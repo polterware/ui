@@ -1,0 +1,26 @@
+[package]
+name = "polterware-ui"
+description = "Polterware's shared GPUI controls and the compositions its apps repeat."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[features]
+default = ["bots"]
+# The mascot on empty pages and the agent bots, drawn by bot-avatar.
+bots = ["dep:bot-avatar", "dep:image", "dep:smallvec"]
+
+[dependencies]
+gpui.workspace = true
+polterware-assets.workspace = true
+polterware-motion.workspace = true
+polterware-theme.workspace = true
+polterware-window.workspace = true
+unicode-segmentation = "1"
+bot-avatar = { workspace = true, optional = true }
+image = { version = "0.25.1", default-features = false, features = ["png"], optional = true }
+smallvec = { version = "1.6", optional = true }
+
+[dev-dependencies]
+gpui = { workspace = true, features = ["test-support"] }

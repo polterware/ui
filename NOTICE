@@ -1,0 +1,13 @@
+Polterware UI
+Copyright 2026 Erick Barcelos
+
+Licensed under the Apache License, Version 2.0 (LICENSE).
+
+This repository bundles third-party assets in crates/polterware-assets/assets:
+
+- Hugeicons Free (stroke rounded), MIT License: icons/LICENSE-hugeicons.txt
+- Inter, SIL Open Font License 1.1: fonts/Inter-OFL.txt
+- JetBrains Mono, SIL Open Font License 1.1: fonts/JetBrainsMono-OFL.txt
+
+The bot avatars come from bot-avatar (https://github.com/polterware/bot-avatar),
+a Rust port of bot-avatars by Jakub Antalik (MIT License).

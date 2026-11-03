@@ -1,0 +1,10 @@
+[package]
+name = "polterware-theme"
+description = "Polterware design tokens for GPUI: colors, materials, radii, spacing, type, and motion timing."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+gpui.workspace = true

@@ -1,0 +1,18 @@
+[package]
+name = "polterware-window"
+description = "The macOS window frame of Polterware's GPUI apps: vibrancy, window drag, and window options."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+gpui.workspace = true
+image = { version = "0.25.1", default-features = false, features = ["png"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc = "0.2.7"
+raw-window-handle = "0.6.2"
+
+[lints]
+workspace = true
