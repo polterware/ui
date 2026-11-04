@@ -6,7 +6,8 @@
 //! material, 8px in from the page's right edge and 8px above its bottom, padded `16px 8px 8px`,
 //! scrolling on its own.
 //! Below 900px the rail leaves the row and opens as a drawer over the text, on the floating
-//! material, 52px from the top and 8px in from the other edges.
+//! material, 52px from the top and 8px in from the other edges; it takes the pointer and the
+//! wheel, so the text under it never scrolls with it.
 //!
 //! The rail comes and goes like the detail panel: it slides 16px and fades on `spring.slow` (a
 //! tween on its exit), and beside the text its width and the gap before it close too, so the
@@ -16,6 +17,7 @@
 //! `RailGroup` is one titled group of the rail: a toggle heading (a 24px `IconTile` with a
 //! 14px mark, the 13px/500 title, and a 14px muted chevron at the end that turns −90° when
 //! closed) over its content, which folds into a [`SectionClip`].
+//! [`rail_section`] is the same heading, with no chevron, over content that does not fold.
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -218,8 +220,11 @@ pub fn rail_page_body_under(
     let opacity = progress.clamp(0.0, 1.0);
     if page.is_narrow() {
         let width = RAIL_WIDTH.min(page.0.get() - 16.0).max(0.0);
+        // Over the text, the drawer takes the pointer and the wheel: scrolling it never
+        // scrolls the column behind.
         let drawer = div()
             .absolute()
+            .occlude()
             .top(px(52.0))
             .right(px(8.0 - offset))
             .bottom(px(8.0))
@@ -338,14 +343,8 @@ impl Render for RailGroup {
         if self.chevron.is_animating() {
             window.request_animation_frame();
         }
-        let heading = div()
+        let heading = group_heading(self.icon, self.tone, self.title.clone(), &theme)
             .id(("rail-group-toggle", cx.entity_id()))
-            .w_full()
-            .min_w(px(0.0))
-            .flex()
-            .items_center()
-            .gap(px(8.0))
-            .px(px(4.0))
             .rounded(px(theme.radius_item))
             .cursor_pointer()
             .on_click(cx.listener(|this, _, _, cx| {
@@ -353,24 +352,6 @@ impl Render for RailGroup {
                 this.set_open(open, cx);
                 cx.notify();
             }))
-            .child(
-                div()
-                    .flex()
-                    .flex_none()
-                    .child(IconTile::new(self.icon).size(24.0, 14.0).tone(self.tone)),
-            )
-            .child(
-                div()
-                    .flex_1()
-                    .min_w(px(0.0))
-                    .overflow_hidden()
-                    .whitespace_nowrap()
-                    .text_size(px(13.0))
-                    .line_height(px(13.0 * 1.5))
-                    .font_weight(FontWeight::MEDIUM)
-                    .text_color(theme.color_text_primary)
-                    .child(self.title.clone()),
-            )
             .child(icon_rotated(
                 Icon::ChevronDown,
                 14.0,
@@ -402,6 +383,49 @@ impl Render for RailGroup {
             .child(heading)
             .when(shows, |group| group.child(clip))
     }
+}
+
+/// A rail group's heading: the 24px `IconTile` with its 14px mark and the 13px/500 title,
+/// 8px apart and 4px in.
+fn group_heading(icon: Icon, tone: TileTone, title: SharedString, theme: &Theme) -> Div {
+    div()
+        .w_full()
+        .min_w(px(0.0))
+        .flex()
+        .items_center()
+        .gap(px(8.0))
+        .px(px(4.0))
+        .child(
+            div()
+                .flex()
+                .flex_none()
+                .child(IconTile::new(icon).size(24.0, 14.0).tone(tone)),
+        )
+        .child(
+            div()
+                .flex_1()
+                .min_w(px(0.0))
+                .overflow_hidden()
+                .whitespace_nowrap()
+                .text_size(px(13.0))
+                .line_height(px(13.0 * 1.5))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(theme.color_text_primary)
+                .child(title),
+        )
+}
+
+/// A [`RailGroup`] that does not fold, for a page or dialog divided into titled sections:
+/// the group's heading over the children added to it, 8px apart.
+pub fn rail_section(title: impl Into<SharedString>, icon: Icon, cx: &App) -> Div {
+    let theme = Theme::global(cx);
+    div()
+        .w_full()
+        .min_w(px(0.0))
+        .flex()
+        .flex_col()
+        .gap(px(8.0))
+        .child(group_heading(icon, TileTone::Neutral, title.into(), theme))
 }
 
 /// `DetailPanel.Properties variant="rail"`: rows 2px apart.

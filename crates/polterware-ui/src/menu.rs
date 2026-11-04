@@ -442,8 +442,11 @@ impl Menu {
         };
         let is_submenu = matches!(item, MenuItem::Submenu { .. });
         let item = item.clone();
+        // Tests find a row as `menu-item-<index>` (`menu-sub-item-<index>` in a submenu).
+        let selector = format!("{}-{}", id.0, id.1);
         let mut row = div()
             .id(id)
+            .debug_selector(move || selector)
             .relative()
             .w_full()
             .px(px(tw(2.5)))

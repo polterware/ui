@@ -1,7 +1,8 @@
 //! `PageEmpty`: `EmptyBot` (the mascot in a mood, 64px) over an 18px semibold title at
 //! `leading-tight`, centered in the space it fills (`flex h-full min-h-[200px] w-full p-8`,
 //! then `m-auto flex-col items-center gap-2 text-center`). The title sits `mt-2` lower and a
-//! body `mt-4` lower, as wide as it needs up to `max-w-3xl`.
+//! body `mt-4` lower, as wide as it needs up to `max-w-3xl`. [`list_empty`] is its small
+//! form, for a list in a narrow column such as a sidebar.
 
 pub use bot_avatar::MascotMood;
 use gpui::{AnyElement, App, Div, FontWeight, SharedString, div, prelude::*, px};
@@ -11,6 +12,8 @@ use crate::theme::{Theme, tw};
 
 /// `EmptyBot`'s default size.
 const MASCOT: f32 = 64.0;
+/// The mascot of a list's empty state.
+const LIST_MASCOT: f32 = 40.0;
 /// `max-w-3xl`, 48rem.
 const BODY_MAX: f32 = 48.0 * 13.0;
 
@@ -58,4 +61,27 @@ pub fn page_empty_with(
         .justify_center()
         .p(px(tw(8.0)))
         .child(column)
+}
+
+/// A list's empty state, for a narrow column such as a sidebar: the mascot at 40px over one
+/// muted line in the small size, centered, with room above and below. It says one thing: a
+/// list that is empty because it could not load shows only that.
+pub fn list_empty(text: impl Into<SharedString>, mood: MascotMood, cx: &App) -> Div {
+    let theme = Theme::global(cx);
+    div()
+        .w_full()
+        .py(px(tw(6.0)))
+        .px(px(theme.space_2))
+        .flex()
+        .flex_col()
+        .items_center()
+        .gap(px(theme.space_2))
+        .text_center()
+        .child(mascot(mood, LIST_MASCOT))
+        .child(
+            div()
+                .text_size(px(theme.font_size_sm))
+                .text_color(theme.color_text_muted)
+                .child(text.into()),
+        )
 }

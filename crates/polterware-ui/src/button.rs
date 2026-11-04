@@ -278,6 +278,11 @@ impl RenderOnce for Button {
 
         let mut root = div()
             .id(self.id.clone())
+            // Tests find a button by its id (a no-op outside gpui's test support).
+            .debug_selector({
+                let id = self.id.clone();
+                move || id.to_string()
+            })
             // A double click on a button inside a drag region is the button's.
             .window_drag_control()
             .relative()

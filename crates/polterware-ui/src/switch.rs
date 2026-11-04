@@ -266,8 +266,11 @@ fn labelled(
     };
     let hover_switch = switch.clone();
     let click_switch = switch.clone();
+    let selector = id.clone();
     let row = div()
         .id(id)
+        // Tests find a switch row by its id (a no-op outside gpui's test support).
+        .debug_selector(move || selector.to_string())
         .relative()
         .flex()
         .items_center()

@@ -76,10 +76,10 @@ pub use patterns::{
     PropertyPillsEvent, RailGroup, RailPresence, SectionBody, SectionClip, SidebarItem,
     SidebarSectionLabel, StatTile, UsageCard, UsageMeter, WIDE_MEASURE, card_grid, grid_columns,
     rail_card, rail_group, rail_page_body, rail_page_body_under, rail_page_header, rail_properties,
-    rail_property, rail_toggle_label, toolbar, toolbar_center,
+    rail_property, rail_section, rail_toggle_label, toolbar, toolbar_center,
 };
 #[cfg(feature = "bots")]
-pub use patterns::{MascotMood, page_empty, page_empty_with};
+pub use patterns::{MascotMood, list_empty, page_empty, page_empty_with};
 pub use pointer::{
     PointerState, PointerTiming, track, track_with_hover, use_pointer, use_pointer_timed,
 };

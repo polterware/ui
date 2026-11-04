@@ -32,7 +32,7 @@ pub use composer::{
 };
 pub use jump_to_end::{JUMP_TO_END_REST, jump_to_end};
 #[cfg(feature = "bots")]
-pub use page_empty::{MascotMood, page_empty, page_empty_with};
+pub use page_empty::{MascotMood, list_empty, page_empty, page_empty_with};
 pub use property_pills::{
     PICKER_WIDTH, Property, PropertyOption, PropertyPicker, PropertyPickerEvent, PropertyPills,
     PropertyPillsEvent,
@@ -40,7 +40,7 @@ pub use property_pills::{
 pub use rail::{rail_card, rail_group};
 pub use rail_page::{
     PageWidth, RailGroup, RailPresence, WIDE_MEASURE, rail_page_body, rail_page_body_under,
-    rail_page_header, rail_properties, rail_property, rail_toggle_label,
+    rail_page_header, rail_properties, rail_property, rail_section, rail_toggle_label,
 };
 pub use scroll_fade::{
     FadeEdges, FadeScroll, SCROLL_FADE, fade_item, fade_scroll, toolbar_trail, trailing_toolbar,
@@ -50,7 +50,7 @@ pub use settings_dialog::{
     settings_dialog, settings_size,
 };
 pub use settings_section::{SETTINGS_SECTION_GAP, SettingsSection, settings_section};
-pub use shell::{main_surface, modal_layer, window_layer};
+pub use shell::{AnchorSlot, main_surface, modal_layer, window_anchor, window_layer};
 pub use sidebar_item::{SidebarItem, SidebarSectionLabel};
 pub use toolbar::{toolbar, toolbar_center};
 pub use usage_cards::{StatTile, UsageCard, UsageMeter, card_grid, grid_columns};

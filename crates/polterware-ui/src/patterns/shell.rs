@@ -1,10 +1,13 @@
 //! The app frame's surfaces: the main surface inset over the shell, and the layer a modal
 //! (Commander, a Composer) opens on.
 
+use std::cell::Cell;
+use std::rc::Rc;
+
 use gpui::{
     AnyElement, App, Bounds, Div, Element, ElementId, GlobalElementId, InspectorElementId,
-    IntoElement, LayoutId, MouseButton, Pixels, Position, Style, Window, deferred, div, point,
-    prelude::*, px,
+    IntoElement, LayoutId, MouseButton, Pixels, Position, Style, Window, canvas, deferred, div,
+    point, prelude::*, px,
 };
 
 use crate::Handler;
@@ -93,6 +96,64 @@ pub fn window_layer(child: impl IntoElement) -> AnyElement {
         child: child.into_any_element(),
     }
     .into_any_element()
+}
+
+/// `child` in a box at `anchor`, a trigger's bounds in window coordinates, through
+/// [`window_layer`]: a panel that hangs from the trigger (a [`Popover`](crate::Popover), a
+/// [`Menu`](crate::Menu)) drawn outside the scrolling or clipping box that holds the trigger,
+/// so it neither scrolls away under the rows after it nor is cut by that box's edge.
+pub fn window_anchor(anchor: Bounds<Pixels>, child: impl IntoElement) -> AnyElement {
+    window_layer(
+        div().size_full().child(
+            div()
+                .absolute()
+                .left(anchor.origin.x)
+                .top(anchor.origin.y)
+                .w(anchor.size.width)
+                .h(anchor.size.height)
+                .child(child),
+        ),
+    )
+}
+
+/// Where a trigger was laid out, for [`window_anchor`]: the bounds the last frame gave the
+/// box an [`AnchorSlot::probe`] fills. A host builds the overlay from the last frame's bounds,
+/// so when they change (the trigger first drawn, or moved by a scroll) the probe asks for one
+/// more frame, which hangs the panel where the trigger is now.
+#[derive(Clone, Default)]
+pub struct AnchorSlot(Rc<Cell<Option<Bounds<Pixels>>>>);
+
+impl AnchorSlot {
+    /// The bounds, once a frame has laid the probe out.
+    pub fn get(&self) -> Option<Bounds<Pixels>> {
+        self.0.get()
+    }
+
+    /// Forgets the bounds, for a slot that moves to another trigger: its panel waits for the
+    /// new one instead of showing a frame at the old.
+    pub fn clear(&self) {
+        self.0.set(None);
+    }
+
+    /// A probe that fills its `relative()` parent and records its bounds each frame.
+    pub fn probe(&self) -> impl IntoElement {
+        let slot = self.0.clone();
+        canvas(
+            move |bounds, window, _| {
+                if slot.get() != Some(bounds) {
+                    slot.set(Some(bounds));
+                    // gpui ignores a refresh asked for while the window draws, so the redraw
+                    // that moves the panel to the new bounds is asked for from the next frame.
+                    window.on_next_frame(|window, _| window.refresh());
+                }
+            },
+            |_, _, _, _| {},
+        )
+        .absolute()
+        .top(px(0.0))
+        .left(px(0.0))
+        .size_full()
+    }
 }
 
 struct WindowLayer {

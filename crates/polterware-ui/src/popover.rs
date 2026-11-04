@@ -1,4 +1,6 @@
-//! Anchored opaque panel. Springs in, and closes on Escape or a click outside.
+//! Anchored opaque panel. Springs in, and closes on Escape or a click outside. It hangs from
+//! the box it is rendered in (see [`hang`](super::hang)); a host whose box scrolls or clips
+//! draws it outside that box, in a [`window_anchor`](crate::patterns::window_anchor).
 
 use std::rc::Rc;
 
@@ -18,6 +20,8 @@ pub struct Popover {
     focus: FocusHandle,
     open: bool,
     took_focus: bool,
+    /// The trigger's width, when the panel lines up with its right edge.
+    end: Option<f32>,
     progress: SpringValue,
     animator: Animator,
     panel: PopoverPanel,
@@ -29,6 +33,7 @@ impl Popover {
             focus: cx.focus_handle(),
             open: false,
             took_focus: false,
+            end: None,
             progress: SpringValue::new(0.0, SpringTier::Fast),
             animator: Animator::new(),
             panel: Rc::new(|_, _| div().into_any_element()),
@@ -37,6 +42,12 @@ impl Popover {
 
     pub fn set_panel(&mut self, panel: PopoverPanel) {
         self.panel = panel;
+    }
+
+    /// Lines the panel's right edge up with a trigger `trigger_width` wide, for a trigger at
+    /// the end of a row; `None` lines up their left edges, the default.
+    pub fn set_align_end(&mut self, trigger_width: Option<f32>) {
+        self.end = trigger_width;
     }
 
     pub fn set_open(&mut self, open: bool) {
@@ -103,7 +114,11 @@ impl Render for Popover {
                     .text_color(theme.color_text_primary)
                     .child(content),
             );
-        hang(theme.control_height_md, (1.0 - t) * SLIDE, panel).into_any_element()
+        let hung = hang(theme.control_height_md, (1.0 - t) * SLIDE, panel);
+        match self.end {
+            Some(width) => hung.align_end(width).into_any_element(),
+            None => hung.into_any_element(),
+        }
     }
 }
 

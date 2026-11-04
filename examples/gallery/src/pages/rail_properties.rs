@@ -1,9 +1,12 @@
 //! `DetailPanel.Property` in a 360px rail card: short values, values that wrap over lines, a
-//! mono id with no spaces, and a chip beside a long path.
+//! mono id with no spaces, and a chip beside a long path; then sections divided by their
+//! titled headings (`rail_section`), as a dialog that is no rail lays its groups out.
 
 use gpui::{AnyElement, App, IntoElement, Window, div, prelude::*, px};
 use polterware_ui::theme::StatusTone;
-use polterware_ui::{chip, rail_card, rail_properties, rail_property, wrap_text};
+use polterware_ui::{
+    Icon, chip, rail_card, rail_properties, rail_property, rail_section, wrap_text,
+};
 
 use super::super::Example;
 
@@ -55,11 +58,40 @@ fn properties(_: &mut Window, cx: &mut App) -> Vec<AnyElement> {
     ]
 }
 
+fn sections(_: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    let skill = rail_section("Skill", Icon::AiBrain01Icon, cx).child(
+        rail_properties()
+            .child(rail_property("Skill \u{03b8}", text("-0.08"), true, cx))
+            .child(rail_property("From", text("ECI 169"), false, cx)),
+    );
+    let machine = rail_section("On this machine", Icon::Laptop, cx).child(rail_properties().child(
+        rail_property("OpenCode", text("openai/gpt-6-astra"), true, cx),
+    ));
+    vec![
+        div()
+            .w(px(360.0))
+            .flex()
+            .flex_col()
+            .gap(px(20.0))
+            .child(skill)
+            .child(machine)
+            .into_any_element(),
+    ]
+}
+
 pub fn examples() -> Vec<Example> {
-    vec![Example {
-        slug: "rail-properties",
-        title: "Values that wrap",
-        height: 380.0,
-        render: properties,
-    }]
+    vec![
+        Example {
+            slug: "rail-properties",
+            title: "Values that wrap",
+            height: 380.0,
+            render: properties,
+        },
+        Example {
+            slug: "rail-sections",
+            title: "Sections by their headings",
+            height: 260.0,
+            render: sections,
+        },
+    ]
 }

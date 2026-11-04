@@ -2,7 +2,8 @@
 //!
 //! The panel is laid out at the top-left corner of the box it is rendered in, which stands for
 //! the trigger: `trigger_height` tall from there. It goes under the trigger with their left
-//! edges aligned, above it when it does not fit under and does fit above, and is kept
+//! edges aligned (their right edges, for a trigger at the end of a row: [`Hang::align_end`]),
+//! above it when it does not fit under and does fit above, and is kept
 //! `WINDOW_MARGIN` inside the window. The side is picked in the frame that lays the panel out,
 //! from its own size, so it never draws on the wrong side first. `slide` moves it toward the
 //! trigger along the side it took, for the spring in.
@@ -31,6 +32,8 @@ pub struct Hang {
     child: AnyElement,
     trigger_height: Pixels,
     slide: Pixels,
+    /// The trigger's width, when the panel's right edge lines up with the trigger's.
+    end: Option<Pixels>,
     on_side: Option<Box<dyn Fn(Side)>>,
 }
 
@@ -40,11 +43,19 @@ pub fn hang(trigger_height: f32, slide: f32, child: impl IntoElement) -> Hang {
         child: child.into_any_element(),
         trigger_height: px(trigger_height),
         slide: px(slide),
+        end: None,
         on_side: None,
     }
 }
 
 impl Hang {
+    /// Lines the panel's right edge up with the right edge of a trigger `trigger_width` wide,
+    /// so a panel opened from the end of a row grows back over the row, not past it.
+    pub fn align_end(mut self, trigger_width: f32) -> Self {
+        self.end = Some(px(trigger_width));
+        self
+    }
+
     /// Tells `callback` the side the panel took, each frame.
     pub fn on_side(mut self, callback: impl Fn(Side) + 'static) -> Self {
         self.on_side = Some(Box::new(callback));
@@ -53,12 +64,13 @@ impl Hang {
 }
 
 /// The panel's origin for a `size` panel hung from a trigger whose top-left corner is
-/// `trigger`, in a `viewport`.
+/// `trigger`, in a `viewport`; `end` is the trigger's width when their right edges align.
 fn place(
     trigger: gpui::Point<Pixels>,
     trigger_height: Pixels,
     size: gpui::Size<Pixels>,
     viewport: gpui::Size<Pixels>,
+    end: Option<Pixels>,
 ) -> (gpui::Point<Pixels>, Side) {
     let margin = px(WINDOW_MARGIN);
     let below = trigger.y + trigger_height;
@@ -73,7 +85,10 @@ fn place(
     if side == Side::Below && !fits_below {
         y = (viewport.height - margin - size.height).max(margin);
     }
-    let mut x = trigger.x;
+    let mut x = match end {
+        Some(width) => (trigger.x + width - size.width).max(margin),
+        None => trigger.x,
+    };
     if x + size.width > viewport.width - margin {
         x = (viewport.width - margin - size.width).max(margin);
     }
@@ -124,6 +139,7 @@ impl Element for Hang {
             self.trigger_height,
             size,
             window.viewport_size(),
+            self.end,
         );
         if let Some(callback) = &self.on_side {
             callback(side);
@@ -176,6 +192,7 @@ mod tests {
             px(32.0),
             size(px(200.0), px(150.0)),
             size(px(VIEWPORT.0), px(VIEWPORT.1)),
+            None,
         )
     }
 
@@ -202,8 +219,34 @@ mod tests {
             px(32.0),
             size(px(200.0), px(300.0)),
             size(px(VIEWPORT.0), px(VIEWPORT.1)),
+            None,
         );
         assert_eq!(side, Side::Below);
         assert_eq!(origin.y, px(VIEWPORT.1 - 8.0 - 300.0));
+    }
+
+    #[test]
+    fn aligned_to_its_end_it_grows_back_over_the_row() {
+        // A 28px trigger at x 400: the panel's right edge meets the trigger's, at 428.
+        let (origin, side) = place(
+            point(px(400.0), px(40.0)),
+            px(28.0),
+            size(px(200.0), px(150.0)),
+            size(px(VIEWPORT.0), px(VIEWPORT.1)),
+            Some(px(28.0)),
+        );
+        assert_eq!((origin, side), (point(px(228.0), px(68.0)), Side::Below));
+    }
+
+    #[test]
+    fn aligned_to_its_end_near_the_left_edge_it_keeps_the_margin() {
+        let (origin, _) = place(
+            point(px(20.0), px(40.0)),
+            px(28.0),
+            size(px(200.0), px(150.0)),
+            size(px(VIEWPORT.0), px(VIEWPORT.1)),
+            Some(px(28.0)),
+        );
+        assert_eq!(origin.x, px(8.0));
     }
 }

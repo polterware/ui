@@ -7,6 +7,7 @@ mod card;
 mod collapsible_section;
 mod commander;
 mod composer;
+mod empty;
 mod filter_popover;
 mod icon_tile;
 mod keyboard_key;
@@ -33,6 +34,7 @@ pub fn all() -> Vec<Example> {
     examples.extend(switch::examples());
     examples.extend(progress_bar::examples());
     examples.extend(skeleton::examples());
+    examples.extend(empty::examples());
     examples.extend(segment_display::examples());
     examples.extend(status::examples());
     examples.extend(card::examples());

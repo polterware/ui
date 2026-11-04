@@ -11,7 +11,9 @@
 //! a group's quiet heading (11px medium muted) leads the rows that share it. The panel draws
 //! Close (the secondary icon button, on the control material) 20px in from its top right,
 //! the section's 16px semibold heading (and its actions) 24px above the content, and scrolls
-//! the content `24px 32px 32px` in; scrolled, the content fades out under Close.
+//! the content `24px 32px 32px` in; scrolled, the content fades out under Close. A panel a
+//! control in the content opens (a menu, a picker) goes in [`SettingsDialog::overlay`],
+//! drawn over the whole dialog and outside the content's scroll and clip.
 //!
 //! It behaves like gpui-kit's `Settings` (its `SettingPage`s in a sidebar): the app owns
 //! which section is open and hears a pick through [`SettingsDialog::on_select`]; the panel's
@@ -91,6 +93,7 @@ pub fn settings_dialog(presence: f32) -> SettingsDialog {
         actions: None,
         on_close: None,
         content: Vec::new(),
+        overlay: Vec::new(),
     }
 }
 
@@ -104,6 +107,7 @@ pub struct SettingsDialog {
     actions: Option<AnyElement>,
     on_close: Option<Handler>,
     content: Vec<AnyElement>,
+    overlay: Vec<AnyElement>,
 }
 
 impl SettingsDialog {
@@ -138,6 +142,15 @@ impl SettingsDialog {
     /// Close at the panel's top right.
     pub fn on_close(mut self, handler: Handler) -> Self {
         self.on_close = Some(handler);
+        self
+    }
+
+    /// Drawn over the dialog, after the content and outside its scroll and clip: the panel a
+    /// control in the content opens, hung from it in a
+    /// [`window_anchor`](super::window_anchor), so the rows after the control never paint
+    /// over it and the panel's edge is the window's, not the content's.
+    pub fn overlay(mut self, overlay: impl IntoElement) -> Self {
+        self.overlay.push(overlay.into_any_element());
         self
     }
 }
@@ -304,6 +317,8 @@ impl RenderOnce for SettingsDialog {
             .child(
                 div()
                     .id("settings-content")
+                    // Tests scroll the section over it (a no-op outside gpui's test support).
+                    .debug_selector(|| "settings-content".to_string())
                     .size_full()
                     .overflow_y_scroll()
                     .track_scroll(&handle)
@@ -377,5 +392,6 @@ impl RenderOnce for SettingsDialog {
             .child(nav)
             .child(panel)
             .child(edge(Edge::Quiet, radius, &theme))
+            .children(self.overlay)
     }
 }
