@@ -10,6 +10,7 @@ pub use polterware_theme as theme;
 pub use polterware_window as window;
 pub(crate) use polterware_window::window_drag;
 
+pub mod aim;
 #[cfg(feature = "bots")]
 pub mod bots;
 pub mod filter;
@@ -18,6 +19,7 @@ pub mod sort;
 
 pub mod button;
 pub mod card;
+pub mod checkbox;
 pub mod chip;
 pub mod data_table;
 pub mod ellipsis;
@@ -36,7 +38,9 @@ pub mod progress_bar;
 pub mod radio_group;
 pub mod scroll;
 pub mod segment_display;
+pub mod segmented;
 pub mod select;
+pub mod skeleton;
 pub mod status_dot;
 pub mod switch;
 #[cfg(test)]
@@ -44,9 +48,11 @@ mod test_support;
 pub mod text_input;
 pub mod toast;
 pub mod tooltip;
+pub mod wrap;
 
 pub use button::{Button, ButtonKind, ButtonSize, button};
 pub use card::card;
+pub use checkbox::checkbox_mark;
 pub use chip::{chip, chip_colors};
 pub use data_table::{
     Align, Column, DataTable, RowCx, SortDirection, fade_text, mono, next_sort, primary_cell, sans,
@@ -63,11 +69,14 @@ pub use material::{
     Edge, control_drop, drop, edge, face, float_drop, floating_panel, raised_drop, raised_panel,
     rim_fade,
 };
-pub use menu::{Menu, MenuEntry};
+pub use menu::{Menu, MenuEntry, MenuItem};
 pub use patterns::{
-    CollapsibleSection, PageWidth, RailGroup, RailPresence, SectionBody, SectionClip, SidebarItem,
-    SidebarSectionLabel, WIDE_MEASURE, rail_card, rail_group, rail_page_body, rail_page_header,
-    rail_properties, rail_property, rail_toggle_label, toolbar,
+    CollapsibleSection, Commander, CommanderEvent, CommanderGroup, CommanderItem, CommanderMark,
+    PageWidth, Property, PropertyOption, PropertyPicker, PropertyPickerEvent, PropertyPills,
+    PropertyPillsEvent, RailGroup, RailPresence, SectionBody, SectionClip, SidebarItem,
+    SidebarSectionLabel, StatTile, UsageCard, UsageMeter, WIDE_MEASURE, card_grid, grid_columns,
+    rail_card, rail_group, rail_page_body, rail_page_body_under, rail_page_header, rail_properties,
+    rail_property, rail_toggle_label, toolbar, toolbar_center,
 };
 #[cfg(feature = "bots")]
 pub use patterns::{MascotMood, page_empty, page_empty_with};
@@ -75,20 +84,29 @@ pub use pointer::{
     PointerState, PointerTiming, track, track_with_hover, use_pointer, use_pointer_timed,
 };
 pub use popover::{Popover, PopoverPanel};
-pub use progress_bar::{progress_bar, progress_bar_sm};
-pub use radio_group::{RadioOption, radio_group};
+pub use progress_bar::{bar_legend, progress_bar, progress_bar_sm, stacked_bar};
+pub use radio_group::{RadioOption, radio_group, radio_mark};
 pub use scroll::{
     GUTTER as SCROLLBAR_GUTTER, ListScroll, ScrollAxis, ScrollGeometry, ScrollSource, ScrollState,
-    ScrollbarState, page_content, page_fill, page_fill_bar, page_inner_height, scroll_area,
-    scrollbar, use_scroll,
+    ScrollbarState, page_content, page_fill, page_fill_bar, page_inner_height, page_under,
+    page_under_inset, scroll_area, scroll_area_under, scrollbar, use_scroll,
 };
 pub use segment_display::{GlyphKind, segment_display, segment_glyph};
+pub use segmented::SegmentedControl;
 pub use select::select_trigger;
+pub use skeleton::{
+    PageSkeleton, SkeletonLayout, bone, line_bone, list_skeleton, page_skeleton, skeleton_tone,
+    text_skeleton,
+};
 pub use status_dot::status_dot;
-pub use switch::{Switch, switch_row};
+pub use switch::{Switch, switch_card, switch_row};
 pub use text_input::{FieldSize, TextInput};
-pub use toast::{Toast, ToastTone, toast_stack};
-pub use tooltip::{TooltipView, tooltip};
+pub use toast::{Toast, ToastTone, toast_lifetime, toast_stack};
+pub use tooltip::{
+    RichTooltipView, TooltipView, rich_tooltip, tooltip, tooltip_card, tooltip_heading,
+    tooltip_note, tooltip_row,
+};
+pub use wrap::{WrapText, wrap_text};
 
 use std::rc::Rc;
 
@@ -117,6 +135,9 @@ pub fn init(cx: &mut App) {
 /// The controls' key bindings; [`init`] installs them.
 pub fn register_key_bindings(cx: &mut App) {
     text_input::register_key_bindings(cx);
+    patterns::commander::register_key_bindings(cx);
+    patterns::property_pills::register_key_bindings(cx);
+    menu::register_key_bindings(cx);
     cx.bind_keys([
         KeyBinding::new("escape", Dismiss, Some("Popover")),
         KeyBinding::new("escape", Dismiss, Some("Menu")),

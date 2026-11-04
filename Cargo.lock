@@ -678,7 +678,6 @@ dependencies = [
 [[package]]
 name = "bot-avatar"
 version = "0.1.0"
-source = "git+https://github.com/polterware/bot-avatar#4628014df52ff1b637d822ee6f6c1cdd06acf311"
 dependencies = [
  "tiny-skia",
 ]

@@ -6,8 +6,12 @@
 //! directly: `-[NSWindow performWindowDragWithEvent:]` with the current mouse
 //! event. The drag starts once the pointer moves a few pixels with the button
 //! down, so a press that ends as a click still reaches buttons inside the
-//! region. A double click follows the system's titlebar preference (zoom or
-//! minimize).
+//! region. A double click on the region's empty area follows the system's
+//! titlebar preference (zoom or minimize); on a control inside it, one marked
+//! [`WindowDragRegion::window_drag_control`], it is the control's, as a double
+//! click on a toolbar button never zooms a native window.
+
+use std::cell::Cell;
 
 use gpui::{InteractiveElement, MouseButton, Pixels, Point, Window, px};
 
@@ -20,15 +24,33 @@ struct PendingDrag {
 
 thread_local! {
     static PENDING: std::cell::RefCell<PendingDrag> = std::cell::RefCell::new(PendingDrag::default());
+    /// Where a control inside a region was last pressed. A control's listener runs before
+    /// the region's (the bubble phase goes from the innermost element out), so the region
+    /// reads the press it is handling.
+    static CLAIMED: Cell<Option<Point<Pixels>>> = const { Cell::new(None) };
+}
+
+/// A control took the press at `position`.
+fn claim(position: Point<Pixels>) {
+    CLAIMED.with(|claimed| claimed.set(Some(position)));
+}
+
+/// Whether a control took the press at `position`, forgetting any claim either way, so a
+/// claim the region never read cannot hold over a later press.
+fn take_claim(position: Point<Pixels>) -> bool {
+    CLAIMED.with(|claimed| claimed.take()) == Some(position)
 }
 
 /// Adds window dragging to an element's empty area.
 pub trait WindowDragRegion: InteractiveElement + Sized {
     fn window_drag_region(self) -> Self {
         self.on_mouse_down(MouseButton::Left, |event, window, _cx| {
+            let on_a_control = take_claim(event.position);
             if event.click_count >= 2 {
                 PENDING.with(|p| p.borrow_mut().origin = None);
-                window.titlebar_double_click();
+                if !on_a_control {
+                    window.titlebar_double_click();
+                }
                 return;
             }
             PENDING.with(|p| p.borrow_mut().origin = Some(event.position));
@@ -51,6 +73,13 @@ pub trait WindowDragRegion: InteractiveElement + Sized {
             PENDING.with(|p| p.borrow_mut().origin = None);
             start_native_drag(window);
         })
+    }
+
+    /// Marks a control inside a drag region (a button, a row, a section's heading): a double
+    /// click on it is its own and never zooms the window. A press that moves still drags the
+    /// window from it, as from the region around it. Outside a region it does nothing.
+    fn window_drag_control(self) -> Self {
+        self.on_mouse_down(MouseButton::Left, |event, _, _| claim(event.position))
     }
 }
 
@@ -89,4 +118,28 @@ fn start_native_drag(window: &Window) {
 #[cfg(not(target_os = "macos"))]
 fn start_native_drag(window: &Window) {
     window.start_window_move();
+}
+
+#[cfg(test)]
+mod tests {
+    use gpui::{point, px};
+
+    use super::{claim, take_claim};
+
+    #[test]
+    fn a_press_a_control_took_is_not_the_regions() {
+        let on = point(px(10.0), px(20.0));
+        claim(on);
+        assert!(take_claim(on), "the control's press");
+        // Read once: the next press at the same spot is the region's unless claimed again.
+        assert!(!take_claim(on));
+    }
+
+    #[test]
+    fn a_claim_the_region_never_read_does_not_hold_over() {
+        claim(point(px(10.0), px(20.0)));
+        // A press elsewhere, on the region's empty area, clears it.
+        assert!(!take_claim(point(px(200.0), px(20.0))));
+        assert!(!take_claim(point(px(10.0), px(20.0))));
+    }
 }

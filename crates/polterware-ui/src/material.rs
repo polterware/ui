@@ -138,8 +138,16 @@ pub fn raised_panel<E: Styled + ParentElement>(element: E, radius: f32, theme: &
 }
 
 /// A floating surface (menus, popovers, dialogs, tooltips): the quiet edge and the float drop.
-pub fn floating_panel<E: Styled + ParentElement>(element: E, radius: f32, theme: &Theme) -> E {
+/// It takes the pointer over its whole face, so a press on it never reaches what it floats
+/// over, wherever it sits: a submenu or a picker drawn past its owner's bounds blocks the
+/// page under it as much as a panel in place does.
+pub fn floating_panel<E: Styled + ParentElement + InteractiveElement>(
+    element: E,
+    radius: f32,
+    theme: &Theme,
+) -> E {
     element
+        .occlude()
         .rounded(px(radius))
         .shadow(float_drop(theme))
         .child(edge(Edge::Quiet, radius, theme))

@@ -10,10 +10,11 @@
 //! opens them at once with their search focused. Typing in the root search lists the matching
 //! fields and then `Field › Value` shortcuts.
 //!
-//! The values panel, 240 wide, lists 32px rows in 12px: a 14px checkbox that stays hidden until
-//! the row is hovered unless checked (a radio for a single field), then the option's tile and
-//! label. A label click picks only that value and closes the menu; a checkbox edits the pill
-//! the first check created and keeps the menu open.
+//! The values panel, 240 wide, lists 32px rows in 12px: a 14px checkbox (a radio for a single
+//! field), then the option's tile and label. On a field of several values a click anywhere on
+//! the row toggles its checkbox and keeps the menu open, as gpui-kit's multiple `Select` does,
+//! until a press outside or on its trigger closes it; on a single field a click picks and
+//! closes.
 //!
 //! The bar is a recessed track (radius 14, 2px in, 8px from the page) of segmented pills,
 //! `[icon Field] [operator] [value] [×]`, then `+` and Clear. The pill's value opens the same
@@ -31,17 +32,20 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
-    AnyElement, App, Bounds, Context, Corner, Entity, EventEmitter, Focusable, FontWeight,
-    IntoElement, MouseButton, MouseDownEvent, Pixels, Point, Render, SharedString, Window,
-    anchored, canvas, deferred, div, point, prelude::*, px,
+    AnyElement, App, Bounds, Context, Corner, DispatchPhase, Entity, EventEmitter, Focusable,
+    FontWeight, IntoElement, MouseButton, MouseDownEvent, MouseMoveEvent, Pixels, Point, Render,
+    SharedString, Window, anchored, canvas, deferred, div, point, prelude::*, px,
 };
 
+use super::aim::{AIM_DELAY, MenuAim};
 use super::button::{Button, ButtonKind, ButtonSize};
+use super::checkbox::checkbox_mark;
 use super::ellipsis::ellipsis;
 use super::icon_tile::IconTile;
 use super::icons::{Icon, icon_colored};
 use super::material::{self, Edge, face};
 use super::pointer::{PointerTiming, track, track_with_hover, use_pointer_timed};
+use super::radio_group::radio_mark;
 use super::text_input::TextInput;
 use super::tooltip::tooltip;
 use crate::filter::{
@@ -283,6 +287,13 @@ pub struct FilterPopover {
     operator_hover: Glide,
     focus_next: Option<Surface>,
     geometry: Rc<RefCell<Geometry>>,
+    /// The pointer's way to the open submenu: the field rows it crosses wait for it.
+    aim: Rc<RefCell<MenuAim>>,
+    /// The field row under the pointer. Moving from one row to the next may report the
+    /// new row's enter before the old one's leave, and that leave must not undo the enter.
+    hovered_row: Option<usize>,
+    /// Draws the icon button; off for a control that shows only its `pills`.
+    trigger: bool,
 }
 
 impl EventEmitter<FiltersChanged> for FilterPopover {}
@@ -323,7 +334,18 @@ impl FilterPopover {
             operator_hover: Glide::new(),
             focus_next: None,
             geometry: Rc::new(RefCell::new(Geometry::default())),
+            aim: Rc::new(RefCell::new(MenuAim::default())),
+            hovered_row: None,
+            trigger: true,
         }
+    }
+
+    /// No icon button: the control draws only its panels, for `pills`, whose fields always
+    /// hold a value. It takes no F key.
+    pub fn without_trigger(mut self) -> Self {
+        self.trigger = false;
+        self.shortcut = false;
+        self
     }
 
     /// A bare search whose Enter and Escape reach this control.
@@ -402,6 +424,26 @@ impl FilterPopover {
         self.changed(cx);
     }
 
+    /// Replaces `field`'s pills with one holding `values` (none when empty), as a page does
+    /// when another field's pick leaves this one's value out of place.
+    pub fn set_filter(&mut self, field: &str, values: &[String], cx: &mut Context<Self>) {
+        self.filters.clauses.retain(|clause| clause.field != field);
+        if !values.is_empty()
+            && let Some(index) = self.field_index(field)
+        {
+            let spec = self.fields[index].spec.clone();
+            self.filters.add(&spec, values);
+        }
+        if self
+            .values_clause
+            .as_ref()
+            .is_some_and(|clause| !self.filters.clauses.iter().any(|kept| &kept.id == clause))
+        {
+            self.close_values();
+        }
+        self.changed(cx);
+    }
+
     pub fn clear(&mut self, cx: &mut Context<Self>) {
         self.filters.clear();
         self.close_values();
@@ -438,6 +480,7 @@ impl FilterPopover {
     /// `closeRoot`: the menu, its open values, the session, and the query.
     fn close_root(&mut self, cx: &mut Context<Self>) {
         self.timer += 1;
+        self.aim.borrow_mut().reset();
         self.root.set(false);
         self.sub.set(false);
         self.session = None;
@@ -553,39 +596,90 @@ impl FilterPopover {
         cx.notify();
     }
 
+    /// Opens `open`'s submenu, or closes the open one, once the pointer has rested on it:
+    /// a field row's hover, or leaving the rows.
     fn schedule(&mut self, open: Option<(usize, usize)>, cx: &mut Context<Self>) {
-        self.timer += 1;
-        let timer = self.timer;
         let delay = if open.is_some() {
             OPEN_DELAY
         } else {
             CLOSE_DELAY
         };
+        self.schedule_after(open, delay, cx);
+    }
+
+    fn schedule_after(
+        &mut self,
+        open: Option<(usize, usize)>,
+        delay: Duration,
+        cx: &mut Context<Self>,
+    ) {
+        self.timer += 1;
+        let timer = self.timer;
+        let moves = self.aim.borrow().moves();
         cx.spawn(async move |this, cx| {
             cx.background_executor().timer(delay).await;
             let _ = this.update(cx, |this, cx| {
                 if this.timer != timer || !this.root.open {
                     return;
                 }
-                match open {
-                    Some((field, row)) => this.open_field(field, row, false, cx),
-                    None => {
-                        this.sub.set(false);
-                        cx.notify();
-                    }
-                }
+                this.settle_hover(open, moves, cx);
             });
         })
         .detach();
     }
 
+    /// A hover's timer has run out: while the pointer is still on its way to the open
+    /// submenu (it moved since, toward it), the rows it crossed wait and look again; a
+    /// pointer that rests or turns away gets the row it is on, or the submenu closes.
+    fn settle_hover(&mut self, open: Option<(usize, usize)>, moves: u64, cx: &mut Context<Self>) {
+        let leaves_the_submenu =
+            self.sub.open && open.map(|(field, _)| field) != self.shown_field();
+        let on_its_way = {
+            let aim = self.aim.borrow();
+            aim.moves() != moves && aim.aiming()
+        };
+        if leaves_the_submenu && on_its_way {
+            self.schedule_after(open, AIM_DELAY, cx);
+            return;
+        }
+        match open {
+            Some((field, row)) => self.open_field(field, row, false, cx),
+            None => {
+                self.sub.set(false);
+                cx.notify();
+            }
+        }
+    }
+
+    /// The field whose submenu is open.
+    fn shown_field(&self) -> Option<usize> {
+        self.sub
+            .open
+            .then_some(self.sub_field.map(|(field, _)| field))
+            .flatten()
+    }
+
     fn hover_field(&mut self, field: usize, row: usize, hovered: bool, cx: &mut Context<Self>) {
         if hovered {
+            self.hovered_row = Some(row);
             self.root_hover.to(Some(row), FIELD_ROW_H);
-            self.schedule(Some((field, row)), cx);
+            // A row crossed on the way to another field's submenu waits longer, and then
+            // only takes over if the pointer has come to rest on it.
+            let crossing =
+                self.shown_field().is_some_and(|open| open != field) && self.aim.borrow().aiming();
+            if crossing {
+                self.schedule_after(Some((field, row)), AIM_DELAY, cx);
+            } else {
+                self.schedule(Some((field, row)), cx);
+            }
         } else {
             self.root_hover.leave(row);
-            self.schedule(None, cx);
+            // Only the row the pointer is on: a leave reported after the next row's enter
+            // keeps that row's open.
+            if self.hovered_row == Some(row) {
+                self.hovered_row = None;
+                self.schedule(None, cx);
+            }
         }
         cx.notify();
     }
@@ -850,58 +944,6 @@ fn empty_line(text: &'static str, theme: &Theme) -> impl IntoElement {
         .line_height(px(18.0))
         .text_color(theme.color_text_muted)
         .child(text)
-}
-
-/// `.pw-checkbox__control` at 14px, radius 4: the field fill unchecked, the control face with
-/// a 12px check when checked.
-fn checkbox_mark(checked: bool, theme: &Theme) -> impl IntoElement {
-    let fill = if checked {
-        face(theme.material_face_top, theme.material_face_bottom)
-    } else {
-        face(theme.field_fill_top, theme.field_fill_bottom)
-    };
-    div()
-        .relative()
-        .size(px(14.0))
-        .flex_none()
-        .flex()
-        .items_center()
-        .justify_center()
-        .rounded(px(4.0))
-        .bg(fill)
-        .shadow(material::control_drop(theme))
-        .when(checked, |mark| {
-            mark.child(icon_colored(Icon::Check, 12.0, theme.color_text_primary))
-        })
-        .child(material::edge(Edge::Strong, 4.0, theme))
-}
-
-/// `RadioMark`: a 16px round field control; checked, the control face and a 6px dot.
-fn radio_mark(checked: bool, theme: &Theme) -> impl IntoElement {
-    let fill = if checked {
-        face(theme.material_face_top, theme.material_face_bottom)
-    } else {
-        face(theme.field_fill_top, theme.field_fill_bottom)
-    };
-    div()
-        .relative()
-        .size(px(16.0))
-        .flex_none()
-        .flex()
-        .items_center()
-        .justify_center()
-        .rounded_full()
-        .bg(fill)
-        .shadow(material::control_drop(theme))
-        .when(checked, |mark| {
-            mark.child(
-                div()
-                    .size(px(6.0))
-                    .rounded_full()
-                    .bg(theme.color_text_primary),
-            )
-        })
-        .child(material::edge(Edge::Strong, 8.0, theme))
 }
 
 /// The floating surface every panel shares (`surface-panel-float`): opaque, radius 16, the
@@ -1211,9 +1253,9 @@ impl FilterPopover {
                 ));
                 let pointer =
                     use_pointer_timed(id.clone(), PointerTiming::item(&theme), window, cx);
-                let (hovered, hover, hover_color) = {
+                let (hover, hover_color) = {
                     let state = pointer.read(cx);
-                    (state.hovered(), state.hover(), state.hover_color())
+                    (state.hover(), state.hover_color())
                 };
                 let fill = if active { 1.0 } else { hover };
                 let ink = if checked || active {
@@ -1251,11 +1293,7 @@ impl FilterPopover {
                                     this.toggle_option(surface, field, &value, !checked, cx)
                                 });
                             })
-                            .child(if checked || hovered {
-                                checkbox_mark(checked, &theme).into_any_element()
-                            } else {
-                                div().size(px(14.0)).into_any_element()
-                            }),
+                            .child(checkbox_mark(checked, 14.0, &theme)),
                     );
                 }
                 let select_entity = entity.clone();
@@ -1272,13 +1310,19 @@ impl FilterPopover {
                     .cursor_pointer()
                     .text_size(px(12.0))
                     .line_height(px(18.0))
+                    // A field of several values toggles the row's checkbox and stays open, as
+                    // gpui-kit's multiple `Select` does; one of a single value picks and closes.
                     .on_click(move |_, _, cx| {
                         let value = value.clone();
                         select_entity.update(cx, |this, cx| {
-                            this.select_option(surface, field, &value, cx)
+                            if multi {
+                                this.toggle_option(surface, field, &value, !checked, cx)
+                            } else {
+                                this.select_option(surface, field, &value, cx)
+                            }
                         });
                     })
-                    .when(!multi, |body| body.child(radio_mark(checked, &theme)))
+                    .when(!multi, |body| body.child(radio_mark(checked, 16.0, &theme)))
                     .child(IconTile::option(None, &option.label))
                     .child(
                         div()
@@ -1608,6 +1652,25 @@ impl Render for FilterPopover {
             entity.update(cx, |this, cx| this.toggle_root(Anchor::Trigger, cx));
         });
         let geometry = self.geometry.clone();
+        // The open submenu is what the pointer may be on its way to.
+        let target = self.sub.open.then(|| geometry.borrow().sub).flatten();
+        self.aim.borrow_mut().set_target(target);
+        let tracker = self.root.open.then(|| {
+            let aim = self.aim.clone();
+            canvas(
+                |_, _, _| {},
+                move |_, _, window, _| {
+                    let aim = aim.clone();
+                    window.on_mouse_event(move |event: &MouseMoveEvent, phase, _, _| {
+                        if phase == DispatchPhase::Capture {
+                            aim.borrow_mut().moved(event.position);
+                        }
+                    });
+                },
+            )
+            .absolute()
+            .size_0()
+        });
         let root = self.root_panel(window, cx);
         let sub = self.sub_panel(window, cx);
         let values = self.values_panel(window, cx);
@@ -1615,13 +1678,17 @@ impl Render for FilterPopover {
         if self.animating() {
             window.request_animation_frame();
         }
+        let shown = self.trigger;
         div()
             .relative()
             .flex_none()
-            .child(trigger)
-            .child(probe(&geometry, |geometry, bounds| {
-                geometry.trigger = Some(bounds)
-            }))
+            .when(shown, |this| {
+                this.child(trigger)
+                    .child(probe(&geometry, |geometry, bounds| {
+                        geometry.trigger = Some(bounds)
+                    }))
+            })
+            .children(tracker)
             .children(root)
             .children(sub)
             .children(values)
@@ -1672,6 +1739,116 @@ fn ghost(
 }
 
 impl FilterPopover {
+    /// The clauses as bare pills, with no track, operator, remove, `+`, or Clear: for fields that
+    /// always hold one value, where a pill reads like a select (the Solid `Select` trigger's
+    /// neutral face, `rounded-full`, the field muted before its value and a chevron) and a press
+    /// opens the value's menu, as gpui-kit's `Select` does. Draw the control itself too (often
+    /// `without_trigger`), which holds the menu.
+    pub fn pills(entity: &Entity<Self>, window: &mut Window, cx: &mut App) -> Option<AnyElement> {
+        let theme = *Theme::global(cx);
+        let this = entity.read(cx);
+        let clauses: Vec<_> = this
+            .filters
+            .clauses
+            .iter()
+            .filter_map(|clause| {
+                this.field_index(&clause.field)
+                    .map(|field| (clause.clone(), field))
+            })
+            .collect();
+        if clauses.is_empty() {
+            return None;
+        }
+        let id = this.id.clone();
+        let geometry = this.geometry.clone();
+        let values_open = this
+            .values
+            .open
+            .then(|| this.values_clause.clone())
+            .flatten();
+        let fields = this.fields.clone();
+        let mut row = div().flex().min_w(px(0.0)).items_center().gap(px(6.0));
+        for (clause, field) in clauses {
+            let spec = &fields[field].spec;
+            let pill_id = SharedString::from(format!("{id}-pill-{}", clause.id));
+            let pointer =
+                use_pointer_timed(pill_id.clone(), PointerTiming::control(&theme), window, cx);
+            let open = values_open.as_deref() == Some(clause.id.as_str());
+            let (hover, ink) = {
+                let state = pointer.read(cx);
+                if open {
+                    (1.0, 1.0)
+                } else {
+                    (state.hover(), state.hover_color())
+                }
+            };
+            let target = entity.clone();
+            let clause_id = clause.id.clone();
+            let probe_id = clause.id.clone();
+            row = row.child(track(
+                div()
+                    .id(pill_id)
+                    .relative()
+                    .flex()
+                    .min_w(px(0.0))
+                    .items_center()
+                    .gap(px(5.0))
+                    .h(px(26.0))
+                    .pl(px(10.0))
+                    .pr(px(8.0))
+                    .rounded(px(PILL_RADIUS))
+                    .bg(face(theme.face_neutral.top, theme.face_neutral.bottom))
+                    .shadow(material::control_drop(&theme))
+                    .cursor_pointer()
+                    .text_size(px(12.0))
+                    .line_height(px(14.4))
+                    .child(
+                        div()
+                            .absolute()
+                            .inset_0()
+                            .rounded(px(PILL_RADIUS))
+                            .bg(fade(theme.color_surface_hover, hover)),
+                    )
+                    .children(
+                        fields[field]
+                            .icon
+                            .map(|name| icon_colored(name, 13.0, theme.color_text_muted)),
+                    )
+                    .child(
+                        div()
+                            .relative()
+                            .flex_none()
+                            .text_color(theme.color_text_muted)
+                            .child(SharedString::from(spec.label.clone())),
+                    )
+                    .child(
+                        div()
+                            .relative()
+                            .min_w(px(0.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(theme.color_text_primary)
+                            .child(ellipsis(SharedString::from(value_summary(spec, &clause)))),
+                    )
+                    .child(icon_colored(
+                        Icon::ChevronDown,
+                        12.0,
+                        mix(theme.color_text_muted, theme.color_text_primary, ink),
+                    ))
+                    .child(probe(&geometry, move |geometry, bounds| {
+                        geometry.pills.insert(probe_id.clone(), bounds);
+                        geometry.value_segments.insert(probe_id.clone(), bounds);
+                    }))
+                    .child(material::edge(Edge::Strong, PILL_RADIUS, &theme))
+                    .on_click(move |_, _, cx| {
+                        target.update(cx, |this, cx| this.toggle_values(&clause_id, cx));
+                    }),
+                &pointer,
+                true,
+            ));
+        }
+        Some(row.into_any_element())
+    }
+
     /// `ActiveFilterBar`: the pills, `+`, and Clear, or nothing while no clause filters.
     pub fn bar(entity: &Entity<Self>, window: &mut Window, cx: &mut App) -> Option<AnyElement> {
         let theme = *Theme::global(cx);
@@ -1969,5 +2146,163 @@ impl FilterPopover {
                 .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                 .into_any_element(),
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use gpui::{Modifiers, TestAppContext, div, point, prelude::*, px, size};
+
+    use super::{
+        AIM_DELAY, Anchor, CLOSE_DELAY, FIELD_ROW_H, FilterField, FilterPopover, HEADER_H,
+        LIST_PAD, OPEN_DELAY,
+    };
+    use crate::filter::{FilterOption, FilterSpec};
+    use crate::test_support::{draw, open, settle};
+
+    fn field(id: &str, label: &str) -> FilterField {
+        let options = ["One", "Two", "Three", "Four"]
+            .into_iter()
+            .map(|name| FilterOption::new(name.to_lowercase(), name))
+            .collect();
+        FilterField::new(FilterSpec::multi(id, label, options).single(), None)
+    }
+
+    /// The popover's root open over a 900 by 600 window, its trigger at (300, 40), with
+    /// three fields; answers the y of each field row's middle and a point inside the rows.
+    fn opened(cx: &mut TestAppContext) -> (gpui::Entity<FilterPopover>, gpui::VisualTestContext) {
+        let popover = cx.new(|cx| {
+            let mut popover = FilterPopover::new("f", "Filters", false, cx);
+            popover.set_fields(vec![
+                field("provider", "Provider"),
+                field("window", "Window"),
+                field("agent", "Agent"),
+            ]);
+            popover
+        });
+        let host = popover.clone();
+        let mut cx = open(cx, size(900.0, 600.0), move |_, _| {
+            div()
+                .relative()
+                .size_full()
+                .child(
+                    div()
+                        .absolute()
+                        .left(px(300.0))
+                        .top(px(40.0))
+                        .child(host.clone()),
+                )
+                .into_any_element()
+        });
+        settle(&mut cx);
+        cx.update(|_, cx| {
+            popover.update(cx, |popover, cx| popover.toggle_root(Anchor::Trigger, cx))
+        });
+        settle(&mut cx);
+        (popover, cx)
+    }
+
+    fn row_y(
+        popover: &gpui::Entity<FilterPopover>,
+        row: usize,
+        cx: &mut gpui::VisualTestContext,
+    ) -> (f32, f32, f32) {
+        let root = cx
+            .update(|_, cx| popover.read(cx).geometry.borrow().root)
+            .expect("the root was drawn");
+        let y = f32::from(root.top()) + HEADER_H + LIST_PAD + (row as f32 + 0.5) * FIELD_ROW_H;
+        (f32::from(root.left()), f32::from(root.right()), y)
+    }
+
+    fn shown(
+        popover: &gpui::Entity<FilterPopover>,
+        cx: &mut gpui::VisualTestContext,
+    ) -> Option<usize> {
+        cx.update(|_, cx| popover.read(cx).shown_field())
+    }
+
+    fn wait(cx: &mut gpui::VisualTestContext, delay: std::time::Duration) {
+        cx.executor()
+            .advance_clock(delay + std::time::Duration::from_millis(10));
+        cx.run_until_parked();
+        draw(cx);
+    }
+
+    #[gpui::test]
+    fn a_field_crossed_on_the_way_to_the_submenu_waits_for_the_pointer_to_rest(
+        cx: &mut TestAppContext,
+    ) {
+        let (popover, mut cx) = opened(cx);
+        let (left, right, first) = row_y(&popover, 0, &mut cx);
+        cx.simulate_mouse_move(point(px(left + 40.0), px(first)), None, Modifiers::none());
+        wait(&mut cx, OPEN_DELAY);
+        assert_eq!(shown(&popover, &mut cx), Some(0));
+        let sub = cx
+            .update(|_, cx| popover.read(cx).geometry.borrow().sub)
+            .expect("the submenu was drawn");
+        assert!(
+            f32::from(sub.left()) >= right - 8.0,
+            "the submenu opens to the right"
+        );
+        // Down and right toward the submenu's lower rows, over Window.
+        cx.simulate_mouse_move(
+            point(px(left + 46.0), px(first + 1.0)),
+            None,
+            Modifiers::none(),
+        );
+        cx.simulate_mouse_move(
+            point(px(right - 20.0), px(first + FIELD_ROW_H)),
+            None,
+            Modifiers::none(),
+        );
+        draw(&mut cx);
+        wait(&mut cx, OPEN_DELAY);
+        assert_eq!(
+            shown(&popover, &mut cx),
+            Some(0),
+            "crossing Window keeps Provider open"
+        );
+        // Resting on Window, it takes over once the wait is out.
+        wait(&mut cx, AIM_DELAY);
+        assert_eq!(shown(&popover, &mut cx), Some(1));
+    }
+
+    #[gpui::test]
+    fn the_submenu_waits_while_the_pointer_crosses_the_gap_to_it(cx: &mut TestAppContext) {
+        let (popover, mut cx) = opened(cx);
+        let (left, right, last) = row_y(&popover, 2, &mut cx);
+        cx.simulate_mouse_move(point(px(left + 40.0), px(last)), None, Modifiers::none());
+        wait(&mut cx, OPEN_DELAY);
+        settle(&mut cx);
+        assert_eq!(shown(&popover, &mut cx), Some(2));
+        let sub = cx
+            .update(|_, cx| popover.read(cx).geometry.borrow().sub)
+            .expect("the submenu was drawn");
+        let edge = f32::from(sub.left());
+        // Out under the root, past its corner, toward the submenu: over no panel at all.
+        let below = last + FIELD_ROW_H;
+        cx.simulate_mouse_move(
+            point(px(right - 30.0), px(last + 4.0)),
+            None,
+            Modifiers::none(),
+        );
+        cx.simulate_mouse_move(point(px(edge - 16.0), px(below)), None, Modifiers::none());
+        draw(&mut cx);
+        // Still moving toward it when the close would have come.
+        cx.executor().advance_clock(CLOSE_DELAY / 2);
+        cx.simulate_mouse_move(
+            point(px(edge - 6.0), px(below + 4.0)),
+            None,
+            Modifiers::none(),
+        );
+        wait(&mut cx, CLOSE_DELAY / 2);
+        assert_eq!(
+            shown(&popover, &mut cx),
+            Some(2),
+            "on its way, the submenu stays"
+        );
+        // Stopped short of it, the submenu closes.
+        wait(&mut cx, AIM_DELAY);
+        assert_eq!(shown(&popover, &mut cx), None);
     }
 }

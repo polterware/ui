@@ -18,6 +18,7 @@ use crate::icons::{Icon, icon_colored, icon_rotated};
 use crate::motion::{Curve, Tween};
 use crate::pointer::{PointerTiming, track_with_hover, use_pointer_timed};
 use crate::theme::{Theme, fade, mix};
+use crate::window_drag::WindowDragRegion;
 use crate::{Handler, ValueHandler};
 
 type ClickHandler = Handler;
@@ -149,6 +150,8 @@ impl RenderOnce for SidebarItem {
 
         let mut row = div()
             .id(self.id.clone())
+            // A double click on it is the item's, never the window's zoom.
+            .window_drag_control()
             .flex()
             .items_center()
             .gap(px(self.gap))
@@ -208,9 +211,9 @@ impl RenderOnce for SidebarItem {
 
 /// `SidebarSection`'s toggle (`.pw-sidebar-group-label.pw-sidebar-group-toggle`): a 28px row
 /// with 8px sides, 12px/500 muted text and a 12px chevron right after it, 4px apart. Hover
-/// turns the text primary over `--duration-fast` and shows the chevron, which also shows
-/// while the group is collapsed, turned -90° over `--duration-fast`. The text clips without
-/// an ellipsis, as the button's anonymous text box does.
+/// turns the text primary over `--duration-fast`; the chevron always shows, turned -90° over
+/// `--duration-fast` while the group is collapsed. A title too long for the row ends in `…`
+/// with the chevron still beside it, so a long conversation reads as one tidy line.
 #[derive(IntoElement)]
 pub struct SidebarSectionLabel {
     id: ElementId,
@@ -259,10 +262,7 @@ impl RenderOnce for SidebarSectionLabel {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
         let pointer = use_pointer_timed(self.id.clone(), PointerTiming::item(&theme), window, cx);
-        let (hovered, hover_color) = {
-            let state = pointer.read(cx);
-            (state.hovered(), state.hover_color())
-        };
+        let hover_color = pointer.read(cx).hover_color();
         let turn_target = if self.collapsed { -90.0 } else { 0.0 };
         let turn = window.use_keyed_state(
             ElementId::from((self.id.clone(), SharedString::from("chevron"))),
@@ -287,10 +287,10 @@ impl RenderOnce for SidebarSectionLabel {
             theme.color_text_primary,
             hover_color,
         );
-        let chevron_shown = hovered || self.collapsed;
 
         let mut row = div()
             .id(self.id.clone())
+            .window_drag_control()
             .w_full()
             .min_h(px(theme.sidebar_row_height))
             .flex()
@@ -305,20 +305,20 @@ impl RenderOnce for SidebarSectionLabel {
             .font_weight(FontWeight::MEDIUM)
             .text_color(ink)
             .cursor_pointer()
-            .child(div().flex_none().child(self.label))
+            // The title gives way first: it ends in `…` so the chevron keeps its place.
             .child(
                 div()
-                    .size(px(12.0))
-                    .flex_none()
-                    .when(chevron_shown, |slot| {
-                        slot.child(icon_rotated(
-                            Icon::ChevronDown,
-                            12.0,
-                            ink,
-                            degrees.to_radians(),
-                        ))
-                    }),
-            );
+                    .min_w(px(0.0))
+                    .flex_shrink()
+                    .overflow_hidden()
+                    .child(ellipsis(self.label)),
+            )
+            .child(div().size(px(12.0)).flex_none().child(icon_rotated(
+                Icon::ChevronDown,
+                12.0,
+                ink,
+                degrees.to_radians(),
+            )));
         if let Some(handler) = self.on_right_click {
             row = row.on_mouse_down(MouseButton::Right, move |event, window, cx| {
                 cx.stop_propagation();

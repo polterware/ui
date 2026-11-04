@@ -163,6 +163,21 @@ pub fn rail_page_body(
     window: &mut Window,
     cx: &App,
 ) -> (Div, Option<Div>) {
+    rail_page_body_under(column, rail, presence, page, 0.0, window, cx)
+}
+
+/// [`rail_page_body`] for a page whose header floats over it (see
+/// [`trailing_toolbar`](super::trailing_toolbar)): the column runs up under the header,
+/// `header` tall, and keeps that much clear at its own top; the rail starts below it.
+pub fn rail_page_body_under(
+    column: impl IntoElement,
+    rail: AnyElement,
+    presence: &RailPresence,
+    page: &PageWidth,
+    header: f32,
+    window: &mut Window,
+    cx: &App,
+) -> (Div, Option<Div>) {
     let theme = Theme::global(cx);
     if presence.is_animating() {
         window.request_animation_frame();
@@ -234,6 +249,7 @@ pub fn rail_page_body(
         .w(px(width))
         .ml(px(gap_close))
         .mr(px(RAIL_INSET - PAGE_PADDING))
+        .mt(px(header))
         .mb(px(8.0))
         .left(px(offset))
         .opacity(opacity)
@@ -417,12 +433,14 @@ pub fn rail_property(label: &str, value: impl IntoElement, mono: bool, cx: &App)
                 .text_color(theme.color_text_muted)
                 .child(label.to_string()),
         )
+        // One row, no wrap. The value grows into the column from its own width, or shrinks to
+        // it; a text value wraps there when it is a `wrap_text` (gpui's own text can paint
+        // one letter a line in this row; see `wrap.rs`).
         .child(
             div()
-                .flex_1()
+                .flex_auto()
                 .min_w(px(0.0))
                 .flex()
-                .flex_wrap()
                 .items_center()
                 .gap(px(4.0))
                 .pl(px(6.0))

@@ -6,10 +6,12 @@
 //! It wears `Input` (`.control-field.pw-field-control`): the field fill (#1a1a1a to #171717,
 //! #1e1e1e to #1b1b1b under the pointer, swapped at once as a gradient cannot ease), the
 //! control edge and drop, and placeholder text in `--color-text-disabled`. Focused, the edge
-//! gives way to a 1px primary ring inside. `sm` is 32px, radius 6, 12px text, padded 0.5rem;
-//! `md` 36px, radius 12, 13px text, padded 0.625rem. [`TextInput::pill`] is `SearchBar`'s
-//! shape: fully round, padded 3.5 steps. [`TextInput::bare`] drops the face for a search
+//! gives way to a 1px primary ring inside. Every field is round-ended, as the buttons are:
+//! `sm` is 32px, 12px text, padded 3 steps; `md` 36px, 13px text, padded 3.5 steps, the
+//! `SearchBar` shape [`TextInput::pill`] names. [`TextInput::bare`] drops the face for a search
 //! that sits in a popover's header (`.pw-filter-popover-search`): 13px text, no edge or ring.
+//! [`TextInput::title`] sets it as the Composer's title (`.commander-search-input`): 18px
+//! semibold at line-height 1.35.
 
 use std::ops::Range;
 use std::rc::Rc;
@@ -25,7 +27,7 @@ use unicode_segmentation::UnicodeSegmentation;
 
 use super::material::{self, Edge, face};
 use crate::Handler;
-use crate::theme::{Theme, rem, tw};
+use crate::theme::{Theme, tw};
 
 /// `ControlFieldSize`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -140,6 +142,9 @@ pub struct TextInput {
     size: FieldSize,
     pill: bool,
     bare: bool,
+    title: bool,
+    /// A bare field's text size and line height, and its ink, when not the defaults.
+    quiet: Option<(f32, f32)>,
     on_submit: Option<TextCallback>,
     on_cancel: Option<CancelCallback>,
     undo: Vec<Snapshot>,
@@ -164,6 +169,8 @@ impl TextInput {
             size: FieldSize::Sm,
             pill: false,
             bare: false,
+            title: false,
+            quiet: None,
             on_submit: None,
             on_cancel: None,
             undo: Vec::new(),
@@ -182,7 +189,8 @@ impl TextInput {
         self
     }
 
-    /// `SearchBar`: fully round, padded 3.5 steps.
+    /// `SearchBar`. Every field is round-ended now; this only keeps older call sites reading
+    /// as they did.
     pub fn pill(mut self) -> Self {
         self.pill = true;
         self
@@ -192,6 +200,31 @@ impl TextInput {
     pub fn bare(mut self) -> Self {
         self.bare = true;
         self
+    }
+
+    /// The Composer's title: 18px semibold. Pair it with [`Self::bare`] for Commander's search.
+    pub fn title(mut self) -> Self {
+        self.title = true;
+        self
+    }
+
+    /// The Composer's description (`.pw-composer__description`): bare, 13.5px secondary.
+    pub fn description(mut self) -> Self {
+        self.bare = true;
+        self.quiet = Some((13.5, 13.5 * 1.5));
+        self
+    }
+
+    /// A Composer field's value (`.pw-composer__field-input`): bare, 12.5px secondary, for a
+    /// labelled row such as [`crate::patterns::composer_field`].
+    pub fn inline(mut self) -> Self {
+        self.bare = true;
+        self.quiet = Some((12.5, 12.5 * 1.5));
+        self
+    }
+
+    pub fn set_placeholder(&mut self, placeholder: impl Into<SharedString>) {
+        self.placeholder = placeholder.into();
     }
 
     pub fn password(mut self, password: bool) -> Self {
@@ -1004,19 +1037,20 @@ impl Element for TextElement {
 impl Render for TextInput {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let theme = *Theme::global(cx);
-        let (height, radius, text, line, pad) = match self.size {
-            FieldSize::Sm => (theme.field_height_sm, 6.0, 12.0, 15.0, rem() / 2.0),
-            FieldSize::Md => (theme.field_height_md, 12.0, 13.0, 16.9, rem() * 0.625),
+        // Round-ended, padded so the text keeps clear of the curve.
+        let (height, text, line, pad) = match self.size {
+            FieldSize::Sm => (theme.field_height_sm, 12.0, 15.0, tw(3.0)),
+            FieldSize::Md => (theme.field_height_md, 13.0, 16.9, tw(3.5)),
         };
-        let (radius, pad) = if self.pill {
-            (height / 2.0, tw(3.5))
-        } else {
-            (radius, pad)
-        };
+        let radius = height / 2.0;
         let focused = self.focus_handle.is_focused(window);
         let hover_fill = face(theme.field_fill_hover_top, theme.field_fill_hover_bottom);
         let bare = self.bare;
-        let (height, text, line) = if bare {
+        let (height, text, line) = if self.title {
+            (24.3, 18.0, 24.3)
+        } else if let Some((text, line)) = self.quiet {
+            (line, text, line)
+        } else if bare {
             (19.5, 13.0, 19.5)
         } else {
             (height, text, line)
@@ -1072,7 +1106,14 @@ impl Render for TextInput {
             })
             .text_size(px(text))
             .line_height(px(line))
-            .text_color(theme.color_text_primary)
+            .when(self.title, |field| {
+                field.font_weight(gpui::FontWeight::SEMIBOLD)
+            })
+            .text_color(if self.quiet.is_some() {
+                theme.color_text_secondary
+            } else {
+                theme.color_text_primary
+            })
             .child(
                 div()
                     .flex_1()

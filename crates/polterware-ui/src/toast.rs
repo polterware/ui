@@ -1,4 +1,8 @@
-//! Toast models and the stack drawn over the window.
+//! Toast models and the stack drawn over the window. A toast goes on its own once its
+//! [`toast_lifetime`] has passed (the app holding the toasts dismisses it then), or at once
+//! from its Close.
+
+use std::time::Duration;
 
 use gpui::{App, IntoElement, SharedString, div, prelude::*, px};
 
@@ -18,6 +22,16 @@ pub struct Toast {
     pub id: u64,
     pub message: SharedString,
     pub tone: ToastTone,
+}
+
+/// How long a toast stays: a note or a success 4s, a warning 6s, an error 8s, so the longer
+/// it may need reading, the longer it stays.
+pub fn toast_lifetime(tone: ToastTone) -> Duration {
+    Duration::from_secs(match tone {
+        ToastTone::Info | ToastTone::Success => 4,
+        ToastTone::Warning => 6,
+        ToastTone::Danger => 8,
+    })
 }
 
 fn tone_color(theme: &Theme, tone: ToastTone) -> gpui::Rgba {

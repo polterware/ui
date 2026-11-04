@@ -1,11 +1,11 @@
-//! `collapsible-section.docs.tsx`: open sections with and without an icon or a count, and a
-//! closed one.
+//! `collapsible-section.docs.tsx`: open sections with and without an icon or a count, a
+//! closed one, and one with actions at its heading's end.
 
 use std::rc::Rc;
 
 use gpui::{AnyElement, App, Context, IntoElement, SharedString, Window, div, prelude::*, px};
 use polterware_ui::theme::Theme;
-use polterware_ui::{CollapsibleSection, Icon};
+use polterware_ui::{Button, ButtonKind, ButtonSize, CollapsibleSection, Icon};
 
 use super::super::Example;
 
@@ -94,6 +94,33 @@ fn closed(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
     )
 }
 
+fn with_actions(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    let section = window.use_keyed_state(
+        "section-actions",
+        cx,
+        |_, cx: &mut Context<CollapsibleSection>| {
+            let mut section = CollapsibleSection::new("Runs per day", cx);
+            section.set_plain_icon(Icon::CalendarClock);
+            section.set_actions(Some(Rc::new(|_, _| {
+                Button::new("section-action", ButtonKind::Secondary)
+                    .size(ButtonSize::Sm)
+                    .label("Last 7 days")
+                    .into_any_element()
+            })));
+            section.set_body(Rc::new(|_, cx| {
+                div()
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(Theme::global(cx).color_text_secondary)
+                    .child("A click on the action does not fold the section.")
+                    .into_any_element()
+            }));
+            section
+        },
+    );
+    vec![div().w_full().child(section).into_any_element()]
+}
+
 pub fn examples() -> Vec<Example> {
     let example = |title, height, render| Example {
         slug: "collapsible-section",
@@ -106,5 +133,6 @@ pub fn examples() -> Vec<Example> {
         example("With icon", 122.9, with_icon),
         example("With a count", 122.9, with_count),
         example("Initially closed", 120.0, closed),
+        example("With actions", 130.0, with_actions),
     ]
 }

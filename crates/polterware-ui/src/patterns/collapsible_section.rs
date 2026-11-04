@@ -6,6 +6,8 @@
 //! `--ease-standard`. While open the heading has `pb-4` under it. The body, padded 10px on top,
 //! is a flex column with 10px gaps inside a [`SectionClip`].
 //!
+//! Actions, when set, sit at the heading's end beside the toggle, so they never fold it.
+//!
 //! The body is a `'static` builder because a section cannot update another entity while it
 //! is rendering. Read other entities inside the builder.
 
@@ -140,6 +142,8 @@ pub struct CollapsibleSection {
     /// The chevron's turn, 0 open and −90° closed.
     chevron: Tween,
     body: SectionBody,
+    /// Controls at the heading's end, outside the toggle: a card's own filters.
+    actions: Option<SectionBody>,
 }
 
 impl CollapsibleSection {
@@ -153,6 +157,7 @@ impl CollapsibleSection {
             clip: SectionClip::new(true),
             chevron: Tween::new(0.0),
             body: Rc::new(|_, _| div().into_any_element()),
+            actions: None,
         }
     }
 
@@ -177,6 +182,12 @@ impl CollapsibleSection {
 
     pub fn set_body(&mut self, body: SectionBody) {
         self.body = body;
+    }
+
+    /// Controls drawn at the heading's end, outside the toggle, so a click on them does not
+    /// fold the section: the section's own selects or buttons.
+    pub fn set_actions(&mut self, actions: Option<SectionBody>) {
+        self.actions = actions;
     }
 
     pub fn set_open(&mut self, open: bool, cx: &App) {
@@ -288,7 +299,10 @@ impl Render for CollapsibleSection {
                     .items_center()
                     .gap(px(4.0))
                     .when(open, |heading| heading.pb(px(tw(4.0))))
-                    .child(toggle),
+                    .child(toggle)
+                    .when_some(self.actions.clone(), |heading, actions| {
+                        heading.child(div().flex_none().child(actions(window, cx)))
+                    }),
             )
             .child(self.clip.render(body, window))
     }

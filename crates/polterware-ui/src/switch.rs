@@ -8,6 +8,8 @@
 //! [`switch_row`] is `SwitchRow` (`.pw-switch-row`): the label, then the switch, in a row
 //! that pads 6px 8px at `--radius-item` and fills with `--color-surface-hover` on hover. The
 //! row is the switch's root: hovering it stretches the thumb and a click on it toggles.
+//! [`switch_card`] is that row on the card's raised material, a pill as wide as its label, for
+//! a switch that stands in a toolbar.
 
 use std::rc::Rc;
 
@@ -229,6 +231,29 @@ pub fn switch_row(
     window: &mut Window,
     cx: &mut App,
 ) -> impl IntoElement {
+    labelled(id, label, switch, false, window, cx)
+}
+
+/// [`switch_row`] on the card's raised material, as a pill as wide as its label: a toolbar's
+/// switch, standing as one control beside its buttons.
+pub fn switch_card(
+    id: impl Into<ElementId>,
+    label: impl Into<SharedString>,
+    switch: &Entity<Switch>,
+    window: &mut Window,
+    cx: &mut App,
+) -> impl IntoElement {
+    labelled(id, label, switch, true, window, cx)
+}
+
+fn labelled(
+    id: impl Into<ElementId>,
+    label: impl Into<SharedString>,
+    switch: &Entity<Switch>,
+    card: bool,
+    window: &mut Window,
+    cx: &mut App,
+) -> impl IntoElement {
     let theme = *Theme::global(cx);
     let id = id.into();
     let pointer = use_pointer_timed(id.clone(), PointerTiming::item(&theme), window, cx);
@@ -244,23 +269,37 @@ pub fn switch_row(
     let row = div()
         .id(id)
         .relative()
-        .w_full()
         .flex()
         .items_center()
         .gap(px(8.0))
-        .px(px(8.0))
         .py(px(6.0))
-        .rounded(px(theme.radius_item))
-        .bg(crate::theme::fade(theme.color_surface_hover, hover))
         .text_size(px(12.0))
         .line_height(px(18.0))
         .text_color(ink)
-        .cursor_pointer()
-        .child(div().flex_1().min_w(px(0.0)).child(label.into()))
-        .child(switch.clone())
-        .on_click(move |_, window, cx| {
-            click_switch.update(cx, |switch, cx| switch.toggle(window, cx));
-        });
+        .cursor_pointer();
+    let row = if card {
+        // A pill: the track's height and the row's padding, round at both ends.
+        let radius = (TRACK_H + 12.0) / 2.0;
+        material::raised_panel(
+            row.flex_none().pl(px(14.0)).pr(px(6.0)).bg(mix(
+                theme.color_surface_subtle,
+                theme.color_surface_hover,
+                hover,
+            )),
+            radius,
+            &theme,
+        )
+        .child(div().flex_none().child(label.into()))
+    } else {
+        row.w_full()
+            .px(px(8.0))
+            .rounded(px(theme.radius_item))
+            .bg(crate::theme::fade(theme.color_surface_hover, hover))
+            .child(div().flex_1().min_w(px(0.0)).child(label.into()))
+    };
+    let row = row.child(switch.clone()).on_click(move |_, window, cx| {
+        click_switch.update(cx, |switch, cx| switch.toggle(window, cx));
+    });
     // An element takes one hover listener, so the switch's goes through the pointer's.
     let on_hover: ValueHandler<bool> = Rc::new(move |hovered, _, cx| {
         hover_switch.update(cx, |switch, cx| {

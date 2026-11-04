@@ -8,17 +8,21 @@
 //! `ScrollHandle`, or a `gpui::list`'s state through [`ListScroll`].
 //!
 //! [`page_content`] is `PageContent` under a `PageToolbar`: the scroll runs the page's full
-//! height and the toolbar overlays its top 44px, so the first child sits 44px down.
+//! height and the toolbar overlays its top 44px, so the first child sits 44px down. What
+//! scrolls up goes soft under the toolbar's trail, and the end fades into the surface while
+//! there is more below. [`page_under`] does the same for a page whose content scrolls itself
+//! (a `DataTable`), with the `ActiveFilterBar` floating under the toolbar.
 
 use std::cell::Cell;
 use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, Context, DispatchPhase, ElementId, Entity, IntoElement, ListState,
-    MouseButton, MouseMoveEvent, MouseUpEvent, ScrollHandle, Window, canvas, div, point,
+    MouseButton, MouseMoveEvent, MouseUpEvent, Rgba, ScrollHandle, Window, canvas, div, point,
     prelude::*, px,
 };
 
+use crate::patterns::scroll_fade::{SCROLL_FADE, end_fade, toolbar_trail};
 use crate::theme::Theme;
 
 pub const GUTTER: f32 = 12.0;
@@ -297,6 +301,35 @@ pub fn scroll_area(
     window: &mut Window,
     cx: &mut App,
 ) -> AnyElement {
+    scroll_area_below(id, content, 0.0, None, window, cx)
+}
+
+/// [`scroll_area`] for [`page_under`]'s content: `top` kept clear above `content` at rest, the
+/// scrollbar starting there, under the chrome, and the end fading into the page's surface
+/// while there is more below.
+pub fn scroll_area_under(
+    id: impl Into<ElementId>,
+    top: f32,
+    content: impl IntoElement,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let surface = Theme::global(cx).color_surface;
+    let body = div().w_full().pt(px(top)).child(content);
+    scroll_area_below(id, body, top, Some(surface), window, cx)
+}
+
+/// [`scroll_area`] whose scrollbar starts `top` down, under what floats over the area's top
+/// (a page's toolbar), so the bar and the toolbar's controls never meet. With `fade`, the end
+/// fades into that color, over as far as there is left to scroll, up to 24px.
+fn scroll_area_below(
+    id: impl Into<ElementId>,
+    content: impl IntoElement,
+    top: f32,
+    fade: Option<Rgba>,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
     let id = id.into();
     let state = use_scroll(id.clone(), window, cx);
     let (handle, overflows, seen) = {
@@ -333,7 +366,7 @@ pub fn scroll_area(
     )
     .absolute()
     .size_0();
-    let area = div()
+    let mut area = div()
         .relative()
         .size_full()
         .min_h(px(0.0))
@@ -344,12 +377,43 @@ pub fn scroll_area(
     }
     let viewport = f32::from(handle.bounds().size.height);
     let max = f32::from(handle.max_offset().height);
+    if let Some(color) = fade {
+        let offset = (-f32::from(handle.offset().y)).clamp(0.0, max);
+        let left = (max - offset).clamp(0.0, SCROLL_FADE);
+        if left > 0.5 {
+            area = area.child(
+                div()
+                    .absolute()
+                    .left(px(0.0))
+                    .right(px(GUTTER))
+                    .bottom(px(0.0))
+                    .child(end_fade(color, left, false)),
+            );
+        }
+        // The fade reads the offset this frame rendered with: a scroll since draws again (a
+        // cached view draws only when notified).
+        let watch = handle.clone();
+        let view = window.current_view();
+        let rendered = f32::from(handle.offset().y);
+        area = area.child(
+            canvas(
+                move |_, _, cx| {
+                    if (f32::from(watch.offset().y) - rendered).abs() > 0.5 {
+                        cx.notify(view);
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .absolute()
+            .size_0(),
+        );
+    }
     let bar = scrollbar(
         (id.clone(), "bar"),
         &handle,
         ScrollAxis::Vertical,
         ScrollGeometry {
-            track: viewport,
+            track: (viewport - top).max(0.0),
             viewport,
             content: viewport + max,
         },
@@ -359,7 +423,7 @@ pub fn scroll_area(
     area.child(
         div()
             .absolute()
-            .top(px(0.0))
+            .top(px(top))
             .right(px(0.0))
             .bottom(px(0.0))
             .w(px(GUTTER))
@@ -391,7 +455,7 @@ pub fn page_content(
     window: &mut Window,
     cx: &mut App,
 ) -> AnyElement {
-    let theme = Theme::global(cx);
+    let theme = *Theme::global(cx);
     let top = theme.page_header_height + padding;
     let body = div()
         .w_full()
@@ -404,14 +468,150 @@ pub fn page_content(
         .flex_1()
         .min_h(px(0.0))
         .w_full()
-        .child(scroll_area(id, body, window, cx))
+        // The bar starts under the toolbar, so the toolbar spans the page's full width and
+        // its end sits as far in as its start.
+        .child(scroll_area_below(
+            id,
+            body,
+            theme.page_header_height,
+            Some(theme.color_surface),
+            window,
+            cx,
+        ))
         .child(
             div()
                 .absolute()
                 .top(px(0.0))
                 .left(px(0.0))
                 .right(px(0.0))
-                .child(toolbar),
+                // What scrolls up goes soft under the toolbar instead of being cut.
+                .child(crate::patterns::trailing_toolbar(
+                    toolbar,
+                    theme.color_surface,
+                    theme.page_header_height,
+                    theme.radius_surface,
+                )),
+        )
+        .into_any_element()
+}
+
+/// The room [`page_under`]'s chrome takes from the top of the page `id`, plus `padding`: its
+/// content keeps it clear at rest. `bar` says whether the `ActiveFilterBar` shows, whose
+/// height is the last frame's.
+pub fn page_under_inset(
+    id: impl Into<ElementId>,
+    bar: bool,
+    padding: f32,
+    window: &mut Window,
+    cx: &mut App,
+) -> f32 {
+    let measured = chrome_state(id, window, cx);
+    chrome_height(&measured, bar, cx) + padding
+}
+
+fn chrome_state(id: impl Into<ElementId>, window: &mut Window, cx: &mut App) -> Entity<f32> {
+    let id: ElementId = id.into();
+    window.use_keyed_state(
+        ElementId::NamedChild(Box::new(id), "chrome".into()),
+        cx,
+        |_, _: &mut Context<f32>| 0.0_f32,
+    )
+}
+
+/// The chrome's height as the last frame laid it out: the toolbar's alone until then.
+fn chrome_height(measured: &Entity<f32>, bar: bool, cx: &App) -> f32 {
+    let toolbar = Theme::global(cx).page_header_height;
+    if bar {
+        measured.read(cx).max(toolbar)
+    } else {
+        toolbar
+    }
+}
+
+/// `PageContent` whose content scrolls itself and runs up under the chrome, as the run page's
+/// transcript runs under its header: the `PageToolbar`, and the `ActiveFilterBar` under it,
+/// float over the top on the toolbar's trail
+/// ([`trailing_toolbar`](crate::patterns::trailing_toolbar)), so what scrolls up goes soft
+/// beneath them instead of meeting a cut. `content` keeps [`page_under_inset`] clear at its
+/// top at rest: hand that to [`DataTable::inset_top`](crate::DataTable::inset_top) (with
+/// [`DataTable::fades`](crate::DataTable::fades) for the bottom) or [`scroll_area_under`].
+/// The content fills the page inside `padding` at the sides and the bottom.
+pub fn page_under(
+    id: impl Into<ElementId>,
+    toolbar: impl IntoElement,
+    bar: Option<AnyElement>,
+    padding: f32,
+    content: impl IntoElement,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let theme = *Theme::global(cx);
+    let has_bar = bar.is_some();
+    let measured = chrome_state(id, window, cx);
+    let chrome = chrome_height(&measured, has_bar, cx);
+    let view = window.current_view();
+    let probe = {
+        let measured = measured.clone();
+        canvas(
+            move |bounds, _, cx| {
+                let height = f32::from(bounds.size.height);
+                let changed = measured.update(cx, |seen, _| {
+                    let changed = (*seen - height).abs() > 0.5;
+                    *seen = height;
+                    changed
+                });
+                if changed && has_bar {
+                    cx.notify(view);
+                }
+            },
+            |_, _, _, _| {},
+        )
+        .absolute()
+        .inset_0()
+    };
+    let body = div()
+        .absolute()
+        .inset_0()
+        .px(px(padding))
+        .pb(px(padding))
+        .flex()
+        .flex_col()
+        .child(content);
+    // The trail stays the surface's radius in from each side, clear of its round corners.
+    let chrome = div()
+        .relative()
+        .w_full()
+        .child(
+            div()
+                .absolute()
+                .top_0()
+                .left(px(theme.radius_surface))
+                .right(px(theme.radius_surface))
+                .child(toolbar_trail(theme.color_surface, chrome)),
+        )
+        .child(
+            div()
+                .relative()
+                .w_full()
+                .flex()
+                .flex_col()
+                .child(toolbar)
+                .children(bar)
+                .child(probe),
+        );
+    div()
+        .relative()
+        .flex_1()
+        .min_h(px(0.0))
+        .w_full()
+        .child(body)
+        .child(
+            div()
+                .absolute()
+                .top(px(0.0))
+                .left(px(0.0))
+                .right(px(0.0))
+                .child(chrome),
         )
         .into_any_element()
 }

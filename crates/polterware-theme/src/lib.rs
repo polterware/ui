@@ -527,7 +527,8 @@ impl Theme {
             radius_item: 10.0,
             radius_card: 14.0,
             radius_menu: 16.0,
-            radius_surface: 22.0,
+            // As round as the macOS window around it, about 16pt.
+            radius_surface: 16.0,
             radius_window: 24.0,
             radius_dialog: 30.0,
             radius_field: 12.0,

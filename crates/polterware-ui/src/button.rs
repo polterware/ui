@@ -20,6 +20,7 @@ use super::pointer::{track, use_pointer};
 use super::tooltip::tooltip;
 use crate::Handler;
 use crate::theme::{FaceSet, Theme, fade, hex, mix, rem, tw};
+use crate::window_drag::WindowDragRegion;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ButtonKind {
@@ -37,9 +38,9 @@ pub enum ButtonKind {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ButtonSize {
-    /// 28px, 9.75px text (`text-xs`), radius 6 (texture) or round (ghost).
+    /// 28px, 9.75px text (`text-xs`), round-ended.
     Sm,
-    /// 32px, 13px text, radius 12 (texture) or round (ghost).
+    /// 32px, 13px text, round-ended.
     Md,
     /// 28×28, round, a 14px icon.
     Icon,
@@ -131,12 +132,14 @@ pub struct Button {
     label: Option<SharedString>,
     icon: Option<Icon>,
     icon_size: f32,
+    leading: Option<AnyElement>,
     trailing: Option<AnyElement>,
     tooltip: Option<SharedString>,
     disabled: bool,
     selected: bool,
     full_width: bool,
     pill: bool,
+    pad_x: Option<f32>,
     on_click: Option<Handler>,
 }
 
@@ -149,12 +152,14 @@ impl Button {
             label: None,
             icon: None,
             icon_size: 14.0,
+            leading: None,
             trailing: None,
             tooltip: None,
             disabled: false,
             selected: false,
             full_width: false,
             pill: false,
+            pad_x: None,
             on_click: None,
         }
     }
@@ -173,6 +178,12 @@ impl Button {
     /// The icon's size when it is not the 14px default, such as a toolbar action's 12px mark.
     pub fn icon_size(mut self, size: f32) -> Self {
         self.icon_size = size;
+        self
+    }
+
+    /// An element before the label in place of an icon, such as a 14px avatar.
+    pub fn leading(mut self, element: impl IntoElement) -> Self {
+        self.leading = Some(element.into_any_element());
         self
     }
 
@@ -208,9 +219,17 @@ impl Button {
         self
     }
 
-    /// `!rounded-full`: a round-ended texture face, as the page toolbars draw their actions.
+    /// `!rounded-full`. Every button is round-ended now, so this only keeps older call sites
+    /// reading as they did.
     pub fn pill(mut self) -> Self {
         self.pill = true;
+        self
+    }
+
+    /// The side padding in place of the size's, for a button whose leading tile or trailing
+    /// mark already gives it room, such as a toolbar's title button.
+    pub fn pad_x(mut self, pad: f32) -> Self {
+        self.pad_x = Some(pad);
         self
     }
 
@@ -244,18 +263,23 @@ impl RenderOnce for Button {
             self.size == ButtonSize::Icon || (self.label.is_none() && self.icon.is_some());
 
         // `text-xs` and the rem paddings are on the 13px root: a flat button pads `px-2.5` or
-        // `px-3` inside its 1px transparent border, and a texture one `!px-4`.
-        let (height, radius, font_size, line_height, pad_x) = match self.size {
-            ButtonSize::Sm if flat => (28.0, 9999.0, tw(3.0), rem(), tw(2.5) + 1.0),
-            ButtonSize::Md if flat => (32.0, 9999.0, 13.0, 19.5, tw(3.0) + 1.0),
-            ButtonSize::Sm => (28.0, 6.0, tw(3.0), rem(), tw(4.0)),
-            ButtonSize::Md => (32.0, theme.radius_field, 13.0, 19.5, tw(4.0)),
-            ButtonSize::Icon => (28.0, 9999.0, 13.0, 19.5, 0.0),
+        // `px-3` inside its 1px transparent border, and a texture one `!px-4`. Every button is
+        // round-ended (`!rounded-full`), as the toolbars draw theirs, so buttons and fields
+        // share one shape across the apps.
+        let (height, font_size, line_height, pad_x) = match self.size {
+            ButtonSize::Sm if flat => (28.0, tw(3.0), rem(), tw(2.5) + 1.0),
+            ButtonSize::Md if flat => (32.0, 13.0, 19.5, tw(3.0) + 1.0),
+            ButtonSize::Sm => (28.0, tw(3.0), rem(), tw(4.0)),
+            ButtonSize::Md => (32.0, 13.0, 19.5, tw(4.0)),
+            ButtonSize::Icon => (28.0, 13.0, 19.5, 0.0),
         };
-        let radius = if self.pill { 9999.0 } else { radius };
+        let pad_x = self.pad_x.unwrap_or(pad_x);
+        let radius = height / 2.0;
 
         let mut root = div()
             .id(self.id.clone())
+            // A double click on a button inside a drag region is the button's.
+            .window_drag_control()
             .relative()
             .flex()
             .flex_none()
@@ -333,6 +357,9 @@ impl RenderOnce for Button {
         root = root.text_color(ink);
         if let Some(name) = self.icon {
             root = root.child(icon_colored(name, self.icon_size, ink));
+        }
+        if let Some(leading) = self.leading {
+            root = root.child(leading);
         }
         if !icon_only && let Some(label) = self.label {
             root = root.child(div().relative().child(label));

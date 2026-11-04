@@ -1,9 +1,12 @@
-//! Animated agent bots and the mascot, drawn by `bot-avatar` (feature `bots`).
+//! Agent bots and the mascot, drawn by `bot-avatar` (feature `bots`).
 //!
-//! Views call [`agent_avatar`] or [`agent_avatar_keyed`], and [`mascot`] for `EmptyBot`. Each
-//! avatar keeps one
-//! `bot_avatar::Avatar` in GPUI element state. A shared cache renders each
-//! (agent, status, size, scale) once per frame and reuses the [`RenderImage`].
+//! A bot is still by default: [`agent_avatar`], [`agent_avatar_keyed`], and [`mascot`] draw
+//! one idle frame per (agent, state, size, scale), rendered once and shared by every bot that
+//! shows it, so a list of bots costs nothing after its first paint. Only
+//! [`agent_avatar_live`] moves, and only while its bot works (the hop): use it for the one bot
+//! a page is about, such as a running run's agent. A live bot keeps its
+//! `bot_avatar::Avatar` in GPUI element state, and a shared cache renders each
+//! (agent, state, size, scale) once per 30fps frame and reuses the [`RenderImage`].
 //!
 //! The raster seam ([`premultiplied_rgba_to_bgra`], [`render_image_from_rgba_premultiplied`],
 //! [`paint_rgba_premultiplied`]) turns a premultiplied RGBA pixmap into GPUI's BGRA image.
@@ -27,12 +30,37 @@ use smallvec::SmallVec;
 
 /// Pixmap samples per second for one avatar. The sim itself steps at 120Hz.
 const FRAME_SECONDS: f64 = 1.0 / 30.0;
+/// The moment a still bot is drawn at: settled from its start and before its first blink,
+/// which comes a second in at the earliest.
+const STILL_SECONDS: f64 = 0.6;
+
+/// Whether a bot moves.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Motion {
+    /// One idle frame, shared.
+    Still,
+    /// Hops while its state is working; still otherwise.
+    Live,
+}
 
 /// The agent's bot, as `DispatchAgentAvatar` draws it: the bot alone, with no status mark
-/// (the row's status dot says it).
+/// (the row's status dot says it). It is still: one idle frame in its state's pose.
 pub fn agent_avatar(agent: &str, status: &str, size_px: f32) -> impl IntoElement {
     let size_px = finite_px(size_px);
     agent_avatar_keyed(derived_key(agent, status, size_px), agent, status, size_px)
+}
+
+/// [`agent_avatar`] that hops while `status` reads as working, for the one bot a page is
+/// about. Every other state stays still.
+pub fn agent_avatar_live(agent: &str, status: &str, size_px: f32) -> impl IntoElement {
+    let size_px = finite_px(size_px);
+    avatar_element(
+        derived_key(agent, status, size_px),
+        agent,
+        status,
+        size_px,
+        Motion::Live,
+    )
 }
 
 /// Same avatar as [`agent_avatar`], with a caller key so the `Avatar` survives
@@ -43,7 +71,16 @@ pub fn agent_avatar_keyed(
     status: &str,
     size_px: f32,
 ) -> impl IntoElement {
-    let size_px = finite_px(size_px);
+    avatar_element(key, agent, status, finite_px(size_px), Motion::Still)
+}
+
+fn avatar_element(
+    key: impl Into<SharedString>,
+    agent: &str,
+    status: &str,
+    size_px: f32,
+    motion: Motion,
+) -> impl IntoElement {
     let id = ElementId::from((
         ElementId::from(key.into()),
         SharedString::from(agent.to_string()),
@@ -58,11 +95,12 @@ pub fn agent_avatar_keyed(
             status: status.to_string(),
             mood: None,
             size_px,
+            motion,
         })
 }
 
 /// `EmptyBot`: the Polterware mascot (`PolterMascot`, the ghost) in `mood`, as `PageEmpty`
-/// leads with it.
+/// leads with it. It is still.
 pub fn mascot(mood: MascotMood, size_px: f32) -> impl IntoElement {
     let size_px = finite_px(size_px);
     div()
@@ -75,6 +113,7 @@ pub fn mascot(mood: MascotMood, size_px: f32) -> impl IntoElement {
             status: String::new(),
             mood: Some(mood),
             size_px,
+            motion: Motion::Still,
         })
 }
 
@@ -111,6 +150,7 @@ struct AgentAvatarElement {
     /// The mascot's mood; `agent` and `status` then only key its frames.
     mood: Option<MascotMood>,
     size_px: f32,
+    motion: Motion,
 }
 
 impl IntoElement for AgentAvatarElement {
@@ -121,11 +161,9 @@ impl IntoElement for AgentAvatarElement {
     }
 }
 
-/// Working hops, default idles (blink and gaze), sleeping breathes.
-fn state_animates(state: BotAvatarState) -> bool {
-    match state {
-        BotAvatarState::Working | BotAvatarState::Default | BotAvatarState::Sleeping => true,
-    }
+/// A live bot moves only while it works (the hop); idle and sleeping bots stay still.
+fn state_animates(motion: Motion, state: BotAvatarState) -> bool {
+    motion == Motion::Live && state == BotAvatarState::Working
 }
 
 struct HeldAvatar {
@@ -264,8 +302,14 @@ impl Element for AgentAvatarElement {
         let scale = finite_scale(window.scale_factor());
         let picture = canvas_bounds(bounds, self.size_px);
         let on_screen = bounds_are_visible(picture, window.content_mask().bounds);
+        if !state_animates(self.motion, state) {
+            // A still bot keeps no avatar of its own and asks for no frames.
+            if on_screen && let Some(image) = still_frame(&self.agent, mood, state, raster, scale) {
+                let _ = window.paint_image(picture, Corners::all(px(0.0)), image, 0, false);
+            }
+            return;
+        }
         let active = window.is_window_active();
-        let animates = state_animates(state);
         let now = animation_now();
         let bucket = sample_bucket(now);
         let sample = sample_seconds(bucket);
@@ -283,9 +327,7 @@ impl Element for AgentAvatarElement {
                     bucket,
                     sample,
                     sync != AvatarSync::Unchanged
-                        || (active
-                            && animates
-                            && seconds_until_slot(held.last_request, now) == 0.0),
+                        || (active && seconds_until_slot(held.last_request, now) == 0.0),
                 )
             {
                 if let Some(retired) = frame.retired {
@@ -294,7 +336,7 @@ impl Element for AgentAvatarElement {
                 let _ = window.paint_image(picture, Corners::all(px(0.0)), frame.image, 0, false);
             }
 
-            if on_screen && active && animates {
+            if on_screen && active {
                 let remain = seconds_until_slot(held.last_request, now);
                 if remain == 0.0 {
                     held.last_request = Some(now);
@@ -434,6 +476,36 @@ struct SharedFrame {
     retired: Option<Arc<RenderImage>>,
 }
 
+/// Still frames, one per key, kept for the app's life: a few kinds, states, and sizes.
+fn still_cache() -> &'static Mutex<HashMap<FrameKey, Arc<RenderImage>>> {
+    static CACHE: OnceLock<Mutex<HashMap<FrameKey, Arc<RenderImage>>>> = OnceLock::new();
+    CACHE.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+/// The idle frame for this bot, rendered on its first paint and shared after.
+fn still_frame(
+    agent: &str,
+    mood: Option<MascotMood>,
+    state: BotAvatarState,
+    size_px: u32,
+    scale: f32,
+) -> Option<Arc<RenderImage>> {
+    let key = frame_key(agent, state, size_px, scale);
+    let mut guard = still_cache().lock().unwrap_or_else(|err| err.into_inner());
+    if let Some(image) = guard.get(&key) {
+        return Some(image.clone());
+    }
+    let mut avatar = build_avatar(agent, mood, state, size_px, scale);
+    let pixmap = avatar.render(STILL_SECONDS);
+    let image = render_image_from_rgba_premultiplied(
+        pixmap.width(),
+        pixmap.height(),
+        pixmap.data().to_vec(),
+    )?;
+    guard.insert(key, image.clone());
+    Some(image)
+}
+
 fn frame_cache() -> &'static Mutex<HashMap<FrameKey, CacheEntry>> {
     static CACHE: OnceLock<Mutex<HashMap<FrameKey, CacheEntry>>> = OnceLock::new();
     CACHE.get_or_init(|| Mutex::new(HashMap::new()))
@@ -546,8 +618,9 @@ fn empty_fallback_image() -> Arc<RenderImage> {
 #[cfg(test)]
 mod tests {
     use super::{
-        AvatarSync, HeldAvatar, bounds_are_visible, load_frame, premultiplied_rgba_to_bgra,
-        raster_px, sample_bucket, sample_seconds, seconds_until_slot, state_animates, sync_avatar,
+        AvatarSync, HeldAvatar, Motion, bounds_are_visible, load_frame, premultiplied_rgba_to_bgra,
+        raster_px, sample_bucket, sample_seconds, seconds_until_slot, state_animates, still_frame,
+        sync_avatar,
     };
     use crate::bots::{FRAME_SECONDS, frame_key};
     use bot_avatar::{kind_for_agent, state_for_status};
@@ -568,10 +641,19 @@ mod tests {
     }
 
     #[test]
-    fn every_dispatch_state_animates() {
-        assert!(state_animates(state_for_status("running")));
-        assert!(state_animates(state_for_status("idle")));
-        assert!(state_animates(state_for_status("failed")));
+    fn only_a_live_working_bot_animates() {
+        let working = state_for_status("running");
+        assert!(state_animates(Motion::Live, working));
+        assert!(!state_animates(Motion::Still, working));
+        assert!(!state_animates(Motion::Live, state_for_status("idle")));
+        assert!(!state_animates(Motion::Live, state_for_status("failed")));
+    }
+
+    #[test]
+    fn a_still_frame_is_rendered_once_and_shared() {
+        let first = still_frame("codex", None, state_for_status("idle"), 20, 2.0).unwrap();
+        let again = still_frame("codex", None, state_for_status("idle"), 20, 2.0).unwrap();
+        assert!(Arc::ptr_eq(&first, &again));
     }
 
     #[test]
