@@ -137,6 +137,7 @@ pub struct Button {
     tooltip: Option<SharedString>,
     disabled: bool,
     selected: bool,
+    inert: bool,
     full_width: bool,
     pill: bool,
     pad_x: Option<f32>,
@@ -157,6 +158,7 @@ impl Button {
             tooltip: None,
             disabled: false,
             selected: false,
+            inert: false,
             full_width: false,
             pill: false,
             pad_x: None,
@@ -208,6 +210,13 @@ impl Button {
         self
     }
 
+    /// The button's material as a label: its resting face and ink, with no hover, press,
+    /// pointer cursor, or click. For a title drawn like the controls beside it.
+    pub fn inert(mut self) -> Self {
+        self.inert = true;
+        self
+    }
+
     /// `data-selected`: the pressed face, kept.
     pub fn selected(mut self, selected: bool) -> Self {
         self.selected = selected;
@@ -248,7 +257,9 @@ impl RenderOnce for Button {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
         let pointer = use_pointer(self.id.clone(), window, cx);
-        let (hovered, hover, hover_color, press) = {
+        let (hovered, hover, hover_color, press) = if self.inert {
+            (false, 0.0, 0.0, 0.0)
+        } else {
             let state = pointer.read(cx);
             (
                 state.hovered(),
@@ -374,6 +385,9 @@ impl RenderOnce for Button {
         }
         if let Some(text) = self.tooltip {
             root = root.tooltip(tooltip(text));
+        }
+        if self.inert {
+            return root;
         }
         root = if enabled {
             root.cursor_pointer()

@@ -65,6 +65,8 @@ pub struct IconTile {
     mark: f32,
     tone: TileTone,
     finish: TileFinish,
+    /// A circle in place of the control radius, for a tile inside a pill.
+    round: bool,
 }
 
 impl IconTile {
@@ -76,6 +78,7 @@ impl IconTile {
             mark: 16.0,
             tone: TileTone::Neutral,
             finish: TileFinish::ChromeMark,
+            round: false,
         }
     }
 
@@ -87,6 +90,12 @@ impl IconTile {
 
     pub fn tone(mut self, tone: TileTone) -> Self {
         self.tone = tone;
+        self
+    }
+
+    /// A round tile: a circle, as a pill's leading mark follows its round end.
+    pub fn round(mut self) -> Self {
+        self.round = true;
         self
     }
 
@@ -140,7 +149,11 @@ fn chrome_bands(tint: Rgba) -> [(f32, f32, Rgba); 5] {
 impl RenderOnce for IconTile {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
-        let radius = theme.radius_control.min(self.size / 2.0);
+        let radius = if self.round {
+            self.size / 2.0
+        } else {
+            theme.radius_control.min(self.size / 2.0)
+        };
         let inset = (self.size - self.mark) / 2.0;
         let icon = match self.mark_kind {
             TileMark::Icon(icon) => icon,

@@ -41,6 +41,20 @@ fn plain(_: &mut Window, _: &mut App) -> Vec<AnyElement> {
     ]
 }
 
+fn round(_: &mut Window, _: &mut App) -> Vec<AnyElement> {
+    vec![
+        IconTile::new(Icon::Bot)
+            .size(20.0, 12.0)
+            .round()
+            .into_any_element(),
+        IconTile::new(Icon::Database)
+            .size(28.0, 16.0)
+            .tone(TileTone::Data)
+            .round()
+            .into_any_element(),
+    ]
+}
+
 pub fn examples() -> Vec<Example> {
     let example = |title, render| Example {
         slug: "icon-tile",
@@ -51,5 +65,6 @@ pub fn examples() -> Vec<Example> {
     vec![
         example("Semantic tones", tones),
         example("Plain finish", plain),
+        example("Round", round),
     ]
 }
