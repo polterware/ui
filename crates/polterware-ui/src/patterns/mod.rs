@@ -2,6 +2,7 @@
 //! rail, sidebar rows, collapsible sections, empty pages, the main surface, and the frames of
 //! Commander and the Composer, and the Composer's property pills.
 
+pub mod chat_bubble;
 pub mod collapsible_section;
 pub mod commander;
 pub mod composer;
@@ -19,6 +20,7 @@ pub mod sidebar_item;
 pub mod toolbar;
 pub mod usage_cards;
 
+pub use chat_bubble::{ChatBubble, collapsed_text};
 pub use collapsible_section::{CollapsibleSection, SectionBody, SectionClip};
 pub use commander::{
     COMMANDER_GROUP_GAP, COMMANDER_HEADING_H, COMMANDER_HEIGHT, COMMANDER_INSET,

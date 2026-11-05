@@ -280,8 +280,14 @@ pub fn composer_actions(actions: impl IntoIterator<Item = AnyElement>, theme: &T
     composer_footer([], actions, theme)
 }
 
+/// A Composer field value's line height (`TextInput::inline`: 12.5px at 1.5).
+const FIELD_LINE: f32 = 12.5 * 1.5;
+/// The space above and below a field's lines: one line fills the 32px row.
+const FIELD_PAD_Y: f32 = (32.0 - FIELD_LINE) / 2.0;
+
 /// A short labelled field (`.pw-composer__field`): the 12.5px muted label and the value side
-/// by side in a 32px row on the subtle fill, 12px in, at `--radius-field`: a field to type in,
+/// by side on the subtle fill, 32px for one line and taller as the value wraps (the label on its
+/// first line), 12px in, at `--radius-field`: a field to type in,
 /// squarer than the pill buttons beside it. Give it a
 /// [`TextInput::inline`](crate::text_input::TextInput::inline).
 pub fn composer_field(
@@ -289,12 +295,15 @@ pub fn composer_field(
     value: impl IntoElement,
     theme: &Theme,
 ) -> gpui::Div {
+    // The label sits on the value's first line, and a value that wraps keeps the same space
+    // above and below it as one line does.
     div()
         .w_full()
         .min_h(px(32.0))
         .px(px(12.0))
+        .py(px(FIELD_PAD_Y))
         .flex()
-        .items_center()
+        .items_start()
         .gap(px(10.0))
         .rounded(px(theme.radius_field))
         .bg(theme.color_surface_hover)
@@ -302,6 +311,7 @@ pub fn composer_field(
         .child(
             div()
                 .flex_none()
+                .line_height(px(FIELD_LINE))
                 .font_weight(FontWeight(550.0))
                 .text_color(theme.color_text_muted)
                 .child(label.into()),

@@ -70,6 +70,7 @@ pub use material::{
     rim_fade,
 };
 pub use menu::{Menu, MenuEntry, MenuItem};
+pub use patterns::ChatBubble;
 pub use patterns::{
     CollapsibleSection, Commander, CommanderEvent, CommanderGroup, CommanderItem, CommanderMark,
     PageWidth, Property, PropertyOption, PropertyPicker, PropertyPickerEvent, PropertyPills,

@@ -4,6 +4,7 @@ use super::Example;
 
 mod button;
 mod card;
+mod chat_bubble;
 mod collapsible_section;
 mod commander;
 mod composer;
@@ -38,6 +39,7 @@ pub fn all() -> Vec<Example> {
     examples.extend(segment_display::examples());
     examples.extend(status::examples());
     examples.extend(card::examples());
+    examples.extend(chat_bubble::examples());
     examples.extend(collapsible_section::examples());
     examples.extend(icon_tile::examples());
     examples.extend(keyboard_key::examples());

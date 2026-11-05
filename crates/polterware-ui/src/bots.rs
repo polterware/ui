@@ -3,16 +3,20 @@
 //! A bot is still by default: [`agent_avatar`], [`agent_avatar_keyed`], and [`mascot`] draw
 //! one idle frame per (agent, state, size, scale), rendered once and shared by every bot that
 //! shows it, so a list of bots costs nothing after its first paint. Only
-//! [`agent_avatar_live`] moves, and only while its bot works (the hop): use it for the one bot
-//! a page is about, such as a running run's agent. A live bot keeps its
-//! `bot_avatar::Avatar` in GPUI element state, and a shared cache renders each
-//! (agent, state, size, scale) once per 30fps frame and reuses the [`RenderImage`].
+//! [`agent_avatar_live`] moves, and only on an event: while the pointer is over it (it
+//! finishes the hop it is in when the pointer leaves), and for `BURST_SECONDS` after its
+//! status changes. Use it for the one bot a page is about, such as a running run's agent.
+//! Between events it is still, whatever its status, and asks for no frame and no timer. A
+//! live bot keeps its `bot_avatar::Avatar` in GPUI element state, and a shared cache renders
+//! each (agent, state, size, scale) once per 30fps frame and reuses the [`RenderImage`].
 //!
 //! The raster seam ([`premultiplied_rgba_to_bgra`], [`render_image_from_rgba_premultiplied`],
 //! [`paint_rgba_premultiplied`]) turns a premultiplied RGBA pixmap into GPUI's BGRA image.
 
 use std::{
+    cell::Cell,
     collections::HashMap,
+    rc::Rc,
     sync::{Arc, Mutex, OnceLock},
     time::{Duration, Instant},
 };
@@ -21,9 +25,9 @@ use bot_avatar::types::{BotAvatarState, BotAvatarType};
 use bot_avatar::{Avatar, MascotMood, kind_for_agent, state_for_status};
 use gpui::prelude::*;
 use gpui::{
-    App, Bounds, Corners, ElementId, EntityId, GlobalElementId, ImageSource, Img,
-    InspectorElementId, LayoutId, Pixels, RenderImage, SharedString, Style, Window, div, img,
-    point, px, size,
+    App, Bounds, Corners, ElementId, EntityId, GlobalElementId, Hitbox, HitboxBehavior,
+    ImageSource, Img, InspectorElementId, LayoutId, MouseMoveEvent, Pixels, RenderImage,
+    SharedString, Style, Window, div, img, point, px, size,
 };
 use image::{Frame, RgbaImage};
 use smallvec::SmallVec;
@@ -33,13 +37,17 @@ const FRAME_SECONDS: f64 = 1.0 / 30.0;
 /// The moment a still bot is drawn at: settled from its start and before its first blink,
 /// which comes a second in at the earliest.
 const STILL_SECONDS: f64 = 0.6;
+/// How long a live bot hops after its status changes.
+const BURST_SECONDS: f64 = 1.5;
+/// One hop of a live bot. A hover that ends mid-hop runs on to the end of that hop.
+const HOP_SECONDS: f64 = 0.6;
 
-/// Whether a bot moves.
+/// Whether a bot can move.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Motion {
     /// One idle frame, shared.
     Still,
-    /// Hops while its state is working; still otherwise.
+    /// Hops on hover and for a burst after its status changes; still otherwise.
     Live,
 }
 
@@ -50,8 +58,10 @@ pub fn agent_avatar(agent: &str, status: &str, size_px: f32) -> impl IntoElement
     agent_avatar_keyed(derived_key(agent, status, size_px), agent, status, size_px)
 }
 
-/// [`agent_avatar`] that hops while `status` reads as working, for the one bot a page is
-/// about. Every other state stays still.
+/// [`agent_avatar`] that hops on events, for the one bot a page is about: while the pointer
+/// is over it (it finishes the hop it is in when the pointer leaves), and once for about
+/// 1.5 s when `status` changes. It is still otherwise, whatever the status, and asks for no
+/// frame or timer while it is.
 pub fn agent_avatar_live(agent: &str, status: &str, size_px: f32) -> impl IntoElement {
     let size_px = finite_px(size_px);
     avatar_element(
@@ -161,9 +171,21 @@ impl IntoElement for AgentAvatarElement {
     }
 }
 
-/// A live bot moves only while it works (the hop); idle and sleeping bots stay still.
-fn state_animates(motion: Motion, state: BotAvatarState) -> bool {
-    motion == Motion::Live && state == BotAvatarState::Working
+/// Whether a live bot moves at `now`: while hovered, or within `BURST_SECONDS` of its last
+/// status change (`changed_at`). Times are `animation_now` seconds.
+fn is_moving(hovered: bool, changed_at: Option<f64>, now: f64) -> bool {
+    hovered
+        || changed_at.is_some_and(|at| {
+            let elapsed = now - at;
+            elapsed.is_finite() && (0.0..BURST_SECONDS).contains(&elapsed)
+        })
+}
+
+/// When the hop a hover began at `started` ends, for a pointer that left at `left`: the end
+/// of the hop in progress, and never before one whole hop.
+fn hop_end(started: f64, left: f64) -> f64 {
+    let hops = ((left - started) / HOP_SECONDS).ceil().max(1.0);
+    started + hops * HOP_SECONDS
 }
 
 struct HeldAvatar {
@@ -177,6 +199,16 @@ struct HeldAvatar {
     last_request: Option<f64>,
     /// When a 30fps wake is already scheduled, so paints do not stack timers.
     wake_at: Option<f64>,
+    /// The status last painted, to see it change.
+    status: String,
+    /// When that status last changed; `None` until it does, so a bot is still when it appears.
+    changed_at: Option<f64>,
+    /// When the pointer entered, while it is over the bot.
+    hover_started: Option<f64>,
+    /// The end of the hop a finished hover runs on to.
+    hop_until: f64,
+    /// Whether the last paint saw the pointer over the bot, for the mouse-move listener.
+    hover_seen: Rc<Cell<bool>>,
 }
 
 #[derive(PartialEq, Eq)]
@@ -189,6 +221,7 @@ enum AvatarSync {
 impl HeldAvatar {
     fn new(
         agent: &str,
+        status: &str,
         mood: Option<MascotMood>,
         kind: BotAvatarType,
         state: BotAvatarState,
@@ -204,6 +237,11 @@ impl HeldAvatar {
             scale_bits: scale.to_bits(),
             last_request: None,
             wake_at: None,
+            status: status.to_string(),
+            changed_at: None,
+            hover_started: None,
+            hop_until: 0.0,
+            hover_seen: Rc::new(Cell::new(false)),
         }
     }
 }
@@ -242,7 +280,7 @@ fn sync_avatar(
 
 impl Element for AgentAvatarElement {
     type RequestLayoutState = ();
-    type PrepaintState = ();
+    type PrepaintState = Option<Hitbox>;
 
     fn id(&self) -> Option<ElementId> {
         Some(self.id.clone())
@@ -271,11 +309,13 @@ impl Element for AgentAvatarElement {
         &mut self,
         _id: Option<&GlobalElementId>,
         _inspector_id: Option<&InspectorElementId>,
-        _bounds: Bounds<Pixels>,
+        bounds: Bounds<Pixels>,
         _request_layout: &mut Self::RequestLayoutState,
-        _window: &mut Window,
+        window: &mut Window,
         _cx: &mut App,
     ) -> Self::PrepaintState {
+        // Only a live bot reacts to the pointer.
+        (self.motion == Motion::Live).then(|| window.insert_hitbox(bounds, HitboxBehavior::Normal))
     }
 
     fn paint(
@@ -284,7 +324,7 @@ impl Element for AgentAvatarElement {
         _inspector_id: Option<&InspectorElementId>,
         bounds: Bounds<Pixels>,
         _request_layout: &mut Self::RequestLayoutState,
-        _prepaint: &mut Self::PrepaintState,
+        prepaint: &mut Self::PrepaintState,
         window: &mut Window,
         cx: &mut App,
     ) {
@@ -302,24 +342,51 @@ impl Element for AgentAvatarElement {
         let scale = finite_scale(window.scale_factor());
         let picture = canvas_bounds(bounds, self.size_px);
         let on_screen = bounds_are_visible(picture, window.content_mask().bounds);
-        if !state_animates(self.motion, state) {
+        let Some(hitbox) = prepaint.as_ref() else {
             // A still bot keeps no avatar of its own and asks for no frames.
             if on_screen && let Some(image) = still_frame(&self.agent, mood, state, raster, scale) {
                 let _ = window.paint_image(picture, Corners::all(px(0.0)), image, 0, false);
             }
             return;
-        }
+        };
         let active = window.is_window_active();
         let now = animation_now();
         let bucket = sample_bucket(now);
         let sample = sample_seconds(bucket);
-        let key = frame_key(&self.agent, state, raster, scale);
+        let hovered = on_screen && hitbox.is_hovered(window);
+        // A live bot moves in the hop pose, whatever its status says.
+        let hop = BotAvatarState::Working;
+        let key = frame_key(&self.agent, hop, raster, scale);
         let mut arm: Option<(EntityId, Duration)> = None;
+        let mut hover_seen = None;
+        let mut idle = false;
 
         window.with_element_state(id, |slot, window| {
-            let mut held = slot
-                .unwrap_or_else(|| HeldAvatar::new(&self.agent, mood, kind, state, raster, scale));
-            let sync = sync_avatar(&mut held, &self.agent, mood, kind, state, raster, scale);
+            let mut held = slot.unwrap_or_else(|| {
+                HeldAvatar::new(&self.agent, &self.status, mood, kind, hop, raster, scale)
+            });
+            hover_seen = Some(held.hover_seen.clone());
+            held.hover_seen.set(hovered);
+            if held.status != self.status {
+                held.status = self.status.clone();
+                held.changed_at = Some(now);
+            }
+            match (hovered, held.hover_started) {
+                (true, None) => held.hover_started = Some(now),
+                (false, Some(started)) => {
+                    held.hover_started = None;
+                    held.hop_until = hop_end(started, now);
+                }
+                _ => {}
+            }
+            if !(is_moving(hovered, held.changed_at, now) || now < held.hop_until) {
+                // Nothing is happening: no frame and no timer until an event.
+                held.last_request = None;
+                held.wake_at = None;
+                idle = true;
+                return ((), held);
+            }
+            let sync = sync_avatar(&mut held, &self.agent, mood, kind, hop, raster, scale);
             if on_screen
                 && let Some(frame) = load_frame(
                     &mut held.avatar,
@@ -351,6 +418,22 @@ impl Element for AgentAvatarElement {
             }
             ((), held)
         });
+
+        if idle
+            && on_screen
+            && let Some(image) = still_frame(&self.agent, mood, state, raster, scale)
+        {
+            let _ = window.paint_image(picture, Corners::all(px(0.0)), image, 0, false);
+        }
+        // The pointer entering or leaving is the event that wakes a still bot.
+        if let Some(seen) = hover_seen {
+            let hitbox = hitbox.clone();
+            window.on_mouse_event(move |_: &MouseMoveEvent, phase, window, _| {
+                if phase.bubble() && hitbox.is_hovered(window) != seen.get() {
+                    window.refresh();
+                }
+            });
+        }
 
         if let Some((view, wait)) = arm {
             window
@@ -618,11 +701,11 @@ fn empty_fallback_image() -> Arc<RenderImage> {
 #[cfg(test)]
 mod tests {
     use super::{
-        AvatarSync, HeldAvatar, Motion, bounds_are_visible, load_frame, premultiplied_rgba_to_bgra,
-        raster_px, sample_bucket, sample_seconds, seconds_until_slot, state_animates, still_frame,
-        sync_avatar,
+        AvatarSync, HeldAvatar, bounds_are_visible, hop_end, is_moving, load_frame,
+        premultiplied_rgba_to_bgra, raster_px, sample_bucket, sample_seconds, seconds_until_slot,
+        still_frame, sync_avatar,
     };
-    use crate::bots::{FRAME_SECONDS, frame_key};
+    use crate::bots::{BURST_SECONDS, FRAME_SECONDS, HOP_SECONDS, frame_key};
     use bot_avatar::{kind_for_agent, state_for_status};
     use gpui::{Bounds, point, px, size};
     use std::sync::Arc;
@@ -641,12 +724,40 @@ mod tests {
     }
 
     #[test]
-    fn only_a_live_working_bot_animates() {
-        let working = state_for_status("running");
-        assert!(state_animates(Motion::Live, working));
-        assert!(!state_animates(Motion::Still, working));
-        assert!(!state_animates(Motion::Live, state_for_status("idle")));
-        assert!(!state_animates(Motion::Live, state_for_status("failed")));
+    fn a_live_bot_is_still_until_something_happens() {
+        // Never hovered and no status change: still at any time, whatever its status.
+        assert!(!is_moving(false, None, 0.0));
+        assert!(!is_moving(false, None, 1_000.0));
+    }
+
+    #[test]
+    fn a_live_bot_moves_while_hovered() {
+        assert!(is_moving(true, None, 5.0));
+        // Hover still counts after a burst has run out.
+        assert!(is_moving(true, Some(0.0), BURST_SECONDS + 10.0));
+    }
+
+    #[test]
+    fn a_status_change_hops_for_the_burst_then_stops() {
+        let at = 10.0;
+        assert!(is_moving(false, Some(at), at));
+        assert!(is_moving(false, Some(at), at + BURST_SECONDS - 0.01));
+        assert!(!is_moving(false, Some(at), at + BURST_SECONDS));
+        assert!(!is_moving(false, Some(at), at + 60.0));
+        // A clock that reads before the change is not a burst.
+        assert!(!is_moving(false, Some(at), at - 1.0));
+        assert!(!is_moving(false, Some(at), f64::NAN));
+    }
+
+    #[test]
+    fn a_hover_that_ends_runs_on_to_the_end_of_its_hop() {
+        let started = 4.0;
+        let mid_hop = started + HOP_SECONDS * 0.5;
+        assert!((hop_end(started, mid_hop) - (started + HOP_SECONDS)).abs() < 1e-9);
+        // A hover that ends at once still plays a whole hop.
+        assert!((hop_end(started, started) - (started + HOP_SECONDS)).abs() < 1e-9);
+        let into_third = started + HOP_SECONDS * 2.2;
+        assert!((hop_end(started, into_third) - (started + HOP_SECONDS * 3.0)).abs() < 1e-9);
     }
 
     #[test]
@@ -684,7 +795,7 @@ mod tests {
         let kind = kind_for_agent("claude");
         let running = state_for_status("running");
         let failed = state_for_status("failed");
-        let mut held = HeldAvatar::new("claude", None, kind, running, 32, 2.0);
+        let mut held = HeldAvatar::new("claude", "running", None, kind, running, 32, 2.0);
         assert!(matches!(
             sync_avatar(&mut held, "claude", None, kind, failed, 32, 2.0),
             AvatarSync::State

@@ -1,5 +1,6 @@
-//! The Composer: the title field first, the description, two labelled fields, and the
-//! property pills (single choices and a set of tokens); then a pill's picker open.
+//! The Composer: the title field first, the description, three labelled fields (the last one
+//! a wrapping value, long enough to take several lines), and the property pills (single
+//! choices and a set of tokens); then a pill's picker open.
 
 use gpui::{AnyElement, App, Context, Entity, IntoElement, SharedString, Window, div, prelude::*};
 use polterware_ui::patterns::{
@@ -14,6 +15,7 @@ struct Fields {
     title: Entity<TextInput>,
     description: Entity<TextInput>,
     when: Entity<TextInput>,
+    notes: Entity<TextInput>,
     pills: Entity<PropertyPills>,
 }
 
@@ -48,6 +50,18 @@ fn fields(id: &'static str, picking: bool, window: &mut Window, cx: &mut App) ->
         "when",
         |input| input.inline().placeholder("The tasks it fits"),
         "",
+    )(window, cx);
+    let notes = input(
+        "notes",
+        |input| {
+            input
+                .inline()
+                .wrap()
+                .placeholder("What the reviewer should look for")
+        },
+        "Read the whole diff before commenting. Look for bugs, missing tests, and risky changes, \
+         say what to fix first and why it matters, and keep the report short enough to read in \
+         one pass.",
     )(window, cx);
     let pills = window.use_keyed_state(
         SharedString::from(format!("{id}-pills")),
@@ -93,6 +107,7 @@ fn fields(id: &'static str, picking: bool, window: &mut Window, cx: &mut App) ->
         title,
         description,
         when,
+        notes,
         pills,
     }
 }
@@ -111,6 +126,7 @@ fn composer(id: &'static str, picking: bool, window: &mut Window, cx: &mut App) 
                 .child(fields.title)
                 .child(fields.description)
                 .child(composer_field("When to use", fields.when, &theme))
+                .child(composer_field("Instructions", fields.notes, &theme))
                 .child(div().pt_1().child(fields.pills))
                 .footer(composer_footer(
                     [],
@@ -141,14 +157,14 @@ pub fn examples() -> Vec<Example> {
     vec![
         Example {
             slug: "composer",
-            title: "Title, description, a field, and pills",
-            height: 360.0,
+            title: "Title, description, fields (one wrapping), and pills",
+            height: 440.0,
             render: default,
         },
         Example {
             slug: "composer-picker",
             title: "A pill's picker open",
-            height: 480.0,
+            height: 560.0,
             render: picking,
         },
     ]
