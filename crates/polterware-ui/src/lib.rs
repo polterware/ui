@@ -56,6 +56,7 @@ pub mod terminal;
 #[cfg(test)]
 mod test_support;
 pub mod text_input;
+pub mod text_swap;
 pub mod texture_group;
 pub mod toast;
 pub mod tooltip;
@@ -131,6 +132,7 @@ pub use switch::{Switch, switch_card, switch_row};
 pub use tabs::Tabs;
 pub use terminal::{TerminalEvent, TerminalPalette, TerminalSize, TerminalView};
 pub use text_input::{FieldSize, TextInput};
+pub use text_swap::{TextSwap, text_swap};
 pub use texture_group::{TextureButtonGroup, TextureGroupItem};
 pub use toast::{Toast, ToastTone, toast_lifetime, toast_stack};
 pub use tooltip::{

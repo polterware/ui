@@ -23,8 +23,9 @@ use std::{
     time::{Duration, Instant},
 };
 
-use bot_avatar::types::{BotAvatarState, BotAvatarType};
-use bot_avatar::{Avatar, Calm, MascotMood, kind_for_agent, state_for_status};
+pub use bot_avatar::types::BotAvatarState;
+use bot_avatar::types::BotAvatarType;
+use bot_avatar::{Avatar, Calm, MascotMood, Poke, kind_for_agent, spin_time_at, state_for_status};
 use gpui::prelude::*;
 use gpui::{
     App, Bounds, Corners, ElementId, EntityId, GlobalElementId, Hitbox, HitboxBehavior,
@@ -49,6 +50,8 @@ enum Motion {
     Still,
     /// Its eyes follow the pointer on hover, and it plays work beats while its run works.
     Live,
+    /// It plays its state's whole motion all the time, as a chat's typing indicator does.
+    Playing,
 }
 
 /// The agent's bot, as `DispatchAgentAvatar` draws it: the bot alone, with no status mark
@@ -72,6 +75,270 @@ pub fn agent_avatar_live(agent: &str, status: &str, size_px: f32) -> impl IntoEl
         size_px,
         Motion::Live,
     )
+}
+
+/// How many turns the bot spins when it changes into another.
+const SWAP_TURNS: u32 = 2;
+/// How far the old bot turns before the new one takes over: a turn and a quarter, its edge
+/// to the viewer.
+const SWAP_DEGREES: f64 = 450.0;
+
+/// Who a [`route_avatar`] shows: an agent, or the Polterware ghost awake while none is
+/// picked yet (Auto).
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct Who {
+    agent: Option<String>,
+}
+
+impl Who {
+    fn key(&self) -> String {
+        match &self.agent {
+            Some(agent) => agent.clone(),
+            None => "\u{0}auto".to_string(),
+        }
+    }
+
+    fn mood(&self) -> Option<MascotMood> {
+        self.agent.is_none().then_some(MascotMood::Awake)
+    }
+}
+
+/// What a [`route_avatar`] last showed, and the spin into it while one plays.
+struct RouteSeen {
+    who: Who,
+    /// The bot it spins away from, and `animation_now` when the spin began.
+    swap: Option<(Who, f64)>,
+}
+
+/// The bot of a route that may not have an agent yet: the Polterware ghost while `agent` is
+/// none (Auto), the agent's live bot once it is. When the agent changes, the old bot spins
+/// (two turns, as the gallery's spin) and hands over to the new one, spinning the same way,
+/// while both face sideways, so the one turns into the other. `id` keys what it last showed.
+pub fn route_avatar(
+    id: impl Into<ElementId>,
+    agent: Option<&str>,
+    status: &str,
+    size_px: f32,
+) -> RouteAvatar {
+    RouteAvatar {
+        id: id.into(),
+        who: Who {
+            agent: agent
+                .map(str::trim)
+                .filter(|agent| !agent.is_empty())
+                .map(str::to_string),
+        },
+        status: status.to_string(),
+        size_px: finite_px(size_px),
+    }
+}
+
+#[derive(IntoElement)]
+pub struct RouteAvatar {
+    id: ElementId,
+    who: Who,
+    status: String,
+    size_px: f32,
+}
+
+impl RenderOnce for RouteAvatar {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let seen = window.use_keyed_state(self.id.clone(), cx, |_, _| RouteSeen {
+            who: self.who.clone(),
+            swap: None,
+        });
+        let now = animation_now();
+        let duration = Poke::Spin.duration(SWAP_TURNS);
+        let swap = seen.update(cx, |seen, _| {
+            if seen.who != self.who {
+                let from = std::mem::replace(&mut seen.who, self.who.clone());
+                seen.swap = Some((from, now));
+            }
+            if seen
+                .swap
+                .as_ref()
+                .is_some_and(|(_, at)| now - at >= duration)
+            {
+                seen.swap = None;
+            }
+            seen.swap.clone()
+        });
+        let element = match (swap, &self.who.agent) {
+            (Some((from, at)), _) => div()
+                .relative()
+                .size(px(self.size_px))
+                .flex_none()
+                .child(SwapAvatarElement {
+                    id: ElementId::from((self.id.clone(), SharedString::from(self.who.key()))),
+                    from,
+                    to: self.who.clone(),
+                    started: at,
+                    size_px: self.size_px,
+                })
+                .into_any_element(),
+            (None, Some(agent)) => {
+                agent_avatar_live(agent, &self.status, self.size_px).into_any_element()
+            }
+            (None, None) => mascot(MascotMood::Awake, self.size_px).into_any_element(),
+        };
+        div().id(self.id).flex_none().child(element)
+    }
+}
+
+/// The two bots of a spin from one into the other, and the frame last painted.
+struct SwapHeld {
+    from: Avatar,
+    to: Avatar,
+    image: Option<Arc<RenderImage>>,
+    /// The image before `image`, dropped one frame later, once the frame that showed it is up.
+    retired: Option<Arc<RenderImage>>,
+}
+
+struct SwapAvatarElement {
+    id: ElementId,
+    from: Who,
+    to: Who,
+    started: f64,
+    size_px: f32,
+}
+
+impl IntoElement for SwapAvatarElement {
+    type Element = Self;
+
+    fn into_element(self) -> Self::Element {
+        self
+    }
+}
+
+fn spinning(who: &Who, size_px: u32, scale: f32) -> Avatar {
+    let mut avatar = build_avatar(
+        who.agent.as_deref().unwrap_or(""),
+        who.mood(),
+        BotAvatarState::Default,
+        size_px,
+        scale,
+    );
+    // The rest pose, so the turn is the spin alone.
+    avatar.set_calm(Calm::Gaze);
+    avatar.poke(Poke::Spin, SWAP_TURNS);
+    avatar
+}
+
+impl Element for SwapAvatarElement {
+    type RequestLayoutState = ();
+    type PrepaintState = ();
+
+    fn id(&self) -> Option<ElementId> {
+        Some(self.id.clone())
+    }
+
+    fn source_location(&self) -> Option<&'static core::panic::Location<'static>> {
+        None
+    }
+
+    fn request_layout(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> (LayoutId, Self::RequestLayoutState) {
+        let mut style = Style::default();
+        style.size.width = px(self.size_px).into();
+        style.size.height = px(self.size_px).into();
+        style.flex_grow = 0.0;
+        style.flex_shrink = 0.0;
+        (window.request_layout(style, [], cx), ())
+    }
+
+    fn prepaint(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        _bounds: Bounds<Pixels>,
+        _request_layout: &mut Self::RequestLayoutState,
+        _window: &mut Window,
+        _cx: &mut App,
+    ) -> Self::PrepaintState {
+    }
+
+    fn paint(
+        &mut self,
+        id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        bounds: Bounds<Pixels>,
+        _request_layout: &mut Self::RequestLayoutState,
+        _prepaint: &mut Self::PrepaintState,
+        window: &mut Window,
+        _cx: &mut App,
+    ) {
+        let Some(id) = id else {
+            return;
+        };
+        let raster = raster_px(self.size_px);
+        let scale = finite_scale(window.scale_factor());
+        let picture = canvas_bounds(bounds, self.size_px);
+        let t = (animation_now() - self.started).max(0.0);
+        let hand_over = spin_time_at(SWAP_DEGREES, SWAP_TURNS);
+        let (from, to) = (&self.from, &self.to);
+        window.with_element_state(id, |slot: Option<SwapHeld>, window| {
+            let mut held = slot.unwrap_or_else(|| SwapHeld {
+                from: spinning(from, raster, scale),
+                to: spinning(to, raster, scale),
+                image: None,
+                retired: None,
+            });
+            let avatar = if t < hand_over {
+                &mut held.from
+            } else {
+                &mut held.to
+            };
+            let pixmap = avatar.render(t);
+            if let Some(image) = render_image_from_rgba_premultiplied(
+                pixmap.width(),
+                pixmap.height(),
+                pixmap.data().to_vec(),
+            ) {
+                if let Some(old) = held.retired.take() {
+                    let _ = window.drop_image(old);
+                }
+                held.retired = held.image.replace(image);
+            }
+            if let Some(image) = held.image.clone() {
+                let _ = window.paint_image(picture, Corners::all(px(0.0)), image, 0, false);
+            }
+            window.request_animation_frame();
+            ((), held)
+        });
+    }
+}
+
+/// The agent's bot playing `state`'s whole motion while it is painted: [`BotAvatarState::Thinking`]
+/// folds its body into three bouncing dots, the way a chat shows its agent is thinking. Its
+/// frames are shared by every bot of the same agent, state, and size, and it asks for frames
+/// only while it is on screen.
+pub fn agent_avatar_playing(agent: &str, state: BotAvatarState, size_px: f32) -> impl IntoElement {
+    let size_px = finite_px(size_px);
+    let id = ElementId::from((
+        ElementId::from(SharedString::from(format!(
+            "{}\u{1}playing",
+            derived_key(agent, state.as_str(), size_px)
+        ))),
+        SharedString::from(agent.to_string()),
+    ));
+    div()
+        .relative()
+        .size(px(size_px))
+        .flex_none()
+        .child(AgentAvatarElement {
+            id,
+            agent: agent.to_string(),
+            status: String::new(),
+            mood: None,
+            state: Some(state),
+            size_px,
+            motion: Motion::Playing,
+        })
 }
 
 /// Same avatar as [`agent_avatar`], with a caller key so the `Avatar` survives
@@ -105,6 +372,7 @@ fn avatar_element(
             agent: agent.to_string(),
             status: status.to_string(),
             mood: None,
+            state: None,
             size_px,
             motion,
         })
@@ -123,6 +391,7 @@ pub fn mascot(mood: MascotMood, size_px: f32) -> impl IntoElement {
             agent: format!("\u{0}mascot-{mood:?}"),
             status: String::new(),
             mood: Some(mood),
+            state: None,
             size_px,
             motion: Motion::Still,
         })
@@ -132,7 +401,7 @@ pub fn mascot(mood: MascotMood, size_px: f32) -> impl IntoElement {
 fn mascot_state(mood: MascotMood) -> BotAvatarState {
     match mood {
         MascotMood::Sleeping => BotAvatarState::Sleeping,
-        MascotMood::Sad | MascotMood::Lost => BotAvatarState::Default,
+        MascotMood::Sad | MascotMood::Lost | MascotMood::Awake => BotAvatarState::Default,
     }
 }
 
@@ -160,6 +429,8 @@ struct AgentAvatarElement {
     status: String,
     /// The mascot's mood; `agent` and `status` then only key its frames.
     mood: Option<MascotMood>,
+    /// The state to play instead of the one `status` reads as.
+    state: Option<BotAvatarState>,
     size_px: f32,
     motion: Motion,
 }
@@ -174,8 +445,10 @@ impl IntoElement for AgentAvatarElement {
 
 /// How a live bot moves now: `None` when it is still. The pointer (over it, or just gone and
 /// its eyes settling back) takes over from work.
-fn live_calm(working: bool, hovered: bool, settling: bool) -> Option<Calm> {
-    if hovered || settling {
+fn live_calm(motion: Motion, working: bool, hovered: bool, settling: bool) -> Option<Calm> {
+    if motion == Motion::Playing {
+        Some(Calm::Full)
+    } else if hovered || settling {
         Some(Calm::Gaze)
     } else if working {
         Some(Calm::Busy)
@@ -304,7 +577,7 @@ impl Element for AgentAvatarElement {
         _cx: &mut App,
     ) -> Self::PrepaintState {
         // Only a live bot reacts to the pointer.
-        (self.motion == Motion::Live).then(|| window.insert_hitbox(bounds, HitboxBehavior::Normal))
+        (self.motion != Motion::Still).then(|| window.insert_hitbox(bounds, HitboxBehavior::Normal))
     }
 
     fn paint(
@@ -324,7 +597,10 @@ impl Element for AgentAvatarElement {
         };
         let (kind, state) = match self.mood {
             Some(mood) => (BotAvatarType::Ghost, mascot_state(mood)),
-            None => (kind_for_agent(&self.agent), state_for_status(&self.status)),
+            None => (
+                kind_for_agent(&self.agent),
+                self.state.unwrap_or_else(|| state_for_status(&self.status)),
+            ),
         };
         let mood = self.mood;
         let raster = raster_px(self.size_px);
@@ -342,7 +618,8 @@ impl Element for AgentAvatarElement {
         let now = animation_now();
         let bucket = sample_bucket(now);
         let sample = sample_seconds(bucket);
-        let hovered = on_screen && hitbox.is_hovered(window);
+        // A playing bot plays on under the pointer: its frames stay shared.
+        let hovered = self.motion == Motion::Live && on_screen && hitbox.is_hovered(window);
         let working = state == BotAvatarState::Working;
         // While the pointer is over it, the bot looks at it: from its centre to its edge.
         let pointer = hovered.then(|| {
@@ -376,7 +653,7 @@ impl Element for AgentAvatarElement {
                     let _ = window.drop_image(image);
                 }
             }
-            let Some(calm) = live_calm(working, hovered, settling) else {
+            let Some(calm) = live_calm(self.motion, working, hovered, settling) else {
                 // Nothing is happening: no frame and no timer until an event.
                 held.last_request = None;
                 held.wake_at = None;
@@ -721,7 +998,7 @@ fn empty_fallback_image() -> Arc<RenderImage> {
 #[cfg(test)]
 mod tests {
     use super::{
-        AvatarSync, HeldAvatar, bounds_are_visible, live_calm, load_frame,
+        AvatarSync, HeldAvatar, Motion, bounds_are_visible, live_calm, load_frame,
         premultiplied_rgba_to_bgra, raster_px, sample_bucket, sample_seconds, seconds_until_slot,
         still_frame, sync_avatar,
     };
@@ -745,16 +1022,83 @@ mod tests {
 
     #[test]
     fn a_live_bot_is_still_unless_working_or_pointed_at() {
-        assert_eq!(live_calm(false, false, false), None);
-        assert_eq!(live_calm(true, false, false), Some(Calm::Busy));
+        assert_eq!(live_calm(Motion::Live, false, false, false), None);
+        assert_eq!(
+            live_calm(Motion::Live, true, false, false),
+            Some(Calm::Busy)
+        );
+    }
+
+    /// `SWAP_FILM=<file.png> cargo test -p polterware-ui --features bots swap_film -- --ignored`
+    /// draws the Auto ghost spinning into Codex, frame by frame, side by side.
+    #[test]
+    #[ignore]
+    fn swap_film() {
+        use super::{SWAP_DEGREES, SWAP_TURNS, Who, spinning};
+        use bot_avatar::{Poke, spin_time_at};
+        let Some(path) = std::env::var_os("SWAP_FILM") else {
+            return;
+        };
+        let size = 96u32;
+        let auto = Who { agent: None };
+        let codex = Who {
+            agent: Some("codex".to_string()),
+        };
+        let mut from = spinning(&auto, size, 1.0);
+        let mut to = spinning(&codex, size, 1.0);
+        let hand_over = spin_time_at(SWAP_DEGREES, SWAP_TURNS);
+        let duration = Poke::Spin.duration(SWAP_TURNS);
+        let frames = 14;
+        let mut strip: Option<image::RgbaImage> = None;
+        for frame in 0..frames {
+            let t = duration * f64::from(frame) / f64::from(frames - 1);
+            let avatar = if t < hand_over { &mut from } else { &mut to };
+            let pixmap = avatar.render(t);
+            let (w, h) = (pixmap.width(), pixmap.height());
+            let strip = strip.get_or_insert_with(|| {
+                image::RgbaImage::from_pixel(w * frames, h, image::Rgba([36, 36, 36, 255]))
+            });
+            for y in 0..h {
+                for x in 0..w {
+                    let i = ((y * w + x) * 4) as usize;
+                    let p = &pixmap.data()[i..i + 4];
+                    let a = f32::from(p[3]) / 255.0;
+                    let bg = 36.0 * (1.0 - a);
+                    let px = image::Rgba([
+                        (f32::from(p[0]) + bg) as u8,
+                        (f32::from(p[1]) + bg) as u8,
+                        (f32::from(p[2]) + bg) as u8,
+                        255,
+                    ]);
+                    strip.put_pixel(frame * w + x, y, px);
+                }
+            }
+        }
+        strip.expect("frames").save(path).expect("save the film");
+    }
+
+    #[test]
+    fn a_playing_bot_plays_its_whole_motion_always() {
+        for (working, hovered, settling) in [(false, false, false), (true, true, true)] {
+            assert_eq!(
+                live_calm(Motion::Playing, working, hovered, settling),
+                Some(Calm::Full)
+            );
+        }
     }
 
     #[test]
     fn the_pointer_takes_over_from_work() {
         // Hovered or settling back, only the eyes move, working or not.
         for working in [false, true] {
-            assert_eq!(live_calm(working, true, false), Some(Calm::Gaze));
-            assert_eq!(live_calm(working, false, true), Some(Calm::Gaze));
+            assert_eq!(
+                live_calm(Motion::Live, working, true, false),
+                Some(Calm::Gaze)
+            );
+            assert_eq!(
+                live_calm(Motion::Live, working, false, true),
+                Some(Calm::Gaze)
+            );
         }
     }
 
