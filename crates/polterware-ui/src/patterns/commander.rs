@@ -16,6 +16,14 @@
 //! scroll it into view; the pointer lights the row under it; Enter or a click confirms;
 //! Escape clears a query first and only then cancels.
 //!
+//! Run mode follows `palette-body.tsx` and `commander.css`: once the host reads the query as
+//! a run ([`Commander::set_run_mode`]), the results give way to the Composer's description
+//! (Details, three rows), the run's property pills (`.commander-run-pills-region`), and the
+//! footer's Start run, and the frame fits them instead of keeping its fixed height. Enter in
+//! the title moves to Details; ⌘Enter (Ctrl+Enter) in either starts the run
+//! ([`CommanderEvent::Run`]); a pill's pick is [`CommanderEvent::Property`]. The fields and
+//! pickers keep gpui-kit's focus and keyboard behavior.
+//!
 //! GPUI clips to rectangles, so the results stop short of the frame's rounded bottom corners
 //! and fade out above them instead of running under the corners.
 
@@ -23,12 +31,14 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, Context, CursorStyle, Div, ElementId, Entity, EventEmitter, FocusHandle,
-    Focusable, FontWeight, IntoElement, KeyBinding, MouseButton, Render, ScrollHandle,
-    SharedString, Stateful, Window, actions, canvas, div, linear_color_stop, linear_gradient,
-    point, prelude::*, px,
+    Focusable, FontWeight, IntoElement, KeyBinding, KeyDownEvent, MouseButton, Render,
+    ScrollHandle, SharedString, Stateful, Window, actions, canvas, div, linear_color_stop,
+    linear_gradient, point, prelude::*, px,
 };
 
+use super::property_pills::{Property, PropertyPills, PropertyPillsEvent};
 use crate::Handler;
+use crate::button::{Button, ButtonKind, ButtonSize};
 use crate::icon_button::icon_button;
 use crate::icon_tile::{IconTile, TileTone};
 use crate::icons::Icon;
@@ -216,6 +226,13 @@ pub enum CommanderEvent {
     Select(SharedString),
     /// Enter or a click on the command with this id.
     Confirm(SharedString),
+    /// Start the run with the title and details.
+    Run { title: String, details: String },
+    /// A run property changed.
+    Property {
+        id: SharedString,
+        values: Vec<SharedString>,
+    },
     /// Escape with an empty query, or Close: the app closes the palette.
     Cancel,
 }
@@ -231,6 +248,9 @@ enum Row {
 pub struct Commander {
     focus: FocusHandle,
     input: Entity<TextInput>,
+    details: Entity<TextInput>,
+    pills: Entity<PropertyPills>,
+    run_mode: bool,
     groups: Vec<CommanderGroup>,
     filterable: bool,
     empty_label: SharedString,
@@ -272,11 +292,31 @@ impl Commander {
                     }
                 })
         });
+        let details = cx.new(|cx| {
+            TextInput::new(cx)
+                .description()
+                .multiline()
+                .placeholder("Details, files to touch, how to check it…")
+        });
+        let pills = cx.new(PropertyPills::new);
+        cx.observe(&details, |_, _, cx| cx.notify()).detach();
+        cx.observe(&pills, |_, _, cx| cx.notify()).detach();
+        cx.subscribe(&pills, |_, _, event: &PropertyPillsEvent, cx| {
+            let PropertyPillsEvent::Changed { id, values } = event;
+            cx.emit(CommanderEvent::Property {
+                id: id.clone(),
+                values: values.clone(),
+            });
+        })
+        .detach();
         cx.observe_in(&input, window, |this, _, _, cx| this.on_query_changed(cx))
             .detach();
         Self {
             focus: cx.focus_handle(),
             input,
+            details,
+            pills,
+            run_mode: false,
             groups: Vec::new(),
             filterable: true,
             empty_label: "No matches".into(),
@@ -324,6 +364,23 @@ impl Commander {
         self.footer = footer;
     }
 
+    /// Replaces the results with the run form. The host decides when a query is a run.
+    pub fn set_run_mode(&mut self, run_mode: bool, cx: &mut Context<Self>) {
+        self.run_mode = run_mode;
+        cx.notify();
+    }
+
+    /// Sets the run form's properties, in display order.
+    pub fn set_run_properties(&mut self, properties: Vec<Property>, cx: &mut Context<Self>) {
+        self.pills
+            .update(cx, |pills, cx| pills.set_properties(properties, cx));
+    }
+
+    /// Gives the title field focus after a property is picked.
+    pub fn focus_title(&self, window: &mut Window, cx: &App) {
+        self.input.focus_handle(cx).focus(window);
+    }
+
     /// The commands. The highlight stays on its command while that command still matches.
     pub fn set_groups(&mut self, groups: Vec<CommanderGroup>, cx: &mut Context<Self>) {
         self.groups = groups;
@@ -356,6 +413,9 @@ impl Commander {
         self.open = open;
         if open {
             self.input.update(cx, |input, cx| input.set_text("", cx));
+            self.details
+                .update(cx, |details, cx| details.set_text("", cx));
+            self.run_mode = false;
             self.applied_query.clear();
             self.matched_ids.clear();
             self.selected = None;
@@ -376,7 +436,8 @@ impl Commander {
             let field = self.input.read(cx).focus_handle(cx);
             let restore = self.restore.take();
             if let Some(handle) = restore
-                && field.contains_focused(window, cx)
+                && (field.contains_focused(window, cx)
+                    || self.details.focus_handle(cx).contains_focused(window, cx))
             {
                 handle.focus(window);
             }
@@ -538,9 +599,23 @@ impl Commander {
         cx.emit(CommanderEvent::Confirm(id));
     }
 
-    fn confirm_selected(&mut self, _: &mut Window, cx: &mut Context<Self>) {
+    fn confirm_selected(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.run_mode {
+            self.details.focus_handle(cx).focus(window);
+            return;
+        }
         if let Some(index) = self.selected {
             self.confirm(index, cx);
+        }
+    }
+
+    fn submit_run(&mut self, cx: &mut Context<Self>) {
+        let title = self.query(cx);
+        if !title.trim().is_empty() {
+            cx.emit(CommanderEvent::Run {
+                title,
+                details: self.details.read(cx).text().to_string(),
+            });
         }
     }
 
@@ -753,7 +828,7 @@ impl Render for Commander {
         if self.moving() {
             let _ = self.animator.dt(window, true);
         }
-        if self.open && !self.focus_handle(cx).contains_focused(window, cx) {
+        if self.open && window.focused(cx).is_none() {
             self.input.read(cx).focus_handle(cx).focus(window);
         }
 
@@ -810,14 +885,49 @@ impl Render for Commander {
             top: offset.clamp(0.0, FADE),
             bottom: (max - offset).clamp(0.0, FADE),
         };
-        let footer = self.footer.take();
-
+        let (body, footer, bar, fades) = if self.run_mode {
+            let description = self.details.clone();
+            let body = div()
+                .px(px(theme.space_6))
+                .flex()
+                .flex_col()
+                .gap(px(10.0))
+                .child(
+                    div()
+                        .id("commander-description")
+                        .min_h(px(60.0))
+                        .cursor_text()
+                        .on_click(move |_, window, cx| description.focus_handle(cx).focus(window))
+                        .child(self.details.clone()),
+                )
+                .child(div().pt(px(4.0)).child(self.pills.clone()));
+            let weak = cx.entity().downgrade();
+            let submit = Button::new("commander-start-run", ButtonKind::Primary)
+                .size(ButtonSize::Sm)
+                .radius(6.0)
+                .label("Start run")
+                .on_click(move |_, cx| {
+                    let _ = weak.update(cx, |this, cx| this.submit_run(cx));
+                });
+            (
+                body.into_any_element(),
+                Some(div().flex().justify_end().child(submit).into_any_element()),
+                None,
+                Fades::default(),
+            )
+        } else {
+            (results.into_any_element(), self.footer.take(), bar, fades)
+        };
+        // The search row holds the field alone, in both modes (`.commander-search-row`).
+        let input = self.input.clone();
+        let overlay = self.pills.read(cx).overlay(cx);
         palette_frame(
             "commander-palette",
             commander_size(window),
+            self.run_mode,
             self.presence(),
-            self.input.clone().into_any_element(),
-            results.into_any_element(),
+            input.into_any_element(),
+            body,
             &self.scroll,
             fades,
             bar,
@@ -828,6 +938,18 @@ impl Render for Commander {
         )
         .key_context("Commander")
         .track_focus(&self.focus)
+        .capture_key_down(cx.listener(|this, event: &KeyDownEvent, _, cx| {
+            let key = &event.keystroke;
+            if this.run_mode
+                && key.key == "enter"
+                && (key.modifiers.platform || key.modifiers.control)
+                && !key.modifiers.shift
+                && !key.modifiers.alt
+            {
+                cx.stop_propagation();
+                this.submit_run(cx);
+            }
+        }))
         .on_action(cx.listener(|this, _: &SelectUp, _, cx| this.select_by(-1, cx)))
         .on_action(cx.listener(|this, _: &SelectDown, _, cx| this.select_by(1, cx)))
         .on_action(cx.listener(|this, _: &Confirm, window, cx| this.confirm_selected(window, cx)))
@@ -843,6 +965,7 @@ impl Render for Commander {
             cx.listener(|this, _, _, cx| this.release_press(cx)),
         )
         .child(watcher)
+        .children(overlay)
     }
 }
 
@@ -872,6 +995,7 @@ pub fn commander_panel(
     palette_frame(
         id,
         size,
+        false,
         presence,
         input.into_any_element(),
         results.into_any_element(),
@@ -889,6 +1013,7 @@ pub fn commander_panel(
 fn palette_frame(
     id: impl Into<ElementId>,
     (width, height): (f32, f32),
+    run_mode: bool,
     presence: f32,
     input: AnyElement,
     results: AnyElement,
@@ -931,7 +1056,8 @@ fn palette_frame(
         .occlude()
         .relative()
         .w(px(width))
-        .h(px(height))
+        .when(!run_mode, |frame| frame.h(px(height)))
+        .max_h(px(height))
         .mt(px((1.0 - t) * 8.0))
         .opacity(t)
         .flex()
@@ -970,15 +1096,15 @@ fn palette_frame(
         .child(
             div()
                 .relative()
-                .flex_1()
+                .when(!run_mode, |area| area.flex_1())
                 .min_h(px(0.0))
                 .mt(px(RESULTS_TOP))
                 .when(!has_footer, |area| area.mb(px(CORNER_CLEAR)))
                 .child(
                     div()
                         .id("commander-results")
-                        .size_full()
-                        .overflow_y_scroll()
+                        .w_full()
+                        .when(!run_mode, |body| body.h_full().overflow_y_scroll())
                         .track_scroll(scroll)
                         .cursor(CursorStyle::PointingHand)
                         .child(results),
@@ -1079,6 +1205,32 @@ mod tests {
         assert_eq!(fuzzy_score("Stats", ""), Some(0));
         assert!(fuzzy_score("Stats", "st") > fuzzy_score("Settings", "st"));
         assert_eq!(fuzzy_score("Stats", "xyz"), None);
+    }
+
+    #[gpui::test]
+    fn run_title_enter_focuses_details_and_modified_enter_submits(cx: &mut TestAppContext) {
+        let (view, cx) = commander(cx);
+        let events = Rc::new(std::cell::RefCell::new(Vec::new()));
+        let sink = events.clone();
+        cx.update(|window, cx| {
+            cx.subscribe(&view, move |_, event: &CommanderEvent, _| {
+                sink.borrow_mut().push(event.clone())
+            })
+            .detach();
+            view.update(cx, |view, cx| {
+                view.set_open(true, window, cx);
+                view.set_run_mode(true, cx);
+            });
+        });
+        cx.run_until_parked();
+        cx.simulate_input("Title");
+        cx.simulate_keystrokes("enter");
+        cx.simulate_input("Details");
+        cx.simulate_keystrokes("cmd-enter");
+        assert!(events.borrow().contains(&CommanderEvent::Run {
+            title: "Title".into(),
+            details: "Details".into()
+        }));
     }
 
     #[gpui::test]

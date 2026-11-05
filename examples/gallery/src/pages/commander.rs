@@ -2,7 +2,9 @@
 //! disabled; and a query that matches nothing.
 
 use gpui::{AnyElement, App, Context, Entity, IntoElement, Window};
-use polterware_ui::{Commander, CommanderGroup, CommanderItem, Icon, TileTone};
+use polterware_ui::{
+    Commander, CommanderGroup, CommanderItem, Icon, Property, PropertyOption, TileTone,
+};
 
 use super::super::Example;
 
@@ -48,6 +50,28 @@ fn held(
         if !query.is_empty() {
             commander.set_query(query, cx);
         }
+        if id == "commander-run" {
+            commander.set_run_properties(
+                vec![
+                    Property::single(
+                        "route",
+                        "Route",
+                        vec![PropertyOption::new("auto", "Auto")],
+                        "auto",
+                    )
+                    .icon(Icon::Bot),
+                    Property::single(
+                        "milestone",
+                        "Milestone",
+                        vec![PropertyOption::new("", "Any milestone")],
+                        "",
+                    )
+                    .icon(Icon::Briefcase06Icon),
+                ],
+                cx,
+            );
+            commander.set_run_mode(true, cx);
+        }
         commander
     })
 }
@@ -60,6 +84,10 @@ fn empty(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
     vec![held("commander-empty", "zzz", window, cx).into_any_element()]
 }
 
+fn run(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    vec![held("commander-run", "Improve the build", window, cx).into_any_element()]
+}
+
 pub fn examples() -> Vec<Example> {
     let example = |title, render| Example {
         slug: "commander",
@@ -70,5 +98,6 @@ pub fn examples() -> Vec<Example> {
     vec![
         example("Grouped commands", default),
         example("No matches", empty),
+        example("Run mode", run),
     ]
 }

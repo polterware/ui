@@ -1,6 +1,6 @@
-//! `switch.docs.tsx`: the controlled switch and the switch row. The GPUI switch has one
-//! size, no disabled state, and no trailing slot in its row, so "Sizes" draws the default
-//! switch twice, "Row" leaves out "Weekly", and "Disabled" draws an enabled row.
+//! `switch.docs.tsx`: the controlled switch and the switch row. "Sizes" draws `sm` (the
+//! Composer's Create more) and the default. The GPUI switch has no disabled state and no
+//! trailing slot in its row, so "Row" leaves out "Weekly" and "Disabled" draws an enabled row.
 
 use gpui::{AnyElement, App, Context, IntoElement, Window, div, prelude::*};
 use polterware_ui::{Switch, switch_row};
@@ -18,8 +18,11 @@ fn controlled(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
 }
 
 fn sizes(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    let small = window.use_keyed_state("switch-compact", cx, |_, cx: &mut Context<Switch>| {
+        Switch::new(true, cx).small()
+    });
     vec![
-        held("switch-compact", true, window, cx).into_any_element(),
+        small.into_any_element(),
         held("switch-default", true, window, cx).into_any_element(),
     ]
 }

@@ -4,8 +4,9 @@
 //! The root menu, 260 wide, opens 6px under its trigger: a search header (`px-3 py-2.5`, 13px,
 //! the F key chip when the page gives it the shortcut) over a bottom hairline, then the fields
 //! as 33px `MenuItem` rows in 13px secondary text: an `OptionTile`, the label, and a muted
-//! chevron. One hover highlight glides between the rows and one selected marker sits on the
-//! field whose values are open. Hovering a field opens its values 4px beside its row after
+//! chevron, each group of fields that share a section (`fieldSections`) a list of its own,
+//! padded `p-1.5` under a `border-t` hairline across the menu. One hover highlight glides
+//! between the rows and one selected marker sits on the field whose values are open. Hovering a field opens its values 4px beside its row after
 //! 120ms, on the left when the right has no room, and leaving closes them after 180ms; a click
 //! opens them at once with their search focused. Typing in the root search lists the matching
 //! fields and then `Field › Value` shortcuts.
@@ -77,6 +78,8 @@ const HEADER_H: f32 = SEARCH_PAD_Y * 2.0 + SEARCH_LINE + 1.0;
 const LIST_PAD: f32 = 4.875;
 /// A `MenuItem`: `py-2` around a 20px tile; `px-2.5`, `gap-2`.
 const FIELD_ROW_H: f32 = 33.0;
+/// Between two sections: the first list's bottom padding, the `border-t`, the next list's top.
+const SECTION_GAP: f32 = LIST_PAD * 2.0 + 1.0;
 const FIELD_ROW_PAD_X: f32 = 8.125;
 const FIELD_ROW_GAP: f32 = 6.5;
 /// A value row: `6px 8px` around a 20px tile.
@@ -93,16 +96,29 @@ const CLOSE_DELAY: Duration = Duration::from_millis(180);
 const EASE_OUT: Ease = Ease(0.0, 0.0, 0.58, 1.0);
 const EASE_IN: Ease = Ease(0.42, 0.0, 1.0, 1.0);
 
-/// One field a page filters by: the model's spec and the icon its tile and pill show.
+/// One field a page filters by: the model's spec, the icon its tile and pill show, and the
+/// group (`section`) the root menu lists it in.
 #[derive(Clone, Debug)]
 pub struct FilterField {
     pub spec: FilterSpec,
     pub icon: Option<Icon>,
+    pub section: Option<SharedString>,
 }
 
 impl FilterField {
     pub fn new(spec: FilterSpec, icon: Option<Icon>) -> Self {
-        Self { spec, icon }
+        Self {
+            spec,
+            icon,
+            section: None,
+        }
+    }
+
+    /// `section`: fields that share one are listed together, each group a padded list of its
+    /// own under a hairline, in the order the groups first appear.
+    pub fn section(mut self, section: impl Into<SharedString>) -> Self {
+        self.section = Some(section.into());
+        self
     }
 }
 
@@ -175,13 +191,17 @@ impl Glide {
     }
 
     fn to(&mut self, index: Option<usize>, pitch: f32) {
+        self.glide_to(index, index.map_or(0.0, |index| index as f32 * pitch));
+    }
+
+    /// Glides to row `index`, whose top is `y`.
+    fn glide_to(&mut self, index: Option<usize>, y: f32) {
         if self.index == index {
             return;
         }
         let fast = SpringTier::Fast;
         match index {
-            Some(index) => {
-                let y = index as f32 * pitch;
+            Some(_) => {
                 if self.alpha.value() < 0.01 {
                     self.y.snap(y);
                 } else {
@@ -651,6 +671,26 @@ impl FilterPopover {
         }
     }
 
+    /// How many section breaks the root menu draws above row `row`: none while it searches,
+    /// as its matches are one list.
+    fn breaks_before(&self, row: usize, cx: &App) -> usize {
+        if !self.query(Surface::Root, cx).trim().is_empty() {
+            return 0;
+        }
+        self.fields
+            .iter()
+            .take(row + 1)
+            .collect::<Vec<_>>()
+            .windows(2)
+            .filter(|pair| pair[0].section != pair[1].section)
+            .count()
+    }
+
+    /// The top of the root menu's row `row` inside its list.
+    fn root_row_y(&self, row: usize, cx: &App) -> f32 {
+        row as f32 * FIELD_ROW_H + self.breaks_before(row, cx) as f32 * SECTION_GAP
+    }
+
     /// The field whose submenu is open.
     fn shown_field(&self) -> Option<usize> {
         self.sub
@@ -662,7 +702,8 @@ impl FilterPopover {
     fn hover_field(&mut self, field: usize, row: usize, hovered: bool, cx: &mut Context<Self>) {
         if hovered {
             self.hovered_row = Some(row);
-            self.root_hover.to(Some(row), FIELD_ROW_H);
+            let y = self.root_row_y(row, cx);
+            self.root_hover.glide_to(Some(row), y);
             // A row crossed on the way to another field's submenu waits longer, and then
             // only takes over if the pointer has come to rest on it.
             let crossing =
@@ -686,7 +727,8 @@ impl FilterPopover {
 
     fn hover_row(&mut self, row: usize, hovered: bool, cx: &mut Context<Self>) {
         if hovered {
-            self.root_hover.to(Some(row), FIELD_ROW_H);
+            let y = self.root_row_y(row, cx);
+            self.root_hover.glide_to(Some(row), y);
         } else {
             self.root_hover.leave(row);
         }
@@ -1063,7 +1105,8 @@ impl FilterPopover {
             SearchRow::Value(..) if index == 0 => Some(index),
             _ => None,
         });
-        self.root_selected.to(selected_row, FIELD_ROW_H);
+        let selected_y = selected_row.map_or(0.0, |row| self.root_row_y(row, cx));
+        self.root_selected.glide_to(selected_row, selected_y);
 
         let mut list = div().relative().flex().flex_col();
         if let Some(fill) = self
@@ -1079,6 +1122,20 @@ impl FilterPopover {
             list = list.child(fill);
         }
         for (index, row) in rows.iter().enumerate() {
+            // `fieldSections`: a hairline across the menu between two groups of fields.
+            if !searching
+                && index > 0
+                && self.fields[index].section != self.fields[index - 1].section
+            {
+                list = list.child(
+                    div()
+                        .h(px(SECTION_GAP))
+                        .mx(px(-LIST_PAD))
+                        .flex()
+                        .items_center()
+                        .child(div().w_full().h(px(1.0)).bg(theme.color_border_subtle)),
+                );
+            }
             let element = match *row {
                 SearchRow::Field(field) => {
                     let spec = &self.fields[field].spec;
@@ -1415,7 +1472,7 @@ impl FilterPopover {
         }
         let theme = *Theme::global(cx);
         let root = self.geometry.borrow().root?;
-        let row_top = f32::from(root.top()) + HEADER_H + LIST_PAD + row as f32 * FIELD_ROW_H;
+        let row_top = f32::from(root.top()) + HEADER_H + LIST_PAD + self.root_row_y(row, cx);
         let row_left = f32::from(root.left()) + LIST_PAD;
         let row_right = f32::from(root.right()) - LIST_PAD;
         let viewport = f32::from(window.viewport_size().width);
@@ -2155,7 +2212,7 @@ mod tests {
 
     use super::{
         AIM_DELAY, Anchor, CLOSE_DELAY, FIELD_ROW_H, FilterField, FilterPopover, HEADER_H,
-        LIST_PAD, OPEN_DELAY,
+        LIST_PAD, OPEN_DELAY, SECTION_GAP,
     };
     use crate::filter::{FilterOption, FilterSpec};
     use crate::test_support::{draw, open, settle};
@@ -2171,13 +2228,23 @@ mod tests {
     /// The popover's root open over a 900 by 600 window, its trigger at (300, 40), with
     /// three fields; answers the y of each field row's middle and a point inside the rows.
     fn opened(cx: &mut TestAppContext) -> (gpui::Entity<FilterPopover>, gpui::VisualTestContext) {
-        let popover = cx.new(|cx| {
-            let mut popover = FilterPopover::new("f", "Filters", false, cx);
-            popover.set_fields(vec![
+        opened_with(
+            cx,
+            vec![
                 field("provider", "Provider"),
                 field("window", "Window"),
                 field("agent", "Agent"),
-            ]);
+            ],
+        )
+    }
+
+    fn opened_with(
+        cx: &mut TestAppContext,
+        fields: Vec<FilterField>,
+    ) -> (gpui::Entity<FilterPopover>, gpui::VisualTestContext) {
+        let popover = cx.new(|cx| {
+            let mut popover = FilterPopover::new("f", "Filters", false, cx);
+            popover.set_fields(fields);
             popover
         });
         let host = popover.clone();
@@ -2226,6 +2293,33 @@ mod tests {
             .advance_clock(delay + std::time::Duration::from_millis(10));
         cx.run_until_parked();
         draw(cx);
+    }
+
+    #[gpui::test]
+    fn a_new_section_starts_under_a_hairline(cx: &mut TestAppContext) {
+        let (popover, mut cx) = opened_with(
+            cx,
+            vec![
+                field("domain", "Domain").section("scope"),
+                field("component", "Component").section("scope"),
+                field("agent", "Agent"),
+            ],
+        );
+        let (y1, y2) = cx.update(|_, cx| {
+            let popover = popover.read(cx);
+            (popover.root_row_y(1, cx), popover.root_row_y(2, cx))
+        });
+        assert_eq!(y1, FIELD_ROW_H);
+        assert_eq!(y2, 2.0 * FIELD_ROW_H + SECTION_GAP);
+        // The row after the break is drawn a gap lower, so the pointer opens it there.
+        let (left, _, third) = row_y(&popover, 2, &mut cx);
+        cx.simulate_mouse_move(
+            point(px(left + 40.0), px(third + SECTION_GAP)),
+            None,
+            Modifiers::none(),
+        );
+        wait(&mut cx, OPEN_DELAY);
+        assert_eq!(shown(&popover, &mut cx), Some(2));
     }
 
     #[gpui::test]

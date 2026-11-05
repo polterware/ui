@@ -1,10 +1,13 @@
 //! The Composer: the title field first, the description, three labelled fields (the last one
-//! a wrapping value, long enough to take several lines), and the property pills (single
-//! choices and a set of tokens); then a pill's picker open.
+//! a wrapping value, long enough to take several lines), and the property pills (single choices and a set of tokens); then a pill's picker open; and the
+//! confirmation on the same card, for a removal and for a plain change. Then the Composer
+//! whole (`Composer`): a new record with its description, Context, Why, and Create more, and
+//! an edit with its quiet action.
 
 use gpui::{AnyElement, App, Context, Entity, IntoElement, SharedString, Window, div, prelude::*};
 use polterware_ui::patterns::{
-    Property, PropertyOption, PropertyPills, composer_card, composer_field, composer_footer,
+    Composer, ComposerDraft, ComposerSpec, ConfirmDialog, Property, PropertyOption, PropertyPills,
+    composer_card, composer_field, composer_footer,
 };
 use polterware_ui::theme::Theme;
 use polterware_ui::{ButtonKind, Icon, TextInput, button};
@@ -153,6 +156,96 @@ fn picking(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
     vec![composer("composer-picking", true, window, cx)]
 }
 
+/// A Context of two domains, `picked` of them.
+fn context(picked: &[&'static str]) -> Property {
+    Property::tokens(
+        "contexts",
+        "Context",
+        vec![
+            PropertyOption::new("core", "Core").icon(Icon::Boxes),
+            PropertyOption::new("web", "Web").icon(Icon::Boxes),
+        ],
+        picked.iter().map(|id| SharedString::from(*id)).collect(),
+        "Whole project",
+    )
+    .loose()
+    .icon(Icon::Layers)
+}
+
+fn whole(
+    key: &'static str,
+    spec: fn() -> ComposerSpec,
+    picked: &'static [&'static str],
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let composer = window.use_keyed_state(key, cx, move |window, cx| {
+        let mut composer = Composer::new(cx).inline();
+        composer.open(spec(), vec![context(picked)], window, cx);
+        composer
+    });
+    // The pills record where they drew, as the picker example's do.
+    window.request_animation_frame();
+    div().child(composer).into_any_element()
+}
+
+fn new_doc(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    vec![whole(
+        "composer-whole-new",
+        || {
+            ComposerSpec::new("Doc title", "Create doc")
+                .description("Write in Markdown…")
+                .why("Optional. Recorded in Activity")
+        },
+        &[],
+        window,
+        cx,
+    )]
+}
+
+fn edit_rule(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    vec![whole(
+        "composer-whole-edit",
+        || {
+            ComposerSpec::new(
+                "The API returns only fields declared in the contract",
+                "Save rule",
+            )
+            .why("Optional. Recorded in Activity")
+            .edit()
+            .action("Remove rule")
+            .initial(ComposerDraft {
+                title: "Keep one writer per project".into(),
+                ..ComposerDraft::default()
+            })
+        },
+        &["core"],
+        window,
+        cx,
+    )]
+}
+
+fn confirm(_: &mut Window, _: &mut App) -> Vec<AnyElement> {
+    vec![
+        ConfirmDialog::new(
+            "gallery-confirm-kill",
+            "Kill process 4182?",
+            "This sends SIGTERM on the remote host.",
+        )
+        .recovery("The process stops only if the remote user is allowed to signal it.")
+        .confirm_label("Kill")
+        .danger()
+        .into_any_element(),
+        ConfirmDialog::new(
+            "gallery-confirm-reset",
+            "Reset the card layout?",
+            "Every card goes back to its default size and place.",
+        )
+        .confirm_label("Reset")
+        .into_any_element(),
+    ]
+}
+
 pub fn examples() -> Vec<Example> {
     vec![
         Example {
@@ -166,6 +259,24 @@ pub fn examples() -> Vec<Example> {
             title: "A pill's picker open",
             height: 560.0,
             render: picking,
+        },
+        Example {
+            slug: "composer-new",
+            title: "The Composer whole: a new record",
+            height: 380.0,
+            render: new_doc,
+        },
+        Example {
+            slug: "composer-edit",
+            title: "The Composer whole: an edit with its action",
+            height: 300.0,
+            render: edit_rule,
+        },
+        Example {
+            slug: "composer-confirm",
+            title: "A confirmation, danger and plain",
+            height: 640.0,
+            render: confirm,
         },
     ]
 }

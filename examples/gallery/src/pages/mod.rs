@@ -2,17 +2,28 @@
 
 use super::Example;
 
+mod board;
 mod button;
+mod canvas;
 mod card;
 mod chat_bubble;
 mod collapsible_section;
 mod commander;
 mod composer;
+mod dashboard;
+mod data_table;
+mod detail_panel;
+mod dialog;
+mod document;
+mod echo_ring;
 mod empty;
 mod filter_popover;
 mod icon_tile;
 mod keyboard_key;
+mod message_composer;
+mod morph;
 mod page_under;
+mod peek;
 mod progress_bar;
 mod radio_group;
 mod rail_properties;
@@ -22,7 +33,12 @@ mod settings_dialog;
 mod skeleton;
 mod status;
 mod switch;
+mod tabs;
+mod terminal;
+mod texture_group;
+mod title_bar;
 mod tooltip;
+mod tree_view;
 mod usage_cards;
 
 pub fn all() -> Vec<Example> {
@@ -33,21 +49,37 @@ pub fn all() -> Vec<Example> {
     examples.extend(filter_popover::examples());
     examples.extend(page_under::examples());
     examples.extend(switch::examples());
+    examples.extend(tabs::examples());
     examples.extend(progress_bar::examples());
     examples.extend(skeleton::examples());
     examples.extend(empty::examples());
     examples.extend(segment_display::examples());
     examples.extend(status::examples());
+    examples.extend(echo_ring::examples());
     examples.extend(card::examples());
     examples.extend(chat_bubble::examples());
+    examples.extend(message_composer::examples());
     examples.extend(collapsible_section::examples());
+    examples.extend(tree_view::examples());
     examples.extend(icon_tile::examples());
     examples.extend(keyboard_key::examples());
     examples.extend(tooltip::examples());
     examples.extend(commander::examples());
     examples.extend(composer::examples());
     examples.extend(rail_properties::examples());
+    examples.extend(document::examples());
+    examples.extend(dialog::examples());
     examples.extend(settings_dialog::examples());
     examples.extend(usage_cards::examples());
+    examples.extend(dashboard::examples());
+    examples.extend(data_table::examples());
+    examples.extend(detail_panel::examples());
+    examples.extend(morph::examples());
+    examples.extend(board::examples());
+    examples.extend(peek::examples());
+    examples.extend(texture_group::examples());
+    examples.extend(title_bar::examples());
+    examples.extend(terminal::examples());
+    examples.extend(canvas::examples());
     examples
 }

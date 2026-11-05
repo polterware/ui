@@ -17,7 +17,7 @@ use crate::ellipsis::ellipsis;
 use crate::icons::{Icon, icon_colored, icon_rotated};
 use crate::motion::{Curve, Tween};
 use crate::pointer::{PointerTiming, track_with_hover, use_pointer_timed};
-use crate::theme::{Theme, fade, mix};
+use crate::theme::{Theme, fade, mix, tw};
 use crate::window_drag::WindowDragRegion;
 use crate::{Handler, ValueHandler};
 
@@ -40,6 +40,7 @@ pub struct SidebarItem {
     gap: f32,
     active: bool,
     footer: bool,
+    icon_only: bool,
     on_click: Option<ClickHandler>,
     on_hover: Option<HoverHandler>,
     on_right_click: Option<RightClickHandler>,
@@ -59,10 +60,20 @@ impl SidebarItem {
             gap: 8.0,
             active: false,
             footer: false,
+            icon_only: false,
             on_click: None,
             on_hover: None,
             on_right_click: None,
         }
+    }
+
+    /// `!w-8 justify-center`: the icon alone in a `w-8` box, such as the sidebar footer's
+    /// Help. The row keeps its `0 9px 0 8px` padding, which leaves the 14px icon less room
+    /// than it asks for: the browser shrinks it to fit, so it draws as small as what is left
+    /// (9px on a 13px root). The label is its name for the tooltip-less reader only.
+    pub fn icon_only(mut self) -> Self {
+        self.icon_only = true;
+        self
     }
 
     /// `.dispatch-run-item`: min-height 52px, 6px block padding, 12px gap.
@@ -165,13 +176,21 @@ impl RenderOnce for SidebarItem {
             .text_size(px(13.0))
             .line_height(relative(1.2))
             .cursor_pointer();
-        row = if self.footer {
+        let icon_only_width = tw(8.0);
+        let icon_size = if self.icon_only {
+            (icon_only_width - theme.space_2 - 9.0).clamp(0.0, 14.0)
+        } else {
+            14.0
+        };
+        row = if self.icon_only {
+            row.w(px(icon_only_width)).flex_none().justify_start()
+        } else if self.footer {
             row.flex_1().min_w(px(0.0))
         } else {
             row.w_full()
         };
         if let Some(name) = self.icon {
-            row = row.child(icon_colored(name, 14.0, ink));
+            row = row.child(icon_colored(name, icon_size, ink));
         }
         if let Some((element, box_size)) = self.leading {
             row = row.child(
@@ -186,6 +205,7 @@ impl RenderOnce for SidebarItem {
         }
         row = match self.content {
             Some(content) => row.child(div().flex_1().min_w(px(0.0)).child(content)),
+            None if self.icon_only => row,
             None => row.child(div().flex_1().min_w(px(0.0)).child(ellipsis(self.label))),
         };
         if let Some(trailing) = self.trailing {
@@ -221,6 +241,7 @@ pub struct SidebarSectionLabel {
     collapsed: bool,
     pad_left: f32,
     pad_right: f32,
+    quiet_chevron: bool,
     on_toggle: Option<ClickHandler>,
     on_right_click: Option<RightClickHandler>,
 }
@@ -233,6 +254,7 @@ impl SidebarSectionLabel {
             collapsed,
             pad_left: 8.0,
             pad_right: 8.0,
+            quiet_chevron: false,
             on_toggle: None,
             on_right_click: None,
         }
@@ -241,6 +263,13 @@ impl SidebarSectionLabel {
     pub fn padding(mut self, left: f32, right: f32) -> Self {
         self.pad_left = left;
         self.pad_right = right;
+        self
+    }
+
+    /// The chevron shows only under the pointer and while the group is collapsed
+    /// (`.pw-sidebar-group-chevron { visibility: hidden }`), as Polterware's sidebar draws it.
+    pub fn quiet_chevron(mut self) -> Self {
+        self.quiet_chevron = true;
         self
     }
 
@@ -263,6 +292,7 @@ impl RenderOnce for SidebarSectionLabel {
         let theme = *Theme::global(cx);
         let pointer = use_pointer_timed(self.id.clone(), PointerTiming::item(&theme), window, cx);
         let hover_color = pointer.read(cx).hover_color();
+        let chevron_shown = !self.quiet_chevron || self.collapsed || pointer.read(cx).hovered();
         let turn_target = if self.collapsed { -90.0 } else { 0.0 };
         let turn = window.use_keyed_state(
             ElementId::from((self.id.clone(), SharedString::from("chevron"))),
@@ -313,12 +343,19 @@ impl RenderOnce for SidebarSectionLabel {
                     .overflow_hidden()
                     .child(ellipsis(self.label)),
             )
-            .child(div().size(px(12.0)).flex_none().child(icon_rotated(
-                Icon::ChevronDown,
-                12.0,
-                ink,
-                degrees.to_radians(),
-            )));
+            .child(
+                div()
+                    .size(px(12.0))
+                    .flex_none()
+                    .when(chevron_shown, |slot| {
+                        slot.child(icon_rotated(
+                            Icon::ChevronDown,
+                            12.0,
+                            ink,
+                            degrees.to_radians(),
+                        ))
+                    }),
+            );
         if let Some(handler) = self.on_right_click {
             row = row.on_mouse_down(MouseButton::Right, move |event, window, cx| {
                 cx.stop_propagation();

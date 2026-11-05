@@ -6,19 +6,78 @@
 //! at 0px) and serves the final size from its cache without measuring again, so a value that
 //! fits its column can paint one letter a line. This element's measure only reports a size;
 //! it shapes the lines it paints in prepaint, at its final width.
+//!
+//! [`WrapText::with_styles`] sets ranges of it apart, as `StyledText::with_highlights` does,
+//! plus a font of their own (inline code in the mono face), for Markdown's inline marks.
+
+use std::ops::Range;
 
 use gpui::{
-    App, AvailableSpace, Bounds, Element, ElementId, GlobalElementId, InspectorElementId,
-    IntoElement, LayoutId, Pixels, SharedString, Size, Style, TextRun, Window, WrappedLine, px,
+    App, AvailableSpace, Bounds, Element, ElementId, GlobalElementId, HighlightStyle,
+    InspectorElementId, IntoElement, LayoutId, Pixels, SharedString, Size, Style, TextRun,
+    TextStyle, Window, WrappedLine, px,
 };
 
 pub struct WrapText {
     text: SharedString,
+    styles: Vec<(Range<usize>, SpanStyle)>,
+}
+
+/// How a range of a [`WrapText`] differs from the inherited style.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct SpanStyle {
+    pub highlight: HighlightStyle,
+    /// Another font family, such as the mono face for inline code.
+    pub font_family: Option<SharedString>,
 }
 
 /// `text`, wrapping at the width it is given.
 pub fn wrap_text(text: impl Into<SharedString>) -> WrapText {
-    WrapText { text: text.into() }
+    WrapText {
+        text: text.into(),
+        styles: Vec::new(),
+    }
+}
+
+impl WrapText {
+    /// Styles ranges of the text, in order and apart (a range that overlaps the one before,
+    /// or does not fall on character boundaries, is left plain).
+    pub fn with_styles(
+        mut self,
+        styles: impl IntoIterator<Item = (Range<usize>, SpanStyle)>,
+    ) -> Self {
+        self.styles = styles.into_iter().collect();
+        self
+    }
+}
+
+/// The runs of `len` bytes of text in `base`, with `styles` over their ranges.
+fn styled_runs(text: &str, base: &TextStyle, styles: &[(Range<usize>, SpanStyle)]) -> Vec<TextRun> {
+    let mut runs = Vec::new();
+    let mut at = 0;
+    for (range, style) in styles {
+        if range.start < at
+            || range.start >= range.end
+            || range.end > text.len()
+            || !text.is_char_boundary(range.start)
+            || !text.is_char_boundary(range.end)
+        {
+            continue;
+        }
+        if at < range.start {
+            runs.push(base.to_run(range.start - at));
+        }
+        let mut styled = base.clone().highlight(style.highlight);
+        if let Some(family) = &style.font_family {
+            styled.font_family = family.clone();
+        }
+        runs.push(styled.to_run(range.len()));
+        at = range.end;
+    }
+    if at < text.len() || runs.is_empty() {
+        runs.push(base.to_run(text.len() - at));
+    }
+    runs
 }
 
 pub struct WrapLayout {
@@ -87,7 +146,7 @@ impl Element for WrapText {
             .line_height
             .to_pixels(font_size.into(), window.rem_size());
         let layout = WrapLayout {
-            runs: vec![style.to_run(self.text.len())],
+            runs: styled_runs(&self.text, &style, &self.styles),
             font_size,
             line_height,
         };
@@ -150,5 +209,45 @@ impl Element for WrapText {
             let _ = line.paint(origin, layout.line_height, align, Some(bounds), window, cx);
             origin.y += line.size(layout.line_height).height;
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use gpui::FontWeight;
+
+    #[test]
+    fn styled_ranges_split_the_runs_and_a_bad_range_stays_plain() {
+        let base = TextStyle::default();
+        let bold = SpanStyle {
+            highlight: HighlightStyle {
+                font_weight: Some(FontWeight::BOLD),
+                ..HighlightStyle::default()
+            },
+            font_family: None,
+        };
+        let mono = SpanStyle {
+            font_family: Some("Mono".into()),
+            ..SpanStyle::default()
+        };
+        let text = "a bold and code";
+        let runs = styled_runs(text, &base, &[(2..6, bold.clone()), (11..15, mono)]);
+        let lens: Vec<usize> = runs.iter().map(|run| run.len).collect();
+        assert_eq!(lens, [2, 4, 5, 4]);
+        assert_eq!(runs[1].font.weight, FontWeight::BOLD);
+        assert_eq!(runs[3].font.family.as_ref(), "Mono");
+        // Overlapping, empty, and out-of-range ranges are dropped; the runs still cover it all.
+        let runs = styled_runs(
+            text,
+            &base,
+            &[
+                (2..6, bold.clone()),
+                (4..8, bold),
+                (20..30, SpanStyle::default()),
+            ],
+        );
+        assert_eq!(runs.iter().map(|run| run.len).sum::<usize>(), text.len());
+        assert_eq!(styled_runs("", &base, &[]).len(), 1);
     }
 }

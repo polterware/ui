@@ -131,7 +131,7 @@ pub struct Button {
     size: ButtonSize,
     label: Option<SharedString>,
     icon: Option<Icon>,
-    icon_size: f32,
+    icon_size: Option<f32>,
     leading: Option<AnyElement>,
     trailing: Option<AnyElement>,
     tooltip: Option<SharedString>,
@@ -141,6 +141,8 @@ pub struct Button {
     full_width: bool,
     pill: bool,
     pad_x: Option<f32>,
+    radius: Option<f32>,
+    height: Option<f32>,
     on_click: Option<Handler>,
 }
 
@@ -152,7 +154,7 @@ impl Button {
             size: ButtonSize::Md,
             label: None,
             icon: None,
-            icon_size: 14.0,
+            icon_size: None,
             leading: None,
             trailing: None,
             tooltip: None,
@@ -162,6 +164,8 @@ impl Button {
             full_width: false,
             pill: false,
             pad_x: None,
+            radius: None,
+            height: None,
             on_click: None,
         }
     }
@@ -177,9 +181,11 @@ impl Button {
         self
     }
 
-    /// The icon's size when it is not the 14px default, such as a toolbar action's 12px mark.
+    /// The icon's size when it is not the default, such as a toolbar action's 12px mark. The
+    /// default is 14px, and on an icon-size button the `[&_svg]:h-3.5 [&_svg]:w-3.5` its
+    /// class sets over any icon's own size: 0.875rem, 11.375px on the 13px root.
     pub fn icon_size(mut self, size: f32) -> Self {
-        self.icon_size = size;
+        self.icon_size = Some(size);
         self
     }
 
@@ -242,6 +248,26 @@ impl Button {
         self
     }
 
+    /// A corner radius in place of the round ends, for an app whose buttons keep the web's
+    /// `--radius-control`.
+    pub fn radius(mut self, radius: f32) -> Self {
+        self.radius = Some(radius);
+        self
+    }
+
+    /// The radius [`Self::radius`] set, if any, for a control that stands in for this button
+    /// (a morph's Cancel).
+    pub fn radius_override(&self) -> Option<f32> {
+        self.radius
+    }
+
+    /// A height in place of the size's, for a page's one main action (the 48px "Connect a
+    /// host" of a start page).
+    pub fn height(mut self, height: f32) -> Self {
+        self.height = Some(height);
+        self
+    }
+
     pub fn on_click(mut self, handler: impl Fn(&mut Window, &mut App) + 'static) -> Self {
         self.on_click = Some(Rc::new(handler));
         self
@@ -284,8 +310,9 @@ impl RenderOnce for Button {
             ButtonSize::Md => (32.0, 13.0, 19.5, tw(4.0)),
             ButtonSize::Icon => (28.0, 13.0, 19.5, 0.0),
         };
+        let height = self.height.unwrap_or(height);
         let pad_x = self.pad_x.unwrap_or(pad_x);
-        let radius = height / 2.0;
+        let radius = self.radius.unwrap_or(height / 2.0).min(height / 2.0);
 
         let mut root = div()
             .id(self.id.clone())
@@ -372,7 +399,12 @@ impl RenderOnce for Button {
 
         root = root.text_color(ink);
         if let Some(name) = self.icon {
-            root = root.child(icon_colored(name, self.icon_size, ink));
+            let size = self.icon_size.unwrap_or(if self.size == ButtonSize::Icon {
+                tw(3.5)
+            } else {
+                14.0
+            });
+            root = root.child(icon_colored(name, size, ink));
         }
         if let Some(leading) = self.leading {
             root = root.child(leading);

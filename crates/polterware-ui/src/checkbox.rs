@@ -37,3 +37,25 @@ pub fn checkbox_mark(checked: bool, size: f32, theme: &Theme) -> gpui::Div {
         })
         .child(edge(Edge::Strong, radius, theme))
 }
+
+/// The control in its mixed state (`indeterminate`): the checked material with a minus, as a
+/// header's box shows while only some of its rows are picked.
+pub fn checkbox_mark_mixed(size: f32, theme: &Theme) -> gpui::Div {
+    let radius = 4.0 * size / 14.0;
+    div()
+        .relative()
+        .size(px(size))
+        .flex_none()
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded(px(radius))
+        .bg(face(theme.material_face_top, theme.material_face_bottom))
+        .shadow(control_drop(theme))
+        .child(icon_colored(
+            Icon::MinusSignIcon,
+            size - 2.0,
+            theme.color_text_primary,
+        ))
+        .child(edge(Edge::Strong, radius, theme))
+}

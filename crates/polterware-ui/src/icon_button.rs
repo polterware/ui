@@ -1,5 +1,6 @@
 //! Icon-only button: the design system's `Button variant="ghost" size="icon"`, a flat 28px
-//! circle with a 14px icon. The tooltip text is the accessible label.
+//! circle with its icon at the icon size's `h-3.5` (11.375px on the 13px root). The tooltip
+//! text is the accessible label.
 
 use gpui::{App, ElementId, SharedString};
 

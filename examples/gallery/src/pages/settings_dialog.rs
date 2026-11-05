@@ -1,18 +1,21 @@
 //! The settings dialog: grouped sections in the rail, the open one lit, and its panel with
 //! Close, the heading, and the page's sections as cards (`settings_section`), each with its
 //! tile, title, description, an optional action, and its rows; then a picker opened from a
-//! row's "+", hung in the dialog's `overlay` and lined up with the "+"'s right edge.
+//! row's "+", hung in the dialog's `overlay` and lined up with the "+"'s right edge; and
+//! settings rows, each a label with its description and its control.
 
 use std::rc::Rc;
 
 use gpui::{AnyElement, App, IntoElement, Window, div, prelude::*, px};
 use polterware_ui::hang::hang;
 use polterware_ui::patterns::{
-    AnchorSlot, SETTINGS_SECTION_GAP, SettingsNavItem, settings_dialog, settings_section,
-    window_anchor,
+    AnchorSlot, SETTINGS_SECTION_GAP, SettingsNavItem, settings_dialog, settings_row,
+    settings_section, window_anchor,
 };
 use polterware_ui::theme::{StatusTone, Theme};
-use polterware_ui::{Button, ButtonKind, ButtonSize, Icon, TileTone, chip, icon_button};
+use polterware_ui::{
+    Button, ButtonKind, ButtonSize, Icon, SegmentedControl, Switch, TileTone, chip, icon_button,
+};
 
 use super::super::Example;
 
@@ -169,6 +172,56 @@ fn picker(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
     vec![div().w(px(860.0)).child(dialog).into_any_element()]
 }
 
+/// A settings page's rows: a switch, a segmented choice, and a button, each beside its label
+/// and the description under it, and a list entry led by its tile.
+fn rows(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    let confirm = window.use_keyed_state("gallery-settings-row-switch", cx, |_, cx| {
+        Switch::new(true, cx)
+    });
+    vec![
+        div()
+            .w(px(560.0))
+            .child(
+                settings_section("Monitoring")
+                    .description("How metrics read and how long they keep.")
+                    .icon(Icon::Gauge, TileTone::Execution)
+                    .child(
+                        settings_row("Network unit")
+                            .description("Show rates in bytes or in bits per second.")
+                            .child(
+                                SegmentedControl::new("gallery-settings-unit")
+                                    .options(["Bytes", "Bits"])
+                                    .selected(0),
+                            ),
+                    )
+                    .child(
+                        settings_row("Confirm before kill")
+                            .description("Ask before a process gets a signal.")
+                            .child(confirm),
+                    )
+                    .child(
+                        settings_row("Card layout").child(
+                            Button::new("gallery-settings-reset", ButtonKind::Secondary)
+                                .size(ButtonSize::Sm)
+                                .label("Reset"),
+                        ),
+                    )
+                    .child(
+                        settings_row("Local MCP helper")
+                            .description("A list entry, its tile leading the row.")
+                            .icon(Icon::Plug, TileTone::Integration)
+                            .child(chip("Running", StatusTone::Ok, cx))
+                            .child(
+                                Button::new("gallery-settings-stop", ButtonKind::Secondary)
+                                    .size(ButtonSize::Sm)
+                                    .label("Stop"),
+                            ),
+                    ),
+            )
+            .into_any_element(),
+    ]
+}
+
 pub fn examples() -> Vec<Example> {
     vec![
         Example {
@@ -182,6 +235,12 @@ pub fn examples() -> Vec<Example> {
             title: "A picker over the rows after it",
             height: 420.0,
             render: picker,
+        },
+        Example {
+            slug: "settings-dialog-rows",
+            title: "Rows with their controls",
+            height: 360.0,
+            render: rows,
         },
     ]
 }

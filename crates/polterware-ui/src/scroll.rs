@@ -3,7 +3,10 @@
 //! right edge (its bottom edge, sideways), holding a 6px fully rounded thumb (#373737, #8f8f8f
 //! under the pointer) 3px in from the gutter's sides and from the ends of its box, which is as
 //! long as the whole track times the visible share and travels the track's length (so at the
-//! ends the thumb stands 3px off them). Dragging the thumb scrolls; the track has no arrows and a
+//! ends the thumb stands 3px off them). When the system draws overlay scrollers (a trackpad
+//! and "Show scroll bars: automatically"), as Chromium then does, the gutter takes no room
+//! ([`reserved_gutter`] is 0): the thumb floats over the content's edge only while it scrolls,
+//! under the pointer, or dragged, and fades out a second after. Dragging the thumb scrolls; the track has no arrows and a
 //! press on it does not page. [`scrollbar`] draws one for any [`ScrollSource`]: a
 //! `ScrollHandle`, or a `gpui::list`'s state through [`ListScroll`].
 //!
@@ -26,6 +29,19 @@ use crate::patterns::scroll_fade::{SCROLL_FADE, end_fade, toolbar_trail};
 use crate::theme::Theme;
 
 pub const GUTTER: f32 = 12.0;
+/// How long an overlay thumb stays after the last scroll, then how long it fades.
+const OVERLAY_HOLD: f32 = 1.0;
+const OVERLAY_FADE: f32 = 0.3;
+
+/// The width a scroll box gives up to its scrollbar: the 12px gutter, or none while the
+/// system's scrollers overlay the content.
+pub fn reserved_gutter() -> f32 {
+    if crate::window::scroller::overlay_scrollers() {
+        0.0
+    } else {
+        GUTTER
+    }
+}
 const THUMB: f32 = 6.0;
 /// The thumb's inset from the gutter's sides and from the track's ends.
 const THUMB_INSET: f32 = 3.0;
@@ -108,6 +124,9 @@ pub struct ScrollbarState {
     drag: Option<(f32, f32)>,
     /// The scroll per pixel of thumb travel, from the last frame.
     ratio: Rc<Cell<f32>>,
+    /// An overlay thumb's last offset and when it last changed.
+    seen_offset: Option<f32>,
+    moved_at: Option<std::time::Instant>,
 }
 
 impl ScrollbarState {
@@ -116,6 +135,8 @@ impl ScrollbarState {
             thumb_hovered: false,
             drag: None,
             ratio: Rc::new(Cell::new(1.0)),
+            seen_offset: None,
+            moved_at: None,
         }
     }
 }
@@ -172,6 +193,32 @@ pub fn scrollbar<S: ScrollSource>(
             0.0
         };
     ratio.set(if travel > 0.0 { max / travel } else { 0.0 });
+    // An overlay thumb shows while the offset moves, and stays while it is under the pointer
+    // or dragged, then a second more; at rest it is gone and takes no events.
+    let shown = if crate::window::scroller::overlay_scrollers() {
+        let since = state.update(cx, |state, _| {
+            let moved = state
+                .seen_offset
+                .is_some_and(|seen| (seen - offset).abs() > 0.5);
+            state.seen_offset = Some(offset);
+            if moved || hovered || dragging {
+                state.moved_at = Some(std::time::Instant::now());
+            }
+            state.moved_at.map(|at| at.elapsed().as_secs_f32())
+        });
+        let shown = match since {
+            Some(since) if since < OVERLAY_HOLD => 1.0,
+            Some(since) => (1.0 - (since - OVERLAY_HOLD) / OVERLAY_FADE).clamp(0.0, 1.0),
+            None => 0.0,
+        };
+        if shown <= 0.0 {
+            return div().into_any_element();
+        }
+        window.request_animation_frame();
+        shown
+    } else {
+        1.0
+    };
 
     let hover_state = state.clone();
     let down_state = state.clone();
@@ -179,6 +226,7 @@ pub fn scrollbar<S: ScrollSource>(
     let mut thumb = div()
         .id((id.clone(), "thumb"))
         .absolute()
+        .opacity(shown)
         .rounded(px(THUMB / 2.0))
         .bg(if hovered || dragging {
             theme.scrollbar_thumb_hover
@@ -344,7 +392,7 @@ fn scroll_area_below(
         .child(
             div()
                 .w_full()
-                .when(overflows, |content| content.pr(px(GUTTER)))
+                .when(overflows, |content| content.pr(px(reserved_gutter())))
                 .child(content),
         );
     // The gutter and `page_inner_height` read the layout of the frame before, so a new size
@@ -385,7 +433,7 @@ fn scroll_area_below(
                 div()
                     .absolute()
                     .left(px(0.0))
-                    .right(px(GUTTER))
+                    .right(px(reserved_gutter()))
                     .bottom(px(0.0))
                     .child(end_fade(color, left, false)),
             );

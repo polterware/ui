@@ -25,15 +25,38 @@ pub fn chip_colors(theme: &Theme, tone: StatusTone) -> (gpui::Rgba, gpui::Rgba) 
 }
 
 pub fn chip(label: impl Into<SharedString>, tone: StatusTone, cx: &App) -> gpui::Div {
+    chip_shaped(label, tone, None, cx)
+}
+
+/// The chip on the web's own radius (6 in `.pw-status-chip`), for an app whose chips are not
+/// round-ended.
+pub fn chip_rounded(
+    label: impl Into<SharedString>,
+    tone: StatusTone,
+    radius: f32,
+    cx: &App,
+) -> gpui::Div {
+    chip_shaped(label, tone, Some(radius), cx)
+}
+
+fn chip_shaped(
+    label: impl Into<SharedString>,
+    tone: StatusTone,
+    radius: Option<f32>,
+    cx: &App,
+) -> gpui::Div {
     let set = chip_tone(Theme::global(cx), tone);
-    div()
+    let round = |element: gpui::Div, inset: f32| match radius {
+        Some(radius) => element.rounded(px((radius - inset).max(0.0))),
+        None => element.rounded_full(),
+    };
+    round(div(), 0.0)
         .relative()
         .flex_none()
         .flex()
         .items_center()
         .border_1()
         .border_color(set.frame)
-        .rounded_full()
         .bg(face(set.top, set.bottom))
         .px(px(9.0))
         .py(px(3.0))
@@ -43,10 +66,9 @@ pub fn chip(label: impl Into<SharedString>, tone: StatusTone, cx: &App) -> gpui:
         .whitespace_nowrap()
         .text_color(set.ink)
         .child(
-            div()
+            round(div(), 1.0)
                 .absolute()
                 .inset_0()
-                .rounded_full()
                 .border_1()
                 .border_color(set.rim),
         )

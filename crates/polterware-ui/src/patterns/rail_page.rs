@@ -116,7 +116,7 @@ impl RailPresence {
         }
     }
 
-    fn value(&self) -> f32 {
+    pub(crate) fn value(&self) -> f32 {
         self.progress.value()
     }
 }
@@ -129,6 +129,11 @@ impl PageWidth {
     pub fn is_narrow(&self) -> bool {
         let width = self.0.get();
         width > 0.0 && width < NARROW_WIDTH
+    }
+
+    /// The width the last frame gave the page; 0 before it was drawn.
+    pub(crate) fn width(&self) -> f32 {
+        self.0.get()
     }
 
     /// A probe filling the page that records its width and redraws when it crosses
@@ -151,6 +156,66 @@ impl PageWidth {
         .top(px(0.0))
         .left(px(0.0))
         .size_full()
+    }
+}
+
+/// What a rail page keeps of its rail, as `RailPage` keeps `railOpen`, `drawerOpen`, and the
+/// rail's presence: the choice beside the text (kept across pages), the drawer a narrow page
+/// opens instead (closed until its toggle opens it), the slide and fade that follow whichever
+/// applies, and the page's width that picks between them. A host holds one in an `Entity`
+/// and hands it to the page, such as a [`DocumentPage`](super::DocumentPage).
+pub struct RailState {
+    open: bool,
+    drawer_open: bool,
+    presence: RailPresence,
+    page: PageWidth,
+}
+
+impl RailState {
+    /// At rest, beside the text `open` or not.
+    pub fn new(open: bool) -> Self {
+        Self {
+            open,
+            drawer_open: false,
+            presence: RailPresence::new(open),
+            page: PageWidth::default(),
+        }
+    }
+
+    /// The choice beside the text, for a host that keeps it.
+    pub fn is_open(&self) -> bool {
+        self.open
+    }
+
+    /// Whether the rail shows: beside the text the choice, on a narrow page the drawer.
+    pub fn is_visible(&self) -> bool {
+        if self.page.is_narrow() {
+            self.drawer_open
+        } else {
+            self.open
+        }
+    }
+
+    /// The rail's toggle: beside the text it flips the choice; on a narrow page it opens and
+    /// closes the drawer.
+    pub fn toggle(&mut self) {
+        if self.page.is_narrow() {
+            self.drawer_open = !self.drawer_open;
+        } else {
+            self.open = !self.open;
+        }
+    }
+
+    /// The page's width, whose probe the page draws.
+    pub fn page(&self) -> &PageWidth {
+        &self.page
+    }
+
+    /// The presence, set going toward whether the rail shows now.
+    pub(crate) fn presence(&mut self) -> &RailPresence {
+        let visible = self.is_visible();
+        self.presence.set_open(visible);
+        &self.presence
     }
 }
 

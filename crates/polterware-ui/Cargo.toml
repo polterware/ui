@@ -18,6 +18,10 @@ polterware-motion.workspace = true
 polterware-theme.workspace = true
 polterware-window.workspace = true
 unicode-segmentation = "1"
+# Markdown in the document style (`markdown.rs`).
+pulldown-cmark = { version = "0.12", default-features = false }
+# The terminal's emulator (grid, scrollback, selection, modes), as in Zed's GPUI terminal.
+alacritty_terminal = { version = "0.26", default-features = false }
 bot-avatar = { workspace = true, optional = true }
 image = { version = "0.25.1", default-features = false, features = ["png"], optional = true }
 smallvec = { version = "1.6", optional = true }

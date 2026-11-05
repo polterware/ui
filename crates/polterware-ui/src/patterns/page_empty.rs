@@ -1,7 +1,7 @@
 //! `PageEmpty`: `EmptyBot` (the mascot in a mood, 64px) over an 18px semibold title at
 //! `leading-tight`, centered in the space it fills (`flex h-full min-h-[200px] w-full p-8`,
-//! then `m-auto flex-col items-center gap-2 text-center`). The title sits `mt-2` lower and a
-//! body `mt-4` lower, as wide as it needs up to `max-w-3xl`. [`list_empty`] is its small
+//! then `m-auto flex-col items-center gap-2 text-center`). The title sits `mt-2` lower, an
+//! action `mt-2` lower, and a body `mt-4` lower, as wide as it needs up to `max-w-3xl`. [`list_empty`] is its small
 //! form, for a list in a narrow column such as a sidebar.
 
 pub use bot_avatar::MascotMood;
@@ -28,6 +28,27 @@ pub fn page_empty_with(
     body: Option<AnyElement>,
     cx: &App,
 ) -> Div {
+    page_empty_parts(title, mood, None, body, cx)
+}
+
+/// [`page_empty`] with an optional title and an action under it (`PageEmpty`'s `action`),
+/// closer to the mascot than a body.
+pub fn page_empty_action(
+    title: Option<&str>,
+    mood: MascotMood,
+    action: AnyElement,
+    cx: &App,
+) -> Div {
+    page_empty_parts(title, mood, Some(action), None, cx)
+}
+
+fn page_empty_parts(
+    title: Option<&str>,
+    mood: MascotMood,
+    action: Option<AnyElement>,
+    body: Option<AnyElement>,
+    cx: &App,
+) -> Div {
     let theme = Theme::global(cx);
     let column = div()
         .flex()
@@ -45,6 +66,7 @@ pub fn page_empty_with(
                 .text_color(theme.color_text_primary)
                 .child(SharedString::from(title.to_string()))
         }))
+        .children(action.map(|action| div().mt(px(tw(2.0))).child(action)))
         .children(body.map(|body| {
             div()
                 .mt(px(tw(4.0)))

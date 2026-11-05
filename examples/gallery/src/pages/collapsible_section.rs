@@ -121,6 +121,36 @@ fn with_actions(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
     vec![div().w_full().child(section).into_any_element()]
 }
 
+/// A document's section, as Structure's record sections are set: the larger title, 12px in,
+/// with a `+` at its end.
+fn document(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    let section = window.use_keyed_state(
+        "section-document",
+        cx,
+        |_, cx: &mut Context<CollapsibleSection>| {
+            let mut section = CollapsibleSection::new("Rules", cx);
+            section.set_large_title(true);
+            section.set_actions(Some(Rc::new(|_, _| {
+                Button::new("section-document-link", ButtonKind::Ghost)
+                    .size(ButtonSize::Icon)
+                    .icon(Icon::Plus)
+                    .tooltip("Link rule")
+                    .into_any_element()
+            })));
+            section.set_body(Rc::new(|_, cx| {
+                div()
+                    .px(px(12.0))
+                    .text_size(px(12.5))
+                    .text_color(Theme::global(cx).color_text_secondary)
+                    .child("Keep one writer per project")
+                    .into_any_element()
+            }));
+            section
+        },
+    );
+    vec![div().w_full().child(section).into_any_element()]
+}
+
 pub fn examples() -> Vec<Example> {
     let example = |title, height, render| Example {
         slug: "collapsible-section",
@@ -134,5 +164,6 @@ pub fn examples() -> Vec<Example> {
         example("With a count", 122.9, with_count),
         example("Initially closed", 120.0, closed),
         example("With actions", 130.0, with_actions),
+        example("A document's section", 130.0, document),
     ]
 }

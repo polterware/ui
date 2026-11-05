@@ -21,6 +21,7 @@ use gpui::{
 use polterware_ui::IconAssets;
 use polterware_ui::theme::{Theme, white};
 
+mod hot;
 mod pages;
 
 /// One gallery example: its page slug, its title, its box height, and its content.
@@ -58,12 +59,35 @@ fn preview(example: &Example, window: &mut Window, cx: &mut App) -> AnyElement {
 
 struct Gallery {
     examples: Vec<Example>,
+    /// `GALLERY_ONLY`'s pages, kept so a hot patch can rebuild the list with its new code.
+    only: Option<Vec<String>>,
     /// The one example drawn while capturing.
     current: Option<usize>,
 }
 
+fn examples(only: &Option<Vec<String>>) -> Vec<Example> {
+    pages::all()
+        .into_iter()
+        .filter(|example| {
+            only.as_ref()
+                .is_none_or(|only| only.iter().any(|slug| slug == example.slug))
+        })
+        .collect()
+}
+
 impl Render for Gallery {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        hot::call(|| self.draw(window, cx))
+    }
+}
+
+impl Gallery {
+    fn draw(&mut self, window: &mut Window, cx: &mut Context<Self>) -> AnyElement {
+        // The list holds function pointers taken at startup; under hot reload it is rebuilt
+        // here so each example's render is the patched one.
+        if cfg!(feature = "hot-reload") && self.current.is_none() {
+            self.examples = examples(&self.only);
+        }
         let theme = *Theme::global(cx);
         let root = div()
             .size_full()
@@ -122,13 +146,8 @@ fn main() {
             // Dispatch's 13px root, so the controls draw as they do in the apps.
             polterware_ui::theme::set_root_rem(13.0);
             polterware_ui::init(cx);
-            let examples: Vec<Example> = pages::all()
-                .into_iter()
-                .filter(|example| {
-                    only.as_ref()
-                        .is_none_or(|only| only.iter().any(|slug| slug == example.slug))
-                })
-                .collect();
+            hot::init(cx);
+            let examples = examples(&only);
             let capturing = shots.is_some();
             let window_size = if capturing {
                 size(px(BOX_WIDTH), px(520.0))
@@ -158,6 +177,7 @@ fn main() {
                 .open_window(options, |_, cx| {
                     cx.new(|_| Gallery {
                         examples,
+                        only,
                         current: None,
                     })
                 })

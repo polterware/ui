@@ -3,7 +3,9 @@
 //! rim) sits 3px in. Hover stretches it 2px and press 4px, toward the middle, and press also
 //! squashes it 4px; its x, y, width, and height spring on `spring.moderate`, as `switch.tsx`
 //! drives them. The track's color eases over `--duration-fast`. A click toggles it; dragging
-//! the thumb across does not (Ark's drag-to-toggle is not ported).
+//! the thumb across does not (Ark's drag-to-toggle is not ported). [`Switch::small`] is
+//! `size="sm"`: a 30×18 track at radius 4, a 12px thumb at radius 2, 3px in, stretching 2px
+//! on hover and 3px on press, which squashes it 3px.
 //!
 //! [`switch_row`] is `SwitchRow` (`.pw-switch-row`): the label, then the switch, in a row
 //! that pads 6px 8px at `--radius-item` and fills with `--color-surface-hover` on hover. The
@@ -24,16 +26,47 @@ use crate::ValueHandler;
 use crate::motion::{Animator, Curve, SpringTier, SpringValue, Tween};
 use crate::theme::{Theme, hex, mix, white};
 
-const TRACK_W: f32 = 38.0;
-const TRACK_H: f32 = 22.0;
-const THUMB: f32 = 16.0;
-const OFFSET: f32 = 3.0;
-const HOVER_EXTEND: f32 = 2.0;
-const PRESS_EXTEND: f32 = 4.0;
-const SQUASH: f32 = 4.0;
+/// A size's track and thumb (`METRICS` in `switch.tsx`, the radii from `switch.css`).
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct Metrics {
+    track_w: f32,
+    track_h: f32,
+    track_radius: f32,
+    thumb: f32,
+    thumb_radius: f32,
+    offset: f32,
+    hover_extend: f32,
+    press_extend: f32,
+    squash: f32,
+}
+
+const DEFAULT: Metrics = Metrics {
+    track_w: 38.0,
+    track_h: 22.0,
+    track_radius: 6.0,
+    thumb: 16.0,
+    thumb_radius: 3.0,
+    offset: 3.0,
+    hover_extend: 2.0,
+    press_extend: 4.0,
+    squash: 4.0,
+};
+
+const SMALL: Metrics = Metrics {
+    track_w: 30.0,
+    track_h: 18.0,
+    track_radius: 4.0,
+    thumb: 12.0,
+    thumb_radius: 2.0,
+    offset: 3.0,
+    hover_extend: 2.0,
+    press_extend: 3.0,
+    squash: 3.0,
+};
 
 pub struct Switch {
     on: bool,
+    metrics: Metrics,
     hovered: bool,
     /// The pointer is over the `SwitchRow` that holds it.
     row_hovered: bool,
@@ -47,31 +80,44 @@ pub struct Switch {
     on_change: Option<ValueHandler<bool>>,
 }
 
-fn rest_x(on: bool, extend: f32) -> f32 {
+fn rest_x(metrics: &Metrics, on: bool, extend: f32) -> f32 {
     // On, the thumb stretches leftward so it stays flush with the right edge.
     if on {
-        TRACK_W - OFFSET - THUMB - extend
+        metrics.track_w - metrics.offset - metrics.thumb - extend
     } else {
-        OFFSET
+        metrics.offset
     }
 }
 
 impl Switch {
     pub fn new(on: bool, cx: &mut Context<Self>) -> Self {
         let _ = cx;
+        let metrics = DEFAULT;
         Self {
             on,
+            metrics,
             hovered: false,
             row_hovered: false,
             pressed: false,
-            x: SpringValue::new(rest_x(on, 0.0), SpringTier::Moderate),
-            y: SpringValue::new(OFFSET, SpringTier::Moderate),
-            width: SpringValue::new(THUMB, SpringTier::Moderate),
-            height: SpringValue::new(THUMB, SpringTier::Moderate),
+            x: SpringValue::new(rest_x(&metrics, on, 0.0), SpringTier::Moderate),
+            y: SpringValue::new(metrics.offset, SpringTier::Moderate),
+            width: SpringValue::new(metrics.thumb, SpringTier::Moderate),
+            height: SpringValue::new(metrics.thumb, SpringTier::Moderate),
             hover: Tween::new(0.0),
             animator: Animator::new(),
             on_change: None,
         }
+    }
+
+    /// `size="sm"`, as the Composer's Create more is: see the module's docs.
+    pub fn small(mut self) -> Self {
+        let metrics = SMALL;
+        self.metrics = metrics;
+        self.x = SpringValue::new(rest_x(&metrics, self.on, 0.0), SpringTier::Moderate);
+        self.y = SpringValue::new(metrics.offset, SpringTier::Moderate);
+        self.width = SpringValue::new(metrics.thumb, SpringTier::Moderate);
+        self.height = SpringValue::new(metrics.thumb, SpringTier::Moderate);
+        self
     }
 
     pub fn on_change(
@@ -119,18 +165,19 @@ impl Switch {
     }
 
     fn retarget(&mut self) {
+        let metrics = self.metrics;
         let extend = if self.pressed {
-            PRESS_EXTEND
+            metrics.press_extend
         } else if self.hovered || self.row_hovered {
-            HOVER_EXTEND
+            metrics.hover_extend
         } else {
             0.0
         };
-        let squeeze = if self.pressed { SQUASH } else { 0.0 };
-        self.x.set_target(rest_x(self.on, extend));
-        self.y.set_target(OFFSET + squeeze / 2.0);
-        self.width.set_target(THUMB + extend);
-        self.height.set_target(THUMB - squeeze);
+        let squeeze = if self.pressed { metrics.squash } else { 0.0 };
+        self.x.set_target(rest_x(&metrics, self.on, extend));
+        self.y.set_target(metrics.offset + squeeze / 2.0);
+        self.width.set_target(metrics.thumb + extend);
+        self.height.set_target(metrics.thumb - squeeze);
     }
 
     fn moving(&self) -> bool {
@@ -170,13 +217,14 @@ impl Render for Switch {
         } else {
             hex(0xe4e4e4)
         };
-        let radius = 6.0;
+        let metrics = self.metrics;
+        let radius = metrics.track_radius;
         div()
             .id(("switch", cx.entity_id()))
             .relative()
             .flex_none()
-            .w(px(TRACK_W))
-            .h(px(TRACK_H))
+            .w(px(metrics.track_w))
+            .h(px(metrics.track_h))
             .rounded(px(radius))
             .bg(face(top, bottom))
             .cursor_pointer()
@@ -188,7 +236,7 @@ impl Render for Switch {
                     .top(px(self.y.value()))
                     .w(px(self.width.value().max(0.0)))
                     .h(px(self.height.value().max(0.0)))
-                    .rounded(px(3.0))
+                    .rounded(px(metrics.thumb_radius))
                     .bg(face(hex(0xffffff), thumb_bottom))
                     .border(px(0.5))
                     .border_color(hex(0xffffff))
@@ -282,7 +330,7 @@ fn labelled(
         .cursor_pointer();
     let row = if card {
         // A pill: the track's height and the row's padding, round at both ends.
-        let radius = (TRACK_H + 12.0) / 2.0;
+        let radius = (switch.read(cx).metrics.track_h + 12.0) / 2.0;
         material::raised_panel(
             row.flex_none().pl(px(14.0)).pr(px(6.0)).bg(mix(
                 theme.color_surface_subtle,

@@ -27,8 +27,10 @@ use crate::material::{Edge, drop, edge, float_drop};
 use crate::scroll::{GUTTER, ScrollAxis, ScrollGeometry, scrollbar, use_scroll};
 use crate::theme::Theme;
 
-/// The Composer's width (`lg`: 44rem).
+/// The Composer's width (`lg`: 44rem on a 16px root).
 pub const COMPOSER_WIDTH: f32 = 704.0;
+/// The root the card's rem measures assume unless [`ComposerCard::root_scaled`].
+const DEFAULT_REM: f32 = 16.0;
 /// The tallest the Composer grows before its body scrolls (`max-height: min(85vh, 760px)`).
 pub const COMPOSER_MAX_HEIGHT: f32 = 760.0;
 /// What the Composer keeps clear of the window's edges.
@@ -49,6 +51,8 @@ pub fn composer_card(
     ComposerCard {
         title: title.into(),
         heading: false,
+        width: COMPOSER_WIDTH,
+        rem: DEFAULT_REM,
         presence,
         offset_y,
         fields: Vec::new(),
@@ -62,6 +66,9 @@ pub fn composer_card(
 pub struct ComposerCard {
     title: SharedString,
     heading: bool,
+    width: f32,
+    /// The root size its rem measures are taken at.
+    rem: f32,
     presence: f32,
     offset_y: f32,
     fields: Vec<AnyElement>,
@@ -75,6 +82,26 @@ impl ComposerCard {
     /// dialog whose body has no title field, such as a confirmation.
     pub fn heading(mut self) -> Self {
         self.heading = true;
+        self
+    }
+
+    /// The card's width, [`COMPOSER_WIDTH`] by default (a compact dialog is a
+    /// [`dialog`](super::dialog)). It still shrinks to fit the window.
+    pub fn width(mut self, width: f32) -> Self {
+        self.width = width;
+        self
+    }
+
+    /// Takes the card's rem measures at the app's root size rather than at 16px: the 44rem
+    /// width (unless [`Self::width`] set one), Close 1rem in, the footer's `px-7 pt-3 pb-6`,
+    /// and a heading's insets, as a design system on a smaller root draws them (Polterware's
+    /// 13px).
+    pub fn root_scaled(mut self) -> Self {
+        let rem = crate::theme::rem();
+        if self.width == COMPOSER_WIDTH {
+            self.width = 44.0 * rem;
+        }
+        self.rem = rem;
         self
     }
 
@@ -112,7 +139,8 @@ impl RenderOnce for ComposerCard {
             .min(f32::from(viewport.height) * 0.85)
             .min(f32::from(viewport.height) - WINDOW_INSET)
             .max(240.0);
-        let width = COMPOSER_WIDTH
+        let width = self
+            .width
             .min(f32::from(viewport.width) - WINDOW_INSET)
             .max(320.0);
         let scroll = use_scroll("composer-fields", window, cx);
@@ -141,24 +169,25 @@ impl RenderOnce for ComposerCard {
         shadow.push(drop(20.0, 56.0, theme.color_shadow_float));
         // The body's inset: `18px 24px 8px` under the flush chrome, `px-7 py-4` under a
         // heading.
+        // The rem measures, at 16px unless the card is root-scaled.
+        let k = self.rem / DEFAULT_REM;
         let (pad_x, pad_top) = if self.heading {
-            (28.0, 16.0)
+            (28.0 * k, 16.0 * k)
         } else {
             (24.0, 18.0)
         };
+        // Close is `h-8 w-8` round with its X at 16px (`<X size={16} />`).
         let close = self.on_close.map(|handler| {
             div()
                 .absolute()
-                .top(px(theme.space_4))
-                .right(px(theme.space_4))
+                .top(px(16.0 * k))
+                .right(px(16.0 * k))
                 .cursor(CursorStyle::PointingHand)
-                .child(icon_button(
-                    "composer-close",
-                    Icon::Close,
-                    "Close",
-                    handler,
-                    cx,
-                ))
+                .child(
+                    icon_button("composer-close", Icon::Close, "Close", handler, cx)
+                        .height(32.0 * k)
+                        .icon_size(16.0),
+                )
         });
         div()
             .occlude()
@@ -179,10 +208,10 @@ impl RenderOnce for ComposerCard {
                 card.child(
                     div()
                         .flex_none()
-                        .px(px(28.0))
-                        .pt(px(24.0))
-                        .pb(px(8.0))
-                        .pr(px(28.0 + 32.0))
+                        .px(px(28.0 * k))
+                        .pt(px(24.0 * k))
+                        .pb(px(8.0 * k))
+                        .pr(px((28.0 + 32.0) * k))
                         .text_size(px(16.0))
                         .line_height(px(24.0))
                         .font_weight(FontWeight::SEMIBOLD)
@@ -241,9 +270,9 @@ impl RenderOnce for ComposerCard {
             .children(self.footer.map(|footer| {
                 div()
                     .flex_none()
-                    .px(px(28.0))
-                    .pt(px(12.0))
-                    .pb(px(24.0))
+                    .px(px(28.0 * k))
+                    .pt(px(12.0 * k))
+                    .pb(px(24.0 * k))
                     .child(footer)
             }))
             .children(close)
@@ -273,6 +302,45 @@ pub fn composer_footer(
                 .gap(px(theme.space_2))
                 .children(end),
         )
+}
+
+/// The Solid `Composer`'s footer as `.pw-dialog-footer` lays it out (`justify-end gap-2`):
+/// `start` (Create more, a quiet action such as Remove) as one group 12px apart
+/// (`.pw-composer__footer-start`), then `end` (the submit last), all together at the end, 8px
+/// apart. With three or more children the first moves to the start, as the CSS's
+/// `margin-inline-end: auto` does.
+pub(crate) fn dialog_footer(
+    start: impl IntoIterator<Item = AnyElement>,
+    end: impl IntoIterator<Item = AnyElement>,
+    theme: &Theme,
+) -> gpui::Div {
+    let start: Vec<AnyElement> = start.into_iter().collect();
+    let mut children: Vec<AnyElement> = Vec::new();
+    if !start.is_empty() {
+        children.push(
+            div()
+                .flex()
+                .items_center()
+                .gap(px(12.0))
+                .children(start)
+                .into_any_element(),
+        );
+    }
+    children.extend(end);
+    let split = children.len() >= 3;
+    let mut row = div()
+        .w_full()
+        .flex()
+        .items_center()
+        .justify_end()
+        .gap(px(theme.space_2));
+    for (index, child) in children.into_iter().enumerate() {
+        row = row.child(child);
+        if split && index == 0 {
+            row = row.child(div().flex_1());
+        }
+    }
+    row
 }
 
 /// The Composer's last row with its buttons at the end, in order (the primary one last).
@@ -317,4 +385,18 @@ pub fn composer_field(
                 .child(label.into()),
         )
         .child(div().flex_1().min_w(px(0.0)).child(value))
+}
+
+/// The Solid `Composer`'s own field (`.pw-composer__field`): as [`composer_field`], 10px in
+/// at `--radius-control`, on `--color-surface-subtle`, the dialog's own surface, so only the
+/// muted label and the value show.
+pub(crate) fn solid_composer_field(
+    label: impl Into<SharedString>,
+    value: impl IntoElement,
+    theme: &Theme,
+) -> gpui::Div {
+    composer_field(label, value, theme)
+        .px(px(10.0))
+        .rounded(px(theme.radius_control))
+        .bg(theme.color_surface_subtle)
 }

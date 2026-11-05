@@ -8,6 +8,35 @@ use gpui::Window;
 /// A region of the window image, in device pixels: x, y, width, height.
 pub type Crop = (u32, u32, u32, u32);
 
+/// The window's number in the window server (its `CGWindowID`), as `screencapture -l`
+/// takes it.
+#[cfg(target_os = "macos")]
+pub fn window_number(window: &Window) -> Option<u32> {
+    use objc::runtime::Object;
+    use objc::{msg_send, sel, sel_impl};
+    use raw_window_handle::{HasWindowHandle, RawWindowHandle};
+
+    let handle = HasWindowHandle::window_handle(window).ok()?;
+    let RawWindowHandle::AppKit(appkit) = handle.as_raw() else {
+        return None;
+    };
+    // SAFETY: main thread, live window; two plain AppKit getters.
+    unsafe {
+        let view = appkit.ns_view.as_ptr() as *mut Object;
+        let ns_window: *mut Object = msg_send![view, window];
+        if ns_window.is_null() {
+            return None;
+        }
+        let number: isize = msg_send![ns_window, windowNumber];
+        u32::try_from(number).ok()
+    }
+}
+
+#[cfg(not(target_os = "macos"))]
+pub fn window_number(_window: &Window) -> Option<u32> {
+    None
+}
+
 /// Saves the window's own pixels (no shadow or frame) as a PNG, cut to `crop` when given.
 #[cfg(target_os = "macos")]
 pub fn save_window_png(window: &Window, path: &Path, crop: Option<Crop>) -> Result<(), String> {

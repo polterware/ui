@@ -67,6 +67,8 @@ pub struct IconTile {
     finish: TileFinish,
     /// A circle in place of the control radius, for a tile inside a pill.
     round: bool,
+    /// A tint in place of the tone's accent, as a text color class on the tile sets it.
+    tint: Option<Rgba>,
 }
 
 impl IconTile {
@@ -79,6 +81,7 @@ impl IconTile {
             tone: TileTone::Neutral,
             finish: TileFinish::ChromeMark,
             round: false,
+            tint: None,
         }
     }
 
@@ -90,6 +93,13 @@ impl IconTile {
 
     pub fn tone(mut self, tone: TileTone) -> Self {
         self.tone = tone;
+        self
+    }
+
+    /// Tints the mark with `tint` in place of the tone's accent, as a text color class on the
+    /// tile does (`class="!text-[var(--color-chart-violet)]"`): the chrome sheet reads it.
+    pub fn tint(mut self, tint: Rgba) -> Self {
+        self.tint = Some(tint);
         self
     }
 
@@ -148,6 +158,9 @@ fn chrome_bands(tint: Rgba) -> [(f32, f32, Rgba); 5] {
 
 impl RenderOnce for IconTile {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let accent = self
+            .tint
+            .unwrap_or_else(|| self.tone.accent(Theme::global(cx)));
         let theme = *Theme::global(cx);
         let radius = if self.round {
             self.size / 2.0
@@ -171,7 +184,7 @@ impl RenderOnce for IconTile {
                     .text_size(px(10.0))
                     .line_height(px(10.0))
                     .font_weight(FontWeight::SEMIBOLD)
-                    .text_color(self.tone.accent(&theme))
+                    .text_color(accent)
                     .child(initial)
                     .child(material::edge(Edge::Strong, radius, &theme));
             }
@@ -189,7 +202,7 @@ impl RenderOnce for IconTile {
             )),
             TileFinish::ChromeMark => {
                 let mut tile = tile;
-                for (start, end, color) in chrome_bands(self.tone.accent(&theme)) {
+                for (start, end, color) in chrome_bands(accent) {
                     let top = start * self.size;
                     let height = (end - start) * self.size;
                     tile = tile.child(

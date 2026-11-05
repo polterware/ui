@@ -1,8 +1,10 @@
 //! The macOS window frame every Polterware app shares: a transparent window with the
-//! traffic lights over the sidebar, the vibrancy material under the shell, and window drag
-//! from the empty parts of the chrome.
+//! traffic lights over the sidebar, the vibrancy material under the shell, window drag
+//! from the empty parts of the chrome, and the Dock icon of a build with no bundle.
 
 pub mod capture;
+pub mod dock_icon;
+pub mod scroller;
 pub mod vibrancy;
 pub mod window_drag;
 

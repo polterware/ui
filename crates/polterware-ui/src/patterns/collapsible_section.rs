@@ -6,7 +6,9 @@
 //! `--ease-standard`. While open the heading has `pb-4` under it. The body, padded 10px on top,
 //! is a flex column with 10px gaps inside a [`SectionClip`].
 //!
-//! Actions, when set, sit at the heading's end beside the toggle, so they never fold it.
+//! Actions, when set, sit at the heading's end beside the toggle, so they never fold it. A
+//! document's section ([`CollapsibleSection::set_large_title`]) sets its title 16px/600 in
+//! primary ink, 12px in, with 6px under the heading while open.
 //!
 //! The body is a `'static` builder because a section cannot update another entity while it
 //! is rendering. Read other entities inside the builder.
@@ -144,6 +146,8 @@ pub struct CollapsibleSection {
     body: SectionBody,
     /// Controls at the heading's end, outside the toggle: a card's own filters.
     actions: Option<SectionBody>,
+    /// A document's section heading, set larger than its rows.
+    large: bool,
 }
 
 impl CollapsibleSection {
@@ -158,7 +162,15 @@ impl CollapsibleSection {
             chevron: Tween::new(0.0),
             body: Rc::new(|_, _| div().into_any_element()),
             actions: None,
+            large: false,
         }
+    }
+
+    /// A section of a document, as Structure's record sections are set
+    /// (`.pw-structure__section`): the title 16px/600 in primary ink, the heading 12px in on
+    /// each side, in line with the rows' text, and 6px over the body while open.
+    pub fn set_large_title(&mut self, large: bool) {
+        self.large = large;
     }
 
     pub fn set_title(&mut self, title: impl Into<SharedString>) {
@@ -254,11 +266,24 @@ impl Render for CollapsibleSection {
                     // One line: a title free to wrap here collapsed to a letter per line in
                     // GPUI's flex layout, where the browser keeps a short title whole.
                     .whitespace_nowrap()
-                    .text_size(px(12.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .line_height(px(12.0 * 1.35))
-                    .text_color(theme.color_text_muted)
-                    .group_hover(group, |style| style.text_color(theme.color_text_primary))
+                    .map(|title| {
+                        if self.large {
+                            title
+                                .text_size(px(16.0))
+                                .font_weight(FontWeight::SEMIBOLD)
+                                .line_height(px(16.0 * 1.35))
+                                .text_color(theme.color_text_primary)
+                        } else {
+                            title
+                                .text_size(px(12.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .line_height(px(12.0 * 1.35))
+                                .text_color(theme.color_text_muted)
+                                .group_hover(group, |style| {
+                                    style.text_color(theme.color_text_primary)
+                                })
+                        }
+                    })
                     .child(self.title.clone()),
             )
             .when_some(self.aside.clone(), |toggle, aside| {
@@ -298,7 +323,10 @@ impl Render for CollapsibleSection {
                     .min_w(px(0.0))
                     .items_center()
                     .gap(px(4.0))
-                    .when(open, |heading| heading.pb(px(tw(4.0))))
+                    .when(self.large, |heading| heading.px(px(12.0)))
+                    .when(open, |heading| {
+                        heading.pb(px(if self.large { 6.0 } else { tw(4.0) }))
+                    })
                     .child(toggle)
                     .when_some(self.actions.clone(), |heading, actions| {
                         heading.child(div().flex_none().child(actions(window, cx)))

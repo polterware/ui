@@ -7,12 +7,22 @@
 //! several values (`TokenPicker`) is one group on a field-face track, as `ActiveFilterBar`
 //! holds its pills: its icon and name, each value as a pill that removes it (or the empty
 //! label while none is picked), then a `+`, so two lists of the same options read apart; its
-//! picker's rows are checkboxes that toggle and keep it open. The picker is a 240px floating
-//! panel: a bare search field (`Set lowest tier…`, `10px 12px` in, a subtle rule under it),
-//! then the options (`6px` in, 2px apart, at most 260px tall). An option row is 32px
-//! (40 with a hint) and `0 10px` in: a 14px radio mark, the 20px option tile (its icon, or
-//! the label's initial), the 13px label with its hint in 11px muted under it, and the
-//! option's digit at the end while the search is empty.
+//! picker's rows are checkboxes that toggle and keep it open. A [`Property::loose`] tokens
+//! property is the `TokenPicker` itself: each value is a filter pill of its own (its mark and
+//! label, then × on a rule), then a texture `+` (the empty label while none is picked, on
+//! the small texture button's 6px corners) that opens a picker of the values not picked yet,
+//! gone once every option is. A loose token shows its option's hint muted after the label; an
+//! [`Property::editable`] token's value is a button that asks to edit it (`onEdit`), an option
+//! that [`PropertyOption::opens`] somewhere outside adds an ↗ before the × (`opener`), and an
+//! [`Property::adds`] `+` asks the host for a new token (`onAdd`) instead of picking one. The picker is a 240px floating panel: a bare search field
+//! (`Set lowest tier…`, `10px 12px` in, a subtle rule under it), then the options (`6px` in,
+//! 2px apart, at most 260px tall). An option row is 32px (40 with a hint) and `0 10px` in:
+//! a 14px radio mark, the 20px option tile (its icon, or the label's initial), the 13px label
+//! with its hint in 11px muted under it, and the option's digit at the end while the search
+//! is empty. Options with a [`PropertyOption::group`] sit under an 11px medium muted heading
+//! (`8px 10px 2px` in), each group's together in the order they first appear; a
+//! [`Property::creatable`] picker ends with `Create “…”` (an empty radio slot and a 12px muted
+//! `+`) while the search matches no option's label, which picks the typed text.
 //!
 //! The picker behaves like gpui-kit's `Select` with search on: it opens on the picked option,
 //! typing filters by label and hint, ↑/↓ move the highlight (wrapping) and the pointer lights
@@ -41,9 +51,11 @@ use crate::icon_tile::IconTile;
 use crate::icons::{Icon, icon_colored};
 use crate::material::{self, Edge, face, floating_panel};
 use crate::motion::{Animator, SpringTier, SpringValue};
+use crate::pointer::{PointerTiming, track, use_pointer_timed};
 use crate::radio_group::radio_mark;
 use crate::text_input::{self, TextInput};
-use crate::theme::Theme;
+use crate::theme::{Theme, fade, mix};
+use crate::tooltip::tooltip;
 
 /// The picker's width (`width ?? 240`).
 pub const PICKER_WIDTH: f32 = 240.0;
@@ -53,6 +65,11 @@ const OPTIONS_MAX_H: f32 = 260.0;
 const PILL_GAP: f32 = 6.0;
 /// A token group's track: its 28px pills and 2px around them.
 const GROUP_RADIUS: f32 = 16.0;
+/// A loose token's pill (`.pw-filter-pill`).
+const TOKEN_RADIUS: f32 = 11.0;
+/// A small texture button's corners (`rounded-[6px]`), as the loose add button wears them
+/// while it shows the empty label; the `+` alone stays round.
+const ADD_RADIUS: f32 = 6.0;
 /// A click on the pill whose picker a press outside just closed toggles it shut, not open
 /// again: the press closes it first, then the click lands.
 const REOPEN_GUARD: Duration = Duration::from_millis(250);
@@ -80,6 +97,8 @@ pub struct PropertyOption {
     icon: Option<Icon>,
     mark: Option<MarkBuilder>,
     hint: Option<SharedString>,
+    group: Option<SharedString>,
+    opens: Option<SharedString>,
 }
 
 impl PropertyOption {
@@ -90,6 +109,8 @@ impl PropertyOption {
             icon: None,
             mark: None,
             hint: None,
+            group: None,
+            opens: None,
         }
     }
 
@@ -115,6 +136,21 @@ impl PropertyOption {
         self
     }
 
+    /// The heading the option sits under in the picker (`group`); the groups keep the order
+    /// they first appear in.
+    pub fn group(mut self, group: impl Into<SharedString>) -> Self {
+        self.group = Some(group.into());
+        self
+    }
+
+    /// A token that leads somewhere outside, such as a deploy's page on its platform
+    /// (`opener`): an ↗ between its value and its ×, named `label`, which asks the host with
+    /// [`PropertyTokenEvent::Open`].
+    pub fn opens(mut self, label: impl Into<SharedString>) -> Self {
+        self.opens = Some(label.into());
+        self
+    }
+
     pub fn value(&self) -> &SharedString {
         &self.value
     }
@@ -125,11 +161,10 @@ impl PropertyOption {
 
     fn matches(&self, needle: &str) -> bool {
         needle.is_empty()
-            || self.label.to_lowercase().contains(needle)
-            || self
-                .hint
-                .as_ref()
-                .is_some_and(|hint| hint.to_lowercase().contains(needle))
+            || [Some(&self.label), self.hint.as_ref(), self.group.as_ref()]
+                .into_iter()
+                .flatten()
+                .any(|text| text.to_lowercase().contains(needle))
     }
 }
 
@@ -139,6 +174,7 @@ enum Kind {
     Tokens {
         values: Vec<SharedString>,
         empty: SharedString,
+        loose: bool,
     },
 }
 
@@ -151,6 +187,9 @@ pub struct Property {
     options: Vec<PropertyOption>,
     kind: Kind,
     width: f32,
+    creatable: bool,
+    editable: bool,
+    adds: bool,
 }
 
 impl Property {
@@ -169,6 +208,9 @@ impl Property {
             options,
             kind: Kind::Single(value.into()),
             width: PICKER_WIDTH,
+            creatable: false,
+            editable: false,
+            adds: false,
         }
     }
 
@@ -189,9 +231,53 @@ impl Property {
             kind: Kind::Tokens {
                 values,
                 empty: empty.into(),
+                loose: false,
             },
             width: PICKER_WIDTH,
+            creatable: false,
+            editable: false,
+            adds: false,
         }
+    }
+
+    /// Draws a tokens property as `TokenPicker` does: each value its own pill, without the
+    /// group's track and name, and a `+` that adds one of the values not picked yet.
+    pub fn loose(mut self) -> Self {
+        if let Kind::Tokens { loose, .. } = &mut self.kind {
+            *loose = true;
+        }
+        self
+    }
+
+    /// Typed text that matches no option's label becomes a value of its own (`onCreate`,
+    /// `creatable`): the picker ends with a `Create “…”` row while it does.
+    pub fn creatable(mut self) -> Self {
+        self.creatable = true;
+        self
+    }
+
+    /// Each loose token's value is a button that asks the host to edit it (`onEdit`), with
+    /// [`PropertyTokenEvent::Edit`], such as opening a deploy in its Composer.
+    pub fn editable(mut self) -> Self {
+        self.editable = true;
+        self
+    }
+
+    /// The loose tokens' `+` asks the host for a new one (`onAdd`), with
+    /// [`PropertyTokenEvent::Add`], in place of the picker.
+    pub fn adds(mut self) -> Self {
+        self.adds = true;
+        self
+    }
+
+    /// The options not picked yet.
+    fn remaining(&self) -> Vec<PropertyOption> {
+        let picked = self.values();
+        self.options
+            .iter()
+            .filter(|option| !picked.contains(&option.value))
+            .cloned()
+            .collect()
     }
 
     /// The icon on the pill while its option has none.
@@ -248,7 +334,10 @@ pub struct PropertyPicker {
     checked: Option<Vec<SharedString>>,
     width: f32,
     trigger_height: f32,
-    /// Indices into `options`, in order, that match the search.
+    /// Typed text that matches no option can be picked as a value of its own.
+    creatable: bool,
+    /// Indices into `options` that match the search, each group's together in the order the
+    /// groups first appear.
     matched: Vec<usize>,
     active: Option<usize>,
     applied_query: String,
@@ -280,6 +369,7 @@ impl PropertyPicker {
             checked: None,
             width: PICKER_WIDTH,
             trigger_height: 28.0,
+            creatable: false,
             matched: Vec::new(),
             active: None,
             applied_query: String::new(),
@@ -303,6 +393,7 @@ impl PropertyPicker {
         self.options = options;
         self.value = value;
         self.checked = None;
+        self.creatable = false;
         self.width = width;
         let placeholder = format!("Set {}…", self.label.to_lowercase());
         self.input.update(cx, |input, cx| {
@@ -319,6 +410,28 @@ impl PropertyPicker {
     pub fn set_checked(&mut self, checked: Vec<SharedString>, cx: &mut Context<Self>) {
         self.checked = Some(checked);
         cx.notify();
+    }
+
+    /// Ends the options with a `Create “…”` row while the search matches no option's label,
+    /// which picks the typed text. Call after [`Self::set_options`].
+    pub fn set_creatable(&mut self, creatable: bool, cx: &mut Context<Self>) {
+        self.creatable = creatable;
+        cx.notify();
+    }
+
+    /// The text a `Create “…”` row would pick, while it shows.
+    fn created(&self) -> Option<SharedString> {
+        let text = self.applied_query.trim();
+        let taken = self
+            .options
+            .iter()
+            .any(|option| option.label.to_lowercase() == text.to_lowercase());
+        (self.creatable && !text.is_empty() && !taken).then(|| SharedString::from(text.to_string()))
+    }
+
+    /// The matching options, then the create row while it shows.
+    fn row_count(&self) -> usize {
+        self.matched.len() + usize::from(self.created().is_some())
     }
 
     /// The height of the control it hangs from.
@@ -403,22 +516,41 @@ impl PropertyPicker {
         }
         self.applied_query = query;
         self.update_matches();
-        self.active = (!self.matched.is_empty()).then_some(0);
+        self.active = (self.row_count() > 0).then_some(0);
         cx.notify();
     }
 
     fn update_matches(&mut self) {
         let needle = self.applied_query.trim().to_lowercase();
-        self.matched = (0..self.options.len())
+        let found: Vec<usize> = (0..self.options.len())
             .filter(|index| self.options[*index].matches(&needle))
             .collect();
-        if self.active.is_some_and(|row| row >= self.matched.len()) {
-            self.active = (!self.matched.is_empty()).then_some(0);
+        // Rows of one group stay together, in the order the groups first appear.
+        let mut groups: Vec<Option<SharedString>> = Vec::new();
+        for index in &found {
+            let group = &self.options[*index].group;
+            if !groups.contains(group) {
+                groups.push(group.clone());
+            }
+        }
+        self.matched = groups
+            .iter()
+            .flat_map(|group| {
+                found
+                    .iter()
+                    .copied()
+                    .filter(|index| self.options[*index].group == *group)
+                    .collect::<Vec<_>>()
+            })
+            .collect();
+        let rows = self.row_count();
+        if self.active.is_some_and(|row| row >= rows) {
+            self.active = (rows > 0).then_some(0);
         }
     }
 
     fn step(&mut self, step: isize, cx: &mut Context<Self>) {
-        let len = self.matched.len();
+        let len = self.row_count();
         if len == 0 {
             return;
         }
@@ -434,10 +566,14 @@ impl PropertyPicker {
     }
 
     fn choose(&mut self, row: usize, cx: &mut Context<Self>) {
-        let Some(index) = self.matched.get(row) else {
-            return;
+        let value = match self.matched.get(row) {
+            Some(index) => self.options[*index].value.clone(),
+            None if row == self.matched.len() => match self.created() {
+                Some(text) => text,
+                None => return,
+            },
+            None => return,
         };
-        let value = self.options[*index].value.clone();
         if let Some(checked) = self.checked.as_mut() {
             let on = !checked.contains(&value);
             if on {
@@ -533,6 +669,60 @@ impl PropertyPicker {
     }
 }
 
+impl PropertyPicker {
+    /// The `Create “…”` row: the radio's slot left empty, a 12px muted `+` in a 14px slot,
+    /// then the label.
+    fn create_row(
+        &self,
+        row: usize,
+        text: SharedString,
+        theme: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let lit = self.active == Some(row);
+        div()
+            .id(("property-create", row))
+            .w_full()
+            .min_h(px(32.0))
+            .px(px(10.0))
+            .flex()
+            .items_center()
+            .gap(px(8.0))
+            .rounded(px(theme.radius_item))
+            .cursor_pointer()
+            .text_color(if lit {
+                theme.color_text_primary
+            } else {
+                theme.color_text_secondary
+            })
+            .when(lit, |row| row.bg(theme.color_surface_hover))
+            .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+                if *hovered && this.active != Some(row) {
+                    this.active = Some(row);
+                    cx.notify();
+                }
+            }))
+            .on_click(cx.listener(move |this, _, _, cx| this.choose(row, cx)))
+            .child(div().flex_none().size(px(14.0)))
+            .child(
+                div()
+                    .flex_none()
+                    .min_w(px(14.0))
+                    .flex()
+                    .justify_center()
+                    .child(icon_colored(Icon::Plus, 12.0, theme.color_text_muted)),
+            )
+            .child(
+                div()
+                    .flex_1()
+                    .min_w(px(0.0))
+                    .truncate()
+                    .child(format!("Create “{text}”")),
+            )
+            .into_any_element()
+    }
+}
+
 fn single_digit(text: &str) -> Option<usize> {
     let mut chars = text.chars();
     let first = chars.next()?;
@@ -564,16 +754,29 @@ impl Render for PropertyPicker {
         }
         let theme = *Theme::global(cx);
         let t = self.progress.value().clamp(0.0, 1.0);
-        let rows: Vec<AnyElement> = self
-            .matched
-            .clone()
-            .into_iter()
-            .enumerate()
-            .map(|(row, index)| {
-                let option = self.options[index].clone();
-                self.row(row, &option, &theme, window, cx)
-            })
-            .collect();
+        let mut rows: Vec<AnyElement> = Vec::new();
+        let mut group: Option<SharedString> = None;
+        for (row, index) in self.matched.clone().into_iter().enumerate() {
+            let option = self.options[index].clone();
+            if option.group.is_some() && option.group != group {
+                rows.push(
+                    div()
+                        .px(px(10.0))
+                        .pt(px(8.0))
+                        .pb(px(2.0))
+                        .text_size(px(11.0))
+                        .font_weight(gpui::FontWeight::MEDIUM)
+                        .text_color(theme.color_text_muted)
+                        .children(option.group.clone())
+                        .into_any_element(),
+                );
+            }
+            group = option.group.clone();
+            rows.push(self.row(row, &option, &theme, window, cx));
+        }
+        if let Some(text) = self.created() {
+            rows.push(self.create_row(self.matched.len(), text, &theme, cx));
+        }
         let empty = rows.is_empty();
         let list = div()
             .id("property-options")
@@ -637,6 +840,23 @@ pub enum PropertyPillsEvent {
     },
 }
 
+/// What a loose token asks of its host, apart from the values it holds.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum PropertyTokenEvent {
+    /// An [`Property::editable`] token's value was pressed.
+    Edit {
+        id: SharedString,
+        value: SharedString,
+    },
+    /// The `+` of an [`Property::adds`] property was pressed.
+    Add { id: SharedString },
+    /// The ↗ of a token whose option [`PropertyOption::opens`] was pressed.
+    Open {
+        id: SharedString,
+        value: SharedString,
+    },
+}
+
 /// The row of pills and the one picker they share.
 pub struct PropertyPills {
     properties: Vec<Property>,
@@ -649,6 +869,7 @@ pub struct PropertyPills {
 }
 
 impl EventEmitter<PropertyPillsEvent> for PropertyPills {}
+impl EventEmitter<PropertyTokenEvent> for PropertyPills {}
 
 impl PropertyPills {
     pub fn new(cx: &mut Context<Self>) -> Self {
@@ -681,7 +902,11 @@ impl PropertyPills {
             .resize(self.properties.len(), None);
         // An open checkbox picker shows what its property holds now, which its host may
         // have changed in answer to the last toggle.
-        if let Some(Kind::Tokens { values, .. }) = self
+        if let Some(Kind::Tokens {
+            values,
+            loose: false,
+            ..
+        }) = self
             .opened
             .and_then(|index| self.properties.get(index))
             .map(|property| &property.kind)
@@ -748,13 +973,15 @@ impl PropertyPills {
         };
         let (value, checked) = match &property.kind {
             Kind::Single(value) => (Some(value.clone()), None),
+            Kind::Tokens { loose: true, .. } => (None, None),
             Kind::Tokens { values, .. } => (None, Some(values.clone())),
         };
-        let (label, options, width) = (
-            property.label.clone(),
-            property.options.clone(),
-            property.width,
-        );
+        let options = match &property.kind {
+            Kind::Tokens { loose: true, .. } => property.remaining(),
+            _ => property.options.clone(),
+        };
+        let (label, width, creatable) =
+            (property.label.clone(), property.width, property.creatable);
         let height = self
             .anchors
             .borrow()
@@ -765,6 +992,7 @@ impl PropertyPills {
         self.opened = Some(index);
         self.picker.update(cx, |picker, cx| {
             picker.set_options(label, options, value, width, cx);
+            picker.set_creatable(creatable, cx);
             if let Some(checked) = checked {
                 picker.set_checked(checked, cx);
             }
@@ -868,6 +1096,165 @@ fn pill_mark(
     })
 }
 
+/// What a loose token shows and does besides its value and remove.
+struct TokenParts {
+    mark: Option<AnyElement>,
+    label: SharedString,
+    /// Muted after the label, such as a deploy's state.
+    hint: Option<SharedString>,
+    /// The value is a button.
+    edit: Option<crate::Handler>,
+    /// The ↗ segment: its name and what it does.
+    open: Option<(SharedString, crate::Handler)>,
+}
+
+/// A segment of a token that lights on hover (`.pw-filter-pill__remove`, and the value while
+/// it is a button): `fill` and `ink` from its pointer.
+fn token_segment(
+    id: gpui::ElementId,
+    theme: &Theme,
+    window: &mut Window,
+    cx: &mut App,
+) -> (Entity<crate::pointer::PointerState>, f32, f32) {
+    let pointer = use_pointer_timed(id, PointerTiming::item(theme), window, cx);
+    let (fill, ink) = {
+        let state = pointer.read(cx);
+        (state.hover(), state.hover_color())
+    };
+    (pointer, fill, ink)
+}
+
+/// One `TokenPicker` token (`.pw-filter-pill`): the texture pill of the filter bar, 2px of
+/// frame and face around its segments, the value (its 13px mark, the 12px medium label, and
+/// its hint muted, `4px 8px` in, 10px at the start; a button that edits the token where the
+/// property is editable), an ↗ that opens it outside where its option leads there, and
+/// remove (a 12px ×, `0 6px` in, on a subtle rule), each lighting on hover.
+fn token_pill(
+    id: impl Into<gpui::ElementId>,
+    parts: TokenParts,
+    remove: impl Fn(&mut Window, &mut App) + 'static,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let theme = *Theme::global(cx);
+    let id: gpui::ElementId = id.into();
+    let TokenParts {
+        mark,
+        label,
+        hint,
+        edit,
+        open,
+    } = parts;
+    let (pointer, fill, ink) = token_segment(id.clone(), &theme, window, cx);
+    let content = div()
+        .flex()
+        .items_center()
+        .gap(px(5.0))
+        .pl(px(10.0))
+        .pr(px(8.0))
+        .py(px(4.0))
+        .rounded_l(px(TOKEN_RADIUS - 1.0))
+        .children(mark.map(|mark| div().flex_none().child(mark)))
+        .child(label.clone())
+        .children(hint.map(|hint| {
+            div()
+                .flex_none()
+                .font_weight(gpui::FontWeight::NORMAL)
+                .text_color(theme.color_text_muted)
+                .child(hint)
+        }));
+    let value = match edit {
+        Some(edit) => {
+            let selector = format!("{id}-edit");
+            let value_id = gpui::ElementId::Name(selector.clone().into());
+            let (value_pointer, value_fill, _) =
+                token_segment(value_id.clone(), &theme, window, cx);
+            track(
+                content
+                    .id(value_id)
+                    .debug_selector(move || selector.clone())
+                    .cursor_pointer()
+                    .bg(fade(theme.color_surface_hover, value_fill))
+                    .tooltip(tooltip(format!("Edit {label}")))
+                    .on_click(move |_, window, cx| edit(window, cx)),
+                &value_pointer,
+                true,
+            )
+            .into_any_element()
+        }
+        None => content.into_any_element(),
+    };
+    let opener = open.map(|(name, open)| {
+        let selector = format!("{id}-open");
+        let open_id = gpui::ElementId::Name(selector.clone().into());
+        let (open_pointer, open_fill, open_ink) =
+            token_segment(open_id.clone(), &theme, window, cx);
+        track(
+            div()
+                .id(open_id)
+                .debug_selector(move || selector.clone())
+                .flex_none()
+                .flex()
+                .items_center()
+                .justify_center()
+                .px(px(6.0))
+                .border_l_1()
+                .border_color(theme.color_border_subtle)
+                .bg(fade(theme.color_surface_hover, open_fill))
+                .cursor_pointer()
+                .tooltip(tooltip(name))
+                .child(icon_colored(
+                    Icon::ArrowUpRight01Icon,
+                    12.0,
+                    mix(theme.color_text_muted, theme.color_text_primary, open_ink),
+                ))
+                .on_click(move |_, window, cx| open(window, cx)),
+            &open_pointer,
+            true,
+        )
+    });
+    div()
+        .relative()
+        .flex_none()
+        .flex()
+        .p(px(2.0))
+        .rounded(px(TOKEN_RADIUS))
+        .bg(face(theme.face_neutral.top, theme.face_neutral.bottom))
+        .shadow(material::control_drop(&theme))
+        .text_size(px(12.0))
+        .line_height(px(14.4))
+        .font_weight(gpui::FontWeight::MEDIUM)
+        .text_color(theme.color_text_primary)
+        .whitespace_nowrap()
+        .child(value)
+        .children(opener)
+        .child(track(
+            div()
+                .id(id)
+                .flex_none()
+                .flex()
+                .items_center()
+                .justify_center()
+                .px(px(6.0))
+                .border_l_1()
+                .border_color(theme.color_border_subtle)
+                .rounded_r(px(TOKEN_RADIUS - 1.0))
+                .bg(fade(theme.color_surface_hover, fill))
+                .cursor_pointer()
+                .tooltip(tooltip(format!("Remove {label}")))
+                .child(icon_colored(
+                    Icon::X,
+                    12.0,
+                    mix(theme.color_text_muted, theme.color_text_primary, ink),
+                ))
+                .on_click(move |_, window, cx| remove(window, cx)),
+            &pointer,
+            true,
+        ))
+        .child(material::edge(Edge::Strong, TOKEN_RADIUS, &theme))
+        .into_any_element()
+}
+
 impl Render for PropertyPills {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let theme = *Theme::global(cx);
@@ -906,7 +1293,99 @@ impl Render for PropertyPills {
                     }
                     row = row.child(self.anchored(index, pill));
                 }
-                Kind::Tokens { values, empty } => {
+                Kind::Tokens {
+                    values,
+                    empty,
+                    loose: true,
+                } => {
+                    for (slot, value) in values.iter().enumerate() {
+                        let option = property.option(value);
+                        let label = option.map_or(value.clone(), |option| option.label.clone());
+                        let remove = {
+                            let view = view.clone();
+                            let value = value.clone();
+                            move |_: &mut Window, cx: &mut App| {
+                                if let Some(view) = view.upgrade() {
+                                    view.update(cx, |this, cx| this.remove(index, &value, cx));
+                                }
+                            }
+                        };
+                        let mark = pill_mark(option, window, cx).or_else(|| {
+                            option.and_then(|option| option.icon).map(|name| {
+                                icon_colored(name, 13.0, theme.color_text_muted).into_any_element()
+                            })
+                        });
+                        let ask = |event: PropertyTokenEvent| -> crate::Handler {
+                            let view = view.clone();
+                            Rc::new(move |_, cx| {
+                                if let Some(view) = view.upgrade() {
+                                    view.update(cx, |_, cx| cx.emit(event.clone()));
+                                }
+                            })
+                        };
+                        let parts = TokenParts {
+                            mark,
+                            label,
+                            hint: option.and_then(|option| option.hint.clone()),
+                            edit: property.editable.then(|| {
+                                ask(PropertyTokenEvent::Edit {
+                                    id: property.id.clone(),
+                                    value: value.clone(),
+                                })
+                            }),
+                            open: option.and_then(|option| option.opens.clone()).map(|name| {
+                                let open = ask(PropertyTokenEvent::Open {
+                                    id: property.id.clone(),
+                                    value: value.clone(),
+                                });
+                                (name, open)
+                            }),
+                        };
+                        row = row.child(token_pill(
+                            ("property-token", index * 1000 + slot),
+                            parts,
+                            remove,
+                            window,
+                            cx,
+                        ));
+                    }
+                    let remaining =
+                        !property.remaining().is_empty() || property.creatable || property.adds;
+                    if values.is_empty() || remaining {
+                        let toggle: crate::Handler = if property.adds {
+                            let view = view.clone();
+                            let id = property.id.clone();
+                            Rc::new(move |_, cx| {
+                                if let Some(view) = view.upgrade() {
+                                    let id = id.clone();
+                                    view.update(cx, |_, cx| {
+                                        cx.emit(PropertyTokenEvent::Add { id })
+                                    });
+                                }
+                            })
+                        } else {
+                            Rc::new(toggle)
+                        };
+                        let mut add = Button::new(("property-add", index), ButtonKind::Secondary)
+                            .on_click(move |window, cx| toggle(window, cx));
+                        add = if values.is_empty() {
+                            let add = add
+                                .size(ButtonSize::Sm)
+                                .radius(ADD_RADIUS)
+                                .label(empty.clone());
+                            match property.icon {
+                                Some(name) => add.icon(name),
+                                None => add,
+                            }
+                        } else {
+                            add.size(ButtonSize::Icon)
+                                .icon(Icon::Plus)
+                                .tooltip(format!("Add {}", property.label.to_lowercase()))
+                        };
+                        row = row.child(self.anchored(index, add.disabled(!remaining)));
+                    }
+                }
+                Kind::Tokens { values, empty, .. } => {
                     // One group per property, as `ActiveFilterBar`'s track holds its pills:
                     // the property's icon and name, its values as pills that remove them, then
                     // `+`, so two lists of the same options read apart.
@@ -1005,7 +1484,7 @@ mod tests {
 
     use super::{
         Property, PropertyOption, PropertyPicker, PropertyPickerEvent, PropertyPills,
-        PropertyPillsEvent,
+        PropertyPillsEvent, PropertyTokenEvent,
     };
 
     fn tiers() -> Vec<PropertyOption> {
@@ -1160,6 +1639,108 @@ mod tests {
                 PropertyPillsEvent::Changed {
                     id: "prefer".into(),
                     values: vec![]
+                },
+            ]
+        );
+    }
+
+    #[gpui::test]
+    fn groups_keep_together_and_a_new_name_can_be_created(cx: &mut TestAppContext) {
+        cx.update(crate::init);
+        let (view, cx) = cx.add_window_view(|_, cx| PropertyPicker::new(cx));
+        let seen = events(&view, cx);
+        view.update_in(cx, |this, window, cx| {
+            let options = vec![
+                PropertyOption::new("none", "None"),
+                PropertyOption::new("web", "web").group("Account"),
+                PropertyOption::new("api", "api").group("In this repository"),
+                PropertyOption::new("docs", "docs").group("Account"),
+            ];
+            this.set_options("Target", options, None, 320.0, cx);
+            this.set_creatable(true, cx);
+            this.open(window, cx);
+            let order: Vec<&str> = this
+                .matched
+                .iter()
+                .map(|index| this.options[*index].value.as_ref())
+                .collect();
+            assert_eq!(order, ["none", "web", "docs", "api"]);
+            assert_eq!(
+                this.row_count(),
+                4,
+                "no create row while the search is empty"
+            );
+            // An option's label, whatever its case, is not created again.
+            this.set_query("API", cx);
+            assert_eq!(this.row_count(), 1);
+            this.set_query("worker", cx);
+            assert_eq!(this.matched.len(), 0);
+            assert_eq!(this.row_count(), 1);
+            this.confirm(cx);
+        });
+        assert_eq!(
+            seen.borrow().as_slice(),
+            [
+                PropertyPickerEvent::Pick("worker".into()),
+                PropertyPickerEvent::Close
+            ]
+        );
+    }
+
+    #[gpui::test]
+    fn tokens_ask_to_edit_add_and_open(cx: &mut TestAppContext) {
+        cx.update(crate::init);
+        let (view, cx) = cx.add_window_view(|_, cx| PropertyPills::new(cx));
+        let seen: Rc<RefCell<Vec<PropertyTokenEvent>>> = Rc::default();
+        let sink = seen.clone();
+        cx.update(|_, cx| {
+            cx.subscribe(&view, move |_, event: &PropertyTokenEvent, _| {
+                sink.borrow_mut().push(event.clone());
+            })
+            .detach();
+        });
+        view.update(cx, |this, cx| {
+            let deploys =
+                vec![PropertyOption::new("0", "Vercel · Production").opens("Open in Vercel")];
+            this.set_properties(
+                vec![
+                    Property::tokens(
+                        "deploys",
+                        "Deploys",
+                        deploys,
+                        vec!["0".into()],
+                        "Where it runs",
+                    )
+                    .loose()
+                    .editable()
+                    .adds(),
+                ],
+                cx,
+            );
+        });
+        cx.run_until_parked();
+        let click = |cx: &mut VisualTestContext, selector: &'static str| {
+            let bounds = cx
+                .debug_bounds(selector)
+                .unwrap_or_else(|| panic!("{selector} is drawn"));
+            cx.simulate_click(bounds.center(), gpui::Modifiers::none());
+        };
+        click(cx, "property-token-0-edit");
+        click(cx, "property-token-0-open");
+        click(cx, "property-add-0");
+        assert_eq!(
+            seen.borrow().as_slice(),
+            [
+                PropertyTokenEvent::Edit {
+                    id: "deploys".into(),
+                    value: "0".into()
+                },
+                PropertyTokenEvent::Open {
+                    id: "deploys".into(),
+                    value: "0".into()
+                },
+                PropertyTokenEvent::Add {
+                    id: "deploys".into()
                 },
             ]
         );

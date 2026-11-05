@@ -17,6 +17,20 @@
 //! and the field grows to its lines. It is still one line of text: Enter submits and no
 //! newline is typed or pasted. The caret, the selection, a click or a drag, Home and End, and
 //! Up and Down move over the visual lines; the placeholder wraps too.
+//!
+//! [`TextInput::multiline`] is the `<textarea>` itself, as gpui-kit's multi-line `Input` is:
+//! a field that wraps and keeps hard line breaks. Enter and pasted newlines go into the text,
+//! each line of it a paragraph that wraps on its own, and only what holds the field submits
+//! it (the Composer's Cmd+Enter). [`TextInput::chat`] is the chat box's: the same field, but
+//! Enter submits and Shift+Enter types the newline.
+//!
+//! A field can drive a menu that hangs from it, as Tiptap's slash menu does from the editor:
+//! [`TextInput::on_menu_key`] sees Up, Down, Enter, Tab, and Escape before the field does and
+//! keeps the ones it answers. [`TextInput::selection`], [`TextInput::select`], and
+//! [`TextInput::range_bounds`] give what holds the field its selection and where a range was
+//! drawn, [`TextInput::set_highlight`] marks a range (the slash query's
+//! `--color-surface-selected`), and [`TextInput::mono`] sets the field in the mono face, as a
+//! code block's.
 
 use std::ops::Range;
 use std::rc::Rc;
@@ -61,6 +75,7 @@ actions!(
         Cut,
         Copy,
         Submit,
+        Newline,
         Cancel,
         WordLeft,
         WordRight,
@@ -78,6 +93,7 @@ actions!(
         Down,
         SelectUp,
         SelectDown,
+        MenuTab,
     ]
 );
 
@@ -100,6 +116,7 @@ pub fn register_key_bindings(cx: &mut App) {
         KeyBinding::new("end", End, Some("TextInput")),
         KeyBinding::new("ctrl-cmd-space", ShowCharacterPalette, Some("TextInput")),
         KeyBinding::new("enter", Submit, Some("TextInput")),
+        KeyBinding::new("shift-enter", Newline, Some("TextInput")),
         KeyBinding::new("escape", Cancel, Some("TextInput")),
         KeyBinding::new("alt-left", WordLeft, Some("TextInput")),
         KeyBinding::new("alt-right", WordRight, Some("TextInput")),
@@ -123,6 +140,8 @@ pub fn register_key_bindings(cx: &mut App) {
         KeyBinding::new("down", Down, Some(WRAPPED_CONTEXT)),
         KeyBinding::new("shift-up", SelectUp, Some(WRAPPED_CONTEXT)),
         KeyBinding::new("shift-down", SelectDown, Some(WRAPPED_CONTEXT)),
+        // Tab picks a menu's row only in a field that drives one; elsewhere it moves focus.
+        KeyBinding::new("tab", MenuTab, Some("TextInput && menu")),
     ]);
 }
 
@@ -130,6 +149,18 @@ pub fn register_key_bindings(cx: &mut App) {
 const WRAPPED_CONTEXT: &str = "TextInput && wrapped";
 
 type TextCallback = Rc<dyn Fn(&str, &mut Window, &mut App)>;
+type MenuKeyCallback = Rc<dyn Fn(MenuKey, &mut Window, &mut App) -> bool>;
+
+/// A key a menu that hangs from the field may answer before the field does: see
+/// [`TextInput::on_menu_key`].
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MenuKey {
+    Up,
+    Down,
+    Enter,
+    Tab,
+    Escape,
+}
 
 /// The text and selection before an edit.
 #[derive(Clone)]
@@ -160,10 +191,16 @@ pub struct TextInput {
     password: bool,
     size: FieldSize,
     pill: bool,
+    /// A corner radius in place of the round ends.
+    radius: Option<f32>,
     bare: bool,
     title: bool,
     /// Soft-wraps the text at the field's width: see [`Self::wrap`].
     wrap: bool,
+    /// Keeps hard line breaks: see [`Self::multiline`].
+    multiline: bool,
+    /// Enter submits a multi-line field and Shift+Enter breaks the line: see [`Self::chat`].
+    chat: bool,
     /// The visual lines of the last paint of a field that wraps.
     wrapped: Option<WrapLayout>,
     /// A caret on the break between two visual lines is drawn at the start of the lower one,
@@ -174,8 +211,18 @@ pub struct TextInput {
     goal_x: Option<Pixels>,
     /// A bare field's text size and line height, and its ink, when not the defaults.
     quiet: Option<(f32, f32)>,
+    /// Secondary ink in place of primary, for prose set in it such as a summary.
+    secondary: bool,
+    /// A bare field set in the text it edits: its size, line height, and weight, in primary
+    /// ink. See [`Self::prose`].
+    prose: Option<(f32, f32, gpui::FontWeight)>,
     on_submit: Option<TextCallback>,
     on_cancel: Option<CancelCallback>,
+    on_menu_key: Option<MenuKeyCallback>,
+    /// Set in the mono face: see [`Self::mono`].
+    mono: bool,
+    /// A range marked with the selected surface: see [`Self::set_highlight`].
+    highlight: Option<Range<usize>>,
     undo: Vec<Snapshot>,
     redo: Vec<Snapshot>,
     /// The last edit and where the caret was after it; `None` starts a new undo step.
@@ -197,15 +244,23 @@ impl TextInput {
             password: false,
             size: FieldSize::Sm,
             pill: false,
+            radius: None,
             bare: false,
             title: false,
             wrap: false,
+            multiline: false,
+            chat: false,
             wrapped: None,
             upstream_at: None,
             goal_x: None,
             quiet: None,
+            secondary: false,
+            prose: None,
             on_submit: None,
             on_cancel: None,
+            on_menu_key: None,
+            mono: false,
+            highlight: None,
             undo: Vec::new(),
             redo: Vec::new(),
             last_edit: None,
@@ -226,6 +281,13 @@ impl TextInput {
     /// as they did.
     pub fn pill(mut self) -> Self {
         self.pill = true;
+        self
+    }
+
+    /// A corner radius in place of the round ends, for an app whose fields keep the web's
+    /// (`.pw-field-control.control-field-sm`'s 6px).
+    pub fn radius(mut self, radius: f32) -> Self {
+        self.radius = Some(radius);
         self
     }
 
@@ -256,6 +318,22 @@ impl TextInput {
         self
     }
 
+    /// A bare field in the type of the text it edits in place, such as a document's 24px
+    /// title or a Markdown block's 15px prose: that size, line height, and weight, in primary
+    /// ink. Pair it with [`Self::wrap`] for text that runs over lines.
+    pub fn prose(mut self, size: f32, line_height: f32, weight: gpui::FontWeight) -> Self {
+        self.bare = true;
+        self.prose = Some((size, line_height, weight));
+        self
+    }
+
+    /// The text in secondary ink (`--color-text-secondary`), as a document's summary is set.
+    /// Pair it with [`Self::prose`].
+    pub fn secondary(mut self) -> Self {
+        self.secondary = true;
+        self
+    }
+
     /// Soft-wraps the text (and the placeholder) at the field's width, and the field grows to
     /// its lines, as a `<textarea>` that sizes to its text does. Pair it with
     /// [`Self::inline`] or [`Self::description`] for the Composer's fields. Enter still
@@ -264,6 +342,33 @@ impl TextInput {
     pub fn wrap(mut self) -> Self {
         self.wrap = true;
         self
+    }
+
+    /// A `<textarea>`: [`Self::wrap`] with hard line breaks, as the Composer's description
+    /// (`rows={3}`) takes them. Enter types a newline and a paste keeps its lines; the field
+    /// grows to its lines and submits only through what holds it.
+    pub fn multiline(mut self) -> Self {
+        self.wrap = true;
+        self.multiline = true;
+        self
+    }
+
+    /// A chat box's field: [`Self::multiline`], but Enter submits through
+    /// [`Self::on_submit`] and Shift+Enter types the newline, as a chat app's composer does.
+    pub fn chat(mut self) -> Self {
+        self.wrap = true;
+        self.multiline = true;
+        self.chat = true;
+        self
+    }
+
+    /// `text` as this field holds it: one line, or its lines with every break a `\n`.
+    fn clean(&self, text: &str) -> String {
+        if self.multiline {
+            text.replace("\r\n", "\n").replace('\r', "\n")
+        } else {
+            single_line(text)
+        }
     }
 
     pub fn set_placeholder(&mut self, placeholder: impl Into<SharedString>) {
@@ -285,6 +390,163 @@ impl TextInput {
         self
     }
 
+    /// Hands Up, Down, Enter, Tab, and Escape to a menu that hangs from the field before the
+    /// field moves, submits, or cancels: a key the callback answers `true` to stops there,
+    /// as Tiptap's `handleKeyDown` keeps the slash menu's keys. Tab is the field's only while
+    /// the callback is set. The callback runs inside the field's update, so it must not read
+    /// the field; work that does is deferred (`Window::defer`).
+    pub fn on_menu_key(
+        mut self,
+        callback: impl Fn(MenuKey, &mut Window, &mut App) -> bool + 'static,
+    ) -> Self {
+        self.on_menu_key = Some(Rc::new(callback));
+        self
+    }
+
+    /// The field in the mono face (`--font-mono`), as a code block's text is set.
+    pub fn mono(mut self) -> Self {
+        self.mono = true;
+        self
+    }
+
+    /// The selected bytes; empty at the caret.
+    pub fn selection(&self) -> Range<usize> {
+        self.selected_range.clone()
+    }
+
+    /// Where the caret is: the selection's moving end.
+    pub fn cursor(&self) -> usize {
+        self.cursor_offset()
+    }
+
+    /// Selects `range` (clamped to the text), the caret at its end.
+    pub fn select(&mut self, range: Range<usize>, cx: &mut Context<Self>) {
+        let range = clamp_range(&self.content, range);
+        let start = self.next_boundary_at(range.start);
+        let end = self.next_boundary_at(range.end).max(start);
+        self.selected_range = start..end;
+        self.selection_reversed = false;
+        self.forget_caret_hints();
+        cx.notify();
+    }
+
+    /// Replaces the text with `text` and selects `selection` in it, as one edit that Undo
+    /// takes back, as a toolbar's Bold does to the text it marks.
+    pub fn edit(
+        &mut self,
+        text: impl Into<String>,
+        selection: Range<usize>,
+        cx: &mut Context<Self>,
+    ) {
+        let text = self.clean(&text.into());
+        if text != self.content.as_ref() {
+            self.last_edit = None;
+            self.record(EditKind::Other, &(0..self.content.len()));
+            self.content = SharedString::from(text);
+            self.marked_range = None;
+        }
+        self.select(selection, cx);
+    }
+
+    /// Sets the field in another type, as a block edited in place is when it turns into a
+    /// heading: see [`Self::prose`].
+    pub fn set_prose(
+        &mut self,
+        size: f32,
+        line_height: f32,
+        weight: gpui::FontWeight,
+        cx: &mut Context<Self>,
+    ) {
+        if self.prose != Some((size, line_height, weight)) {
+            self.bare = true;
+            self.prose = Some((size, line_height, weight));
+            cx.notify();
+        }
+    }
+
+    /// Where the text was drawn in the last frame, in window coordinates.
+    pub fn bounds(&self) -> Option<Bounds<Pixels>> {
+        self.last_bounds
+    }
+
+    /// `offset`, or the next character boundary when it falls inside a character.
+    fn next_boundary_at(&self, offset: usize) -> usize {
+        let mut offset = offset.min(self.content.len());
+        while !self.content.is_char_boundary(offset) {
+            offset += 1;
+        }
+        offset
+    }
+
+    /// Marks `range` of the text with the selected surface behind it, as the slash menu's
+    /// `::highlight(pw-md-slash)` marks the query; `None` clears it.
+    pub fn set_highlight(&mut self, range: Option<Range<usize>>, cx: &mut Context<Self>) {
+        let range = range.filter(|range| !range.is_empty());
+        if self.highlight != range {
+            self.highlight = range;
+            cx.notify();
+        }
+    }
+
+    /// Where `range` was drawn in the last frame, in window coordinates: the box around the
+    /// visual lines it covers, or, for an empty range, the caret's line at no width. `None`
+    /// before the field is drawn.
+    pub fn range_bounds(&self, range: Range<usize>) -> Option<Bounds<Pixels>> {
+        let bounds = self.last_bounds?;
+        let range = clamp_range(&self.content, range);
+        if !self.wrap {
+            let line = self.last_layout.as_ref()?;
+            let start = line.x_for_index(self.display_offset_for_content(range.start));
+            let end = line.x_for_index(self.display_offset_for_content(range.end));
+            return Some(Bounds::from_corners(
+                point(bounds.left() + start, bounds.top()),
+                point(bounds.left() + end, bounds.bottom()),
+            ));
+        }
+        let wrapped = self.wrapped.as_ref()?;
+        let line_height = wrapped.line_height;
+        if self.content.is_empty() {
+            return Some(Bounds::new(bounds.origin, size(px(0.0), line_height)));
+        }
+        let start = self.display_offset_for_content(range.start);
+        let end = self.display_offset_for_content(range.end);
+        if start == end {
+            let upstream = self.upstream_at == Some(range.start);
+            let caret = wrapped.point_for_index(start, upstream);
+            return Some(Bounds::new(
+                bounds.origin + caret,
+                size(px(0.0), line_height),
+            ));
+        }
+        let mut covered: Option<Bounds<Pixels>> = None;
+        for (ix, line) in wrapped.lines.iter().enumerate() {
+            let from = start.max(line.start);
+            let to = end.min(line.end);
+            if from > to || (from == to && line.start < line.end) {
+                continue;
+            }
+            let top = bounds.top() + line_height * ix as f32;
+            let rect = Bounds::from_corners(
+                point(bounds.left() + wrapped.x_in_line(ix, from), top),
+                point(bounds.left() + wrapped.x_in_line(ix, to), top + line_height),
+            );
+            covered = Some(covered.map_or(rect, |covered| covered.union(&rect)));
+        }
+        covered
+    }
+
+    /// Whether a menu that hangs from the field answered `key`.
+    fn menu_key(&self, key: MenuKey, window: &mut Window, cx: &mut Context<Self>) -> bool {
+        let callback = self.on_menu_key.clone();
+        callback.is_some_and(|callback| callback(key, window, cx))
+    }
+
+    fn menu_tab(&mut self, _: &MenuTab, window: &mut Window, cx: &mut Context<Self>) {
+        if !self.menu_key(MenuKey::Tab, window, cx) {
+            cx.propagate();
+        }
+    }
+
     pub fn text(&self) -> &str {
         self.content.as_ref()
     }
@@ -292,7 +554,7 @@ impl TextInput {
     /// Replaces the text, with the caret at its end. It starts a new history: undo does not
     /// go back past it.
     pub fn set_text(&mut self, text: impl Into<String>, cx: &mut Context<Self>) {
-        let cleaned = single_line(&text.into());
+        let cleaned = self.clean(&text.into());
         self.undo.clear();
         self.redo.clear();
         self.last_edit = None;
@@ -305,13 +567,38 @@ impl TextInput {
     }
 
     fn submit(&mut self, _: &Submit, window: &mut Window, cx: &mut Context<Self>) {
+        if self.menu_key(MenuKey::Enter, window, cx) {
+            return;
+        }
+        if self.multiline && !self.chat {
+            self.type_newline(window, cx);
+            return;
+        }
         if let Some(callback) = self.on_submit.clone() {
             let text = self.content.to_string();
             callback(&text, window, cx);
         }
     }
 
+    /// Shift+Enter: a newline where the field keeps them, else Enter's submit.
+    fn newline(&mut self, _: &Newline, window: &mut Window, cx: &mut Context<Self>) {
+        if self.multiline {
+            self.type_newline(window, cx);
+        } else {
+            self.submit(&Submit, window, cx);
+        }
+    }
+
+    fn type_newline(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.last_edit = None;
+        self.replace_text_in_range(None, "\n", window, cx);
+        self.last_edit = Some((EditKind::Other, self.cursor_offset()));
+    }
+
     fn cancel(&mut self, _: &Cancel, window: &mut Window, cx: &mut Context<Self>) {
+        if self.menu_key(MenuKey::Escape, window, cx) {
+            return;
+        }
         match self.on_cancel.clone() {
             Some(callback) => callback(window, cx),
             // With nothing to cancel, Escape goes on to close what holds the field.
@@ -506,12 +793,16 @@ impl TextInput {
         self.upstream_at = upstream.then_some(offset);
     }
 
-    fn up(&mut self, _: &Up, _: &mut Window, cx: &mut Context<Self>) {
-        self.move_vertically(true, false, cx);
+    fn up(&mut self, _: &Up, window: &mut Window, cx: &mut Context<Self>) {
+        if !self.menu_key(MenuKey::Up, window, cx) {
+            self.move_vertically(true, false, cx);
+        }
     }
 
-    fn down(&mut self, _: &Down, _: &mut Window, cx: &mut Context<Self>) {
-        self.move_vertically(false, false, cx);
+    fn down(&mut self, _: &Down, window: &mut Window, cx: &mut Context<Self>) {
+        if !self.menu_key(MenuKey::Down, window, cx) {
+            self.move_vertically(false, false, cx);
+        }
     }
 
     fn select_up(&mut self, _: &SelectUp, _: &mut Window, cx: &mut Context<Self>) {
@@ -574,7 +865,7 @@ impl TextInput {
     fn line_end(&self, offset: usize) -> (usize, bool) {
         match self.visual_line(offset) {
             Some((wrapped, line)) => {
-                let (end, upstream) = line_end_caret(&wrapped.lines, line);
+                let (end, upstream) = wrapped.line_end(line);
                 (self.wrapped_content_offset(end), upstream)
             }
             None => (self.content.len(), false),
@@ -643,7 +934,8 @@ impl TextInput {
     fn paste(&mut self, _: &Paste, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(text) = cx.read_from_clipboard().and_then(|item| item.text()) {
             self.last_edit = None;
-            self.replace_text_in_range(None, &single_line(&text), window, cx);
+            let text = self.clean(&text);
+            self.replace_text_in_range(None, &text, window, cx);
             self.last_edit = Some((EditKind::Other, self.cursor_offset()));
         }
     }
@@ -877,7 +1169,7 @@ impl EntityInputHandler for TextInput {
         _: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let new_text = single_line(new_text);
+        let new_text = self.clean(new_text);
         let range = range_utf16
             .as_ref()
             .map(|range_utf16| self.range_from_utf16(range_utf16))
@@ -913,7 +1205,7 @@ impl EntityInputHandler for TextInput {
         _window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let new_text = single_line(new_text);
+        let new_text = self.clean(new_text);
         let range = range_utf16
             .as_ref()
             .map(|range_utf16| self.range_from_utf16(range_utf16))
@@ -1081,42 +1373,83 @@ fn clamp_to_line(lines: &[Range<usize>], line: usize, index: usize) -> (usize, b
 
 /// A wrapped field as it was last drawn: its text shaped to its width, and the visual lines.
 struct WrapLayout {
-    /// `None` when gpui shaped nothing, as it may for no text.
-    line: Option<WrappedLine>,
-    /// The range of the shown text each visual line holds: see [`lines_from_breaks`].
+    /// Each paragraph (the text between two newlines, all of it in a field without any)
+    /// shaped, and the offset it starts at; none when gpui shaped nothing, as it may for no
+    /// text.
+    paragraphs: Vec<(usize, WrappedLine)>,
+    /// The range of the shown text each visual line holds: see [`lines_from_breaks`]. A
+    /// paragraph's last line holds the newline after it, so the lines still meet end to start.
     lines: Vec<Range<usize>>,
+    /// Whether each line ends at a newline, where the caret goes before it rather than on the
+    /// next line's start.
+    hard: Vec<bool>,
+    /// The paragraph each line belongs to.
+    owner: Vec<usize>,
     line_height: Pixels,
 }
 
 impl WrapLayout {
-    fn new(line: Option<WrappedLine>, text_len: usize, line_height: Pixels) -> Self {
-        let breaks: Vec<usize> = line
-            .as_ref()
-            .map(|line| {
-                line.wrap_boundaries
-                    .iter()
-                    .filter_map(|boundary| {
-                        let run = line.unwrapped_layout.runs.get(boundary.run_ix)?;
-                        Some(run.glyphs.get(boundary.glyph_ix)?.index)
-                    })
-                    .collect()
-            })
-            .unwrap_or_default();
-        Self {
-            line,
-            lines: lines_from_breaks(&breaks, text_len),
+    /// `paragraphs` are `text`'s lines as gpui shaped them, one per newline-separated part.
+    fn new(paragraphs: Vec<WrappedLine>, text: &str, line_height: Pixels) -> Self {
+        let mut layout = Self {
+            paragraphs: Vec::with_capacity(paragraphs.len()),
+            lines: Vec::new(),
+            hard: Vec::new(),
+            owner: Vec::new(),
             line_height,
+        };
+        let count = paragraphs.len();
+        let mut start = 0;
+        for (index, (shaped, part)) in paragraphs.into_iter().zip(text.split('\n')).enumerate() {
+            let breaks: Vec<usize> = shaped
+                .wrap_boundaries
+                .iter()
+                .filter_map(|boundary| {
+                    let run = shaped.unwrapped_layout.runs.get(boundary.run_ix)?;
+                    Some(run.glyphs.get(boundary.glyph_ix)?.index)
+                })
+                .collect();
+            let mut lines = lines_from_breaks(&breaks, part.len());
+            let last = index + 1 < count;
+            if last && let Some(line) = lines.last_mut() {
+                // The newline closes the paragraph's last line.
+                line.end += 1;
+            }
+            let lines_here = lines.len();
+            layout.lines.extend(
+                lines
+                    .into_iter()
+                    .map(|line| line.start + start..line.end + start),
+            );
+            layout
+                .hard
+                .extend((0..lines_here).map(|ix| last && ix + 1 == lines_here));
+            layout.owner.extend(std::iter::repeat_n(index, lines_here));
+            layout.paragraphs.push((start, shaped));
+            start += part.len() + 1;
         }
+        if layout.lines.is_empty() {
+            layout.lines = lines_from_breaks(&[], text.len());
+            layout.hard = vec![false];
+            layout.owner = vec![0];
+        }
+        layout
+    }
+
+    /// The x of `index` in `paragraph` (an offset into the whole text), from its line's start.
+    fn x_at(shaped: &WrappedLine, start: usize, index: usize) -> Pixels {
+        let layout = &shaped.unwrapped_layout;
+        layout.x_for_index(index.saturating_sub(start).min(layout.len))
     }
 
     /// The x of `index` from the left edge of `line`, which `index` is clamped onto.
     fn x_in_line(&self, line: usize, index: usize) -> Pixels {
-        let Some(shaped) = self.line.as_ref() else {
+        let Some((start, shaped)) = self.paragraphs.get(self.owner[line]) else {
             return px(0.0);
         };
         let range = &self.lines[line];
-        let layout = &shaped.unwrapped_layout;
-        layout.x_for_index(index.clamp(range.start, range.end)) - layout.x_for_index(range.start)
+        Self::x_at(shaped, *start, index.clamp(range.start, range.end))
+            - Self::x_at(shaped, *start, range.start)
     }
 
     /// Where the caret at `index` is drawn, from the top left of the text.
@@ -1125,14 +1458,30 @@ impl WrapLayout {
         point(self.x_in_line(line, index), self.line_height * line as f32)
     }
 
+    /// Where End lands on `line`, and whether the caret there stays on `line`: before the
+    /// newline that ends a paragraph, else as [`line_end_caret`] puts it.
+    fn line_end(&self, line: usize) -> (usize, bool) {
+        if self.hard[line] {
+            (self.lines[line].end - 1, false)
+        } else {
+            line_end_caret(&self.lines, line)
+        }
+    }
+
     /// The offset nearest `x` on `line`, and whether the caret there stays on `line`.
     fn index_in_line(&self, line: usize, x: Pixels) -> (usize, bool) {
-        let Some(shaped) = self.line.as_ref() else {
+        let Some((start, shaped)) = self.paragraphs.get(self.owner[line]) else {
             return (self.lines[line].start, false);
         };
+        let range = &self.lines[line];
         let layout = &shaped.unwrapped_layout;
-        let closest = layout.closest_index_for_x(layout.x_for_index(self.lines[line].start) + x);
-        clamp_to_line(&self.lines, line, closest)
+        let closest =
+            start + layout.closest_index_for_x(Self::x_at(shaped, *start, range.start) + x);
+        if self.hard[line] {
+            (closest.clamp(range.start, range.end - 1), false)
+        } else {
+            clamp_to_line(&self.lines, line, closest)
+        }
     }
 
     /// The offset nearest `point`, from the top left of the text, and whether the caret there
@@ -1156,68 +1505,87 @@ struct Shaping {
 }
 
 impl Shaping {
-    /// The text wrapped at `width` (none: not wrapped). gpui splits a text at newlines and a
-    /// field's has none, so there is one line, or none for no text.
-    fn wrapped(&self, width: Option<Pixels>, window: &Window) -> Option<WrappedLine> {
+    /// The text wrapped at `width` (none: not wrapped): a paragraph for each part between
+    /// newlines (one in a field that keeps none), or none for no text.
+    fn wrapped(&self, width: Option<Pixels>, window: &Window) -> Vec<WrappedLine> {
         window
             .text_system()
             .shape_text(self.text.clone(), self.font_size, &self.runs, width, None)
-            .ok()?
-            .into_iter()
-            .next()
+            .map(|lines| lines.into_vec())
+            .unwrap_or_default()
     }
 
-    /// The height of `line`'s visual lines, and at least one.
-    fn height(&self, line: Option<&WrappedLine>) -> Pixels {
-        line.map_or(self.line_height, |line| {
-            line.size(self.line_height).height.max(self.line_height)
-        })
+    /// The height of the paragraphs' visual lines, and at least one.
+    fn height(&self, paragraphs: &[WrappedLine]) -> Pixels {
+        let height = paragraphs
+            .iter()
+            .map(|line| line.size(self.line_height).height)
+            .fold(px(0.0), |total, height| total + height);
+        height.max(self.line_height)
+    }
+
+    /// The widest of the paragraphs.
+    fn width(&self, paragraphs: &[WrappedLine]) -> Pixels {
+        paragraphs
+            .iter()
+            .map(|line| line.size(self.line_height).width)
+            .fold(px(0.0), Pixels::max)
     }
 }
 
 /// The runs that style `len` bytes of text in `color`, the `marked` range of a composition
-/// underlined.
+/// underlined and the `highlight` range on its fill.
 fn text_runs(
     len: usize,
     style: &TextStyle,
     color: Hsla,
     marked: Option<Range<usize>>,
+    highlight: Option<(Range<usize>, Hsla)>,
 ) -> Vec<TextRun> {
-    let run = TextRun {
+    let mut runs = vec![TextRun {
         len,
         font: style.font(),
         color,
         background_color: None,
         underline: None,
         strikethrough: None,
-    };
-    let Some(marked) = marked else {
-        return vec![run];
-    };
-    let end = marked.end.min(len);
-    let start = marked.start.min(end);
-    vec![
-        TextRun {
-            len: start,
-            ..run.clone()
-        },
-        TextRun {
-            len: end - start,
-            underline: Some(UnderlineStyle {
+    }];
+    if let Some(marked) = marked {
+        runs = restyle(runs, marked, |run| {
+            run.underline = Some(UnderlineStyle {
                 color: Some(run.color),
                 thickness: px(1.0),
                 wavy: false,
-            }),
-            ..run.clone()
-        },
-        TextRun {
-            len: len.saturating_sub(end),
-            ..run
-        },
-    ]
-    .into_iter()
-    .filter(|run| run.len > 0)
-    .collect()
+            });
+        });
+    }
+    if let Some((range, fill)) = highlight {
+        runs = restyle(runs, range, |run| run.background_color = Some(fill));
+    }
+    runs
+}
+
+/// `runs` split where `range` starts and ends, the part inside it changed by `apply`.
+fn restyle(runs: Vec<TextRun>, range: Range<usize>, apply: impl Fn(&mut TextRun)) -> Vec<TextRun> {
+    let mut styled = Vec::with_capacity(runs.len() + 2);
+    let mut start = 0;
+    for run in runs {
+        let end = start + run.len;
+        let from = range.start.clamp(start, end);
+        let to = range.end.clamp(from, end);
+        for (len, inside) in [(from - start, false), (to - from, true), (end - to, false)] {
+            if len == 0 {
+                continue;
+            }
+            let mut piece = TextRun { len, ..run.clone() };
+            if inside {
+                apply(&mut piece);
+            }
+            styled.push(piece);
+        }
+        start = end;
+    }
+    styled
 }
 
 struct TextElement {
@@ -1252,8 +1620,13 @@ impl TextElement {
                 range.clone()
             }
         });
+        let highlight = input
+            .highlight
+            .clone()
+            .filter(|_| !input.content.is_empty() && !input.password)
+            .map(|range| (range, theme.color_surface_selected.into()));
         Shaping {
-            runs: text_runs(text.len(), &style, color, marked),
+            runs: text_runs(text.len(), &style, color, marked, highlight),
             font_size: style.font_size.to_pixels(window.rem_size()),
             line_height: window.line_height(),
             text,
@@ -1271,8 +1644,8 @@ impl TextElement {
         let theme = *Theme::global(cx);
         let shaping = self.shaping(window, cx);
         // The slack absorbs layout rounding: a line as wide as its box stays one line.
-        let line = shaping.wrapped(Some(bounds.size.width + px(0.5)), window);
-        let wrapped = WrapLayout::new(line, shaping.text.len(), shaping.line_height);
+        let paragraphs = shaping.wrapped(Some(bounds.size.width + px(0.5)), window);
+        let wrapped = WrapLayout::new(paragraphs, &shaping.text, shaping.line_height);
         let input = self.input.read(cx);
         let cursor = input.cursor_offset();
         let empty = input.content.is_empty();
@@ -1368,13 +1741,10 @@ impl Element for TextElement {
                 AvailableSpace::Definite(room) => Some(room),
                 _ => None,
             });
-            let line = shaping.wrapped(width, window);
-            let natural = line
-                .as_ref()
-                .map_or(px(0.0), |line| line.size(shaping.line_height).width);
+            let paragraphs = shaping.wrapped(width, window);
             Size {
-                width: known.width.unwrap_or(natural),
-                height: known.height.unwrap_or(shaping.height(line.as_ref())),
+                width: known.width.unwrap_or(shaping.width(&paragraphs)),
+                height: known.height.unwrap_or(shaping.height(&paragraphs)),
             }
         });
         (id, ())
@@ -1486,23 +1856,32 @@ impl Element for TextElement {
         let wrapped = prepaint.wrapped.take();
         let line = prepaint.line.take();
         if let Some(line) = &line {
+            let _ = line.paint_background(bounds.origin, window.line_height(), window, cx);
             line.paint(bounds.origin, window.line_height(), window, cx)
                 .unwrap();
         }
-        if let Some(WrapLayout {
-            line: Some(line),
-            line_height,
-            ..
-        }) = &wrapped
-        {
-            let _ = line.paint(
-                bounds.origin,
-                *line_height,
-                TextAlign::Left,
-                Some(bounds),
-                window,
-                cx,
-            );
+        if let Some(wrapped) = &wrapped {
+            // Each paragraph under the visual lines of those before it.
+            let mut top = bounds.origin.y;
+            for (_, paragraph) in &wrapped.paragraphs {
+                let _ = paragraph.paint_background(
+                    point(bounds.origin.x, top),
+                    wrapped.line_height,
+                    TextAlign::Left,
+                    Some(bounds),
+                    window,
+                    cx,
+                );
+                let _ = paragraph.paint(
+                    point(bounds.origin.x, top),
+                    wrapped.line_height,
+                    TextAlign::Left,
+                    Some(bounds),
+                    window,
+                    cx,
+                );
+                top += paragraph.size(wrapped.line_height).height;
+            }
         }
 
         if focus_handle.is_focused(window)
@@ -1522,18 +1901,26 @@ impl Element for TextElement {
 impl Render for TextInput {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let theme = *Theme::global(cx);
-        // Round-ended, padded so the text keeps clear of the curve.
+        // Round-ended unless a radius is set, padded so the text keeps clear of the curve.
         let (height, text, line, pad) = match self.size {
             FieldSize::Sm => (theme.field_height_sm, 12.0, 15.0, tw(3.0)),
             FieldSize::Md => (theme.field_height_md, 13.0, 16.9, tw(3.5)),
         };
-        let radius = height / 2.0;
+        // A field with corners keeps the web's padding (`.control-field-sm`, `-md`).
+        let pad = match (self.radius, self.size) {
+            (None, _) => pad,
+            (Some(_), FieldSize::Sm) => tw(2.0),
+            (Some(_), FieldSize::Md) => tw(2.5),
+        };
+        let radius = self.radius.unwrap_or(height / 2.0).min(height / 2.0);
         let focused = self.focus_handle.is_focused(window);
         let hover_fill = face(theme.field_fill_hover_top, theme.field_fill_hover_bottom);
         let bare = self.bare;
         let wrap = self.wrap;
         let (height, text, line) = if self.title {
             (24.3, 18.0, 24.3)
+        } else if let Some((text, line, _)) = self.prose {
+            (line, text, line)
         } else if let Some((text, line)) = self.quiet {
             (line, text, line)
         } else if bare {
@@ -1546,10 +1933,11 @@ impl Render for TextInput {
             .relative()
             .flex()
             .w_full()
-            .key_context(if wrap {
-                "TextInput wrapped"
-            } else {
-                "TextInput"
+            .key_context(match (wrap, self.on_menu_key.is_some()) {
+                (false, false) => "TextInput",
+                (true, false) => "TextInput wrapped",
+                (false, true) => "TextInput menu",
+                (true, true) => "TextInput wrapped menu",
             })
             .track_focus(&self.focus_handle)
             .cursor(CursorStyle::IBeam)
@@ -1567,6 +1955,7 @@ impl Render for TextInput {
             .on_action(cx.listener(Self::cut))
             .on_action(cx.listener(Self::copy))
             .on_action(cx.listener(Self::submit))
+            .on_action(cx.listener(Self::newline))
             .on_action(cx.listener(Self::cancel))
             .on_action(cx.listener(Self::word_left))
             .on_action(cx.listener(Self::word_right))
@@ -1584,6 +1973,7 @@ impl Render for TextInput {
             .on_action(cx.listener(Self::down))
             .on_action(cx.listener(Self::select_up))
             .on_action(cx.listener(Self::select_down))
+            .on_action(cx.listener(Self::menu_tab))
             .on_mouse_down(MouseButton::Left, cx.listener(Self::on_mouse_down))
             .on_mouse_up(MouseButton::Left, cx.listener(Self::on_mouse_up))
             .on_mouse_up_out(MouseButton::Left, cx.listener(Self::on_mouse_up))
@@ -1611,7 +2001,11 @@ impl Render for TextInput {
             .when(self.title, |field| {
                 field.font_weight(gpui::FontWeight::SEMIBOLD)
             })
-            .text_color(if self.quiet.is_some() {
+            .when_some(self.prose, |field, (_, _, weight)| {
+                field.font_weight(weight)
+            })
+            .when(self.mono, |field| field.font_family(theme.font_mono))
+            .text_color(if self.quiet.is_some() || self.secondary {
                 theme.color_text_secondary
             } else {
                 theme.color_text_primary
@@ -1656,8 +2050,8 @@ mod tests {
     use std::rc::Rc;
 
     use gpui::{
-        Bounds, Entity, EntityInputHandler, Focusable, Modifiers, MouseButton, Pixels,
-        TestAppContext, VisualTestContext, point, prelude::*, px, size,
+        Bounds, ClipboardItem, Entity, EntityInputHandler, Focusable, Modifiers, MouseButton,
+        Pixels, TestAppContext, VisualTestContext, point, prelude::*, px, size,
     };
 
     use super::{
@@ -2083,6 +2477,76 @@ mod tests {
         cx.simulate_keystrokes("enter");
         assert_eq!(submitted.borrow().as_slice(), ["onetwo three"]);
         assert_eq!(text(&input, &mut cx), "onetwo three");
+    }
+
+    #[gpui::test]
+    fn a_multiline_field_types_a_newline_on_enter_and_keeps_its_lines(cx: &mut TestAppContext) {
+        let submitted: Rc<RefCell<Vec<String>>> = Rc::default();
+        let sink = submitted.clone();
+        let (input, mut cx) = field(cx, move |field| {
+            field
+                .description()
+                .multiline()
+                .on_submit(move |text, _, _| sink.borrow_mut().push(text.to_string()))
+        });
+        cx.simulate_input("one");
+        cx.simulate_keystrokes("enter");
+        cx.simulate_input("two");
+        draw(&mut cx);
+        assert_eq!(text(&input, &mut cx), "one\ntwo");
+        assert!(submitted.borrow().is_empty(), "Enter does not submit");
+        // The newline closes the first line, so the lines still meet.
+        assert_eq!(lines_of(&input, &mut cx), [0..4, 4..7]);
+        let (bounds, line_height) = geometry(&input, &mut cx);
+        assert!((f32::from(bounds.size.height) - 2.0 * f32::from(line_height)).abs() < 1.0);
+        // End stops before the newline, and Down goes on into the next paragraph.
+        cx.simulate_keystrokes("up end");
+        assert_eq!(caret(&input, &mut cx), 3);
+        assert_eq!(caret_line(&input, &mut cx), 0);
+        cx.simulate_keystrokes("down");
+        assert_eq!(caret_line(&input, &mut cx), 1);
+        cx.simulate_keystrokes("home");
+        assert_eq!(caret(&input, &mut cx), 4);
+        // Backspace at a line's start joins it to the one above.
+        cx.simulate_keystrokes("backspace");
+        assert_eq!(text(&input, &mut cx), "onetwo");
+    }
+
+    #[gpui::test]
+    fn a_chat_field_submits_on_enter_and_breaks_the_line_on_shift_enter(cx: &mut TestAppContext) {
+        let submitted: Rc<RefCell<Vec<String>>> = Rc::default();
+        let sink = submitted.clone();
+        let (input, mut cx) = field(cx, move |field| {
+            field
+                .description()
+                .chat()
+                .on_submit(move |text, _, _| sink.borrow_mut().push(text.to_string()))
+        });
+        cx.simulate_input("one");
+        cx.simulate_keystrokes("shift-enter");
+        cx.simulate_input("two");
+        draw(&mut cx);
+        assert_eq!(text(&input, &mut cx), "one\ntwo");
+        assert!(submitted.borrow().is_empty(), "Shift+Enter does not submit");
+        assert_eq!(lines_of(&input, &mut cx), [0..4, 4..7]);
+        cx.simulate_keystrokes("enter");
+        assert_eq!(submitted.borrow().as_slice(), ["one\ntwo"]);
+    }
+
+    #[gpui::test]
+    fn a_multiline_field_keeps_pasted_breaks_and_an_empty_line(cx: &mut TestAppContext) {
+        let (input, mut cx) = field(cx, |field| field.description().multiline());
+        cx.update(|_, cx| cx.write_to_clipboard(ClipboardItem::new_string("a\r\n\nb".into())));
+        cx.simulate_keystrokes("cmd-v");
+        draw(&mut cx);
+        assert_eq!(text(&input, &mut cx), "a\n\nb");
+        assert_eq!(lines_of(&input, &mut cx), [0..2, 2..3, 3..4]);
+        // The empty line holds the caret on its own.
+        cx.simulate_keystrokes("up");
+        assert_eq!(caret(&input, &mut cx), 2);
+        assert_eq!(caret_line(&input, &mut cx), 1);
+        cx.update(|_, cx| input.update(cx, |input, cx| input.set_text("x\ny", cx)));
+        assert_eq!(text(&input, &mut cx), "x\ny");
     }
 
     #[gpui::test]

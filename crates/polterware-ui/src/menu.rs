@@ -96,6 +96,16 @@ impl MenuItem {
         })
     }
 
+    /// [`Self::action`] in danger ink, for a removal or a stop.
+    pub fn danger(label: impl Into<SharedString>, icon: Option<Icon>, on_select: Handler) -> Self {
+        MenuItem::Action(MenuEntry {
+            label: label.into(),
+            icon,
+            danger: true,
+            on_select,
+        })
+    }
+
     pub fn radio(label: impl Into<SharedString>, checked: bool, on_select: Handler) -> Self {
         MenuItem::Radio {
             label: label.into(),

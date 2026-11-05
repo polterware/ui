@@ -18,10 +18,13 @@ pub mod patterns;
 pub mod sort;
 
 pub mod button;
+pub mod canvas;
 pub mod card;
 pub mod checkbox;
 pub mod chip;
+pub mod count_badge;
 pub mod data_table;
+pub mod echo_ring;
 pub mod ellipsis;
 pub mod filter_popover;
 pub mod hang;
@@ -30,8 +33,12 @@ pub mod icon_button;
 pub mod icon_tile;
 pub mod icons;
 pub mod kbd;
+pub mod list_popover;
+pub mod markdown;
+pub mod markdown_tools;
 pub mod material;
 pub mod menu;
+pub mod number_stepper;
 pub mod pointer;
 pub mod popover;
 pub mod progress_bar;
@@ -41,23 +48,30 @@ pub mod segment_display;
 pub mod segmented;
 pub mod select;
 pub mod skeleton;
+pub mod spark_chart;
 pub mod status_dot;
 pub mod switch;
+pub mod tabs;
+pub mod terminal;
 #[cfg(test)]
 mod test_support;
 pub mod text_input;
+pub mod texture_group;
 pub mod toast;
 pub mod tooltip;
 pub mod wrap;
 
 pub use button::{Button, ButtonKind, ButtonSize, button};
-pub use card::card;
-pub use checkbox::checkbox_mark;
-pub use chip::{chip, chip_colors};
+pub use card::{card, texture_card, texture_compact};
+pub use checkbox::{checkbox_mark, checkbox_mark_mixed};
+pub use chip::{chip, chip_colors, chip_rounded};
+pub use count_badge::{CountBadge, CountTone};
 pub use data_table::{
-    Align, Column, DataTable, RowCx, SortDirection, fade_text, mono, next_sort, primary_cell, sans,
-    table_height, tabular, text_width,
+    Align, Column, DataTable, GroupAdd, RowCx, SELECTION_WIDTH, SelectionChange, SortDirection,
+    TableGroup, fade_text, mono, next_sort, primary_cell, primary_cell_ink, sans, table_height,
+    tabular, text_width,
 };
+pub use echo_ring::{EchoColors, EchoRing, echo_color};
 pub use ellipsis::{Ellipsis, ellipsis, fade};
 pub use filter_popover::{FilterField, FilterPopover, FiltersChanged};
 pub use hover_card::{HoverBuilder, HoverCard};
@@ -65,22 +79,34 @@ pub use icon_button::icon_button;
 pub use icon_tile::{IconTile, TileTone};
 pub use icons::{Icon, IconAssets, icon, icon_colored, icon_rotated, icon_stroked};
 pub use kbd::kbd;
+pub use list_popover::{ListPopover, ListRow, RowLeading};
+pub use markdown::{MarkdownEditor, MarkdownEditorEvent, markdown_view};
 pub use material::{
     Edge, control_drop, drop, edge, face, float_drop, floating_panel, raised_drop, raised_panel,
     rim_fade,
 };
 pub use menu::{Menu, MenuEntry, MenuItem};
+pub use number_stepper::{NumberStepper, StepperChanged};
 pub use patterns::ChatBubble;
 pub use patterns::{
-    CollapsibleSection, Commander, CommanderEvent, CommanderGroup, CommanderItem, CommanderMark,
-    PageWidth, Property, PropertyOption, PropertyPicker, PropertyPickerEvent, PropertyPills,
-    PropertyPillsEvent, RailGroup, RailPresence, SectionBody, SectionClip, SidebarItem,
-    SidebarSectionLabel, StatTile, UsageCard, UsageMeter, WIDE_MEASURE, card_grid, grid_columns,
-    rail_card, rail_group, rail_page_body, rail_page_body_under, rail_page_header, rail_properties,
-    rail_property, rail_section, rail_toggle_label, toolbar, toolbar_center,
+    CardGrip, Cell, CollapsibleSection, Commander, CommanderEvent, CommanderGroup, CommanderItem,
+    CommanderMark, ConfirmDialog, ContextMenu, DashboardCard, DashboardGrid, DashboardLayout,
+    Dialog, DialogPose, DialogPresence, DialogSize, Field, GridCard, Level, Meter, PageWidth,
+    PickRow, Property, PropertyOption, PropertyPicker, PropertyPickerEvent, PropertyPills,
+    PropertyPillsEvent, RailGroup, RailPresence, Reading, Rect, SectionBody, SectionClip,
+    SettingsGroup, SettingsRow, SidebarItem, SidebarSectionLabel, StatTile, UsageCard, UsageMeter,
+    WIDE_MEASURE, card_grid, card_width, dashboard_columns, dashboard_grid, dashboard_grip,
+    dashboard_measure, dialog, field, form_stack, grid_columns, headline, meters, pack_cards,
+    packed_rows, rail_card, rail_group, rail_page_body, rail_page_body_under, rail_page_header,
+    rail_properties, rail_property, rail_section, rail_toggle_label, readings, settings_group,
+    settings_row, toolbar, toolbar_center,
+};
+pub use patterns::{
+    DOCUMENT_COLUMN, DocumentPage, RAIL_BUTTON_RADIUS, TagPicker, TagPickerEvent, document_footer,
+    document_group, document_group_body, document_title,
 };
 #[cfg(feature = "bots")]
-pub use patterns::{MascotMood, list_empty, page_empty, page_empty_with};
+pub use patterns::{MascotMood, list_empty, page_empty, page_empty_action, page_empty_with};
 pub use pointer::{
     PointerState, PointerTiming, track, track_with_hover, use_pointer, use_pointer_timed,
 };
@@ -99,15 +125,19 @@ pub use skeleton::{
     PageSkeleton, SkeletonLayout, bone, line_bone, list_skeleton, page_skeleton, skeleton_tone,
     text_skeleton,
 };
-pub use status_dot::status_dot;
+pub use spark_chart::{SPARK_HEIGHT, SparkChart, compact_tick, value_axis};
+pub use status_dot::{status_dot, status_dot_label};
 pub use switch::{Switch, switch_card, switch_row};
+pub use tabs::Tabs;
+pub use terminal::{TerminalEvent, TerminalPalette, TerminalSize, TerminalView};
 pub use text_input::{FieldSize, TextInput};
+pub use texture_group::{TextureButtonGroup, TextureGroupItem};
 pub use toast::{Toast, ToastTone, toast_lifetime, toast_stack};
 pub use tooltip::{
     RichTooltipView, TooltipView, rich_tooltip, tooltip, tooltip_card, tooltip_heading,
     tooltip_note, tooltip_row,
 };
-pub use wrap::{WrapText, wrap_text};
+pub use wrap::{SpanStyle, WrapText, wrap_text};
 
 use std::rc::Rc;
 
@@ -126,6 +156,9 @@ actions!(polterware_ui, [Dismiss]);
 /// with `Application::with_assets`, and set the root size with
 /// [`theme::set_root_rem`] and the status words with [`theme::set_status_tones`] before.
 pub fn init(cx: &mut App) {
+    // The tests lay out the classic scrollbar whatever the machine running them prefers.
+    #[cfg(test)]
+    window::scroller::set_overlay_scrollers(false);
     assets::install_fonts(cx);
     if !cx.has_global::<Theme>() {
         cx.set_global(Theme::dark());
@@ -138,9 +171,12 @@ pub fn register_key_bindings(cx: &mut App) {
     text_input::register_key_bindings(cx);
     patterns::commander::register_key_bindings(cx);
     patterns::property_pills::register_key_bindings(cx);
+    patterns::confirm::register_key_bindings(cx);
     menu::register_key_bindings(cx);
+    terminal::register_key_bindings(cx);
     cx.bind_keys([
         KeyBinding::new("escape", Dismiss, Some("Popover")),
         KeyBinding::new("escape", Dismiss, Some("Menu")),
+        KeyBinding::new("escape", Dismiss, Some("Composer")),
     ]);
 }
