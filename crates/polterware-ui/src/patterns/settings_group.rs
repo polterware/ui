@@ -61,6 +61,7 @@ impl ParentElement for SettingsGroup {
 impl RenderOnce for SettingsGroup {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
+        let anchor = self.title.clone();
         let heading = div()
             .flex()
             .items_center()
@@ -91,21 +92,24 @@ impl RenderOnce for SettingsGroup {
                 self.action
                     .map(|action| div().flex_none().my(px(-tw(2.0))).child(action)),
             );
-        div()
-            .w_full()
-            .flex()
-            .flex_col()
-            .gap(px(tw(2.0)))
-            .child(heading)
-            .child(
-                card(cx)
-                    .w_full()
-                    .p(px(tw(4.0)))
-                    .flex()
-                    .flex_col()
-                    .gap(px(tw(4.0)))
-                    .children(self.children),
-            )
+        super::settings_dialog::settings_anchor(
+            anchor,
+            div()
+                .w_full()
+                .flex()
+                .flex_col()
+                .gap(px(tw(2.0)))
+                .child(heading)
+                .child(
+                    card(cx)
+                        .w_full()
+                        .p(px(tw(4.0)))
+                        .flex()
+                        .flex_col()
+                        .gap(px(tw(4.0)))
+                        .children(self.children),
+                ),
+        )
     }
 }
 

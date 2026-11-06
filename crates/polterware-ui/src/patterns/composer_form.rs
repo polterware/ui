@@ -9,7 +9,8 @@
 //! (a small [`Switch`] and its 12.5px secondary label, 8px apart) and a quiet action, 12px
 //! apart, then the submit, together at its end. Every text button wears the texture face, as
 //! the app's `TextureFaceProvider` sets it: the submit the primary tone (the info blue) and the
-//! action the neutral one, on a small texture button's 6px corners. It fades in and out with the scrim on [`DialogPresence`]'s motion.
+//! action the neutral one. It fades in and out with the scrim on [`DialogPresence`]'s
+//! motion.
 //!
 //! It behaves like gpui-kit's `Dialog` holding a form: Enter in the title moves into the
 //! description (or submits a Composer without one), Cmd+Enter submits from anywhere in it, and
@@ -18,6 +19,8 @@
 //! failed keeps the draft, and one that went through closes the Composer, or clears it for
 //! the next record while Create more is on. The host owns every write and the properties,
 //! which it hears of through [`ComposerEvent::Property`] and sets back.
+
+use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, AppContext as _, Context, Entity, EventEmitter, Focusable, IntoElement,
@@ -34,10 +37,10 @@ use crate::switch::Switch;
 use crate::text_input::{self, TextInput};
 use crate::theme::Theme;
 
+/// The description's greatest height before it scrolls (`max-h-[280px]`).
+const DESCRIPTION_MAX_H: f32 = 280.0;
 /// The description's least height (`min-height: 60px`, `rows={3}`).
 const DESCRIPTION_MIN_H: f32 = 60.0;
-/// A small texture button's corners (`rounded-[6px]`), the footer's buttons in the dialog.
-const BUTTON_RADIUS: f32 = 6.0;
 
 /// What a person typed; the host adds the properties it owns.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -53,15 +56,18 @@ pub struct ComposerDraft {
 /// (`ComposerProps`).
 #[derive(Clone, Debug)]
 pub struct ComposerSpec {
+    crumbs: Vec<SharedString>,
     title_placeholder: SharedString,
     description_placeholder: Option<SharedString>,
     why_placeholder: Option<SharedString>,
     submit_label: SharedString,
     create_more: bool,
+    can_submit: bool,
     action: Option<SharedString>,
     initial: ComposerDraft,
     /// Each labelled field's label and placeholder (`ComposerField`).
     fields: Vec<(SharedString, SharedString)>,
+    date_fields: Vec<usize>,
 }
 
 impl ComposerSpec {
@@ -71,15 +77,31 @@ impl ComposerSpec {
         submit_label: impl Into<SharedString>,
     ) -> Self {
         Self {
+            crumbs: Vec::new(),
             title_placeholder: title_placeholder.into(),
             description_placeholder: None,
             why_placeholder: None,
             submit_label: submit_label.into(),
             create_more: true,
+            can_submit: true,
             action: None,
             initial: ComposerDraft::default(),
             fields: Vec::new(),
+            date_fields: Vec::new(),
         }
+    }
+
+    /// Electron `ComposerProps.canSubmit`: additionally gates button and keyboard submission.
+    pub fn can_submit(mut self, allowed: bool) -> Self {
+        self.can_submit = allowed;
+        self
+    }
+
+    /// Where the record goes (`ComposerProps.crumbs`). Electron currently uses only the
+    /// final crumb as its accessible heading; GPUI also shows the supplied path above Title.
+    pub fn crumbs(mut self, crumbs: impl IntoIterator<Item = impl Into<SharedString>>) -> Self {
+        self.crumbs = crumbs.into_iter().map(Into::into).collect();
+        self
     }
 
     /// A labelled text field under the description (`ComposerField`), such as a target date;
@@ -90,6 +112,13 @@ impl ComposerSpec {
         placeholder: impl Into<SharedString>,
     ) -> Self {
         self.fields.push((label.into(), placeholder.into()));
+        self
+    }
+
+    /// A date field using the shared calendar, returned as ISO in `ComposerDraft.fields`.
+    pub fn date_field(mut self, label: impl Into<SharedString>) -> Self {
+        self.date_fields.push(self.fields.len());
+        self.fields.push((label.into(), "Choose date".into()));
         self
     }
 
@@ -149,15 +178,23 @@ pub struct Composer {
     why: Entity<TextInput>,
     /// The spec's labelled fields, made as it opens.
     fields: Vec<Entity<TextInput>>,
+    dates: Vec<(usize, Entity<crate::date_picker::DatePicker>)>,
     pills: Entity<PropertyPills>,
     more: Entity<Switch>,
     presence: DialogPresence,
+    /// The description's own scroll once it passes its 280px cap.
+    description_scroll: gpui::ScrollHandle,
     busy: bool,
+    on_expand: Option<crate::Handler>,
     /// Draws the card where it is declared, open and still, instead of on a modal layer.
     inline: bool,
     /// The title takes the focus on the next frame: the next record after Create more.
     refocus: bool,
+    body: Option<ComposerBody>,
 }
+
+/// `ComposerProps.body`: host content below the properties, such as a template grid.
+pub type ComposerBody = Rc<dyn Fn(&mut Window, &mut App) -> AnyElement>;
 
 impl EventEmitter<ComposerEvent> for Composer {}
 
@@ -200,12 +237,16 @@ impl Composer {
             description,
             why,
             fields: Vec::new(),
+            dates: Vec::new(),
             pills,
             more,
             presence: DialogPresence::new(),
+            description_scroll: gpui::ScrollHandle::new(),
             busy: false,
+            on_expand: None,
             inline: false,
             refocus: false,
+            body: None,
         }
     }
 
@@ -215,6 +256,11 @@ impl Composer {
         self.inline = true;
         self.presence = DialogPresence::shown();
         self
+    }
+
+    /// Sets the optional body slot, as in Electron's Composer. Apps own its data and actions.
+    pub fn set_body(&mut self, body: Option<ComposerBody>) {
+        self.body = body;
     }
 
     /// Opens it as `spec` says, with `properties`, the fields set to its initial values and
@@ -263,6 +309,22 @@ impl Composer {
                 field
             })
             .collect();
+        self.dates = spec
+            .date_fields
+            .iter()
+            .map(|index| {
+                let index = *index;
+                let value =
+                    crate::date_picker::DatePicker::parse(&initial_field(&spec.initial, index));
+                let picker = cx.new(|cx| {
+                    let mut picker = crate::date_picker::DatePicker::new(cx);
+                    picker.set_value(value, cx);
+                    picker
+                });
+                cx.observe(&picker, |_, _, cx| cx.notify()).detach();
+                (index, picker)
+            })
+            .collect();
         self.spec = spec;
         self.busy = false;
         self.set_properties(properties, cx);
@@ -271,10 +333,42 @@ impl Composer {
         cx.notify();
     }
 
+    /// Optional expand action for an existing record, as Electron `Composer.onExpand`.
+    pub fn set_on_expand(&mut self, handler: Option<crate::Handler>) {
+        self.on_expand = handler;
+    }
+
     /// The property pills, as the host holds them now.
     pub fn set_properties(&mut self, properties: Vec<Property>, cx: &mut Context<Self>) {
         self.pills
             .update(cx, |pills, cx| pills.set_properties(properties, cx));
+    }
+
+    /// Keeps the description's caret in its scrolled box while it is typed in.
+    fn reveal_description_caret(&self, window: &Window, cx: &App) {
+        let input = self.description.read(cx);
+        if !input.focus_handle(cx).is_focused(window) {
+            return;
+        }
+        let end = input.selection().end;
+        let (Some(caret), view) = (
+            input.range_bounds(end..end),
+            self.description_scroll.bounds(),
+        ) else {
+            return;
+        };
+        if view.size.height <= px(0.0) {
+            return;
+        }
+        let offset = self.description_scroll.offset();
+        let line = px(20.0);
+        if caret.bottom() + px(4.0) > view.bottom() {
+            let y = offset.y - (caret.bottom() + px(4.0) - view.bottom());
+            self.description_scroll.set_offset(gpui::point(offset.x, y));
+        } else if caret.top() < view.top() && caret.bottom() - line < view.top() {
+            let y = (offset.y + (view.top() - caret.top())).min(px(0.0));
+            self.description_scroll.set_offset(gpui::point(offset.x, y));
+        }
     }
 
     pub fn is_open(&self) -> bool {
@@ -307,6 +401,9 @@ impl Composer {
                 {
                     field.update(cx, |field, cx| field.set_text("", cx));
                 }
+                for (_, picker) in &self.dates {
+                    picker.update(cx, |picker, cx| picker.set_value(None, cx));
+                }
                 self.refocus = true;
             } else {
                 self.close(cx);
@@ -330,12 +427,36 @@ impl Composer {
             } else {
                 String::new()
             },
-            fields: self.fields.iter().map(text).collect(),
+            fields: self
+                .fields
+                .iter()
+                .enumerate()
+                .map(|(index, field)| {
+                    self.dates.iter().find(|(i, _)| *i == index).map_or_else(
+                        || text(field),
+                        |(_, picker)| {
+                            picker
+                                .read(cx)
+                                .value()
+                                .map(|d| d.to_string())
+                                .unwrap_or_default()
+                        },
+                    )
+                })
+                .collect(),
+        }
+    }
+
+    /// Updates Electron's `canSubmit` as required properties change.
+    pub fn set_can_submit(&mut self, allowed: bool, cx: &mut Context<Self>) {
+        if self.spec.can_submit != allowed {
+            self.spec.can_submit = allowed;
+            cx.notify();
         }
     }
 
     fn can_submit(&self, cx: &App) -> bool {
-        !self.busy && !self.title.read(cx).text().trim().is_empty()
+        self.spec.can_submit && !self.busy && !self.title.read(cx).text().trim().is_empty()
     }
 
     fn submit(&mut self, cx: &mut Context<Self>) {
@@ -405,7 +526,6 @@ impl Render for Composer {
             start.push(
                 Button::new("composer-action", ButtonKind::Secondary)
                     .size(ButtonSize::Sm)
-                    .radius(BUTTON_RADIUS)
                     .label(label)
                     .disabled(self.busy)
                     .on_click(move |_, cx| {
@@ -416,7 +536,6 @@ impl Render for Composer {
         }
         let submit = Button::new("composer-submit", ButtonKind::Primary)
             .size(ButtonSize::Sm)
-            .radius(BUTTON_RADIUS)
             .label(self.spec.submit_label.clone())
             .disabled(!self.can_submit(cx))
             .on_click({
@@ -433,15 +552,62 @@ impl Render for Composer {
             })
         };
         let mut card = composer_card(self.spec.submit_label.clone(), pose.opacity, 0.0, &theme)
+            .scale(pose.scale)
             .root_scaled()
             .on_close(close.clone())
-            .child(self.title.clone());
+            .on_expand(self.on_expand.clone());
+        if !self.spec.crumbs.is_empty() {
+            card = card.child(
+                div()
+                    .id("composer-crumbs")
+                    .debug_selector(|| "composer-crumbs".into())
+                    .min_w(px(0.0))
+                    .overflow_hidden()
+                    .flex()
+                    .items_center()
+                    .gap(px(6.0))
+                    .pr(px(32.0))
+                    .text_size(px(12.0))
+                    .text_color(theme.color_text_muted)
+                    .children(self.spec.crumbs.iter().enumerate().map(|(index, crumb)| {
+                        div()
+                            .flex()
+                            .items_center()
+                            .gap(px(6.0))
+                            .when(index > 0, |part| {
+                                part.child(crate::icons::icon(
+                                    crate::icons::Icon::ChevronRight,
+                                    12.0,
+                                    cx,
+                                ))
+                            })
+                            .child(
+                                div()
+                                    .min_w(px(0.0))
+                                    .overflow_hidden()
+                                    .text_ellipsis()
+                                    .whitespace_nowrap()
+                                    .child(crumb.clone()),
+                            )
+                    })),
+            );
+        }
+        card = card.child(
+            div()
+                .when(self.on_expand.is_some(), |title| title.pr(px(72.0)))
+                .child(self.title.clone()),
+        );
         if self.spec.description_placeholder.is_some() {
             let description = self.description.clone();
+            self.reveal_description_caret(window, cx);
             card = card.child(
                 div()
                     .id("composer-description")
                     .min_h(px(DESCRIPTION_MIN_H))
+                    // `max-h-[280px] overflow-y-auto`: a long description scrolls in place.
+                    .max_h(px(DESCRIPTION_MAX_H))
+                    .overflow_y_scroll()
+                    .track_scroll(&self.description_scroll)
                     .cursor_text()
                     // A press under the lines still lands in the field, as a textarea's does.
                     .on_click(move |_, window, cx| {
@@ -450,18 +616,38 @@ impl Render for Composer {
                     .child(self.description.clone()),
             );
         }
-        for ((label, _), field) in self.spec.fields.iter().zip(&self.fields) {
-            card = card.child(solid_composer_field(label.clone(), field.clone(), &theme));
+        for (index, ((label, _), field)) in self.spec.fields.iter().zip(&self.fields).enumerate() {
+            let control = self.dates.iter().find(|(i, _)| *i == index).map_or_else(
+                || field.clone().into_any_element(),
+                |(_, picker)| picker.clone().into_any_element(),
+            );
+            card = card.child(solid_composer_field(label.clone(), control, &theme));
         }
         if !self.pills.read(cx).properties().is_empty() {
             card = card.child(div().pt(px(4.0)).child(self.pills.clone()));
         }
+        if let Some(body) = &self.body {
+            card = card.child(body(window, cx));
+        }
         if self.spec.why_placeholder.is_some() {
             card = card.child(solid_composer_field("Why", self.why.clone(), &theme));
         }
+        for (_, picker) in &self.dates {
+            picker.update(cx, |picker, _| picker.set_disabled(self.busy));
+        }
+        let date_overlays = self
+            .dates
+            .iter()
+            .filter_map(|(_, picker)| crate::date_picker::DatePicker::overlay(picker, window, cx))
+            .collect::<Vec<_>>();
         let card = card
             .footer(dialog_footer(start, [submit], &theme))
-            .overlay(self.pills.read(cx).overlay(cx));
+            .overlay(Some(
+                div()
+                    .children(date_overlays)
+                    .children(self.pills.read(cx).overlay(cx))
+                    .into_any_element(),
+            ));
         let body = div()
             .key_context("Composer")
             .on_action(cx.listener(|this, _: &Dismiss, _, cx| this.dismiss(cx)))
@@ -496,6 +682,63 @@ mod tests {
 
     use super::{Composer, ComposerDraft, ComposerEvent, ComposerSpec};
     use crate::test_support::draw;
+
+    #[gpui::test]
+    fn crumbs_are_preserved_when_the_composer_opens(cx: &mut TestAppContext) {
+        let spec = ComposerSpec::new("Milestone name", "Save").crumbs([
+            "Milestones",
+            "Beta",
+            "Rename milestone",
+        ]);
+        let (view, _, cx) = composer(cx, spec);
+        draw(cx);
+        assert!(
+            cx.debug_bounds("composer-crumbs").is_some(),
+            "the path is visible above Title"
+        );
+        view.read_with(cx, |composer, _| {
+            assert_eq!(
+                composer.spec.crumbs,
+                vec!["Milestones", "Beta", "Rename milestone"]
+            );
+        });
+    }
+
+    #[gpui::test]
+    fn date_field_preserves_iso_and_escape_closes_only_its_calendar(cx: &mut TestAppContext) {
+        let spec = ComposerSpec::new("Milestone name", "Create milestone")
+            .date_field("Target date")
+            .initial(ComposerDraft {
+                title: "Beta".into(),
+                fields: vec!["2026-12-01".into()],
+                ..Default::default()
+            });
+        let (view, events, cx) = composer(cx, spec);
+        let picker = view.read_with(cx, |composer, _| composer.dates[0].1.clone());
+        cx.update(|window, cx| picker.update(cx, |picker, cx| picker.open(window, cx)));
+        crate::test_support::settle(cx);
+        assert!(cx.debug_bounds("date-picker-panel").is_some());
+        cx.simulate_keystrokes("escape");
+        view.read_with(cx, |composer, cx| {
+            assert!(composer.is_open());
+            assert!(!picker.read(cx).is_open());
+            assert_eq!(composer.draft(cx).fields, vec!["2026-12-01"]);
+        });
+        cx.simulate_keystrokes("cmd-enter");
+        assert_eq!(submits(&events)[0].fields, vec!["2026-12-01"]);
+    }
+
+    #[gpui::test]
+    fn required_properties_gate_button_and_keyboard_submission(cx: &mut TestAppContext) {
+        let spec = ComposerSpec::new("Resource name", "Add deploy").can_submit(false);
+        let (view, events, cx) = composer(cx, spec);
+        cx.simulate_input("api");
+        cx.simulate_keystrokes("enter cmd-enter");
+        assert!(submits(&events).is_empty());
+        cx.update(|_, cx| view.update(cx, |c, cx| c.set_can_submit(true, cx)));
+        cx.simulate_keystrokes("cmd-enter");
+        assert_eq!(submits(&events).len(), 1);
+    }
 
     type Events = Rc<RefCell<Vec<ComposerEvent>>>;
 

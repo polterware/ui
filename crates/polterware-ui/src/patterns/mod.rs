@@ -115,7 +115,8 @@ pub use scroll_fade::{
 pub use selection_toolbar::selection_toolbar;
 pub use settings_dialog::{
     SETTINGS_HEIGHT, SETTINGS_WIDTH, SettingsDialog, SettingsNavItem, SettingsSearchEntry,
-    SettingsSearchOpen, SettingsSelect, search_settings, settings_dialog, settings_size,
+    SettingsSearchOpen, SettingsSelect, scroll_to_settings_section, search_settings,
+    settings_anchor, settings_dialog, settings_size,
 };
 pub use settings_group::{SettingsGroup, settings_group, settings_group_gap};
 pub use settings_row::{SettingsRow, settings_row};

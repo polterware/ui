@@ -194,6 +194,7 @@ fn new_doc(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
         "composer-whole-new",
         || {
             ComposerSpec::new("Doc title", "Create doc")
+                .crumbs(["Polterware", "New doc"])
                 .description("Write in Markdown…")
                 .why("Optional. Recorded in Activity")
         },

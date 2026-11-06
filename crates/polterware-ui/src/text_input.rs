@@ -39,9 +39,9 @@ use gpui::{
     App, AvailableSpace, Bounds, ClipboardItem, Context, CursorStyle, Element, ElementId,
     ElementInputHandler, Entity, EntityInputHandler, FocusHandle, Focusable, GlobalElementId, Hsla,
     InspectorElementId, IntoElement, KeyBinding, LayoutId, MouseButton, MouseDownEvent,
-    MouseMoveEvent, MouseUpEvent, PaintQuad, Pixels, Point, ShapedLine, SharedString, Size, Style,
-    TextAlign, TextRun, TextStyle, UTF16Selection, UnderlineStyle, Window, WrappedLine, actions,
-    div, fill, point, prelude::*, px, relative, size,
+    MouseMoveEvent, MouseUpEvent, PaintQuad, Pixels, Point, ScrollHandle, ShapedLine, SharedString,
+    Size, Style, TextAlign, TextRun, TextStyle, UTF16Selection, UnderlineStyle, Window,
+    WrappedLine, actions, div, fill, point, prelude::*, px, relative, size,
 };
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -189,6 +189,8 @@ pub struct TextInput {
     last_bounds: Option<Bounds<Pixels>>,
     is_selecting: bool,
     password: bool,
+    /// A one-line field whose text sits in its middle (`text-align: center`).
+    centered: bool,
     size: FieldSize,
     pill: bool,
     /// A corner radius in place of the round ends.
@@ -227,6 +229,8 @@ pub struct TextInput {
     redo: Vec<Snapshot>,
     /// The last edit and where the caret was after it; `None` starts a new undo step.
     last_edit: Option<(EditKind, usize)>,
+    scroll_x: ScrollHandle,
+    last_scrolled_caret: Option<(usize, usize, u32, u32)>,
 }
 
 impl TextInput {
@@ -242,6 +246,7 @@ impl TextInput {
             last_bounds: None,
             is_selecting: false,
             password: false,
+            centered: false,
             size: FieldSize::Sm,
             pill: false,
             radius: None,
@@ -264,6 +269,8 @@ impl TextInput {
             undo: Vec::new(),
             redo: Vec::new(),
             last_edit: None,
+            scroll_x: ScrollHandle::new(),
+            last_scrolled_caret: None,
         }
     }
 
@@ -279,6 +286,13 @@ impl TextInput {
 
     /// `SearchBar`. Every field is round-ended now; this only keeps older call sites reading
     /// as they did.
+    /// A one-line field's text centered in it (`text-align: center`), as a number stepper's
+    /// value sits.
+    pub fn centered(mut self) -> Self {
+        self.centered = true;
+        self
+    }
+
     pub fn pill(mut self) -> Self {
         self.pill = true;
         self
@@ -351,6 +365,20 @@ impl TextInput {
         self.wrap = true;
         self.multiline = true;
         self
+    }
+
+    /// Keeps a [`multiline`](Self::multiline) field's lines from wrapping: lines wider than
+    /// the field scroll horizontally instead, as a code block's (`white-space: pre;
+    /// overflow-x: auto`) do.
+    pub fn nowrap(mut self) -> Self {
+        self.wrap = false;
+        self
+    }
+
+    /// Whether the field lays its text out over lines (`WrapLayout`), wrapped or broken by
+    /// newlines.
+    fn lines(&self) -> bool {
+        self.wrap || self.multiline
     }
 
     /// A chat box's field: [`Self::multiline`], but Enter submits through
@@ -464,6 +492,15 @@ impl TextInput {
         }
     }
 
+    /// Centers a one-line field's text, or not, as a label edited in place follows its
+    /// alignment: see [`Self::centered`].
+    pub fn set_centered(&mut self, centered: bool, cx: &mut Context<Self>) {
+        if self.centered != centered {
+            self.centered = centered;
+            cx.notify();
+        }
+    }
+
     /// Where the text was drawn in the last frame, in window coordinates.
     pub fn bounds(&self) -> Option<Bounds<Pixels>> {
         self.last_bounds
@@ -494,7 +531,7 @@ impl TextInput {
     pub fn range_bounds(&self, range: Range<usize>) -> Option<Bounds<Pixels>> {
         let bounds = self.last_bounds?;
         let range = clamp_range(&self.content, range);
-        if !self.wrap {
+        if !self.lines() {
             let line = self.last_layout.as_ref()?;
             let start = line.x_for_index(self.display_offset_for_content(range.start));
             let end = line.x_for_index(self.display_offset_for_content(range.end));
@@ -842,7 +879,7 @@ impl TextInput {
     /// The wrapped layout and the visual line `offset` is on, once a field that wraps has been
     /// drawn with text in it.
     fn visual_line(&self, offset: usize) -> Option<(&WrapLayout, usize)> {
-        if !self.wrap || self.content.is_empty() {
+        if !self.lines() || self.content.is_empty() {
             return None;
         }
         let wrapped = self.wrapped.as_ref()?;
@@ -1003,7 +1040,7 @@ impl TextInput {
     /// The text offset under `position` and whether the caret there stays on the upper line of a
     /// break (a click past the end of a wrapped line).
     fn caret_for_mouse_position(&self, position: Point<Pixels>) -> (usize, bool) {
-        if !self.wrap {
+        if !self.lines() {
             return (self.index_for_mouse_position(position), false);
         }
         let (Some(bounds), Some(wrapped)) = (self.last_bounds.as_ref(), self.wrapped.as_ref())
@@ -1240,7 +1277,7 @@ impl EntityInputHandler for TextInput {
         _window: &mut Window,
         _cx: &mut Context<Self>,
     ) -> Option<Bounds<Pixels>> {
-        if self.wrap {
+        if self.lines() {
             let wrapped = self.wrapped.as_ref()?;
             let range = self.range_from_utf16(&range_utf16);
             let start =
@@ -1281,7 +1318,7 @@ impl EntityInputHandler for TextInput {
     ) -> Option<usize> {
         let bounds = self.last_bounds?;
         let line_point = bounds.localize(&point)?;
-        if self.wrap {
+        if self.lines() {
             if self.content.is_empty() {
                 return Some(0);
             }
@@ -1598,6 +1635,8 @@ struct PrepaintState {
     cursor: Option<PaintQuad>,
     /// One quad, or one a visual line in a field that wraps.
     selection: Vec<PaintQuad>,
+    /// How far a centered line starts in from the field's left edge.
+    inset: Pixels,
 }
 
 impl TextElement {
@@ -1633,8 +1672,8 @@ impl TextElement {
         }
     }
 
-    /// A field that wraps: the text shaped at the width it was given, its caret or the quads
-    /// of its selection, a line each.
+    /// A field that wraps (or keeps hard line breaks): the text shaped at the width it was
+    /// given, its caret or the quads of its selection, a line each.
     fn prepaint_wrapped(
         &self,
         bounds: Bounds<Pixels>,
@@ -1643,8 +1682,9 @@ impl TextElement {
     ) -> PrepaintState {
         let theme = *Theme::global(cx);
         let shaping = self.shaping(window, cx);
+        let wrap = self.input.read(cx).wrap;
         // The slack absorbs layout rounding: a line as wide as its box stays one line.
-        let paragraphs = shaping.wrapped(Some(bounds.size.width + px(0.5)), window);
+        let paragraphs = shaping.wrapped(wrap.then(|| bounds.size.width + px(0.5)), window);
         let wrapped = WrapLayout::new(paragraphs, &shaping.text, shaping.line_height);
         let input = self.input.read(cx);
         let cursor = input.cursor_offset();
@@ -1695,6 +1735,7 @@ impl TextElement {
             wrapped: Some(wrapped),
             cursor: cursor_quad,
             selection,
+            inset: px(0.0),
         }
     }
 }
@@ -1726,21 +1767,35 @@ impl Element for TextElement {
         window: &mut Window,
         cx: &mut App,
     ) -> (LayoutId, Self::RequestLayoutState) {
+        let (wrap, lines) = {
+            let input = self.input.read(cx);
+            (input.wrap, input.lines())
+        };
         let mut style = Style::default();
-        style.size.width = relative(1.).into();
-        if !self.input.read(cx).wrap {
+        if !lines {
+            style.size.width = relative(1.).into();
             style.size.height = window.line_height().into();
             return (window.request_layout(style, [], cx), ());
         }
-        // The measure only reports a height for the width it is given; the lines it paints are
-        // shaped in prepaint at the final width (see `wrap_text`).
-        style.min_size.width = px(0.0).into();
+        // The measure only reports a height for the width it is given (or the widest line's
+        // width when not wrapped); the lines it paints are shaped in prepaint.
+        if wrap {
+            style.size.width = relative(1.).into();
+            style.min_size.width = px(0.0).into();
+        } else {
+            style.flex_shrink = 0.0;
+            style.min_size.width = relative(1.).into();
+        }
         let shaping = self.shaping(window, cx);
         let id = window.request_measured_layout(style, move |known, available, window, _| {
-            let width = known.width.or(match available.width {
-                AvailableSpace::Definite(room) => Some(room),
-                _ => None,
-            });
+            let width = wrap
+                .then(|| {
+                    known.width.or(match available.width {
+                        AvailableSpace::Definite(room) => Some(room),
+                        _ => None,
+                    })
+                })
+                .flatten();
             let paragraphs = shaping.wrapped(width, window);
             Size {
                 width: known.width.unwrap_or(shaping.width(&paragraphs)),
@@ -1759,17 +1814,18 @@ impl Element for TextElement {
         window: &mut Window,
         cx: &mut App,
     ) -> Self::PrepaintState {
-        if self.input.read(cx).wrap {
+        if self.input.read(cx).lines() {
             return self.prepaint_wrapped(bounds, window, cx);
         }
         let theme = *Theme::global(cx);
-        let (selected_range, cursor, password, content_empty) = {
+        let (selected_range, cursor, password, content_empty, centered) = {
             let input = self.input.read(cx);
             (
                 input.selected_range.clone(),
                 input.cursor_offset(),
                 input.password,
                 input.content.is_empty(),
+                input.centered,
             )
         };
         let shaping = self.shaping(window, cx);
@@ -1777,6 +1833,16 @@ impl Element for TextElement {
             window
                 .text_system()
                 .shape_line(shaping.text, shaping.font_size, &shaping.runs, None);
+        // A centered line is drawn, and its caret and selection placed, from its own start.
+        let inset = if centered {
+            ((bounds.size.width - line.width) / 2.0).max(px(0.0))
+        } else {
+            px(0.0)
+        };
+        let bounds = Bounds::new(
+            point(bounds.origin.x + inset, bounds.origin.y),
+            size(bounds.size.width - inset, bounds.size.height),
+        );
 
         let display_cursor = if content_empty {
             0
@@ -1831,6 +1897,7 @@ impl Element for TextElement {
             wrapped: None,
             cursor: cursor_quad,
             selection,
+            inset,
         }
     }
 
@@ -1844,6 +1911,10 @@ impl Element for TextElement {
         window: &mut Window,
         cx: &mut App,
     ) {
+        let bounds = Bounds::new(
+            point(bounds.origin.x + prepaint.inset, bounds.origin.y),
+            size(bounds.size.width - prepaint.inset, bounds.size.height),
+        );
         let focus_handle = self.input.read(cx).focus_handle.clone();
         window.handle_input(
             &focus_handle,
@@ -1894,6 +1965,43 @@ impl Element for TextElement {
             input.last_layout = line;
             input.wrapped = wrapped;
             input.last_bounds = Some(bounds);
+            let caret = (
+                input.cursor_offset(),
+                input.content.len(),
+                f32::from(bounds.size.width).to_bits(),
+                f32::from(input.scroll_x.bounds().size.width).to_bits(),
+            );
+            if input.multiline && !input.wrap && input.last_scrolled_caret != Some(caret) {
+                input.last_scrolled_caret = Some(caret);
+                if let Some(wrapped) = &input.wrapped {
+                    let display = if input.content.is_empty() {
+                        0
+                    } else {
+                        input.display_offset_for_content(caret.0)
+                    };
+                    let x = f32::from(
+                        wrapped
+                            .point_for_index(display, input.upstream_at == Some(caret.0))
+                            .x,
+                    );
+                    let view = f32::from(input.scroll_x.bounds().size.width);
+                    if view > 0.0 {
+                        let max = (f32::from(bounds.size.width) - view).max(0.0);
+                        let scrolled = (-f32::from(input.scroll_x.offset().x)).clamp(0.0, max);
+                        let next = if x < scrolled {
+                            x
+                        } else if x + 2.0 > scrolled + view {
+                            (x + 2.0 - view).min(max)
+                        } else {
+                            scrolled
+                        };
+                        if (next - scrolled).abs() > 0.5 {
+                            input.scroll_x.set_offset(point(px(-next), px(0.0)));
+                            window.on_next_frame(|window, _| window.refresh());
+                        }
+                    }
+                }
+            }
         });
     }
 }
@@ -1917,6 +2025,7 @@ impl Render for TextInput {
         let hover_fill = face(theme.field_fill_hover_top, theme.field_fill_hover_bottom);
         let bare = self.bare;
         let wrap = self.wrap;
+        let lines = self.lines();
         let (height, text, line) = if self.title {
             (24.3, 18.0, 24.3)
         } else if let Some((text, line, _)) = self.prose {
@@ -1933,7 +2042,7 @@ impl Render for TextInput {
             .relative()
             .flex()
             .w_full()
-            .key_context(match (wrap, self.on_menu_key.is_some()) {
+            .key_context(match (lines, self.on_menu_key.is_some()) {
                 (false, false) => "TextInput",
                 (true, false) => "TextInput wrapped",
                 (false, true) => "TextInput menu",
@@ -1979,15 +2088,16 @@ impl Render for TextInput {
             .on_mouse_up_out(MouseButton::Left, cx.listener(Self::on_mouse_up))
             .on_mouse_move(cx.listener(Self::on_mouse_move))
             .map(|field| {
-                // A field that wraps is as tall as its lines, and never shorter than one.
-                if wrap {
+                // A field that wraps (or keeps hard line breaks) is as tall as its lines, and
+                // never shorter than one.
+                if lines {
                     field.min_h(px(height))
                 } else {
                     field.h(px(height))
                 }
             })
             .items_center()
-            .when(wrap && !bare, |field| field.py(px((height - line) / 2.0)))
+            .when(lines && !bare, |field| field.py(px((height - line) / 2.0)))
             .when(!bare, |field| {
                 field
                     .px(px(pad))
@@ -2010,13 +2120,22 @@ impl Render for TextInput {
             } else {
                 theme.color_text_primary
             })
-            .child(
+            .child(if self.multiline && !wrap {
+                crate::scroll::horizontal_scroll_area(
+                    ("text-input-scroll", cx.entity_id()),
+                    &self.scroll_x,
+                    TextElement { input: cx.entity() },
+                    window,
+                    cx,
+                )
+            } else {
                 div()
                     .flex_1()
                     .min_w(px(0.0))
                     .overflow_hidden()
-                    .child(TextElement { input: cx.entity() }),
-            )
+                    .child(TextElement { input: cx.entity() })
+                    .into_any_element()
+            })
             .map(|field| {
                 if bare {
                     field
@@ -2228,6 +2347,31 @@ mod tests {
         assert_eq!(text(&input, &mut cx), "hello world");
         cx.simulate_keystrokes("cmd-shift-z cmd-shift-z");
         assert_eq!(text(&input, &mut cx), "x");
+    }
+
+    #[gpui::test]
+    fn a_centered_field_draws_its_line_in_the_middle(cx: &mut TestAppContext) {
+        let (plain, mut plain_cx) = field(cx, |field| field);
+        plain_cx.simulate_input("42");
+        draw(&mut plain_cx);
+        let start = plain_cx
+            .update(|_, cx| plain.read(cx).range_bounds(0..0))
+            .unwrap()
+            .left();
+        let (centered, mut cx) = field(cx, |field| field.centered());
+        cx.simulate_input("42");
+        draw(&mut cx);
+        let caret = cx
+            .update(|_, cx| centered.read(cx).range_bounds(0..0))
+            .unwrap()
+            .left();
+        assert!(
+            caret > start + px(100.0),
+            "{caret:?} should sit near the middle"
+        );
+        // A click in the middle lands in the text, not past its end.
+        cx.simulate_click(point(caret + px(1.0), px(10.0)), Modifiers::none());
+        assert!(cx.update(|_, cx| centered.read(cx).cursor_offset()) <= 1);
     }
 
     #[gpui::test]
@@ -2561,5 +2705,46 @@ mod tests {
         // Home and End still go to the ends of the text.
         cx.simulate_keystrokes("end");
         assert_eq!(caret(&input, &mut cx), 5);
+    }
+
+    #[gpui::test]
+    fn nowrap_keeps_hard_breaks_and_navigates_between_them(cx: &mut TestAppContext) {
+        let (input, mut cx) = field(cx, |field| field.description().multiline().nowrap());
+        let text = format!("{LONG}\nshort\n{LONG}");
+        cx.simulate_input(&text);
+        draw(&mut cx);
+        assert_eq!(
+            lines_of(&input, &mut cx),
+            [
+                0..LONG.len() + 1,
+                LONG.len() + 1..LONG.len() + 7,
+                LONG.len() + 7..text.len()
+            ]
+        );
+        cx.simulate_keystrokes("home up end");
+        draw(&mut cx);
+        assert_eq!(caret(&input, &mut cx), LONG.len() + 6);
+        let scrolled = cx.update(|_, cx| input.read(cx).scroll_x.offset().x);
+        assert_eq!(scrolled, px(0.0));
+    }
+
+    #[gpui::test]
+    fn a_nowrap_multiline_field_scrolls_long_lines_instead_of_wrapping(cx: &mut TestAppContext) {
+        let (input, mut cx) = field(cx, |field| field.description().multiline().nowrap());
+        cx.simulate_input(LONG);
+        draw(&mut cx);
+        assert_eq!(lines_of(&input, &mut cx), [0..LONG.len()]);
+        let (bounds, line_height) = geometry(&input, &mut cx);
+        assert!(
+            f32::from(bounds.size.width) > 120.0,
+            "the text extends past the 120px field width: {:?}",
+            bounds.size
+        );
+        assert!((f32::from(bounds.size.height) - f32::from(line_height)).abs() < 1.0);
+        let scrolled = cx.update(|_, cx| -f32::from(input.read(cx).scroll_x.offset().x));
+        assert!(
+            scrolled > 0.0,
+            "typing past the edge scrolls horizontally: {scrolled}"
+        );
     }
 }

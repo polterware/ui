@@ -18,6 +18,7 @@ polterware-motion.workspace = true
 polterware-theme.workspace = true
 polterware-window.workspace = true
 unicode-segmentation = "1"
+chrono = "0.4.44"
 # Markdown in the document style (`markdown.rs`).
 pulldown-cmark = { version = "0.12", default-features = false }
 # The terminal's emulator (grid, scrollback, selection, modes), as in Zed's GPUI terminal.

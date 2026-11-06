@@ -22,6 +22,9 @@ impl AssetSource for IconAssets {
                 super::segment_display::glyph_svg(path).map(|svg| Cow::Owned(svg.into_bytes()))
             );
         }
+        if path.starts_with("service-marks/") {
+            return Ok(crate::service_mark::asset(path));
+        }
         IconSource.load(path)
     }
 

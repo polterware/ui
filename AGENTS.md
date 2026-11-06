@@ -12,10 +12,10 @@
 
 The shared GPUI library of Polterware, Polterware Dispatch, and Vitals (see README.md for the crates). It knows no app: status words, routes, and data belong to the apps, which set them through `polterware_theme::set_root_rem` and `set_status_tones`.
 
-- The Polterware design system (`DESIGN.md` and `@polterware/frontend-design-system` in [polterware/polterware](https://github.com/polterware/polterware)) is the visual source of truth. A control here ports its CSS: name the CSS it mirrors in the doc comment, and keep values as tokens in `polterware-theme`.
+- The Polterware design system (`DESIGN.md` and `@polterware/frontend-design-system` in the workspace's `polterware-old` checkout, the last source of the Electron Desktop) is the visual source of truth. A control here ports its CSS: name the CSS it mirrors in the doc comment, and keep values as tokens in `polterware-theme`.
 - A control never defers its own panel.
 - Hugeicons Free Stroke Rounded is the only icon set (`polterware-assets`, generated from `@hugeicons/core-free-icons` under the design system's names).
-- Visual differences of about 1pt from the web design system are acceptable; do not vendor GPUI patches to chase them.
+- GPUI is used as published, never patched, forked, or vendored. Where the engine cannot do what the web design system does, adapt to what it can do, take the closest look it draws, and name the difference in the component's doc comment. Visual differences of about 1pt are acceptable.
 - Every control appears in `examples/gallery` in its variants and states. Add a gallery page with a new control, and compare captures (`GALLERY_SHOTS=<dir>`) before and after a visual change.
 - The apps depend on this repository by git. A change to a public API is a change to every app: say which apps it breaks.
 
@@ -25,7 +25,7 @@ This library is how every Polterware app builds its interface, so interface work
 
 - Componentize first. When an app needs a control, a row, a list, a panel, or a pattern, build it here as a general component the app configures (items, slots, callbacks, events) and have the app use it. An app's own code keeps only what is truly its own: its data, its words, its routes, and what a confirmed command does. When an app already draws something by hand that another app could use, move it here. Name the apps a new or changed public API reaches.
 - Two references, two jobs:
-  - **Look**: the old Solid/Electron apps and the web design system (`@polterware/frontend-design-system`, `@polterware/feature-*` in [polterware/polterware](https://github.com/polterware/polterware); the pre-GPUI copies are in the workspace's `archive/` bundles). Match their layout, sizes, and spacing. Our tokens (`polterware-theme`) and materials (`material.rs`: faces, edges, drops, `IconTile`, `kbd`) are already right; use them and do not invent colors, radii, or shadows.
+  - **Look**: the old Solid/Electron apps and the web design system (`@polterware/frontend-design-system`, `@polterware/feature-*` in the workspace's `polterware-old` checkout; the pre-GPUI copies are in the workspace's `archive/` bundles). Match their layout, sizes, and spacing. Our tokens (`polterware-theme`) and materials (`material.rs`: faces, edges, drops, `IconTile`, `kbd`) are already right; use them and do not invent colors, radii, or shadows.
   - **Behavior and robustness**: [longbridge/gpui-kit](https://github.com/longbridge/gpui-kit) (formerly gpui-component). Before building a component, read its counterpart there and match what it does: its state model and API shape (a state entity, builders, slots, events), keyboard handling, selection, scrolling, empty and disabled states, and the edge cases its tests cover. Port the behavior into this library; do not depend on the crate and do not take its look.
 - Write the component's doc comment to say both: which CSS or Solid component it looks like, and which gpui-kit component it behaves like. `patterns/commander.rs` (`Commander`, after gpui-kit's `Command`) is the model to follow.
 - Test the behavior here (`#[gpui::test]`), add the component to `examples/gallery`, and check it in a real app capture.

@@ -55,9 +55,11 @@ pub fn composer_card(
         rem: DEFAULT_REM,
         presence,
         offset_y,
+        scale: 1.0,
         fields: Vec::new(),
         footer: None,
         on_close: None,
+        on_expand: None,
         overlay: None,
     }
 }
@@ -71,13 +73,23 @@ pub struct ComposerCard {
     rem: f32,
     presence: f32,
     offset_y: f32,
+    /// The frame's scale, 0.97 to 1 while it opens (see [`super::DialogPresence`]).
+    scale: f32,
     fields: Vec<AnyElement>,
     footer: Option<AnyElement>,
     on_close: Option<Handler>,
+    on_expand: Option<Handler>,
     overlay: Option<AnyElement>,
 }
 
 impl ComposerCard {
+    /// The frame's scale as it opens, from [`super::DialogPose::scale`]. GPUI cannot scale an
+    /// element, so the face and its shadow grow from 0.97 around the content, as a dialog's do.
+    pub fn scale(mut self, scale: f32) -> Self {
+        self.scale = scale;
+        self
+    }
+
     /// Draws the title as the dialog's 16px heading (`A11yDialog`'s default chrome), for a
     /// dialog whose body has no title field, such as a confirmation.
     pub fn heading(mut self) -> Self {
@@ -114,6 +126,12 @@ impl ComposerCard {
     /// Close at the top right, a 28px ghost icon button 16px in.
     pub fn on_close(mut self, handler: Handler) -> Self {
         self.on_close = Some(handler);
+        self
+    }
+
+    /// Electron `Composer.onExpand`: opens a cited record as a page.
+    pub fn on_expand(mut self, handler: Option<Handler>) -> Self {
+        self.on_expand = handler;
         self
     }
 
@@ -177,6 +195,16 @@ impl RenderOnce for ComposerCard {
             (24.0, 18.0)
         };
         // Close is `h-8 w-8` round with its X at 16px (`<X size={16} />`).
+        let expand = self.on_expand.map(|handler| {
+            div()
+                .absolute()
+                .top(px(16.0 * k + (32.0 * k - theme.control_height_sm) / 2.0))
+                .right(px(48.0 * k + 4.0))
+                .child(
+                    icon_button("composer-expand", Icon::ExpandIcon, "Expand", handler, cx)
+                        .icon_size(14.0),
+                )
+        });
         let close = self.on_close.map(|handler| {
             div()
                 .absolute()
@@ -197,8 +225,13 @@ impl RenderOnce for ComposerCard {
             .flex()
             .flex_col()
             .rounded(px(radius))
-            .bg(theme.color_surface_subtle)
-            .shadow(shadow)
+            .child(super::dialog::scaled_frame(
+                self.scale,
+                div()
+                    .rounded(px(radius))
+                    .bg(theme.color_surface_subtle)
+                    .shadow(shadow),
+            ))
             .text_color(theme.color_text_primary)
             .font_family(theme.font_sans)
             .mt(px(self.offset_y))
@@ -275,6 +308,7 @@ impl RenderOnce for ComposerCard {
                     .pb(px(24.0 * k))
                     .child(footer)
             }))
+            .children(expand)
             .children(close)
             .child(edge(Edge::Quiet, radius, &theme))
             .children(self.overlay)

@@ -251,6 +251,15 @@ pub struct Commander {
     details: Entity<TextInput>,
     pills: Entity<PropertyPills>,
     run_mode: bool,
+    /// The panel's glide between the results' fixed height and the run's content height
+    /// (`morphPanel`): pending until the new mode's height is measured.
+    morph_height: crate::motion::Tween,
+    morph_pending: bool,
+    /// The incoming content's fade, 0 to 1, which a run's pills and Start run also rise on.
+    morph_in: crate::motion::Tween,
+    /// The frame's height as last drawn, and its content's own height.
+    drawn_h: Rc<std::cell::Cell<f32>>,
+    natural_h: Rc<std::cell::Cell<f32>>,
     groups: Vec<CommanderGroup>,
     filterable: bool,
     empty_label: SharedString,
@@ -317,6 +326,11 @@ impl Commander {
             details,
             pills,
             run_mode: false,
+            morph_height: crate::motion::Tween::new(0.0),
+            morph_pending: false,
+            morph_in: crate::motion::Tween::new(1.0),
+            drawn_h: Rc::default(),
+            natural_h: Rc::default(),
             groups: Vec::new(),
             filterable: true,
             empty_label: "No matches".into(),
@@ -366,6 +380,19 @@ impl Commander {
 
     /// Replaces the results with the run form. The host decides when a query is a run.
     pub fn set_run_mode(&mut self, run_mode: bool, cx: &mut Context<Self>) {
+        // Only a switch on the open panel moves; its first paint snaps.
+        if run_mode != self.run_mode && self.open && self.presence() > 0.99 {
+            let from = self.drawn_h.get();
+            if from > 0.5 {
+                self.morph_height.snap(from);
+                self.morph_pending = true;
+                self.natural_h.set(0.0);
+            }
+            let moderate = SpringTier::Moderate;
+            self.morph_in.snap(0.0);
+            self.morph_in
+                .animate_to(1.0, moderate.duration(), moderate.curve());
+        }
         self.run_mode = run_mode;
         cx.notify();
     }
@@ -832,6 +859,34 @@ impl Render for Commander {
             self.input.read(cx).focus_handle(cx).focus(window);
         }
 
+        // The glide starts once the new mode's height is known: the results' frame at once,
+        // the run's content after the frame it was first measured in.
+        let (_, palette_height) = commander_size(window);
+        if self.morph_pending {
+            let target = if self.run_mode {
+                self.natural_h.get()
+            } else {
+                palette_height
+            };
+            if target > 0.5 {
+                let slow = SpringTier::Slow;
+                if target < self.morph_height.value() {
+                    self.morph_height
+                        .animate_to(target, slow.exit_duration(), slow.exit_curve());
+                } else {
+                    self.morph_height
+                        .animate_to(target, slow.duration(), slow.curve());
+                }
+                self.morph_pending = false;
+            }
+            window.request_animation_frame();
+        }
+        let glide = (self.morph_pending || self.morph_height.is_animating())
+            .then(|| self.morph_height.value());
+        if glide.is_some() || self.morph_in.is_animating() {
+            window.request_animation_frame();
+        }
+        let content_in = self.morph_in.value().clamp(0.0, 1.0);
         let offset = -f32::from(self.scroll.offset().y);
         let max = f32::from(self.scroll.max_offset().height);
         let viewport = f32::from(self.scroll.bounds().size.height);
@@ -885,6 +940,11 @@ impl Render for Commander {
             top: offset.clamp(0.0, FADE),
             bottom: (max - offset).clamp(0.0, FADE),
         };
+        let rise = if self.run_mode {
+            (1.0 - content_in) * 6.0
+        } else {
+            0.0
+        };
         let (body, footer, bar, fades) = if self.run_mode {
             let description = self.details.clone();
             let body = div()
@@ -900,23 +960,47 @@ impl Render for Commander {
                         .on_click(move |_, window, cx| description.focus_handle(cx).focus(window))
                         .child(self.details.clone()),
                 )
-                .child(div().pt(px(4.0)).child(self.pills.clone()));
+                .child(
+                    div()
+                        .relative()
+                        .top(px(rise))
+                        .opacity(content_in)
+                        .pt(px(4.0))
+                        .child(self.pills.clone()),
+                );
             let weak = cx.entity().downgrade();
             let submit = Button::new("commander-start-run", ButtonKind::Primary)
                 .size(ButtonSize::Sm)
-                .radius(6.0)
                 .label("Start run")
                 .on_click(move |_, cx| {
                     let _ = weak.update(cx, |this, cx| this.submit_run(cx));
                 });
             (
                 body.into_any_element(),
-                Some(div().flex().justify_end().child(submit).into_any_element()),
+                Some(
+                    div()
+                        .relative()
+                        .top(px(rise))
+                        .opacity(content_in)
+                        .flex()
+                        .justify_end()
+                        .child(submit)
+                        .into_any_element(),
+                ),
                 None,
                 Fades::default(),
             )
         } else {
-            (results.into_any_element(), self.footer.take(), bar, fades)
+            (
+                div()
+                    .w_full()
+                    .opacity(content_in)
+                    .child(results)
+                    .into_any_element(),
+                self.footer.take(),
+                bar,
+                fades,
+            )
         };
         // The search row holds the field alone, in both modes (`.commander-search-row`).
         let input = self.input.clone();
@@ -925,6 +1009,11 @@ impl Render for Commander {
             "commander-palette",
             commander_size(window),
             self.run_mode,
+            Glide {
+                height: glide,
+                drawn: self.drawn_h.clone(),
+                natural: self.natural_h.clone(),
+            },
             self.presence(),
             input.into_any_element(),
             body,
@@ -996,6 +1085,11 @@ pub fn commander_panel(
         id,
         size,
         false,
+        Glide {
+            height: None,
+            drawn: Rc::default(),
+            natural: Rc::default(),
+        },
         presence,
         input.into_any_element(),
         results.into_any_element(),
@@ -1009,11 +1103,19 @@ pub fn commander_panel(
     )
 }
 
+/// The frame's height while it glides between modes, and where it reports what it drew.
+struct Glide {
+    height: Option<f32>,
+    drawn: Rc<std::cell::Cell<f32>>,
+    natural: Rc<std::cell::Cell<f32>>,
+}
+
 #[allow(clippy::too_many_arguments)]
 fn palette_frame(
     id: impl Into<ElementId>,
     (width, height): (f32, f32),
     run_mode: bool,
+    glide: Glide,
     presence: f32,
     input: AnyElement,
     results: AnyElement,
@@ -1051,12 +1153,30 @@ fn palette_frame(
             ))
     };
     let has_footer = footer.is_some();
+    // The frame's top and height as drawn, which the glide starts from.
+    let frame_top: Rc<std::cell::Cell<f32>> = Rc::default();
+    let measure = canvas(
+        {
+            let (drawn, top) = (glide.drawn.clone(), frame_top.clone());
+            move |bounds, _, _| {
+                top.set(f32::from(bounds.origin.y));
+                drawn.set(f32::from(bounds.size.height));
+            }
+        },
+        |_, _, _, _| {},
+    )
+    .absolute()
+    .size_full();
     div()
         .id(id)
         .occlude()
         .relative()
         .w(px(width))
-        .when(!run_mode, |frame| frame.h(px(height)))
+        .map(|frame| match glide.height {
+            // Mid-glide the frame clips what it has not reached yet.
+            Some(glided) => frame.h(px(glided)).overflow_hidden(),
+            None => frame.when(!run_mode, |frame| frame.h(px(height))),
+        })
         .max_h(px(height))
         .mt(px((1.0 - t) * 8.0))
         .opacity(t)
@@ -1068,6 +1188,7 @@ fn palette_frame(
         .text_color(theme.color_text_primary)
         .font_family(theme.font_sans)
         .cursor(CursorStyle::IBeam)
+        .child(measure)
         .child(
             div()
                 .relative()
@@ -1096,8 +1217,14 @@ fn palette_frame(
         .child(
             div()
                 .relative()
-                .when(!run_mode, |area| area.flex_1())
-                .min_h(px(0.0))
+                .map(|area| {
+                    if run_mode {
+                        // At its own height while the frame glides, so it can be measured.
+                        area.flex_none()
+                    } else {
+                        area.flex_1().min_h(px(0.0))
+                    }
+                })
                 .mt(px(RESULTS_TOP))
                 .when(!has_footer, |area| area.mb(px(CORNER_CLEAR)))
                 .child(
@@ -1133,6 +1260,21 @@ fn palette_frame(
                 .pb(px(theme.space_4))
                 .child(footer)
         }))
+        // The content's end, whose distance from the frame's top is its own height.
+        .child(
+            canvas(
+                {
+                    let (natural, top) = (glide.natural.clone(), frame_top.clone());
+                    move |bounds, _, _| {
+                        natural.set(f32::from(bounds.origin.y) - top.get());
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .flex_none()
+            .w_full()
+            .h(px(0.0)),
+        )
         .child(edge(Edge::Quiet, radius, theme))
 }
 

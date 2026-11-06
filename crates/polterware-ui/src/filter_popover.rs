@@ -88,7 +88,7 @@ const OPTION_ROW_H: f32 = 32.0;
 const MENU_ROW_H: f32 = 31.0;
 const MENU_ROW_GAP: f32 = 3.25;
 /// The bar's pills: 4px apart, each a 22.4px segment row inside 2px of frame and face.
-const PILL_RADIUS: f32 = 11.0;
+const PILL_RADIUS: f32 = 13.2;
 const TRACK_RADIUS: f32 = 14.0;
 const OPEN_DELAY: Duration = Duration::from_millis(120);
 const CLOSE_DELAY: Duration = Duration::from_millis(180);
@@ -103,6 +103,7 @@ pub struct FilterField {
     pub spec: FilterSpec,
     pub icon: Option<Icon>,
     pub section: Option<SharedString>,
+    pub option_icons: std::collections::HashMap<String, Icon>,
 }
 
 impl FilterField {
@@ -111,7 +112,14 @@ impl FilterField {
             spec,
             icon,
             section: None,
+            option_icons: Default::default(),
         }
+    }
+
+    /// Per-value glyphs, as Electron FilterField options; absent values use the label initial.
+    pub fn option_icons(mut self, icons: impl IntoIterator<Item = (String, Icon)>) -> Self {
+        self.option_icons = icons.into_iter().collect();
+        self
     }
 
     /// `section`: fields that share one are listed together, each group a padded list of its
@@ -279,6 +287,7 @@ enum Surface {
 }
 
 pub struct FilterPopover {
+    display: Option<Entity<crate::display_options::DisplayOptions>>,
     id: SharedString,
     label: SharedString,
     shortcut: bool,
@@ -333,6 +342,7 @@ impl FilterPopover {
             id: id.into(),
             label: label.into(),
             shortcut,
+            display: None,
             fields: Vec::new(),
             filters: Filters::default(),
             root: Popup::new(),
@@ -358,6 +368,20 @@ impl FilterPopover {
             hovered_row: None,
             trigger: true,
         }
+    }
+
+    /// `FilterPopover.display`: the List's controls at the end of the root menu.
+    pub fn set_display(
+        &mut self,
+        display: Option<Entity<crate::display_options::DisplayOptions>>,
+        cx: &mut Context<Self>,
+    ) {
+        if display.is_none()
+            && let Some(previous) = &self.display
+        {
+            previous.update(cx, |previous, cx| previous.close(cx));
+        }
+        self.display = display;
     }
 
     /// No icon button: the control draws only its panels, for `pills`, whose fields always
@@ -499,6 +523,9 @@ impl FilterPopover {
 
     /// `closeRoot`: the menu, its open values, the session, and the query.
     fn close_root(&mut self, cx: &mut Context<Self>) {
+        if let Some(display) = &self.display {
+            display.update(cx, |display, cx| display.close(cx));
+        }
         self.timer += 1;
         self.aim.borrow_mut().reset();
         self.root.set(false);
@@ -533,6 +560,9 @@ impl FilterPopover {
             // `onInput`: typing closes the open values.
             self.timer += 1;
             self.sub.set(false);
+            if let Some(display) = &self.display {
+                display.update(cx, |display, cx| display.close(cx));
+            }
         }
         cx.notify();
     }
@@ -897,7 +927,12 @@ impl FilterPopover {
                 }
             }
         };
-        if keep {
+        if keep
+            || self
+                .display
+                .as_ref()
+                .is_some_and(|display| display.read(cx).contains_menu(position, cx))
+        {
             return;
         }
         match surface {
@@ -1164,7 +1199,14 @@ impl FilterPopover {
                 SearchRow::Value(field, option) => {
                     let spec = &self.fields[field].spec;
                     let item = &spec.options[option];
-                    let tile = IconTile::option(self.fields[field].icon, &item.label);
+                    let tile = IconTile::option(
+                        self.fields[field]
+                            .option_icons
+                            .get(&item.id)
+                            .copied()
+                            .or(self.fields[field].icon),
+                        &item.label,
+                    );
                     let text = div()
                         .flex()
                         .min_w(px(0.0))
@@ -1227,7 +1269,11 @@ impl FilterPopover {
                 .id(SharedString::from(format!("{}-root", self.id)))
                 .relative()
                 .top(px(-offset))
-                .w(px(ROOT_W))
+                .w(px(if self.display.is_some() {
+                    320.0
+                } else {
+                    ROOT_W
+                }))
                 .max_h(px((viewport - PANEL_INSET_Y).max(120.0)))
                 .flex()
                 .flex_col()
@@ -1247,7 +1293,23 @@ impl FilterPopover {
                         .id(SharedString::from(format!("{}-root-list", self.id)))
                         .min_h(px(0.0))
                         .overflow_y_scroll()
-                        .child(body),
+                        .child(body)
+                        .when(!searching, |body| {
+                            body.children(self.display.as_ref().map(|display| {
+                                div()
+                                    .border_t_1()
+                                    .border_color(theme.color_border_subtle)
+                                    .child(
+                                        div()
+                                            .px(px(14.0))
+                                            .pt(px(10.0))
+                                            .text_size(px(11.0))
+                                            .text_color(theme.color_text_muted)
+                                            .child("Display"),
+                                    )
+                                    .child(display.clone())
+                            }))
+                        }),
                 )
                 .child(probe(&geometry, |geometry, bounds| {
                     geometry.root = Some(bounds)
@@ -1380,7 +1442,10 @@ impl FilterPopover {
                         });
                     })
                     .when(!multi, |body| body.child(radio_mark(checked, 16.0, &theme)))
-                    .child(IconTile::option(None, &option.label))
+                    .child(IconTile::option(
+                        self.fields[field].option_icons.get(&option.id).copied(),
+                        &option.label,
+                    ))
                     .child(
                         div()
                             .min_w(px(0.0))
@@ -1750,6 +1815,12 @@ impl Render for FilterPopover {
             .children(sub)
             .children(values)
             .children(operator)
+            .children(
+                self.display
+                    .as_ref()
+                    .filter(|_| self.root.visible())
+                    .map(|display| display.read(cx).overlay()),
+            )
     }
 }
 
@@ -2096,7 +2167,7 @@ impl FilterPopover {
                     .px(px(6.0))
                     .border_l_1()
                     .border_color(theme.color_border_subtle)
-                    .rounded_r(px(10.0))
+                    .rounded_r(px(PILL_RADIUS - 2.0))
                     .bg(fade(theme.color_surface_hover, remove_fill))
                     .cursor_pointer()
                     .tooltip(tooltip(format!("Remove {} filter", spec.label)))
@@ -2216,6 +2287,63 @@ mod tests {
     };
     use crate::filter::{FilterOption, FilterSpec};
     use crate::test_support::{draw, open, settle};
+
+    #[gpui::test]
+    fn display_widens_the_filter_and_selecting_keeps_it_open(cx: &mut TestAppContext) {
+        use crate::display_options::{DisplayChoice, DisplayOptions, DisplaySettings};
+        let (filter, mut visual) = opened(cx);
+        let display = visual.new(DisplayOptions::new);
+        display.update(&mut visual, |display, cx| {
+            display.set_choices(
+                vec![
+                    DisplayChoice::new("none", "No grouping"),
+                    DisplayChoice::new("stage", "Stage"),
+                    DisplayChoice::new("milestone", "Milestone"),
+                ],
+                vec![],
+                vec![],
+            );
+            display.set_settings(
+                DisplaySettings {
+                    grouping: "stage".into(),
+                    ..Default::default()
+                },
+                cx,
+            );
+        });
+        filter.update(&mut visual, |filter, cx| {
+            filter.set_display(Some(display.clone()), cx);
+            cx.notify();
+        });
+        settle(&mut visual);
+        filter.read_with(&visual, |filter, _| {
+            assert_eq!(filter.geometry.borrow().root.unwrap().size.width, px(320.0))
+        });
+        let trigger = visual.debug_bounds("display-select-0").unwrap();
+        visual.simulate_click(trigger.center(), Modifiers::none());
+        settle(&mut visual);
+        visual.simulate_keystrokes("down");
+        visual.simulate_keystrokes("down");
+        visual.simulate_keystrokes("down");
+        visual.simulate_keystrokes("enter");
+        display.read_with(&visual, |display, _| {
+            assert_eq!(display.settings().grouping, "milestone")
+        });
+        filter.read_with(&visual, |filter, _| assert!(filter.root.open));
+        let height_before = filter.read_with(&visual, |filter, _| {
+            filter.geometry.borrow().root.unwrap().size.height
+        });
+        filter.update(&mut visual, |filter, cx| {
+            filter
+                .root_search
+                .update(cx, |search, cx| search.set_text("agent", cx))
+        });
+        settle(&mut visual);
+        filter.read_with(&visual, |filter, cx| {
+            assert_eq!(filter.query(super::Surface::Root, cx), "agent");
+            assert!(filter.geometry.borrow().root.unwrap().size.height < height_before);
+        });
+    }
 
     fn field(id: &str, label: &str) -> FilterField {
         let options = ["One", "Two", "Three", "Four"]

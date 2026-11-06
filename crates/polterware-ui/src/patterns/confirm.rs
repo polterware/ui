@@ -14,6 +14,11 @@
 //! change of intent such as reopening a decision: a field under the description, and the
 //! confirm button, primary, stays disabled (Enter does nothing) until the field holds a
 //! reason, which the app reads from the field when it confirms.
+//!
+//! [`ConfirmDialog::alternate`] adds a second way to go ahead between Cancel and the confirm
+//! button (Quit & Stop Core beside Quit), and [`ConfirmDialog::check`] a checkbox under the
+//! description (`checkboxLabel` on Electron's `showMessageBox`, such as Don't ask again),
+//! whose state the app keeps and reads when it confirms.
 
 use gpui::{
     App, Entity, FocusHandle, IntoElement, KeyBinding, SharedString, Window, actions, div,
@@ -22,6 +27,7 @@ use gpui::{
 
 use crate::Handler;
 use crate::button::{Button, ButtonKind};
+use crate::checkbox::checkbox_mark;
 use crate::text_input::TextInput;
 use crate::theme::Theme;
 
@@ -50,6 +56,8 @@ pub struct ConfirmDialog {
     on_cancel: Option<Handler>,
     on_confirm: Option<Handler>,
     reason: Option<Entity<TextInput>>,
+    alternate: Option<(SharedString, Handler)>,
+    check: Option<(SharedString, bool, Handler)>,
 }
 
 impl ConfirmDialog {
@@ -70,12 +78,32 @@ impl ConfirmDialog {
             on_cancel: None,
             on_confirm: None,
             reason: None,
+            alternate: None,
+            check: None,
         }
     }
 
     /// Asks why: `field` goes under the description, and confirming waits for a reason in it.
     pub fn reason(mut self, field: &Entity<TextInput>) -> Self {
         self.reason = Some(field.clone());
+        self
+    }
+
+    /// A second way to go ahead, a secondary button between Cancel and the confirm button.
+    pub fn alternate(mut self, label: impl Into<SharedString>, handler: Handler) -> Self {
+        self.alternate = Some((label.into(), handler));
+        self
+    }
+
+    /// A checkbox under the description, `checked` as the app keeps it; a click on its row
+    /// calls `on_toggle`.
+    pub fn check(
+        mut self,
+        label: impl Into<SharedString>,
+        checked: bool,
+        on_toggle: Handler,
+    ) -> Self {
+        self.check = Some((label.into(), checked, on_toggle));
         self
     }
 
@@ -141,24 +169,44 @@ impl RenderOnce for ConfirmDialog {
                 }
                 .into_any_element()
             };
-        let actions = [
-            button(
-                "cancel",
+        let mut actions = vec![button(
+            "cancel",
+            ButtonKind::Secondary,
+            "Cancel".into(),
+            &self.on_cancel,
+        )];
+        if let Some((label, handler)) = &self.alternate {
+            actions.push(button(
+                "alternate",
                 ButtonKind::Secondary,
-                "Cancel".into(),
-                &self.on_cancel,
-            ),
-            button(
-                "confirm",
-                if self.danger {
-                    ButtonKind::Danger
-                } else {
-                    ButtonKind::Primary
-                },
-                self.confirm_label.clone(),
-                &self.on_confirm,
-            ),
-        ];
+                label.clone(),
+                &Some(handler.clone()),
+            ));
+        }
+        actions.push(button(
+            "confirm",
+            if self.danger {
+                ButtonKind::Danger
+            } else {
+                ButtonKind::Primary
+            },
+            self.confirm_label.clone(),
+            &self.on_confirm,
+        ));
+        let check = self.check.clone().map(|(label, checked, on_toggle)| {
+            div()
+                .id(SharedString::from(format!("{}-check", self.id)))
+                .mt(px(12.0))
+                .flex()
+                .items_center()
+                .gap(px(8.0))
+                .cursor_pointer()
+                .text_size(px(12.0))
+                .text_color(theme.color_text_secondary)
+                .child(checkbox_mark(checked, 14.0, &theme))
+                .child(label)
+                .on_click(move |_, window, cx| on_toggle(window, cx))
+        });
         let mut card = dialog(self.title, 1.0)
             .pose(self.pose)
             .size(DialogSize::Sm)
@@ -170,6 +218,7 @@ impl RenderOnce for ConfirmDialog {
                     .text_color(theme.color_text_muted)
                     .child(recovery)
             }))
+            .children(check)
             .children(
                 self.reason
                     .clone()

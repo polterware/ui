@@ -279,7 +279,26 @@ pub fn switch_row(
     window: &mut Window,
     cx: &mut App,
 ) -> impl IntoElement {
-    labelled(id, label, switch, false, window, cx)
+    labelled(
+        id,
+        div().child(label.into()).into_any_element(),
+        switch,
+        false,
+        window,
+        cx,
+    )
+}
+
+/// Electron `SwitchRow.label` as a slot: icons and descriptive lines share the row's
+/// hover and click behavior. Like gpui-kit's Switch, the control emits one change per click.
+pub fn switch_row_content(
+    id: impl Into<ElementId>,
+    label: impl IntoElement,
+    switch: &Entity<Switch>,
+    window: &mut Window,
+    cx: &mut App,
+) -> impl IntoElement {
+    labelled(id, label.into_any_element(), switch, false, window, cx)
 }
 
 /// [`switch_row`] on the card's raised material, as a pill as wide as its label: a toolbar's
@@ -291,12 +310,19 @@ pub fn switch_card(
     window: &mut Window,
     cx: &mut App,
 ) -> impl IntoElement {
-    labelled(id, label, switch, true, window, cx)
+    labelled(
+        id,
+        div().child(label.into()).into_any_element(),
+        switch,
+        true,
+        window,
+        cx,
+    )
 }
 
 fn labelled(
     id: impl Into<ElementId>,
-    label: impl Into<SharedString>,
+    label: gpui::AnyElement,
     switch: &Entity<Switch>,
     card: bool,
     window: &mut Window,
@@ -340,13 +366,13 @@ fn labelled(
             radius,
             &theme,
         )
-        .child(div().flex_none().child(label.into()))
+        .child(div().flex_none().child(label))
     } else {
         row.w_full()
             .px(px(8.0))
             .rounded(px(theme.radius_item))
             .bg(crate::theme::fade(theme.color_surface_hover, hover))
-            .child(div().flex_1().min_w(px(0.0)).child(label.into()))
+            .child(div().flex_1().min_w(px(0.0)).child(label))
     };
     let row = row.child(switch.clone()).on_click(move |_, window, cx| {
         click_switch.update(cx, |switch, cx| switch.toggle(window, cx));

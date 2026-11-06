@@ -55,6 +55,7 @@ pub enum TileFinish {
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum TileMark {
     Icon(Icon),
+    Svg(SharedString),
     Initial(SharedString),
 }
 
@@ -83,6 +84,13 @@ impl IconTile {
             round: false,
             tint: None,
         }
+    }
+
+    /// A filled SVG mark (Electron `IconTile` accepts arbitrary SVG children), using
+    /// the same chrome bands and material as Hugeicons. The asset source owns the path.
+    pub fn svg_asset(mut self, path: impl Into<SharedString>) -> Self {
+        self.mark_kind = TileMark::Svg(path.into());
+        self
     }
 
     pub fn size(mut self, size: f32, mark: f32) -> Self {
@@ -168,8 +176,17 @@ impl RenderOnce for IconTile {
             theme.radius_control.min(self.size / 2.0)
         };
         let inset = (self.size - self.mark) / 2.0;
-        let icon = match self.mark_kind {
-            TileMark::Icon(icon) => icon,
+        let draw: Box<dyn Fn(Rgba, f32) -> gpui::AnyElement> = match self.mark_kind {
+            TileMark::Icon(icon) => {
+                Box::new(move |color, stroke| icon_stroked(icon, self.mark, color, stroke))
+            }
+            TileMark::Svg(path) => Box::new(move |color, _| {
+                gpui::svg()
+                    .path(path.clone())
+                    .size(px(self.mark))
+                    .text_color(color)
+                    .into_any_element()
+            }),
             TileMark::Initial(initial) => {
                 return div()
                     .relative()
@@ -197,9 +214,13 @@ impl RenderOnce for IconTile {
             .bg(theme.material_face_top)
             .shadow(material::control_drop(&theme));
         tile = match self.finish {
-            TileFinish::Plain => tile.child(div().absolute().top(px(inset)).left(px(inset)).child(
-                icon_stroked(icon, self.mark, theme.color_text_secondary, 2.0),
-            )),
+            TileFinish::Plain => tile.child(
+                div()
+                    .absolute()
+                    .top(px(inset))
+                    .left(px(inset))
+                    .child(draw(theme.color_text_secondary, 2.0)),
+            ),
             TileFinish::ChromeMark => {
                 let mut tile = tile;
                 for (start, end, color) in chrome_bands(accent) {
@@ -218,7 +239,7 @@ impl RenderOnce for IconTile {
                                     .absolute()
                                     .top(px(inset - top))
                                     .left(px(inset))
-                                    .child(icon_stroked(icon, self.mark, color, 2.5)),
+                                    .child(draw(color, 2.5)),
                             ),
                     );
                 }

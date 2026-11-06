@@ -179,7 +179,17 @@ pub fn template_card_grid(
                 .text_size(px(11.0))
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(theme.color_text_muted)
-                .child(SharedString::from(label.to_uppercase()))
+                // template-card.css: letter-spacing: .04em. GPUI 0.2.2 has no tracking;
+                // separate glyph boxes approximate it, losing cross-glyph kerning.
+                .flex()
+                .gap(px(11.0 * 0.04))
+                .children(label.to_uppercase().chars().map(|glyph| {
+                    div().child(SharedString::from(if glyph == ' ' {
+                        "\u{a0}".to_string()
+                    } else {
+                        glyph.to_string()
+                    }))
+                }))
         }))
         .child(
             div()

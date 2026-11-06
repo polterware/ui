@@ -145,6 +145,7 @@ const MIN_WIDTH: f32 = 180.0;
 const SUBMENU_GAP: f32 = 4.0;
 
 pub struct Menu {
+    bounds: Rc<Cell<Option<Bounds<Pixels>>>>,
     focus: FocusHandle,
     open: bool,
     took_focus: bool,
@@ -170,6 +171,7 @@ pub struct Menu {
 impl Menu {
     pub fn new(cx: &mut Context<Self>) -> Self {
         Self {
+            bounds: Rc::new(Cell::new(None)),
             focus: cx.focus_handle(),
             open: false,
             took_focus: false,
@@ -217,6 +219,11 @@ impl Menu {
 
     pub fn is_open(&self) -> bool {
         self.open
+    }
+
+    /// The root panel's last drawn bounds, for an owning popover's outside-press handling.
+    pub fn bounds(&self) -> Option<Bounds<Pixels>> {
+        self.open.then(|| self.bounds.get()).flatten()
     }
 
     /// The plain actions it holds, in order, as a test or a host reads them.
@@ -606,7 +613,14 @@ impl Render for Menu {
         let theme = *Theme::global(cx);
         let t = self.progress.value().clamp(0.0, 1.0);
         let items = self.items.clone();
+        let bounds = self.bounds.clone();
         let panel = div()
+            .relative()
+            .child(
+                canvas(move |rect, _, _| bounds.set(Some(rect)), |_, _, _, _| {})
+                    .absolute()
+                    .inset_0(),
+            )
             .occlude()
             .key_context("Menu")
             .track_focus(&self.focus)

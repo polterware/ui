@@ -29,7 +29,7 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, CursorStyle, FontWeight, IntoElement, MouseButton, ParentElement, RenderOnce,
-    SharedString, Window, div, point, prelude::*, px,
+    SharedString, Window, canvas, div, point, prelude::*, px,
 };
 
 use crate::Handler;
@@ -41,6 +41,56 @@ use crate::theme::{Theme, tw};
 
 use super::dialog::{DialogPose, scaled_frame};
 use super::scroll_fade::toolbar_trail;
+
+#[derive(Default)]
+struct SectionScroll {
+    handle: gpui::ScrollHandle,
+    pending: Option<SharedString>,
+}
+
+fn section_scroll(window: &mut Window, cx: &mut App) -> gpui::Entity<SectionScroll> {
+    window.use_keyed_state("settings-section-scroll", cx, |_, _| {
+        SectionScroll::default()
+    })
+}
+
+/// `SettingsDialog.openResult`: remember the destination until its section mounts, then
+/// align it at `scroll-mt-2`. Like gpui-kit's Settings pages, scrolling belongs to the panel.
+pub fn scroll_to_settings_section(
+    section: impl Into<SharedString>,
+    window: &mut Window,
+    cx: &mut App,
+) {
+    section_scroll(window, cx).update(cx, |state, _| state.pending = Some(section.into()));
+    window.refresh();
+}
+
+/// A named target in Settings, including CLI commands. Geometry is read only on layout;
+/// a request is consumed once, so settled pages never schedule frames.
+pub fn settings_anchor(name: impl Into<SharedString>, child: impl IntoElement) -> impl IntoElement {
+    let name = name.into();
+    div().relative().w_full().child(child).child(
+        canvas(
+            |_, _, _| (),
+            move |bounds, _, window, cx| {
+                let state = section_scroll(window, cx);
+                state.update(cx, |state, _| {
+                    if state.pending.as_ref() == Some(&name) {
+                        state.pending = None;
+                        let offset = state.handle.offset();
+                        let delta = bounds.origin.y - state.handle.bounds().origin.y - px(tw(2.0));
+                        state
+                            .handle
+                            .set_offset(point(offset.x, (offset.y - delta).min(px(0.0))));
+                        window.refresh();
+                    }
+                });
+            },
+        )
+        .absolute()
+        .size_full(),
+    )
+}
 
 /// The dialog's width (55rem) and height when the window has room for them.
 pub const SETTINGS_WIDTH: f32 = 880.0;
@@ -308,6 +358,7 @@ impl RenderOnce for SettingsDialog {
         // The panel scrolls back to its top when another section opens.
         let scroll = use_scroll("settings-content", window, cx);
         let handle = scroll.read(cx).handle().clone();
+        section_scroll(window, cx).update(cx, |state, _| state.handle = handle.clone());
         let seen = window.use_keyed_state("settings-content-section", cx, |_, _| {
             SharedString::default()
         });

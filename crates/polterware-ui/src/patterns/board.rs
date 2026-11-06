@@ -24,9 +24,10 @@
 //! cards show it there, or until the app settles the move ([`BoardMove::settle`]): a move
 //! that was cancelled or failed glides back to the column the cards name. Releasing over its
 //! own column, outside the board, or pressing Escape glides it home. The click that ends a
-//! drag does not open the card. GPUI cannot scale an element, so the held card's 1.03 lift
-//! is its shadow alone, and the hover lights the title under the pointer without the
-//! travelling marker of `createFluidHover`.
+//! drag does not open the card. The lift expands the frame and head metrics by 1.03 about
+//! its center. GPUI 0.2.2 has no subtree transform: slotted footers keep their own metrics.
+//! The hover marker follows `createFluidHover` on the fast spring; its outline stays above
+//! the opaque cards so it remains visible while travelling between columns.
 //!
 //! It behaves like gpui-kit's `Sortable` across lists: the app owns which column each card
 //! is in and writes the move; the board draws the gesture, the move it is waiting on, and
@@ -213,6 +214,69 @@ impl Glide {
     }
 }
 
+/// `FluidHoverHighlight`'s four geometry tracks and opacity, after gpui-kit's list hover.
+/// Tracks stop requesting frames at rest; a fresh entry snaps before fading in.
+struct HoverMarker {
+    key: Option<SharedString>,
+    rect: [Tween; 4],
+    opacity: Tween,
+}
+
+impl HoverMarker {
+    fn new() -> Self {
+        Self {
+            key: None,
+            rect: [Tween::new(0.0); 4],
+            opacity: Tween::new(0.0),
+        }
+    }
+
+    fn target(&mut self, target: Option<(SharedString, Bounds<Pixels>)>) -> bool {
+        let key = target.as_ref().map(|(key, _)| key.clone());
+        let unchanged = target.as_ref().is_none_or(|(_, bounds)| {
+            [
+                bounds.left(),
+                bounds.top(),
+                bounds.size.width,
+                bounds.size.height,
+            ]
+            .into_iter()
+            .zip(self.rect.iter())
+            .all(|(value, track)| (f32::from(value) - track.target()).abs() < 0.01)
+        });
+        if self.key == key && unchanged {
+            return false;
+        }
+        let fresh = self.key.is_none();
+        self.key = key;
+        let fast = SpringTier::Fast;
+        if let Some((_, bounds)) = target {
+            let values = [
+                bounds.left(),
+                bounds.top(),
+                bounds.size.width,
+                bounds.size.height,
+            ];
+            for (track, value) in self.rect.iter_mut().zip(values) {
+                if fresh {
+                    track.snap(f32::from(value));
+                } else {
+                    track.animate_to(f32::from(value), fast.duration(), fast.curve());
+                }
+            }
+            self.opacity.animate_to(1.0, fast.duration(), fast.curve());
+        } else {
+            self.opacity
+                .animate_to(0.0, fast.exit_duration(), fast.curve());
+        }
+        true
+    }
+
+    fn moving(&self) -> bool {
+        self.opacity.is_animating() || self.rect.iter().any(Tween::is_animating)
+    }
+}
+
 /// A press on a card's head that has not travelled far enough to lift it.
 struct Press {
     card: SharedString,
@@ -240,9 +304,9 @@ struct Landing {
 
 impl Landing {
     fn from(card: SharedString, from: Point<Pixels>, lifted: f32) -> Self {
-        let moderate = SpringTier::Moderate;
+        let fast = SpringTier::Fast;
         let mut lift = Tween::new(lifted);
-        lift.animate_to(0.0, moderate.duration(), moderate.curve());
+        lift.animate_to(0.0, fast.duration(), fast.curve());
         Self {
             card,
             from: Some(from),
@@ -262,6 +326,7 @@ impl Landing {
 /// the moves it waits on, and the glide.
 pub struct BoardState {
     scroll: ScrollHandle,
+    hover: HoverMarker,
     focus: FocusHandle,
     restore: Option<FocusHandle>,
     /// Each column's bounds in the window, as the last frame drew them.
@@ -282,6 +347,7 @@ impl BoardState {
     fn new(cx: &mut Context<Self>) -> Self {
         Self {
             scroll: ScrollHandle::new(),
+            hover: HoverMarker::new(),
             focus: cx.focus_handle(),
             restore: None,
             columns: Vec::new(),
@@ -357,6 +423,7 @@ impl BoardState {
         {
             self.landing = None;
         }
+        self.hover.target(None);
         self.drag = Some(Drag {
             grab: press.at - drawn.origin,
             card: press.card,
@@ -619,6 +686,65 @@ impl Board {
         let listeners = canvas(
             |_, _, _| {},
             move |_, _, window, cx| {
+                let hover = listen.clone();
+                window.on_mouse_event(move |event: &MouseMoveEvent, phase, _, cx| {
+                    if phase != DispatchPhase::Bubble {
+                        return;
+                    }
+                    hover.update(cx, |state, cx| {
+                        if state.drag.is_some() {
+                            return;
+                        }
+                        let target = state
+                            .scroll
+                            .bounds()
+                            .contains(&event.position)
+                            .then(|| {
+                                state
+                                    .drawn
+                                    .iter()
+                                    .filter(|(key, _)| state.homes.contains_key(*key))
+                                    .min_by(|(a_key, a), (b_key, b)| {
+                                        let distance = |bounds: &Bounds<Pixels>| {
+                                            if bounds.contains(&event.position) {
+                                                0.0
+                                            } else {
+                                                let d = event.position - bounds.center();
+                                                f32::from(d.x).hypot(f32::from(d.y))
+                                            }
+                                        };
+                                        distance(a)
+                                            .total_cmp(&distance(b))
+                                            .then_with(|| a_key.cmp(b_key))
+                                    })
+                                    .map(|(key, bounds)| (key.clone(), *bounds))
+                            })
+                            .flatten();
+                        if state.hover.target(target) {
+                            cx.notify();
+                        }
+                    });
+                });
+                {
+                    let state = listen.read(cx);
+                    if state.hover.moving() {
+                        window.request_animation_frame();
+                    }
+                    let alpha = state.hover.opacity.value();
+                    if alpha > 0.001 {
+                        let rect = &state.hover.rect;
+                        let bounds = Bounds::new(
+                            point(px(rect[0].value()), px(rect[1].value())),
+                            gpui::size(px(rect[2].value()), px(rect[3].value())),
+                        );
+                        let mut color = Theme::global(cx).color_border_strong;
+                        color.a *= alpha;
+                        window.paint_quad(
+                            gpui::outline(bounds, color, gpui::BorderStyle::Solid)
+                                .corner_radii(px(Theme::global(cx).radius_card)),
+                        );
+                    }
+                }
                 let active = {
                     let state = listen.read(cx);
                     state.press.is_some() || state.drag.is_some()
@@ -676,6 +802,7 @@ impl Board {
         }
 
         let cancel = state.clone();
+        let leave = state.clone();
         div()
             .id(self.id)
             .relative()
@@ -684,14 +811,23 @@ impl Board {
             .overflow_scroll()
             .track_scroll(&scroll)
             .track_focus(&focus)
+            .on_hover(move |hovered, _, cx| {
+                if !hovered {
+                    leave.update(cx, |state, cx| {
+                        if state.hover.target(None) {
+                            cx.notify();
+                        }
+                    });
+                }
+            })
             .on_key_down(move |event: &KeyDownEvent, window, cx| {
                 if event.keystroke.key == "escape" && cancel.read(cx).drag.is_some() {
                     cx.stop_propagation();
                     cancel.update(cx, |state, cx| state.finish(true, window, cx));
                 }
             })
-            .child(listeners)
             .child(row)
+            .child(listeners)
             .into_any_element()
     }
 }
@@ -803,6 +939,8 @@ fn card_element(
     cx: &App,
 ) -> AnyElement {
     let lifted = state.read(cx).lifted(&card.key);
+    let scale = 1.0 + 0.03 * lifted.unwrap_or(0.0);
+    let slot = state.read(cx).drawn.get(&card.key).copied();
     let group = SharedString::from(format!("board-card-{}", card.key));
     let press_state = state.clone();
     let press_key = card.key.clone();
@@ -814,8 +952,8 @@ fn card_element(
         .flex()
         .flex_col()
         .items_start()
-        .gap(px(2.0))
-        .p(px(12.0))
+        .gap(px(2.0 * scale))
+        .p(px(12.0 * scale))
         .rounded(px(theme.radius_card))
         .cursor_pointer()
         .on_mouse_down(MouseButton::Left, move |event: &MouseDownEvent, _, cx| {
@@ -832,7 +970,7 @@ fn card_element(
         .child(
             div()
                 .max_w_full()
-                .text_size(px(13.0))
+                .text_size(px(13.0 * scale))
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(theme.color_text_secondary)
                 .group_hover(group.clone(), |title| {
@@ -847,7 +985,7 @@ fn card_element(
                 .text_ellipsis()
                 .whitespace_nowrap()
                 .font_family(theme.font_mono)
-                .text_size(px(11.0))
+                .text_size(px(11.0 * scale))
                 .text_color(theme.color_text_muted)
                 .child(card.caption.clone()),
         );
@@ -860,19 +998,39 @@ fn card_element(
         lift.a *= share.clamp(0.0, 1.0);
         shadow.push(drop(8.0, 24.0, lift));
     }
-    let surface = div()
+    let mut surface = div()
         .relative()
         .group(group)
         .flex()
         .flex_col()
-        .rounded(px(theme.radius_card))
+        .rounded(px(theme.radius_card * scale))
         .bg(theme.color_surface_subtle)
         .shadow(shadow)
         .child(head)
         .children(card.footer)
-        .child(edge(Edge::Strong, theme.radius_card, theme));
+        .child(edge(Edge::Strong, theme.radius_card * scale, theme));
+    let surface = if let Some(slot) = slot.filter(|_| lifted.is_some()) {
+        let extra = gpui::size(
+            slot.size.width * (scale - 1.0),
+            slot.size.height * (scale - 1.0),
+        );
+        surface = surface
+            .absolute()
+            .left(-extra.width / 2.0)
+            .top(-extra.height / 2.0)
+            .w(slot.size.width * scale)
+            .min_h(slot.size.height * scale);
+        div()
+            .relative()
+            .w_full()
+            .h(slot.size.height)
+            .child(surface)
+            .into_any_element()
+    } else {
+        surface.into_any_element()
+    };
     let shift = Shift {
-        child: surface.into_any_element(),
+        child: surface,
         state: state.clone(),
         key: card.key.clone(),
     };
@@ -957,6 +1115,25 @@ mod tests {
     use gpui::{Modifiers, TestAppContext, VisualTestContext};
 
     use super::*;
+
+    #[test]
+    fn hover_geometry_snaps_on_entry_travels_between_cards_and_finishes() {
+        let mut marker = HoverMarker::new();
+        let first = Bounds::new(point(px(10.0), px(20.0)), gpui::size(px(200.0), px(80.0)));
+        let second = Bounds::new(
+            point(px(222.0), px(120.0)),
+            gpui::size(px(200.0), px(100.0)),
+        );
+        assert!(marker.target(Some(("a".into(), first))));
+        assert_eq!(marker.rect[0].value(), 10.0);
+        assert!(marker.target(Some(("b".into(), second))));
+        assert_eq!(marker.rect[0].target(), 222.0);
+        assert!(!marker.target(Some(("b".into(), second))));
+        assert!(marker.target(None));
+        std::thread::sleep(std::time::Duration::from_millis(500));
+        assert!(!marker.moving(), "the hover must stop requesting frames");
+        assert_eq!(marker.opacity.value(), 0.0);
+    }
 
     #[test]
     fn the_nearest_column_takes_the_drop() {
@@ -1053,6 +1230,31 @@ mod tests {
     }
 
     #[gpui::test]
+    fn the_hover_tracks_cards_and_hides_when_the_pointer_leaves(cx: &mut TestAppContext) {
+        let (view, cx) = open(cx, None);
+        let first = card_head(&view, cx, "one");
+        let second = card_head(&view, cx, "two");
+        cx.simulate_mouse_move(first, None, Modifiers::none());
+        crate::test_support::draw(cx);
+        assert_eq!(
+            state(&view, cx).read_with(cx, |state, _| state.hover.key.clone()),
+            Some("one".into())
+        );
+        cx.simulate_mouse_move(second, None, Modifiers::none());
+        crate::test_support::draw(cx);
+        assert_eq!(
+            state(&view, cx).read_with(cx, |state, _| state.hover.key.clone()),
+            Some("two".into())
+        );
+        cx.simulate_mouse_move(point(px(-10.0), px(-10.0)), None, Modifiers::none());
+        crate::test_support::settle(cx);
+        state(&view, cx).read_with(cx, |state, _| {
+            assert!(state.hover.key.is_none());
+            assert!(!state.hover.moving());
+        });
+    }
+
+    #[gpui::test]
     fn a_drag_past_the_dead_zone_drops_the_card_on_another_column(cx: &mut TestAppContext) {
         let (view, cx) = open(cx, None);
         let from = card_head(&view, cx, "one");
@@ -1075,6 +1277,12 @@ mod tests {
             state(&view, cx).read_with(cx, |state, _| state.target().cloned()),
             Some("plan".into())
         );
+        std::thread::sleep(std::time::Duration::from_millis(300));
+        crate::test_support::draw(cx);
+        state(&view, cx).read_with(cx, |state, _| {
+            let lift = state.lifted(&SharedString::from("one")).expect("held card");
+            assert!((1.0 + 0.03 * lift - 1.03).abs() < 0.001);
+        });
         cx.simulate_mouse_up(to, MouseButton::Left, Modifiers::none());
         cx.run_until_parked();
         let moves = view.read_with(cx, |view, _| view.moves.borrow().clone());

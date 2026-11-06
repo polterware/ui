@@ -379,6 +379,7 @@ pub struct DataTable {
     row: RowFn,
     measure: Option<MeasureFn>,
     on_activate: Option<ActivateFn>,
+    on_peek: Option<ActivateFn>,
     on_move: Option<ActivateFn>,
     on_context: Option<ContextFn>,
     marked: Option<usize>,
@@ -412,6 +413,7 @@ impl DataTable {
             row: Rc::new(row),
             measure: None,
             on_activate: None,
+            on_peek: None,
             on_move: None,
             on_context: None,
             marked: None,
@@ -489,6 +491,13 @@ impl DataTable {
     /// `onActivate`: a click on the row.
     pub fn on_activate(mut self, handler: impl Fn(usize, &mut Window, &mut App) + 'static) -> Self {
         self.on_activate = Some(Rc::new(handler));
+        self
+    }
+
+    /// Electron `DataTable.Row.onPeek`: Space previews the keyboard-focused row,
+    /// independently of activation, following gpui-kit's Table keyboard dispatch.
+    pub fn on_peek(mut self, handler: impl Fn(usize, &mut Window, &mut App) + 'static) -> Self {
+        self.on_peek = Some(Rc::new(handler));
         self
     }
 
@@ -1106,7 +1115,12 @@ impl RenderOnce for DataTable {
             0.0
         };
         let (header_height, label_size) = self.header;
-        let header_pitch = SPACING + header_height + SPACING;
+        // A cited-record table has no thead: only the leading border-spacing remains.
+        let header_pitch = if header_height <= 0.0 {
+            SPACING
+        } else {
+            SPACING + header_height + SPACING
+        };
         let full_height = match &stack {
             Some(stack) => header_pitch + stack.1 + SPACING + inset,
             None => content_height(items.len(), pitch, header_pitch) + inset,
@@ -1486,6 +1500,7 @@ impl RenderOnce for DataTable {
             let shown_rows = shown_rows.clone();
             let items = items.clone();
             let on_activate = self.on_activate.clone();
+            let on_peek = self.on_peek.clone();
             let on_move = self.on_move.clone().or_else(|| self.on_activate.clone());
             let on_select = self
                 .selection
@@ -1547,6 +1562,12 @@ impl RenderOnce for DataTable {
                         if let Some(select) = &on_select {
                             cx.stop_propagation();
                             select(SelectionChange::Toggle(active), window, cx);
+                        }
+                    }
+                    "space" if !mods.shift && on_peek.is_some() => {
+                        cx.stop_propagation();
+                        if let Some(handler) = &on_peek {
+                            handler(active, window, cx);
                         }
                     }
                     "enter" => {
@@ -2542,6 +2563,31 @@ mod tests {
         draw(&mut cx);
         cx.simulate_keystrokes("k k");
         assert_eq!(*active.borrow(), Some(0));
+    }
+
+    #[gpui::test]
+    fn space_peeks_the_keyboard_cursor_without_activating_it(cx: &mut TestAppContext) {
+        let peeked = Rc::new(RefCell::new(Vec::new()));
+        let opened = Rc::new(RefCell::new(Vec::new()));
+        let (peek_log, open_log) = (peeked.clone(), opened.clone());
+        let mut cx = open(cx, size(600.0, 400.0), move |_, _| {
+            let (peek_log, open_log) = (peek_log.clone(), open_log.clone());
+            DataTable::new("peek-rows", vec![Column::new("Item")], 3, |_, _, _| {
+                vec![div().into_any_element()]
+            })
+            .active(Some(0))
+            .on_move(|_, _, _| {})
+            .on_peek(move |row, _, _| peek_log.borrow_mut().push(row))
+            .on_activate(move |row, _, _| open_log.borrow_mut().push(row))
+            .into_any_element()
+        });
+        cx.simulate_click(point(px(100.0), px(HEADER_PITCH + 20.0)), Modifiers::none());
+        draw(&mut cx);
+        cx.simulate_keystrokes("j space");
+        assert_eq!(*peeked.borrow(), vec![1]);
+        assert_eq!(*opened.borrow(), vec![0]);
+        cx.simulate_keystrokes("enter");
+        assert_eq!(*opened.borrow(), vec![0, 1]);
     }
 
     #[gpui::test]

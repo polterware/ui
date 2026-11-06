@@ -1,6 +1,6 @@
 //! `NumberStepper` (`number-stepper.tsx` on Ark's NumberInput, `form-primitives.css`): a label
 //! (12px `--color-text-secondary`) 8px over the control: a texture "−" button, a small field
-//! 72px wide, and a texture "+" button, 4px apart, their marks 12px.
+//! 72px wide with its value centered, and a texture "+" button, 4px apart, their marks 12px.
 //!
 //! Typing a number reports it as it is typed (`onValueChange`); the buttons step it by one,
 //! never under the minimum. Text that is not a number reports nothing. Setting the value from
@@ -43,7 +43,7 @@ fn format_value(value: f64) -> String {
 
 impl NumberStepper {
     pub fn new(id: impl Into<SharedString>, cx: &mut Context<Self>) -> Self {
-        let input = cx.new(|cx| TextInput::new(cx).size(FieldSize::Sm));
+        let input = cx.new(|cx| TextInput::new(cx).size(FieldSize::Sm).centered());
         cx.observe(&input, |this, input, cx| {
             let text = input.read(cx).text().to_string();
             if text == this.written {

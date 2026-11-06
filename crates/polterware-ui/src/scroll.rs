@@ -349,7 +349,95 @@ pub fn scroll_area(
     window: &mut Window,
     cx: &mut App,
 ) -> AnyElement {
-    scroll_area_below(id, content, 0.0, None, window, cx)
+    scroll_area_below(id, content, 0.0, None, false, window, cx)
+}
+
+/// `markdown-editor.tsx`'s frozen ancestor scroll: preserve its offset and gutter while
+/// hiding overflow and disabling its thumb. The overlay's own list keeps scrolling.
+pub fn scroll_area_locked(
+    id: impl Into<ElementId>,
+    content: impl IntoElement,
+    locked: bool,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    scroll_area_below(id, content, 0.0, None, locked, window, cx)
+}
+
+/// A `white-space: pre; overflow-x: auto` viewport, as Markdown code in
+/// `markdown-editor.css`: hard lines retain their width and the shared scrollbar moves them.
+/// `content` supplies its natural width; `handle` also lets an editor reveal its caret.
+pub fn horizontal_scroll_area(
+    id: impl Into<ElementId>,
+    handle: &ScrollHandle,
+    content: impl IntoElement,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let id = id.into();
+    let viewport = f32::from(handle.bounds().size.width);
+    let max = f32::from(handle.max_offset().width);
+    let mut scroller = div()
+        .id(id.clone())
+        .w_full()
+        .min_w(px(0.0))
+        .flex()
+        .overflow_x_scroll()
+        .track_scroll(handle)
+        .child(content);
+    scroller.style().restrict_scroll_to_axis = Some(true);
+    let watch = handle.clone();
+    let view = window.current_view();
+    let watcher = canvas(
+        move |_, _, cx| {
+            if (f32::from(watch.bounds().size.width) - viewport).abs() > 0.5
+                || (f32::from(watch.max_offset().width) - max).abs() > 0.5
+            {
+                cx.notify(view);
+            }
+        },
+        |_, _, _, _| {},
+    )
+    .absolute()
+    .size_0();
+    let mut area = div()
+        .relative()
+        .flex_1()
+        .min_w(px(0.0))
+        .flex()
+        .flex_col()
+        .child(scroller)
+        .child(watcher);
+    if max > 0.5 {
+        let bar = scrollbar(
+            (id, "bar"),
+            handle,
+            ScrollAxis::Horizontal,
+            ScrollGeometry {
+                track: viewport,
+                viewport,
+                content: viewport + max,
+            },
+            window,
+            cx,
+        );
+        area = area.child(
+            div()
+                .relative()
+                .w_full()
+                .h(px(reserved_gutter()))
+                .flex_none()
+                .child(
+                    div()
+                        .absolute()
+                        .bottom_0()
+                        .w_full()
+                        .h(px(GUTTER))
+                        .child(bar),
+                ),
+        );
+    }
+    area.into_any_element()
 }
 
 /// [`scroll_area`] for [`page_under`]'s content: `top` kept clear above `content` at rest, the
@@ -364,17 +452,19 @@ pub fn scroll_area_under(
 ) -> AnyElement {
     let surface = Theme::global(cx).color_surface;
     let body = div().w_full().pt(px(top)).child(content);
-    scroll_area_below(id, body, top, Some(surface), window, cx)
+    scroll_area_below(id, body, top, Some(surface), false, window, cx)
 }
 
 /// [`scroll_area`] whose scrollbar starts `top` down, under what floats over the area's top
 /// (a page's toolbar), so the bar and the toolbar's controls never meet. With `fade`, the end
 /// fades into that color, over as far as there is left to scroll, up to 24px.
+#[allow(clippy::too_many_arguments)]
 fn scroll_area_below(
     id: impl Into<ElementId>,
     content: impl IntoElement,
     top: f32,
     fade: Option<Rgba>,
+    locked: bool,
     window: &mut Window,
     cx: &mut App,
 ) -> AnyElement {
@@ -387,7 +477,13 @@ fn scroll_area_below(
     let scroller = div()
         .id(id.clone())
         .size_full()
-        .overflow_y_scroll()
+        .map(|scroller| {
+            if locked {
+                scroller.overflow_y_hidden()
+            } else {
+                scroller.overflow_y_scroll()
+            }
+        })
         .track_scroll(&handle)
         .child(
             div()
@@ -420,7 +516,7 @@ fn scroll_area_below(
         .min_h(px(0.0))
         .child(scroller)
         .child(watcher);
-    if !overflows {
+    if !overflows || locked {
         return area.into_any_element();
     }
     let viewport = f32::from(handle.bounds().size.height);
@@ -523,6 +619,7 @@ pub fn page_content(
             body,
             theme.page_header_height,
             Some(theme.color_surface),
+            false,
             window,
             cx,
         ))
@@ -716,4 +813,61 @@ pub fn page_fill_bar(
                 .child(toolbar),
         )
         .into_any_element()
+}
+
+#[cfg(test)]
+mod lock_tests {
+    use super::*;
+    use crate::test_support::{draw, open};
+    use gpui::{Modifiers, ScrollDelta, ScrollWheelEvent, TestAppContext, TouchPhase, size};
+
+    #[gpui::test]
+    fn locking_preserves_offset_and_gutter_and_unlocking_restores_wheel(cx: &mut TestAppContext) {
+        let locked = Rc::new(Cell::new(false));
+        let flag = locked.clone();
+        let captured = Rc::new(std::cell::RefCell::new(None));
+        let capture = captured.clone();
+        let mut cx = open(cx, size(300.0, 200.0), move |window, cx| {
+            *capture.borrow_mut() = Some(
+                use_scroll("locked-scroll", window, cx)
+                    .read(cx)
+                    .handle()
+                    .clone(),
+            );
+            scroll_area_locked(
+                "locked-scroll",
+                div().h(px(1000.0)).child(
+                    div()
+                        .debug_selector(|| "scroll-content".into())
+                        .w_full()
+                        .h(px(30.0)),
+                ),
+                flag.get(),
+                window,
+                cx,
+            )
+        });
+        let handle = captured.borrow().clone().unwrap();
+        handle.set_offset(point(px(0.0), px(-100.0)));
+        draw(&mut cx);
+        let width = cx.debug_bounds("scroll-content").unwrap().size.width;
+        locked.set(true);
+        draw(&mut cx);
+        assert_eq!(handle.offset().y, px(-100.0));
+        assert_eq!(cx.debug_bounds("scroll-content").unwrap().size.width, width);
+        let wheel = || ScrollWheelEvent {
+            position: point(px(100.0), px(100.0)),
+            delta: ScrollDelta::Pixels(point(px(0.0), px(-60.0))),
+            modifiers: Modifiers::default(),
+            touch_phase: TouchPhase::Moved,
+        };
+        cx.simulate_event(wheel());
+        draw(&mut cx);
+        assert_eq!(handle.offset().y, px(-100.0));
+        locked.set(false);
+        draw(&mut cx);
+        cx.simulate_event(wheel());
+        draw(&mut cx);
+        assert!(handle.offset().y < px(-100.0));
+    }
 }

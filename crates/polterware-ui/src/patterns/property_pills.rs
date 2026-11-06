@@ -9,8 +9,8 @@
 //! label while none is picked), then a `+`, so two lists of the same options read apart; its
 //! picker's rows are checkboxes that toggle and keep it open. A [`Property::loose`] tokens
 //! property is the `TokenPicker` itself: each value is a filter pill of its own (its mark and
-//! label, then × on a rule), then a texture `+` (the empty label while none is picked, on
-//! the small texture button's 6px corners) that opens a picker of the values not picked yet,
+//! label, then × on a rule), then a texture `+` (the empty label while none is picked)
+//! that opens a picker of the values not picked yet,
 //! gone once every option is. A loose token shows its option's hint muted after the label; an
 //! [`Property::editable`] token's value is a button that asks to edit it (`onEdit`), an option
 //! that [`PropertyOption::opens`] somewhere outside adds an ↗ before the × (`opener`), and an
@@ -69,10 +69,7 @@ const PILL_GAP: f32 = 6.0;
 /// A token group's track: its 28px pills and 2px around them.
 const GROUP_RADIUS: f32 = 16.0;
 /// A loose token's pill (`.pw-filter-pill`).
-const TOKEN_RADIUS: f32 = 11.0;
-/// A small texture button's corners (`rounded-[6px]`), as the loose add button wears them
-/// while it shows the empty label; the `+` alone stays round.
-const ADD_RADIUS: f32 = 6.0;
+const TOKEN_RADIUS: f32 = 13.2;
 /// The fade before a lit row's ⋯ button, over the text it may cover.
 const MORE_FADE: f32 = 24.0;
 /// A click on the pill whose picker a press outside just closed toggles it shut, not open
@@ -412,6 +409,8 @@ pub struct PropertyPicker {
     checked: Option<Vec<SharedString>>,
     width: f32,
     trigger_height: f32,
+    align_end: bool,
+    trigger_width: f32,
     /// Typed text that matches no option can be picked as a value of its own.
     creatable: bool,
     /// Indices into `options` that match the search, each group's together in the order the
@@ -453,6 +452,8 @@ impl PropertyPicker {
             checked: None,
             width: PICKER_WIDTH,
             trigger_height: 28.0,
+            align_end: false,
+            trigger_width: 28.0,
             creatable: false,
             matched: Vec::new(),
             active: None,
@@ -519,6 +520,16 @@ impl PropertyPicker {
     /// The matching options, then the create row while it shows.
     fn row_count(&self) -> usize {
         self.matched.len() + usize::from(self.created().is_some())
+    }
+
+    /// Electron PropertyPicker `align="end"`, using gpui-kit Popover placement semantics.
+    pub fn set_align_end(&mut self, end: bool) {
+        self.align_end = end;
+    }
+
+    /// The measured control width for right-aligned placement.
+    pub fn set_trigger_width(&mut self, width: f32) {
+        self.trigger_width = width;
     }
 
     /// The height of the control it hangs from.
@@ -1123,7 +1134,12 @@ impl Render for PropertyPicker {
                     .top(at.y - origin.y)
                     .child(self.row_menu.clone())
             }));
-        hang(self.trigger_height + 4.0, (1.0 - t) * SLIDE, panel).into_any_element()
+        let panel = hang(self.trigger_height + 4.0, (1.0 - t) * SLIDE, panel);
+        if self.align_end {
+            panel.align_end(self.trigger_width).into_any_element()
+        } else {
+            panel.into_any_element()
+        }
     }
 }
 
@@ -1668,10 +1684,7 @@ impl Render for PropertyPills {
                         let mut add = Button::new(("property-add", index), ButtonKind::Secondary)
                             .on_click(move |window, cx| toggle(window, cx));
                         add = if values.is_empty() {
-                            let add = add
-                                .size(ButtonSize::Sm)
-                                .radius(ADD_RADIUS)
-                                .label(empty.clone());
+                            let add = add.size(ButtonSize::Sm).label(empty.clone());
                             match property.icon {
                                 Some(name) => add.icon(name),
                                 None => add,
@@ -1818,6 +1831,45 @@ mod tests {
             .detach();
         });
         seen
+    }
+
+    #[gpui::test]
+    fn a_link_picker_aligns_to_its_triggers_right_edge(cx: &mut TestAppContext) {
+        use gpui::{AppContext as _, IntoElement, div, prelude::*, size};
+        let view = cx.update(|cx| cx.new(PropertyPicker::new));
+        let picker = view.clone();
+        let mut visual = crate::test_support::open(cx, size(900.0, 600.0), move |_, _| {
+            div()
+                .absolute()
+                .left(px(400.0))
+                .top(px(40.0))
+                .w(px(28.0))
+                .h(px(28.0))
+                .child(picker.clone())
+                .into_any_element()
+        });
+        visual.update(|window, cx| {
+            view.update(cx, |picker, cx| {
+                picker.set_options("Link doc", tiers(), None, 240.0, cx);
+                picker.set_trigger_width(28.0);
+                picker.set_align_end(true);
+                picker.open(window, cx);
+            })
+        });
+        crate::test_support::draw(&mut visual);
+        assert_eq!(
+            view.read_with(&visual, |picker, _| picker.panel_origin.get().x),
+            px(188.0)
+        );
+        view.update(&mut visual, |picker, cx| {
+            picker.set_align_end(false);
+            cx.notify();
+        });
+        crate::test_support::draw(&mut visual);
+        assert_eq!(
+            view.read_with(&visual, |picker, _| picker.panel_origin.get().x),
+            px(400.0)
+        );
     }
 
     #[gpui::test]

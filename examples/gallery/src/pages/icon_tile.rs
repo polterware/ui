@@ -55,6 +55,14 @@ fn round(_: &mut Window, _: &mut App) -> Vec<AnyElement> {
     ]
 }
 
+fn service_marks(_: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    polterware_ui::service_mark::ALL
+        .iter()
+        .chain([&"google-cloud", &"unknown"])
+        .map(|name| polterware_ui::service_mark::service_mark(name, 24.0, cx))
+        .collect()
+}
+
 pub fn examples() -> Vec<Example> {
     let example = |title, render| Example {
         slug: "icon-tile",
@@ -66,5 +74,6 @@ pub fn examples() -> Vec<Example> {
         example("Semantic tones", tones),
         example("Plain finish", plain),
         example("Round", round),
+        example("Service marks", service_marks),
     ]
 }

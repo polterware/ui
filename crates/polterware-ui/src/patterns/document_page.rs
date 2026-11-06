@@ -6,7 +6,8 @@
 //! most 654px wide, centered in the room the rail leaves, then 48px, then the 376px rail of
 //! properties, 48px down. The web rail is sticky at the scroll's top, which keeps it where it
 //! starts, so it is drawn over the scroll there and the column keeps its room; a rail taller
-//! than the window is cut at its bottom.
+//! than the window scrolls independently, fading at both ends over 24px, as the design
+//! system scroll fade in `materials.css`.
 //!
 //! The rail holds [`document_group`]s, the `RailGroup` that does not fold: a 24px neutral
 //! icon tile and the 13px/500 title, then the content 6px under, the group padded
@@ -30,11 +31,12 @@ use gpui::{
     Window, div, prelude::*, px,
 };
 
+use super::scroll_fade::fade_scroll;
 use crate::Handler;
 use crate::button::{Button, ButtonKind, ButtonSize};
 use crate::icon_tile::{IconTile, TileTone};
 use crate::icons::{Icon, icon_colored};
-use crate::scroll::scroll_area;
+use crate::scroll::{scroll_area_locked, use_scroll};
 use crate::theme::Theme;
 
 use super::rail_page::{RAIL_WIDTH, RailState, rail_page_header, rail_toggle_label};
@@ -69,6 +71,7 @@ pub struct DocumentPage {
     rail: Vec<AnyElement>,
     rail_state: Option<Entity<RailState>>,
     children: Vec<AnyElement>,
+    scroll_locked: bool,
 }
 
 impl DocumentPage {
@@ -81,7 +84,14 @@ impl DocumentPage {
             rail: Vec::new(),
             rail_state: None,
             children: Vec::new(),
+            scroll_locked: false,
         }
+    }
+
+    /// Freezes the column while its editor's slash menu is open (`markdown-editor.tsx`).
+    pub fn scroll_locked(mut self, locked: bool) -> Self {
+        self.scroll_locked = locked;
+        self
     }
 
     /// Back to the list.
@@ -221,10 +231,31 @@ impl RenderOnce for DocumentPage {
                         .w(px((RAIL_GAP + RAIL_WIDTH) * progress.max(0.0))),
                 )
             });
-        let scroll = scroll_area((self.id.clone(), "scroll"), row, window, cx);
+        let scroll = scroll_area_locked(
+            (self.id.clone(), "scroll"),
+            row,
+            self.scroll_locked,
+            window,
+            cx,
+        );
         let offset = TRAVEL * (1.0 - progress);
         let opacity = progress.clamp(0.0, 1.0);
         let rail = present.then(|| {
+            let handle = use_scroll((self.id.clone(), "rail-scroll"), window, cx)
+                .read(cx)
+                .handle()
+                .clone();
+            let rail_content = fade_scroll(
+                "document-rail-content",
+                &handle,
+                if narrow {
+                    theme.color_surface_subtle
+                } else {
+                    theme.color_surface
+                },
+            )
+            .column(|column| column.flex().flex_col())
+            .children(self.rail);
             if narrow {
                 // Over the text, the drawer takes the pointer and the wheel.
                 return div()
@@ -239,13 +270,9 @@ impl RenderOnce for DocumentPage {
                     .bg(theme.color_surface_subtle)
                     .shadow(float_drop(&theme))
                     .child(
-                        div()
-                            .id((self.id.clone(), "drawer"))
-                            .size_full()
-                            .overflow_y_scroll()
-                            .py(px(16.0))
-                            .px(px(8.0))
-                            .child(div().w_full().flex().flex_col().children(self.rail)),
+                        rail_content
+                            .inset_x(theme.radius_card)
+                            .column(|column| column.py(px(16.0)).px(px(8.0))),
                     )
                     .child(edge(Edge::Quiet, theme.radius_card, &theme));
             }
@@ -262,7 +289,7 @@ impl RenderOnce for DocumentPage {
                 .overflow_hidden()
                 .flex()
                 .flex_col()
-                .children(self.rail)
+                .child(rail_content)
         });
         let probe = self
             .rail_state
@@ -530,5 +557,44 @@ mod tests {
         assert!((end..=end + TRAVEL).contains(&f32::from(rail.right())));
         let body = cx.debug_bounds("body").expect("the column stays");
         assert_eq!(f32::from(body.left()), (800.0 - DOCUMENT_COLUMN) / 2.0);
+    }
+}
+
+#[cfg(test)]
+mod rail_scroll_tests {
+    use super::*;
+    use crate::test_support::{draw, open};
+    use gpui::{TestAppContext, size};
+
+    #[gpui::test]
+    fn a_long_rail_scrolls_independently_from_the_document(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(1200.0, 400.0), |_, _| {
+            DocumentPage::new("document-test")
+                .rail(
+                    div()
+                        .debug_selector(|| "long-rail".into())
+                        .h(px(900.0))
+                        .flex_none()
+                        .child("Long rail"),
+                )
+                .child(
+                    div()
+                        .debug_selector(|| "document-stationary".into())
+                        .h(px(30.0)),
+                )
+                .into_any_element()
+        });
+        draw(&mut cx);
+        let rail = cx.debug_bounds("long-rail").unwrap();
+        let column = cx.debug_bounds("document-stationary").unwrap();
+        cx.simulate_event(gpui::ScrollWheelEvent {
+            position: gpui::point(rail.left() + px(20.0), rail.top() + px(100.0)),
+            delta: gpui::ScrollDelta::Pixels(gpui::point(px(0.0), px(-100.0))),
+            modifiers: gpui::Modifiers::default(),
+            touch_phase: gpui::TouchPhase::Moved,
+        });
+        draw(&mut cx);
+        assert!(cx.debug_bounds("long-rail").unwrap().top() < rail.top());
+        assert_eq!(cx.debug_bounds("document-stationary").unwrap(), column);
     }
 }

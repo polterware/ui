@@ -148,6 +148,8 @@ pub struct CollapsibleSection {
     actions: Option<SectionBody>,
     /// A document's section heading, set larger than its rows.
     large: bool,
+    /// A canvas side panel's section, set tighter.
+    compact: bool,
 }
 
 impl CollapsibleSection {
@@ -163,6 +165,7 @@ impl CollapsibleSection {
             body: Rc::new(|_, _| div().into_any_element()),
             actions: None,
             large: false,
+            compact: false,
         }
     }
 
@@ -171,6 +174,12 @@ impl CollapsibleSection {
     /// each side, in line with the rows' text, and 6px over the body while open.
     pub fn set_large_title(&mut self, large: bool) {
         self.large = large;
+    }
+
+    /// A section of a canvas side panel (`.pw-canvas-panel-body`): its toggle 6px over and
+    /// under, and its body's rows 8px apart.
+    pub fn set_compact(&mut self, compact: bool) {
+        self.compact = compact;
     }
 
     pub fn set_title(&mut self, title: impl Into<SharedString>) {
@@ -240,7 +249,7 @@ impl Render for CollapsibleSection {
             .min_w(px(0.0))
             .items_center()
             .gap(px(6.0))
-            .py(px(tw(1.0)))
+            .py(px(if self.compact { 6.0 } else { tw(1.0) }))
             .cursor_pointer()
             .on_click(cx.listener(|this, _, _, cx| {
                 let open = !this.is_open();
@@ -307,7 +316,7 @@ impl Render for CollapsibleSection {
                 .pt(px(10.0))
                 .flex()
                 .flex_col()
-                .gap(px(10.0))
+                .gap(px(if self.compact { 8.0 } else { 10.0 }))
                 .min_w(px(0.0))
                 .child((self.body)(window, cx))
                 .into_any_element()

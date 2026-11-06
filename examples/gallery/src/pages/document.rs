@@ -112,8 +112,11 @@ fn toolbar(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
 fn code(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
     let editor = opened(
         "gallery-markdown-code",
-        "Drain it first:\n\n```go\nfunc drain(q *Queue) {\n\tq.Flush()\n}\n```",
-        |editor, window, cx| editor.edit_block(1, window, cx),
+        "Drain it first:\n\n```go\nfunc drain(q *Queue) {\n\tq.FlushWithContext(ctx, \"a long code line stays on one line and scrolls horizontally past the editor edge\")\n}\n```",
+        |editor, window, cx| {
+            editor.edit_block(1, window, cx);
+            editor.select(0..4, cx);
+        },
         window,
         cx,
     );

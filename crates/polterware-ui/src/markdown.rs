@@ -48,8 +48,8 @@ use std::time::Duration;
 use gpui::{
     AnyElement, App, Bounds, ClipboardItem, Context, CursorStyle, Div, ElementId, Entity,
     EventEmitter, Focusable, FontStyle, FontWeight, IntoElement, MouseButton, MouseDownEvent,
-    Pixels, Point, Render, ScrollHandle, SharedString, StrikethroughStyle, Subscription, Task,
-    Window, anchored, canvas, deferred, div, point, prelude::*, px, svg,
+    Pixels, Point, Render, RenderOnce, ScrollHandle, SharedString, StrikethroughStyle,
+    Subscription, Task, Window, anchored, canvas, deferred, div, point, prelude::*, px, svg,
 };
 use pulldown_cmark::{CodeBlockKind, Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 
@@ -697,23 +697,62 @@ fn block_element(block: &Block, on_task: Option<crate::Handler>, theme: &Theme) 
             )
             .into_any_element(),
         BlockKind::Code { text, .. } => code_frame(theme)
-            .overflow_hidden()
-            .children(text.split('\n').map(|line| {
-                div()
-                    .h(px(LINE))
-                    .whitespace_nowrap()
-                    .child(if line.is_empty() {
-                        SharedString::from(" ")
-                    } else {
-                        SharedString::from(line.to_string())
-                    })
-            }))
+            .child(CodeText {
+                text: text.clone(),
+                offset: block.source.start,
+            })
             .into_any_element(),
         BlockKind::Rule => div()
             .w_full()
             .h(px(1.0))
             .bg(theme.color_border_subtle)
             .into_any_element(),
+    }
+}
+
+/// `pre code` keeps its hard lines at their natural width, including outside an open field.
+#[derive(IntoElement)]
+struct CodeText {
+    text: String,
+    offset: usize,
+}
+
+impl RenderOnce for CodeText {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let theme = *Theme::global(cx);
+        let handle = crate::scroll::use_scroll(("md-code-horizontal", self.offset), window, cx)
+            .read(cx)
+            .handle()
+            .clone();
+        let width = self
+            .text
+            .split('\n')
+            .map(|line| {
+                crate::data_table::text_width(line, gpui::font(theme.font_mono), CODE_SIZE, window)
+            })
+            .fold(0.0_f32, f32::max);
+        let lines = div()
+            .w(px(width))
+            .min_w_full()
+            .flex_none()
+            .flex()
+            .flex_col()
+            .children(self.text.split('\n').map(|line| {
+                div()
+                    .h(px(LINE))
+                    .flex_none()
+                    .whitespace_nowrap()
+                    .child(SharedString::from(
+                        if line.is_empty() { " " } else { line }.to_string(),
+                    ))
+            }));
+        crate::scroll::horizontal_scroll_area(
+            ("md-code-text", self.offset),
+            &handle,
+            lines,
+            window,
+            cx,
+        )
     }
 }
 
@@ -750,18 +789,44 @@ pub fn markdown_view(source: &str, cx: &App) -> Div {
     let mut previous = None;
     for block in &blocks {
         let flow = Flow::of(&block.kind);
-        root = root.child(
-            div()
-                .w_full()
-                .pt(px(gap(previous, flow)))
-                .child(block_element(block, None, theme)),
-        );
+        root = root.child(div().w_full().pt(px(gap(previous, flow))).child(
+            if matches!(block.kind, BlockKind::Code { .. }) {
+                ReadOnlyCode {
+                    source: source[block.source.clone()].to_string(),
+                    offset: block.source.start,
+                }
+                .into_any_element()
+            } else {
+                block_element(block, None, theme)
+            },
+        ));
         previous = Some(flow);
     }
     if let Some(last) = previous {
         root = root.pb(px(last.bottom()));
     }
     root
+}
+
+/// Read-only `MarkdownEditor` code: the same Copy corner and 1.5s feedback as the editor.
+#[derive(IntoElement)]
+struct ReadOnlyCode {
+    source: String,
+    offset: usize,
+}
+
+impl RenderOnce for ReadOnlyCode {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let source = self.source;
+        let editor = window.use_keyed_state(("md-readonly-code", self.offset), cx, |_, cx| {
+            let mut editor = MarkdownEditor::new(source.clone(), cx);
+            editor.set_editable(false, cx);
+            editor
+        });
+        editor.update(cx, |editor, cx| editor.set_source(source, cx));
+        // The surrounding markdown_view already supplies this block's bottom margin.
+        div().w_full().mb(px(-BLOCK_GAP)).child(editor)
+    }
 }
 
 /// The text a block's field holds: its Markdown, with the lines a paragraph wraps over
@@ -1082,6 +1147,12 @@ impl MarkdownEditor {
         self.placeholder = placeholder.into();
     }
 
+    /// Whether the host must freeze the scrollers carrying this editor, as
+    /// `markdown-editor.tsx` freezes its ancestors while the slash menu is open.
+    pub fn slash_open(&self) -> bool {
+        self.slash.is_some()
+    }
+
     /// Opens the first block, or a new one in an empty document, as the title's Enter does.
     pub fn edit_start(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         match (0..self.blocks.len()).find(|index| self.opening(*index).is_some()) {
@@ -1188,7 +1259,7 @@ impl MarkdownEditor {
         let input = cx.new(|cx| {
             let input = TextInput::new(cx).prose(size, line, weight);
             let input = if code {
-                input.mono().multiline()
+                input.mono().multiline().nowrap()
             } else {
                 input.wrap()
             };
@@ -1350,8 +1421,7 @@ impl MarkdownEditor {
             .as_ref()
             .map(|slash| slash.range.clone())
             .filter(|range| !range.is_empty());
-        let toolbar =
-            (!code && !text[selection.clone()].trim().is_empty()).then(|| selection.clone());
+        let toolbar = (!text[selection.clone()].trim().is_empty()).then(|| selection.clone());
         if self.dismissed_toolbar.as_ref() != Some(&selection) {
             self.dismissed_toolbar = None;
         }
@@ -1502,6 +1572,33 @@ impl MarkdownEditor {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        let code = self
+            .editing
+            .as_ref()
+            .is_some_and(|editing| editing.fence.is_some());
+        if code {
+            // Tiptap code blocks exclude marks; block tools clear the code node first.
+            if matches!(tool, Tool::Bold | Tool::Italic) {
+                return;
+            }
+            if tool != Tool::Divider {
+                let editing = self.editing.take().expect("the code field is open");
+                self.open(
+                    editing.target,
+                    Opening {
+                        text: text.clone(),
+                        fence: None,
+                        selection: Some(selection.clone()),
+                    },
+                    Some(editing.initial),
+                    window,
+                    cx,
+                );
+                if tool == Tool::Code {
+                    return;
+                }
+            }
+        }
         let shape = match tool {
             Tool::Bold | Tool::Italic => {
                 let mark = if tool == Tool::Bold {
@@ -1536,7 +1633,21 @@ impl MarkdownEditor {
             Tool::Task => Shape::Task,
             Tool::Quote => Shape::Quote,
         };
-        let (next, selection) = toggle_shape(&text, selection, shape);
+        let (next, selection) = if code {
+            // Code text has no Markdown block marker to remove or toggle off.
+            let prefix = match shape {
+                Shape::Paragraph => String::new(),
+                Shape::Heading(level) => format!("{} ", "#".repeat(level as usize)),
+                Shape::Bullet => "- ".into(),
+                Shape::Numbered => "1. ".into(),
+                Shape::Task => "- [ ] ".into(),
+                Shape::Quote => "> ".into(),
+            };
+            let selection = selection.start + prefix.len()..selection.end + prefix.len();
+            (format!("{prefix}{text}"), selection)
+        } else {
+            toggle_shape(&text, selection, shape)
+        };
         self.set_field(next, selection, cx);
     }
 
@@ -1829,6 +1940,7 @@ impl MarkdownEditor {
         let label = if self.copied { "Copied" } else { "Copy" };
         div()
             .id(ElementId::Name(format!("{group}-copy").into()))
+            .debug_selector(|| "md-copy-corner".into())
             .absolute()
             .top_0()
             .right_0()
@@ -1856,7 +1968,7 @@ impl MarkdownEditor {
                     .right(px(10.0))
                     .px(px(8.0))
                     .py(px(2.0))
-                    .rounded(px(theme.radius_control))
+                    .rounded_full()
                     .bg(theme.color_surface_subtle)
                     .font_family(theme.font_sans)
                     .text_size(px(11.0))
@@ -1865,6 +1977,13 @@ impl MarkdownEditor {
                     .whitespace_nowrap()
                     .opacity(0.0)
                     .group_hover(group, |style| style.opacity(1.0))
+                    .debug_selector(move || {
+                        if label == "Copied" {
+                            "md-copied".into()
+                        } else {
+                            "md-copy".into()
+                        }
+                    })
                     .child(label),
             )
             .into_any_element()
@@ -1883,6 +2002,17 @@ impl MarkdownEditor {
         let group = SharedString::from(format!("md-add-{index}"));
         div()
             .id(("md-add", index))
+            .tooltip(crate::tooltip::tooltip(
+                if self
+                    .blocks
+                    .get(index)
+                    .is_some_and(|block| matches!(block.kind, BlockKind::Item { .. }))
+                {
+                    "Insert item below"
+                } else {
+                    "Insert block below"
+                },
+            ))
             .group(group.clone())
             .absolute()
             .left_0()
@@ -2086,6 +2216,7 @@ impl MarkdownEditor {
         let editing = self.editing.as_ref()?;
         let selection = self.toolbar.clone()?;
         let text = editing.input.read(cx).text().to_string();
+        let code = editing.fence.is_some();
         let shape = shape_of(&text).0;
         let mut bar = div()
             .debug_selector(|| "md-toolbar".into())
@@ -2118,12 +2249,13 @@ impl MarkdownEditor {
                 });
             for tool in tools.iter().copied() {
                 let active = match tool {
-                    Tool::Bold => has_mark(&text, selection.clone(), Mark::Bold),
-                    Tool::Italic => has_mark(&text, selection.clone(), Mark::Italic),
-                    Tool::Heading(level) => shape == Shape::Heading(level),
-                    Tool::Bullet => shape == Shape::Bullet,
-                    Tool::Task => shape == Shape::Task,
-                    Tool::Quote => shape == Shape::Quote,
+                    Tool::Bold => !code && has_mark(&text, selection.clone(), Mark::Bold),
+                    Tool::Italic => !code && has_mark(&text, selection.clone(), Mark::Italic),
+                    Tool::Heading(level) => !code && shape == Shape::Heading(level),
+                    Tool::Bullet => !code && shape == Shape::Bullet,
+                    Tool::Task => !code && shape == Shape::Task,
+                    Tool::Quote => !code && shape == Shape::Quote,
+                    Tool::Code => code,
                     _ => false,
                 };
                 group = group.child(tool_button(tool, active, theme, cx));
@@ -2770,6 +2902,75 @@ mod tests {
         cx.simulate_keystrokes("escape");
         draw(&mut cx);
         assert_eq!(source_of(&editor, &cx), "# make it **bold**");
+    }
+
+    #[gpui::test]
+    fn code_selection_has_tools_but_excludes_marks(cx: &mut TestAppContext) {
+        for (tool, expected) in [
+            (Tool::Bold, "plain code"),
+            (Tool::Italic, "plain code"),
+            (Tool::Heading(2), "## plain code"),
+            (Tool::Bullet, "- plain code"),
+            (Tool::Task, "- [ ] plain code"),
+            (Tool::Quote, "> plain code"),
+            (Tool::Code, "plain code"),
+        ] {
+            let (editor, mut cx) = editor_on("```rs\nplain code\n```", cx);
+            cx.update(|window, cx| {
+                editor.update(cx, |editor, cx| {
+                    editor.edit_block(0, window, cx);
+                    editor.select(0..5, cx);
+                })
+            });
+            draw(&mut cx);
+            assert!(editor.read_with(&cx, |editor, _| editor.toolbar_shown()));
+            assert!(cx.debug_bounds("md-toolbar").is_some());
+            cx.update(|window, cx| {
+                editor.update(cx, |editor, cx| editor.apply_tool(tool, window, cx))
+            });
+            draw(&mut cx);
+            assert_eq!(field_text(&editor, &cx), expected);
+            let code = editor.read_with(&cx, |editor, _| {
+                editor.editing.as_ref().unwrap().fence.is_some()
+            });
+            assert_eq!(code, matches!(tool, Tool::Bold | Tool::Italic));
+        }
+    }
+
+    #[gpui::test]
+    fn readonly_code_copies_with_the_editors_feedback(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(600.0, 400.0), |_, cx| {
+            markdown_view("```rs\nlet answer = 42;\n```", cx).into_any_element()
+        });
+        draw(&mut cx);
+        let corner = cx
+            .debug_bounds("md-copy-corner")
+            .expect("read-only code has Copy");
+        cx.simulate_mouse_down(
+            corner.center(),
+            MouseButton::Left,
+            gpui::Modifiers::default(),
+        );
+        draw(&mut cx);
+        assert_eq!(
+            cx.update(|_, cx| cx.read_from_clipboard().unwrap().text()),
+            Some("let answer = 42;".to_string())
+        );
+        assert!(cx.debug_bounds("md-copied").is_some());
+    }
+
+    #[gpui::test]
+    fn copied_feedback_lasts_one_and_a_half_seconds(cx: &mut TestAppContext) {
+        let (editor, mut cx) = editor_on("```\ncode\n```", cx);
+        editor.update(&mut cx, |editor, cx| editor.copy("code".into(), cx));
+        cx.run_until_parked();
+        cx.executor()
+            .advance_clock(COPIED_FOR - Duration::from_millis(1));
+        cx.run_until_parked();
+        assert!(editor.read_with(&cx, |editor, _| editor.copied));
+        cx.executor().advance_clock(Duration::from_millis(11));
+        cx.run_until_parked();
+        assert!(!editor.read_with(&cx, |editor, _| editor.copied));
     }
 
     #[gpui::test]
