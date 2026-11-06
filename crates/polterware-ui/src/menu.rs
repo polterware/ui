@@ -219,6 +219,17 @@ impl Menu {
         self.open
     }
 
+    /// The plain actions it holds, in order, as a test or a host reads them.
+    pub fn entries(&self) -> Vec<MenuEntry> {
+        self.items
+            .iter()
+            .filter_map(|item| match item {
+                MenuItem::Action(entry) => Some(entry.clone()),
+                _ => None,
+            })
+            .collect()
+    }
+
     /// Lights row `index`, opening it when it is a submenu, as the pointer resting on it does.
     pub fn highlight(&mut self, index: usize) {
         self.in_submenu = false;

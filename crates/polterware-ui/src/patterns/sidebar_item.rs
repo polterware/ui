@@ -35,6 +35,8 @@ pub struct SidebarItem {
     /// Replaces the one-line label (`.pw-sidebar-item-label`).
     content: Option<AnyElement>,
     trailing: Option<AnyElement>,
+    /// The trailing element shows only under the pointer.
+    trailing_on_hover: bool,
     min_height: f32,
     pad_y: f32,
     gap: f32,
@@ -55,6 +57,7 @@ impl SidebarItem {
             leading: None,
             content: None,
             trailing: None,
+            trailing_on_hover: false,
             min_height: 28.0,
             pad_y: 0.0,
             gap: 8.0,
@@ -104,6 +107,13 @@ impl SidebarItem {
     /// An element after the label, such as a `Kbd`.
     pub fn trailing(mut self, element: impl IntoElement) -> Self {
         self.trailing = Some(element.into_any_element());
+        self
+    }
+
+    /// The trailing element fades in under the pointer and out after it, keeping its room so
+    /// the label never moves; a `Kbd` hint that only matters once the row is reached.
+    pub fn trailing_on_hover(mut self) -> Self {
+        self.trailing_on_hover = true;
         self
     }
 
@@ -209,7 +219,11 @@ impl RenderOnce for SidebarItem {
             None => row.child(div().flex_1().min_w(px(0.0)).child(ellipsis(self.label))),
         };
         if let Some(trailing) = self.trailing {
-            row = row.child(trailing);
+            row = if self.trailing_on_hover {
+                row.child(div().flex_none().opacity(hover).child(trailing))
+            } else {
+                row.child(trailing)
+            };
         }
         if let Some(handler) = self.on_right_click {
             row = row.on_mouse_down(MouseButton::Right, move |event, window, cx| {

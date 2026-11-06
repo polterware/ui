@@ -245,6 +245,46 @@ pub fn rail_page_body_under(
     window: &mut Window,
     cx: &App,
 ) -> (Div, Option<Div>) {
+    body_under(column, rail, presence, page, header, false, window, cx)
+}
+
+/// [`rail_page_body_under`] for a column that scrolls itself and keeps its scrollbar at the
+/// far end: the column runs to the window's edge, or up against the rail while it is open,
+/// with no padding or gap after it. The column pads its own content by
+/// [`rail_page_end_pad`] instead, so the text sits where it would have.
+pub fn rail_page_body_flush(
+    column: impl IntoElement,
+    rail: AnyElement,
+    presence: &RailPresence,
+    page: &PageWidth,
+    header: f32,
+    window: &mut Window,
+    cx: &App,
+) -> (Div, Option<Div>) {
+    body_under(column, rail, presence, page, header, true, window, cx)
+}
+
+/// The room a [`rail_page_body_flush`] column keeps after its content: the page's padding
+/// with the rail closed (or as a drawer), the gap before the rail while it is open.
+pub fn rail_page_end_pad(presence: &RailPresence, page: &PageWidth) -> f32 {
+    if !presence.is_present() || page.is_narrow() {
+        return PAGE_PADDING;
+    }
+    let progress = presence.value().clamp(0.0, 1.0);
+    PAGE_PADDING + (RAIL_GAP - PAGE_PADDING) * progress
+}
+
+#[allow(clippy::too_many_arguments)]
+fn body_under(
+    column: impl IntoElement,
+    rail: AnyElement,
+    presence: &RailPresence,
+    page: &PageWidth,
+    header: f32,
+    flush: bool,
+    window: &mut Window,
+    cx: &App,
+) -> (Div, Option<Div>) {
     let theme = Theme::global(cx);
     if presence.is_animating() {
         window.request_animation_frame();
@@ -274,8 +314,9 @@ pub fn rail_page_body_under(
         .w_full()
         .flex()
         .flex_row()
-        .gap(px(RAIL_GAP))
-        .px(px(PAGE_PADDING))
+        .gap(px(if flush { 0.0 } else { RAIL_GAP }))
+        .pl(px(PAGE_PADDING))
+        .pr(px(if flush { 0.0 } else { PAGE_PADDING }))
         .overflow_hidden()
         .child(column);
     if !presence.is_present() {
@@ -312,13 +353,22 @@ pub fn rail_page_body_under(
     }
     // Beside the text the width closes with the gap before it; past full size it holds.
     let width = (RAIL_WIDTH * progress).clamp(0.0, RAIL_WIDTH);
-    let gap_close = -RAIL_GAP * (1.0 - width / RAIL_WIDTH);
+    let gap_close = if flush {
+        0.0
+    } else {
+        -RAIL_GAP * (1.0 - width / RAIL_WIDTH)
+    };
+    let end = if flush {
+        RAIL_INSET
+    } else {
+        RAIL_INSET - PAGE_PADDING
+    };
     let card = div()
         .relative()
         .flex_none()
         .w(px(width))
         .ml(px(gap_close))
-        .mr(px(RAIL_INSET - PAGE_PADDING))
+        .mr(px(end))
         .mt(px(header))
         .mb(px(8.0))
         .left(px(offset))
@@ -493,26 +543,34 @@ pub fn rail_section(title: impl Into<SharedString>, icon: Icon, cx: &App) -> Div
         .child(group_heading(icon, TileTone::Neutral, title.into(), theme))
 }
 
+/// A rail property's least height, and the value's padding above and below inside it: a
+/// 21px chip fills the 30px exactly.
+const ROW_MIN: f32 = 30.0;
+const VALUE_PAD_Y: f32 = 4.5;
+
 /// `DetailPanel.Properties variant="rail"`: rows 2px apart.
 pub fn rail_properties() -> Div {
     div().w_full().min_w(px(0.0)).flex().flex_col().gap(px(2.0))
 }
 
 /// `DetailPanel.Property` in the rail: an 88px muted label (12px, 8px in) and the value
-/// (13px/500 primary, `6px 10px` in, wrapping), at least 30px tall and 4px apart.
+/// (13px/500 primary, `6px 10px` in, wrapping), at least 30px tall and 4px apart. The label
+/// keeps to the top, level with the value's first line, when the value wraps.
 pub fn rail_property(label: &str, value: impl IntoElement, mono: bool, cx: &App) -> AnyElement {
     let theme = Theme::global(cx);
     div()
         .w_full()
         .min_w(px(0.0))
-        .min_h(px(30.0))
+        .min_h(px(ROW_MIN))
         .flex()
-        .items_center()
+        .items_start()
         .gap(px(4.0))
         .child(
             div()
                 .w(px(88.0))
                 .flex_none()
+                // Its 18px line centered in the row's first 30px.
+                .pt(px((ROW_MIN - 18.0) / 2.0))
                 .pl(px(8.0))
                 .overflow_hidden()
                 .whitespace_nowrap()
@@ -529,6 +587,10 @@ pub fn rail_property(label: &str, value: impl IntoElement, mono: bool, cx: &App)
             div()
                 .flex_auto()
                 .min_w(px(0.0))
+                // A one-line value stays centered in the 30px; a wrapped one starts where
+                // that line would.
+                .min_h(px(ROW_MIN))
+                .py(px(VALUE_PAD_Y))
                 .flex()
                 .items_center()
                 .gap(px(4.0))

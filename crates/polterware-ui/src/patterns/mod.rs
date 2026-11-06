@@ -105,8 +105,8 @@ pub use property_pills::{
 pub use rail::{rail_card, rail_group};
 pub use rail_page::{
     PageWidth, RailGroup, RailPresence, RailState, WIDE_MEASURE, rail_page_body,
-    rail_page_body_under, rail_page_header, rail_properties, rail_property, rail_section,
-    rail_toggle_label,
+    rail_page_body_flush, rail_page_body_under, rail_page_end_pad, rail_page_header,
+    rail_properties, rail_property, rail_section, rail_toggle_label,
 };
 pub use resizable_panel::{COLLAPSE_THRESHOLD, PanelSide, ResizablePanel, resizable_panel};
 pub use scroll_fade::{

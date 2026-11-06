@@ -34,14 +34,17 @@
 //! with them: the host draws [`PropertyPills::overlay`] outside that body (the Composer card
 //! has a slot for it), and the picker hangs from its pill in window coordinates.
 
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, App, Bounds, Context, Entity, EventEmitter, FocusHandle, Focusable, IntoElement,
-    KeyBinding, Pixels, Render, SharedString, Window, actions, canvas, div, prelude::*, px,
+    KeyBinding, MouseButton, MouseDownEvent, Pixels, Point, Render, SharedString, Window, actions,
+    canvas, div, prelude::*, px,
 };
+
+use crate::menu::{Menu, MenuEntry};
 
 use super::shell::window_layer;
 use crate::button::{Button, ButtonKind, ButtonSize};
@@ -99,6 +102,18 @@ pub struct PropertyOption {
     hint: Option<SharedString>,
     group: Option<SharedString>,
     opens: Option<SharedString>,
+    disabled: Option<SharedString>,
+    action: bool,
+    menu: Vec<RowAction>,
+}
+
+/// An entry of an option's context menu: what [`PropertyPickerEvent::Action`] names, its
+/// label, and whether it reads as danger.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RowAction {
+    pub id: SharedString,
+    pub label: SharedString,
+    pub danger: bool,
 }
 
 impl PropertyOption {
@@ -111,7 +126,44 @@ impl PropertyOption {
             hint: None,
             group: None,
             opens: None,
+            disabled: None,
+            action: false,
+            menu: Vec::new(),
         }
+    }
+
+    /// An entry of the context menu a right click on the row opens, such as "Remove
+    /// repository"; picking it reports [`PropertyPickerEvent::Action`] with the option's value.
+    pub fn row_action(
+        mut self,
+        id: impl Into<SharedString>,
+        label: impl Into<SharedString>,
+        danger: bool,
+    ) -> Self {
+        self.menu.push(RowAction {
+            id: id.into(),
+            label: label.into(),
+            danger,
+        });
+        self
+    }
+
+    /// A command rather than a value, such as "Add repository": a plain row of its icon and
+    /// label, with no radio, tile, hint, or digit. Picking it reports its value as usual.
+    pub fn action(mut self) -> Self {
+        self.action = true;
+        self
+    }
+
+    /// Shown but not pickable: the row is faded, says `reason` in a tooltip, and the arrows
+    /// pass over it.
+    pub fn disabled(mut self, reason: impl Into<SharedString>) -> Self {
+        self.disabled = Some(reason.into());
+        self
+    }
+
+    pub fn is_disabled(&self) -> bool {
+        self.disabled.is_some()
     }
 
     /// The icon in the option's tile and on its pill.
@@ -321,6 +373,9 @@ pub enum PropertyPickerEvent {
     Toggle(SharedString, bool),
     /// The picker closed.
     Close,
+    /// An entry of an option's context menu ([`PropertyOption::row_action`]): the option's
+    /// value, then the entry's id. The picker stays open.
+    Action(SharedString, SharedString),
 }
 
 /// The picker: its search, its options, what matches, and the highlight.
@@ -344,6 +399,12 @@ pub struct PropertyPicker {
     open: bool,
     progress: SpringValue,
     animator: Animator,
+    /// A row's context menu, and where in the window the right click that opened it was.
+    row_menu: Entity<Menu>,
+    row_menu_at: Option<Point<Pixels>>,
+    /// Where the panel sat in the window last frame. The row menu is drawn inside it (the
+    /// picker is in a deferred layer already, which gpui cannot nest), placed from it.
+    panel_origin: Rc<Cell<Point<Pixels>>>,
 }
 
 impl EventEmitter<PropertyPickerEvent> for PropertyPicker {}
@@ -373,6 +434,9 @@ impl PropertyPicker {
             matched: Vec::new(),
             active: None,
             applied_query: String::new(),
+            row_menu: cx.new(Menu::new),
+            row_menu_at: None,
+            panel_origin: Rc::new(Cell::new(Point::default())),
             open: false,
             progress: SpringValue::new(0.0, SpringTier::Fast),
             animator: Animator::new(),
@@ -465,8 +529,69 @@ impl PropertyPicker {
         self.open = false;
         self.progress.set_target(0.0);
         self.clear_query(cx);
+        self.close_row_menu(cx);
         cx.emit(PropertyPickerEvent::Close);
         cx.notify();
+    }
+
+    /// Opens the context menu of the option at `row` where the right click was.
+    fn open_row_menu(&mut self, row: usize, at: Point<Pixels>, cx: &mut Context<Self>) {
+        let Some(option) = self
+            .matched
+            .get(row)
+            .map(|index| self.options[*index].clone())
+        else {
+            return;
+        };
+        if option.menu.is_empty() {
+            return;
+        }
+        let weak = cx.entity().downgrade();
+        let items = option
+            .menu
+            .iter()
+            .map(|action| {
+                let weak = weak.clone();
+                let value = option.value.clone();
+                let id = action.id.clone();
+                MenuEntry {
+                    label: action.label.clone(),
+                    icon: None,
+                    danger: action.danger,
+                    on_select: Rc::new(move |_, cx| {
+                        let (value, id) = (value.clone(), id.clone());
+                        let _ = weak.update(cx, |this, cx| {
+                            this.close_row_menu(cx);
+                            cx.emit(PropertyPickerEvent::Action(value, id));
+                        });
+                    }),
+                }
+            })
+            .collect();
+        self.active = Some(row);
+        self.row_menu_at = Some(at);
+        self.row_menu.update(cx, |menu, cx| {
+            menu.set_items(items);
+            menu.set_width(0.0);
+            menu.set_open(true);
+            cx.notify();
+        });
+        cx.notify();
+    }
+
+    fn close_row_menu(&mut self, cx: &mut Context<Self>) {
+        if self.row_menu.read(cx).is_open() {
+            self.row_menu.update(cx, |menu, cx| {
+                menu.set_open(false);
+                cx.notify();
+            });
+        }
+        self.row_menu_at = None;
+    }
+
+    /// Whether a row's context menu is up, which a press outside the picker closes alone.
+    pub fn row_menu_open(&self, cx: &App) -> bool {
+        self.row_menu_at.is_some() && self.row_menu.read(cx).is_open()
     }
 
     pub fn is_open(&self) -> bool {
@@ -554,9 +679,22 @@ impl PropertyPicker {
         if len == 0 {
             return;
         }
-        let from = self.active.unwrap_or(if step >= 0 { len - 1 } else { 0 });
-        self.active = Some((from as isize + step).rem_euclid(len as isize) as usize);
+        let mut row = self.active.unwrap_or(if step >= 0 { len - 1 } else { 0 });
+        // Pass over disabled rows; stay put when every row is.
+        for _ in 0..len {
+            row = (row as isize + step).rem_euclid(len as isize) as usize;
+            if !self.row_disabled(row) {
+                self.active = Some(row);
+                break;
+            }
+        }
         cx.notify();
+    }
+
+    fn row_disabled(&self, row: usize) -> bool {
+        self.matched
+            .get(row)
+            .is_some_and(|index| self.options[*index].is_disabled())
     }
 
     fn confirm(&mut self, cx: &mut Context<Self>) {
@@ -567,6 +705,7 @@ impl PropertyPicker {
 
     fn choose(&mut self, row: usize, cx: &mut Context<Self>) {
         let value = match self.matched.get(row) {
+            Some(index) if self.options[*index].is_disabled() => return,
             Some(index) => self.options[*index].value.clone(),
             None if row == self.matched.len() => match self.created() {
                 Some(text) => text,
@@ -602,7 +741,11 @@ impl PropertyPicker {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let lit = self.active == Some(row);
+        let disabled = option.disabled.clone();
+        let lit = self.active == Some(row) && disabled.is_none();
+        if option.action {
+            return self.action_row(row, option, lit, theme, cx);
+        }
         let mark = match &self.checked {
             Some(checked) => checkbox_mark(checked.contains(&option.value), 14.0, theme),
             None => radio_mark(self.value.as_ref() == Some(&option.value), 14.0, theme),
@@ -639,20 +782,33 @@ impl PropertyPicker {
             .items_center()
             .gap(px(8.0))
             .rounded(px(theme.radius_item))
-            .cursor_pointer()
             .text_color(if lit {
                 theme.color_text_primary
             } else {
                 theme.color_text_secondary
             })
             .when(lit, |row| row.bg(theme.color_surface_hover))
-            .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
-                if *hovered && this.active != Some(row) {
-                    this.active = Some(row);
-                    cx.notify();
-                }
-            }))
-            .on_click(cx.listener(move |this, _, _, cx| this.choose(row, cx)))
+            .map(|line| match disabled {
+                Some(reason) => line.opacity(0.5).tooltip(tooltip(reason)),
+                None => line
+                    .cursor_pointer()
+                    .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+                        if *hovered && this.active != Some(row) {
+                            this.active = Some(row);
+                            cx.notify();
+                        }
+                    }))
+                    .on_click(cx.listener(move |this, _, _, cx| this.choose(row, cx))),
+            })
+            .when(!option.menu.is_empty(), |line| {
+                line.on_mouse_down(
+                    MouseButton::Right,
+                    cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                        cx.stop_propagation();
+                        this.open_row_menu(row, event.position, cx);
+                    }),
+                )
+            })
             .child(mark)
             .child(tile)
             .child(text)
@@ -670,6 +826,44 @@ impl PropertyPicker {
 }
 
 impl PropertyPicker {
+    /// A [`PropertyOption::action`] row: its 14px icon and label, 32px tall.
+    fn action_row(
+        &self,
+        row: usize,
+        option: &PropertyOption,
+        lit: bool,
+        theme: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let color = if lit {
+            theme.color_text_primary
+        } else {
+            theme.color_text_secondary
+        };
+        div()
+            .id(("property-action", row))
+            .w_full()
+            .min_h(px(32.0))
+            .px(px(10.0))
+            .flex()
+            .items_center()
+            .gap(px(8.0))
+            .rounded(px(theme.radius_item))
+            .cursor_pointer()
+            .text_color(color)
+            .when(lit, |row| row.bg(theme.color_surface_hover))
+            .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+                if *hovered && this.active != Some(row) {
+                    this.active = Some(row);
+                    cx.notify();
+                }
+            }))
+            .on_click(cx.listener(move |this, _, _, cx| this.choose(row, cx)))
+            .children(option.icon.map(|name| icon_colored(name, 14.0, color)))
+            .child(div().truncate().child(option.label.clone()))
+            .into_any_element()
+    }
+
     /// The `Create “…”` row: the radio's slot left empty, a 12px muted `+` in a 14px slot,
     /// then the label.
     fn create_row(
@@ -823,9 +1017,34 @@ impl Render for PropertyPicker {
             .on_action(cx.listener(|this, _: &Confirm, _, cx| this.confirm(cx)))
             .on_action(cx.listener(|this, _: &Cancel, _, cx| this.close(cx)))
             .on_action(cx.listener(|this, _: &text_input::Cancel, _, cx| this.close(cx)))
-            .on_mouse_down_out(cx.listener(|this, _, _, cx| this.close(cx)))
+            // A press on a row's context menu, which floats outside the panel, keeps it open;
+            // the menu closes itself on a press outside it.
+            .on_mouse_down_out(cx.listener(|this, _, _, cx| {
+                if this.row_menu_open(cx) {
+                    return;
+                }
+                this.close(cx);
+            }))
             .opacity(t)
-            .child(floating_panel(body, theme.radius_menu, &theme));
+            .child(floating_panel(body, theme.radius_menu, &theme))
+            .relative()
+            .child({
+                let origin = self.panel_origin.clone();
+                canvas(
+                    move |bounds, _, _| origin.set(bounds.origin),
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .size_full()
+            })
+            .children(self.row_menu_at.map(|at| {
+                let origin = self.panel_origin.get();
+                div()
+                    .absolute()
+                    .left(at.x - origin.x)
+                    .top(at.y - origin.y)
+                    .child(self.row_menu.clone())
+            }));
         hang(self.trigger_height + 4.0, (1.0 - t) * SLIDE, panel).into_any_element()
     }
 }
@@ -883,6 +1102,8 @@ impl PropertyPills {
                 }
                 cx.notify();
             }
+            // Pills give their options no context menu.
+            PropertyPickerEvent::Action(..) => {}
         })
         .detach();
         Self {
@@ -1480,7 +1701,7 @@ mod tests {
     use std::cell::RefCell;
     use std::rc::Rc;
 
-    use gpui::{Entity, SharedString, TestAppContext, VisualTestContext};
+    use gpui::{Entity, SharedString, TestAppContext, VisualTestContext, px};
 
     use super::{
         Property, PropertyOption, PropertyPicker, PropertyPickerEvent, PropertyPills,
@@ -1532,6 +1753,56 @@ mod tests {
             assert_eq!(this.active_value().map(|v| v.as_ref()), Some(""));
             this.step(-1, cx);
             assert_eq!(this.active_value().map(|v| v.as_ref()), Some("hard"));
+        });
+    }
+
+    #[gpui::test]
+    fn a_disabled_option_is_passed_over_and_cannot_be_picked(cx: &mut TestAppContext) {
+        let (view, cx) = picker(cx);
+        let seen = events(&view, cx);
+        view.update(cx, |this, cx| {
+            let mut options = tiers();
+            options[3] = PropertyOption::new("hard", "Hard").disabled("Needs a classifier");
+            this.set_options("Lowest tier", options, Some("normal".into()), 240.0, cx);
+            this.active = Some(2);
+            this.step(1, cx);
+            assert_eq!(this.active_value().map(|v| v.as_ref()), Some(""));
+            this.step(-1, cx);
+            assert_eq!(this.active_value().map(|v| v.as_ref()), Some("normal"));
+            this.choose(3, cx);
+        });
+        assert!(seen.borrow().is_empty(), "a disabled row picks nothing");
+    }
+
+    #[gpui::test]
+    fn a_row_action_opens_on_a_right_click_and_reports_its_option(cx: &mut TestAppContext) {
+        let (view, cx) = picker(cx);
+        let seen = events(&view, cx);
+        view.update(cx, |this, cx| {
+            let mut options = tiers();
+            options[1] = PropertyOption::new("easy", "Easy").row_action("remove", "Remove", true);
+            this.set_options("Lowest tier", options, Some("normal".into()), 240.0, cx);
+            this.open_row_menu(0, gpui::point(px(10.0), px(10.0)), cx);
+            assert!(
+                !this.row_menu_open(cx),
+                "a row with no actions opens no menu"
+            );
+            this.open_row_menu(1, gpui::point(px(10.0), px(10.0)), cx);
+            assert!(this.row_menu_open(cx));
+        });
+        // The menu's entry reports the option and the action, and the picker stays open.
+        let entry = view.update(cx, |this, cx| {
+            let menu = this.row_menu.read(cx);
+            menu.entries().first().cloned().expect("an entry")
+        });
+        cx.update(|window, cx| (entry.on_select)(window, cx));
+        assert_eq!(
+            seen.borrow().as_slice(),
+            [PropertyPickerEvent::Action("easy".into(), "remove".into())]
+        );
+        view.update(cx, |this, cx| {
+            assert!(this.is_open());
+            assert!(!this.row_menu_open(cx));
         });
     }
 
