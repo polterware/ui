@@ -39,12 +39,12 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, App, Bounds, Context, Entity, EventEmitter, FocusHandle, Focusable, IntoElement,
-    KeyBinding, MouseButton, MouseDownEvent, Pixels, Point, Render, SharedString, Window, actions,
-    canvas, div, prelude::*, px,
+    AnyElement, App, Bounds, ClickEvent, Context, Entity, EventEmitter, FocusHandle, Focusable,
+    IntoElement, KeyBinding, MouseButton, MouseDownEvent, Pixels, Point, Render, SharedString,
+    Window, actions, canvas, div, linear_color_stop, linear_gradient, prelude::*, px,
 };
 
-use crate::menu::{Menu, MenuEntry};
+use crate::menu::{Menu, MenuEntry, MenuItem};
 
 use super::shell::window_layer;
 use crate::button::{Button, ButtonKind, ButtonSize};
@@ -73,6 +73,8 @@ const TOKEN_RADIUS: f32 = 11.0;
 /// A small texture button's corners (`rounded-[6px]`), as the loose add button wears them
 /// while it shows the empty label; the `+` alone stays round.
 const ADD_RADIUS: f32 = 6.0;
+/// The fade before a lit row's ⋯ button, over the text it may cover.
+const MORE_FADE: f32 = 24.0;
 /// A click on the pill whose picker a press outside just closed toggles it shut, not open
 /// again: the press closes it first, then the click lands.
 const REOPEN_GUARD: Duration = Duration::from_millis(250);
@@ -105,6 +107,8 @@ pub struct PropertyOption {
     disabled: Option<SharedString>,
     action: bool,
     menu: Vec<RowAction>,
+    tip: Option<SharedString>,
+    rule_next: bool,
 }
 
 /// An entry of an option's context menu: what [`PropertyPickerEvent::Action`] names, its
@@ -114,6 +118,8 @@ pub struct RowAction {
     pub id: SharedString,
     pub label: SharedString,
     pub danger: bool,
+    /// A rule sits above it in the menu, setting it apart from the entries before.
+    pub rule_before: bool,
 }
 
 impl PropertyOption {
@@ -129,11 +135,27 @@ impl PropertyOption {
             disabled: None,
             action: false,
             menu: Vec::new(),
+            tip: None,
+            rule_next: false,
         }
     }
 
-    /// An entry of the context menu a right click on the row opens, such as "Remove
-    /// repository"; picking it reports [`PropertyPickerEvent::Action`] with the option's value.
+    /// A rule in the row's menu before the next [`Self::row_action`], such as the one that
+    /// sets a destructive entry apart.
+    pub fn row_rule(mut self) -> Self {
+        self.rule_next = !self.menu.is_empty();
+        self
+    }
+
+    /// A tooltip on the row, such as the full path behind a short name.
+    pub fn tooltip(mut self, text: impl Into<SharedString>) -> Self {
+        self.tip = Some(text.into());
+        self
+    }
+
+    /// An entry of the menu a right click on the row, or its ⋯ button on hover, opens, such as
+    /// "Remove repository"; picking it reports [`PropertyPickerEvent::Action`] with the
+    /// option's value.
     pub fn row_action(
         mut self,
         id: impl Into<SharedString>,
@@ -144,6 +166,7 @@ impl PropertyOption {
             id: id.into(),
             label: label.into(),
             danger,
+            rule_before: std::mem::take(&mut self.rule_next),
         });
         self
     }
@@ -547,31 +570,31 @@ impl PropertyPicker {
             return;
         }
         let weak = cx.entity().downgrade();
-        let items = option
-            .menu
-            .iter()
-            .map(|action| {
-                let weak = weak.clone();
-                let value = option.value.clone();
-                let id = action.id.clone();
-                MenuEntry {
-                    label: action.label.clone(),
-                    icon: None,
-                    danger: action.danger,
-                    on_select: Rc::new(move |_, cx| {
-                        let (value, id) = (value.clone(), id.clone());
-                        let _ = weak.update(cx, |this, cx| {
-                            this.close_row_menu(cx);
-                            cx.emit(PropertyPickerEvent::Action(value, id));
-                        });
-                    }),
-                }
-            })
-            .collect();
+        let mut items = Vec::with_capacity(option.menu.len() + 1);
+        for action in &option.menu {
+            if action.rule_before {
+                items.push(MenuItem::Separator);
+            }
+            let weak = weak.clone();
+            let value = option.value.clone();
+            let id = action.id.clone();
+            items.push(MenuItem::Action(MenuEntry {
+                label: action.label.clone(),
+                icon: None,
+                danger: action.danger,
+                on_select: Rc::new(move |_, cx| {
+                    let (value, id) = (value.clone(), id.clone());
+                    let _ = weak.update(cx, |this, cx| {
+                        this.close_row_menu(cx);
+                        cx.emit(PropertyPickerEvent::Action(value, id));
+                    });
+                }),
+            }));
+        }
         self.active = Some(row);
         self.row_menu_at = Some(at);
         self.row_menu.update(cx, |menu, cx| {
-            menu.set_items(items);
+            menu.set_menu(items);
             menu.set_width(0.0);
             menu.set_open(true);
             cx.notify();
@@ -791,6 +814,7 @@ impl PropertyPicker {
             .map(|line| match disabled {
                 Some(reason) => line.opacity(0.5).tooltip(tooltip(reason)),
                 None => line
+                    .when_some(option.tip.clone(), |line, tip| line.tooltip(tooltip(tip)))
                     .cursor_pointer()
                     .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
                         if *hovered && this.active != Some(row) {
@@ -821,6 +845,60 @@ impl PropertyPicker {
                         .child((row + 1).to_string()),
                 )
             })
+            .when(lit && !option.menu.is_empty(), |line| {
+                line.relative().child(self.more_button(row, theme, cx))
+            })
+            .into_any_element()
+    }
+
+    /// The ⋯ a lit row with a menu shows at its end: a fade from clear to the row's hover
+    /// fill, so text running under it fades out instead of being cut, then a 24px ghost
+    /// button on that fill that opens the row's menu under it.
+    fn more_button(&self, row: usize, theme: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let fill = theme.color_surface_hover;
+        div()
+            .absolute()
+            .top_0()
+            .bottom_0()
+            .right_0()
+            .flex()
+            .items_center()
+            .rounded_r(px(theme.radius_item))
+            .child(div().w(px(MORE_FADE)).h_full().bg(linear_gradient(
+                90.0,
+                linear_color_stop(fade(fill, 0.0), 0.0),
+                linear_color_stop(fill, 1.0),
+            )))
+            .child(
+                div()
+                    .h_full()
+                    .pr(px(4.0))
+                    .flex()
+                    .items_center()
+                    .bg(fill)
+                    .child(
+                        div()
+                            .id(("property-option-more", row))
+                            .size(px(24.0))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .rounded(px(6.0))
+                            .cursor_pointer()
+                            .hover(|style| style.bg(theme.color_surface_active))
+                            .child(icon_colored(
+                                Icon::MoreHorizontal,
+                                14.0,
+                                theme.color_text_secondary,
+                            ))
+                            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+                            .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
+                                cx.stop_propagation();
+                                let at = event.position();
+                                this.open_row_menu(row, at, cx);
+                            })),
+                    ),
+            )
             .into_any_element()
     }
 }
@@ -1804,6 +1882,19 @@ mod tests {
             assert!(this.is_open());
             assert!(!this.row_menu_open(cx));
         });
+    }
+
+    #[test]
+    fn a_rule_sets_the_next_row_action_apart() {
+        let option = PropertyOption::new("repo", "repo")
+            .row_rule()
+            .row_action("reveal", "Reveal", false)
+            .row_rule()
+            .row_action("remove", "Remove", true)
+            .tooltip("/tmp/repo");
+        let rules: Vec<bool> = option.menu.iter().map(|a| a.rule_before).collect();
+        assert_eq!(rules, [false, true], "no rule leads the menu");
+        assert_eq!(option.tip.as_ref().map(|t| t.as_ref()), Some("/tmp/repo"));
     }
 
     #[gpui::test]
