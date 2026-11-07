@@ -5,8 +5,9 @@
 //! shows it, so a list of bots costs nothing after its first paint. Only
 //! [`agent_avatar_live`] moves, and calmly: its body stays in its state's rest pose. While the
 //! pointer is over it, only its eyes move, following the pointer (`Calm::Gaze`), and they
-//! settle back for `SETTLE_SECONDS` once it leaves. While its run works, its face plays varied
-//! beats (glances, happy closed eyes, a double blink, a small tilt, a rare short hop) while it
+//! settle back for `SETTLE_SECONDS` once it leaves. While its run works, its face and body
+//! play varied beats (glances, happy closed eyes, a double blink, a small tilt, frequent small
+//! hops with the odd double one, bounces, nods, wiggles, shakes, a rare spin) while it
 //! breathes and blinks (`Calm::Busy`). Otherwise it
 //! is still and asks for no frame and no timer. A live bot keeps its `bot_avatar::Avatar` in
 //! GPUI element state; working bots share a cache that renders each (agent, state, size,
@@ -61,10 +62,11 @@ pub fn agent_avatar(agent: &str, status: &str, size_px: f32) -> impl IntoElement
     agent_avatar_keyed(derived_key(agent, status, size_px), agent, status, size_px)
 }
 
-/// [`agent_avatar`] that moves calmly, its body in its state's rest pose: while the pointer is
-/// over it, only its eyes move, following the pointer; while `status` is a working one, its
-/// face plays varied beats (glances, happy closed eyes, blinks, a small tilt, a rare short
-/// hop) while it breathes. It is still otherwise, and asks
+/// [`agent_avatar`] that moves calmly with its body in its state's rest pose between beats:
+/// while the pointer is over it, only its eyes move, following the pointer; while `status` is
+/// a working one, its face and body play varied beats (glances, happy closed eyes, a double
+/// blink, a small tilt, frequent small hops with the odd double one, bounces, nods, wiggles,
+/// shakes, a rare spin) while it breathes. It is still otherwise, and asks
 /// for no frame or timer while it is.
 pub fn agent_avatar_live(agent: &str, status: &str, size_px: f32) -> impl IntoElement {
     let size_px = finite_px(size_px);
