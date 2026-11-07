@@ -18,6 +18,7 @@ use crate::icons::{Icon, icon_colored, icon_rotated};
 use crate::motion::{Curve, Tween};
 use crate::pointer::{PointerTiming, track_with_hover, use_pointer_timed};
 use crate::theme::{Theme, fade, mix, tw};
+use crate::tooltip::rich_tooltip;
 use crate::window_drag::WindowDragRegion;
 use crate::{Handler, ValueHandler};
 
@@ -247,11 +248,14 @@ impl RenderOnce for SidebarItem {
 /// with 8px sides, 12px/500 muted text and a 12px chevron right after it, 4px apart. Hover
 /// turns the text primary over `--duration-fast`; the chevron always shows, turned -90° over
 /// `--duration-fast` while the group is collapsed. A title too long for the row ends in `…`
-/// with the chevron still beside it, so a long conversation reads as one tidy line.
+/// with the chevron still beside it, so a long conversation reads as one tidy line; a
+/// `title_tooltip` gives the title's text alone the whole one, wrapped.
 #[derive(IntoElement)]
 pub struct SidebarSectionLabel {
     id: ElementId,
     label: SharedString,
+    /// The whole title, shown over the title's text only.
+    title_tooltip: Option<SharedString>,
     collapsed: bool,
     pad_left: f32,
     pad_right: f32,
@@ -260,11 +264,15 @@ pub struct SidebarSectionLabel {
     on_right_click: Option<RightClickHandler>,
 }
 
+/// How wide a title tooltip wraps its text.
+const TITLE_TOOLTIP_WIDTH: f32 = 360.0;
+
 impl SidebarSectionLabel {
     pub fn new(id: impl Into<ElementId>, label: impl Into<SharedString>, collapsed: bool) -> Self {
         Self {
             id: id.into(),
             label: label.into(),
+            title_tooltip: None,
             collapsed,
             pad_left: 8.0,
             pad_right: 8.0,
@@ -277,6 +285,13 @@ impl SidebarSectionLabel {
     pub fn padding(mut self, left: f32, right: f32) -> Self {
         self.pad_left = left;
         self.pad_right = right;
+        self
+    }
+
+    /// The whole title, wrapped in a tooltip that opens over the title's text alone; the
+    /// chevron and anything beside the title keep their own.
+    pub fn title_tooltip(mut self, text: impl Into<SharedString>) -> Self {
+        self.title_tooltip = Some(text.into());
         self
     }
 
@@ -332,6 +347,30 @@ impl RenderOnce for SidebarSectionLabel {
             hover_color,
         );
 
+        // The title gives way first: it ends in `…` so the chevron keeps its place. A title
+        // tooltip hangs on the title's text alone.
+        let title = match self.title_tooltip {
+            Some(text) => div()
+                .id(ElementId::from((
+                    self.id.clone(),
+                    SharedString::from("title-tooltip"),
+                )))
+                .min_w(px(0.0))
+                .flex_shrink()
+                .overflow_hidden()
+                .tooltip(rich_tooltip(TITLE_TOOLTIP_WIDTH, move |_, _| {
+                    div().w_full().child(text.clone()).into_any_element()
+                }))
+                .child(ellipsis(self.label))
+                .into_any_element(),
+            None => div()
+                .min_w(px(0.0))
+                .flex_shrink()
+                .overflow_hidden()
+                .child(ellipsis(self.label))
+                .into_any_element(),
+        };
+
         let mut row = div()
             .id(self.id.clone())
             .window_drag_control()
@@ -349,14 +388,7 @@ impl RenderOnce for SidebarSectionLabel {
             .font_weight(FontWeight::MEDIUM)
             .text_color(ink)
             .cursor_pointer()
-            // The title gives way first: it ends in `…` so the chevron keeps its place.
-            .child(
-                div()
-                    .min_w(px(0.0))
-                    .flex_shrink()
-                    .overflow_hidden()
-                    .child(ellipsis(self.label)),
-            )
+            .child(title)
             .child(
                 div()
                     .size(px(12.0))
