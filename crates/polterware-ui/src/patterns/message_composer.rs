@@ -86,6 +86,7 @@ pub fn message_composer(
         can_send: None,
         busy: false,
         footer_start: None,
+        footer_end: None,
         actions: Vec::new(),
     }
 }
@@ -144,6 +145,7 @@ pub struct MessageComposer {
     can_send: Option<bool>,
     busy: bool,
     footer_start: Option<AnyElement>,
+    footer_end: Option<AnyElement>,
     actions: Vec<ComposerAction>,
 }
 
@@ -182,6 +184,13 @@ impl MessageComposer {
     /// What the footer holds at its start, such as a note on where the message goes.
     pub fn footer_start(mut self, element: impl IntoElement) -> Self {
         self.footer_start = Some(element.into_any_element());
+        self
+    }
+
+    /// What the footer holds at its end, before the trailing actions and Send, such as a
+    /// mode toggle that sits beside the microphone.
+    pub fn footer_end(mut self, element: impl IntoElement) -> Self {
+        self.footer_end = Some(element.into_any_element());
         self
     }
 
@@ -350,6 +359,7 @@ impl RenderOnce for MessageComposer {
             .items_center()
             .gap(px(8.0))
             .child(div().flex_1().min_w(px(0.0)).children(self.footer_start))
+            .children(self.footer_end.map(|end| div().flex_none().child(end)))
             .children(actions)
             .child(send);
 
@@ -421,6 +431,12 @@ mod tests {
                 .child(
                     message_composer("composer", &input, &handle)
                         .max_height(100.0)
+                        .footer_end(
+                            div()
+                                .debug_selector(|| "mode".to_string())
+                                .w(px(60.0))
+                                .h(px(20.0)),
+                        )
                         .trailing_action(action),
                 )
                 .into_any_element()
@@ -431,6 +447,11 @@ mod tests {
         assert!(
             action.right() <= send.left(),
             "the action sits before Send: {action:?} and {send:?}"
+        );
+        let mode = cx.debug_bounds("mode").expect("the footer's end draws");
+        assert!(
+            mode.right() <= action.left(),
+            "the footer's end sits before the action: {mode:?} and {action:?}"
         );
         cx.simulate_click(action.center(), gpui::Modifiers::none());
         assert_eq!(*pressed.borrow(), 1);
