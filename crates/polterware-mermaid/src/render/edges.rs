@@ -2,11 +2,12 @@
 //! `orthogonalEdgeClipping.js`, `edgeCornerRadius.ts`, and `edgeStep.ts`.
 //! SVG CSS classes are retained as scene roles; rough.js handDrawn rendering remains a TODO.
 use crate::scene::{Path, Point, Rect};
+use serde::{Deserialize, Serialize};
 
 pub const DEFAULT_EDGE_CORNER_RADIUS: f64 = 5.0;
 pub const EDGE_STEP_DURATION: f64 = 1.0;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Curve {
     Linear,
     Basis,
@@ -64,7 +65,7 @@ pub fn is_step_edge(curve: Curve, explicit: Option<f64>) -> bool {
     explicit.is_some() || matches!(curve, Curve::Step | Curve::StepAfter | Curve::StepBefore)
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct EdgeLabelPosition {
     pub center: Point,
     pub bounds: Rect,
@@ -685,6 +686,291 @@ pub fn style_roles(
     v
 }
 
+/// Input retained from Mermaid's `EdgeData`; measurements are supplied by the caller because
+/// this crate has no DOM or font engine.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct EdgeData {
+    pub id: String,
+    pub points: Vec<Point>,
+    pub label: Option<String>,
+    pub label_width: f64,
+    pub label_height: f64,
+    pub start_label_left: Option<String>,
+    pub start_label_right: Option<String>,
+    pub end_label_left: Option<String>,
+    pub end_label_right: Option<String>,
+    pub curve: Option<String>,
+    pub thickness: String,
+    pub pattern: String,
+    pub animation: Option<String>,
+    pub animate: bool,
+    pub classes: Vec<String>,
+    pub styles: Vec<String>,
+    pub css_compiled_styles: Vec<String>,
+    pub arrow_type_start: Option<String>,
+    pub arrow_type_end: Option<String>,
+    pub corner_radius: Option<f64>,
+    pub to_cluster: Option<Rect>,
+    pub from_cluster: Option<Rect>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct EdgeLabelScene {
+    pub text: String,
+    pub position: EdgeLabelPosition,
+    pub role: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct InsertedEdge {
+    pub id: String,
+    pub path: Path,
+    pub points: Vec<Point>,
+    pub roles: Vec<String>,
+    pub styles: Vec<String>,
+    pub labels: Vec<EdgeLabelScene>,
+    pub curve: Curve,
+}
+
+/// Creates scene data for the main and terminal edge labels; unlike upstream DOM insertion,
+/// text shaping and HTML/SVG selection are deliberately delegated to the scene consumer.
+pub fn insert_edge_label(edge: &EdgeData) -> Vec<EdgeLabelScene> {
+    let mut labels = Vec::new();
+    if let Some(text) = edge.label.as_ref().filter(|s| !s.is_empty()) {
+        if let Some(position) =
+            position_edge_label(&edge.points, edge.label_width, edge.label_height)
+        {
+            labels.push(EdgeLabelScene {
+                text: text.clone(),
+                position,
+                role: "edgeLabel".into(),
+            });
+        }
+    }
+    for (text, position) in [
+        (&edge.start_label_left, TerminalPosition::StartLeft),
+        (&edge.start_label_right, TerminalPosition::StartRight),
+        (&edge.end_label_left, TerminalPosition::EndLeft),
+        (&edge.end_label_right, TerminalPosition::EndRight),
+    ] {
+        if let Some(text) = text.as_ref().filter(|s| !s.is_empty()) {
+            let arrow = if matches!(
+                position,
+                TerminalPosition::StartLeft | TerminalPosition::StartRight
+            ) {
+                &edge.arrow_type_start
+            } else {
+                &edge.arrow_type_end
+            };
+            let marker_size = arrow.as_deref().and_then(marker_offset).unwrap_or(0.0);
+            if let Some(center) = terminal_label_position(&edge.points, position, marker_size) {
+                labels.push(EdgeLabelScene {
+                    text: text.clone(),
+                    position: EdgeLabelPosition {
+                        center,
+                        bounds: Rect::new(center.x, center.y, 0.0, 0.0),
+                    },
+                    role: "edgeTerminals".into(),
+                });
+            }
+        }
+    }
+    labels
+}
+
+/// Resolves Mermaid's marker pull-back table used by `lineWithOffset.ts`.
+pub fn marker_offset(kind: &str) -> Option<f64> {
+    match kind {
+        "aggregation" | "extension" | "composition" => Some(17.25),
+        "dependency" => Some(6.0),
+        "lollipop" => Some(13.5),
+        "arrow_point" => Some(4.0),
+        "arrow_barb" => Some(0.0),
+        "arrow_barb_neo" => Some(5.5),
+        _ => None,
+    }
+}
+
+/// Positions labels from the final rendered geometry, retaining the layout position when no path exists.
+pub fn position_edge_labels(
+    edge: &EdgeData,
+    final_points: Option<&[Point]>,
+) -> Vec<EdgeLabelScene> {
+    let mut positioned = edge.clone();
+    if let Some(points) = final_points {
+        positioned.points = points.to_vec();
+    }
+    insert_edge_label(&positioned)
+}
+
+/// Builds a scene edge from Mermaid edge data, including cluster cuts, curve, styles, and roles.
+/// A missing id is an upstream `insertEdge` error; malformed/empty geometry yields an empty path.
+pub fn insert_edge(
+    edge: &EdgeData,
+    diagram_id: &str,
+) -> Result<InsertedEdge, crate::error::ParseError> {
+    if diagram_id.is_empty() {
+        return Err(crate::error::ParseError::new(
+            format!(
+                "insertEdge: missing diagramId for edge \"{}\" — edge IDs require a diagram prefix for uniqueness",
+                edge.id
+            ),
+            None,
+        ));
+    }
+    let mut points = edge.points.clone();
+    if let Some(bounds) = edge.to_cluster {
+        points = cut_path_at_intersection(&points, bounds);
+    }
+    if let Some(bounds) = edge.from_cluster {
+        points.reverse();
+        points = cut_path_at_intersection(&points, bounds);
+        points.reverse();
+    }
+    points.retain(|p| p.x.is_finite() && p.y.is_finite());
+    let curve = Curve::from_name(edge.curve.as_deref().unwrap_or("basis"));
+    let mut path_points = points.clone();
+    apply_marker_offsets(&mut path_points, edge);
+    let path = edge_path(
+        &path_points,
+        curve,
+        resolve_edge_corner_radius(edge.corner_radius),
+    );
+    let mut roles = style_roles(
+        &edge.thickness,
+        &edge.pattern,
+        edge.animation.as_deref(),
+        edge.animate,
+    );
+    roles.extend(edge.classes.iter().cloned());
+    roles.push("edge".into());
+    let mut styles = edge.css_compiled_styles.clone();
+    styles.extend(edge.styles.iter().cloned());
+    Ok(InsertedEdge {
+        id: format!("{diagram_id}-{}", edge.id),
+        path,
+        points,
+        roles,
+        styles,
+        labels: insert_edge_label(edge),
+        curve,
+    })
+}
+
+fn apply_marker_offsets(points: &mut [Point], edge: &EdgeData) {
+    if points.len() < 2 {
+        return;
+    }
+    for (at_start, kind) in [
+        (true, edge.arrow_type_start.as_deref()),
+        (false, edge.arrow_type_end.as_deref()),
+    ] {
+        let Some(offset) = kind.and_then(marker_offset).filter(|v| *v != 0.0) else {
+            continue;
+        };
+        let (a, b) = if at_start {
+            (points[0], points[1])
+        } else {
+            (points[points.len() - 2], points[points.len() - 1])
+        };
+        let angle = (b.y - a.y).atan2(b.x - a.x);
+        let p = if at_start {
+            Point::new(a.x + offset * angle.cos(), a.y + offset * angle.sin())
+        } else {
+            Point::new(b.x - offset * angle.cos(), b.y - offset * angle.sin())
+        };
+        let index = if at_start { 0 } else { points.len() - 1 };
+        points[index] = p;
+    }
+}
+
+/// Pure line-jump rewrite for orthogonal crossings. Smooth d3 curves are intentionally skipped.
+pub fn line_jump_paths(
+    edges: &[EdgeData],
+    enabled: bool,
+    radius: f64,
+    gap: bool,
+) -> Vec<(String, Path)> {
+    edges
+        .iter()
+        .enumerate()
+        .map(|(index, edge)| {
+            let mut jumps: Vec<(usize, f64, Point, bool)> = Vec::new();
+            if enabled
+                && edge.curve.as_deref().is_none_or(|c| {
+                    matches!(
+                        c,
+                        "linear" | "rounded" | "step" | "stepAfter" | "stepBefore"
+                    )
+                })
+            {
+                for other in edges.iter().skip(index + 1) {
+                    for (si, ab) in edge.points.windows(2).enumerate() {
+                        for cd in other.points.windows(2) {
+                            if let Some(point) = segment_intersection(ab[0], ab[1], cd[0], cd[1]) {
+                                let horiz = (ab[1].x - ab[0].x).abs() >= (ab[1].y - ab[0].y).abs();
+                                let other_horiz =
+                                    (cd[1].x - cd[0].x).abs() >= (cd[1].y - cd[0].y).abs();
+                                if horiz != other_horiz {
+                                    if horiz {
+                                        jumps.push((
+                                            si,
+                                            fraction(ab[0], ab[1], point),
+                                            point,
+                                            (ab[1].x - ab[0].x) >= 0.0,
+                                        ));
+                                    }
+                                } else { /* Later edge wins; generated when it is visited. */
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            let mut p = Path::new();
+            if let Some(first) = edge.points.first() {
+                p.move_to(*first);
+            }
+            for (i, pair) in edge.points.windows(2).enumerate() {
+                let mut found: Vec<_> = jumps.iter().filter(|j| j.0 == i).collect();
+                found.sort_by(|a, b| a.1.total_cmp(&b.1));
+                for (_, _, crossing, forward) in found {
+                    let r = radius
+                        .max(0.0)
+                        .min(pair[0].distance_to(*crossing))
+                        .min(pair[1].distance_to(*crossing));
+                    if r < 1e-5 {
+                        continue;
+                    }
+                    let unit = Point::new(
+                        (pair[1].x - pair[0].x) / pair[0].distance_to(pair[1]),
+                        (pair[1].y - pair[0].y) / pair[0].distance_to(pair[1]),
+                    );
+                    let before = Point::new(crossing.x - unit.x * r, crossing.y - unit.y * r);
+                    let after = Point::new(crossing.x + unit.x * r, crossing.y + unit.y * r);
+                    p.line_to(before);
+                    if !gap {
+                        p.arc_to(r, r, 0.0, false, *forward, after);
+                    } else {
+                        p.move_to(after);
+                    }
+                }
+                p.line_to(pair[1]);
+            }
+            (edge.id.clone(), p)
+        })
+        .collect()
+}
+
+fn fraction(a: Point, b: Point, p: Point) -> f64 {
+    let length = a.distance_to(b);
+    if length == 0.0 {
+        0.0
+    } else {
+        a.distance_to(p) / length
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -853,5 +1139,119 @@ mod tests {
         assert_eq!(resolve_edge_corner_radius(Some(-1.)), 5.);
         assert_eq!(get_step_duration(None), 1.);
         assert!(is_step_edge(Curve::Linear, Some(0.5)));
+    }
+
+    #[test]
+    fn upstream_render_fixture_covers_twelve_edge_variants() {
+        let fixture: serde_json::Value =
+            serde_json::from_str(include_str!("testdata/edges/upstream-render.json")).unwrap();
+        let edges = fixture["edges"].as_array().unwrap();
+        assert!(edges.len() >= 12);
+        for edge in edges {
+            assert!(edge["path"].as_str().is_some());
+            assert!(edge["points"].as_array().is_some());
+        }
+        assert!(edges.iter().any(|edge| edge["label"] == "main label"));
+        assert!(edges.iter().any(|edge| edge["terminalLabels"].is_array()));
+        assert!(edges.iter().any(|edge| edge["cluster"].is_object()));
+        assert!(
+            edges
+                .iter()
+                .any(|edge| edge["jumpPath"].as_str().unwrap().contains('A'))
+        );
+    }
+
+    #[test]
+    fn insert_edge_preserves_scene_roles_and_requires_diagram_id() {
+        let edge = EdgeData {
+            id: "e1".into(),
+            points: vec![Point::new(0., 0.), Point::new(100., 0.)],
+            curve: Some("linear".into()),
+            thickness: "thick".into(),
+            pattern: "dashed".into(),
+            classes: vec!["custom".into()],
+            ..EdgeData::default()
+        };
+        let rendered = insert_edge(&edge, "diagram").unwrap();
+        assert_eq!(rendered.id, "diagram-e1");
+        assert!(rendered.roles.contains(&"edge-thickness-thick".into()));
+        assert!(rendered.roles.contains(&"edge-pattern-dashed".into()));
+        assert!(rendered.roles.contains(&"custom".into()));
+        assert!(
+            insert_edge(&edge, "")
+                .unwrap_err()
+                .message
+                .contains("missing diagramId")
+        );
+    }
+
+    #[test]
+    fn line_jumps_arc_over_crossings_and_gap_style_breaks_path() {
+        let edges = [
+            EdgeData {
+                id: "horizontal".into(),
+                points: vec![Point::new(0., 50.), Point::new(100., 50.)],
+                curve: Some("linear".into()),
+                ..EdgeData::default()
+            },
+            EdgeData {
+                id: "vertical".into(),
+                points: vec![Point::new(50., 0.), Point::new(50., 100.)],
+                curve: Some("linear".into()),
+                ..EdgeData::default()
+            },
+        ];
+        let arc = line_jump_paths(&edges, true, 6., false);
+        assert!(
+            arc[0]
+                .1
+                .commands
+                .iter()
+                .any(|c| matches!(c, PathCommand::ArcTo { .. }))
+        );
+        let gap = line_jump_paths(&edges, true, 6., true);
+        assert!(
+            gap[0]
+                .1
+                .commands
+                .iter()
+                .any(|c| matches!(c, PathCommand::MoveTo { .. }))
+        );
+        let fixture: serde_json::Value =
+            serde_json::from_str(include_str!("testdata/edges/upstream-render.json")).unwrap();
+        let expected = fixture["edges"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|edge| edge["id"] == "cross-h")
+            .unwrap()["jumpPath"]
+            .as_str()
+            .unwrap();
+        assert_eq!(path_data(&arc[0].1), expected);
+    }
+
+    fn path_data(path: &Path) -> String {
+        let mut result = String::new();
+        for command in &path.commands {
+            match *command {
+                PathCommand::MoveTo { x, y } => result.push_str(&format!("M{x},{y}")),
+                PathCommand::LineTo { x, y } => result.push_str(&format!(" L{x},{y}")),
+                PathCommand::ArcTo {
+                    rx,
+                    ry,
+                    large_arc,
+                    sweep,
+                    x,
+                    y,
+                    ..
+                } => result.push_str(&format!(
+                    " A{rx},{ry} 0 {} {} {x},{y}",
+                    u8::from(large_arc),
+                    u8::from(sweep)
+                )),
+                _ => panic!("unexpected line jump command"),
+            }
+        }
+        result
     }
 }
