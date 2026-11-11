@@ -615,6 +615,7 @@ impl Render for Menu {
         let items = self.items.clone();
         let bounds = self.bounds.clone();
         let panel = div()
+            .debug_selector(|| "menu-panel".into())
             .relative()
             .child(
                 canvas(move |rect, _, _| bounds.set(Some(rect)), |_, _, _, _| {})
