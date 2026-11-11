@@ -164,7 +164,7 @@ pub fn terminal_label_position(
     ))
 }
 
-/// Generates the edge path. Catmull-Rom, monotone and natural curves are still approximations.
+/// Generates the edge path using the corresponding d3-shape curve implementation.
 pub fn edge_path(points: &[Point], curve: Curve, radius: f64) -> Path {
     match curve {
         Curve::Rounded => rounded_path(points, radius),
@@ -174,9 +174,10 @@ pub fn edge_path(points: &[Point], curve: Curve, radius: f64) -> Path {
         Curve::Basis => basis_path(points, false),
         Curve::BasisClosed => basis_path(points, true),
         Curve::Cardinal => cardinal_path(points),
-        Curve::CatmullRom | Curve::MonotoneX | Curve::MonotoneY | Curve::Natural => {
-            smooth_path(points)
-        }
+        Curve::CatmullRom => catmull_rom_path(points),
+        Curve::MonotoneX => monotone_path(points, false),
+        Curve::MonotoneY => monotone_path(points, true),
+        Curve::Natural => natural_path(points),
     }
 }
 
@@ -308,24 +309,231 @@ fn bump_path(points: &[Point], curve: Curve) -> Path {
     }
     out
 }
-fn smooth_path(points: &[Point]) -> Path {
+fn catmull_rom_path(points: &[Point]) -> Path {
     let mut out = Path::new();
-    if points.is_empty() {
-        return out;
+    match points.len() {
+        0 => return out,
+        1 => {
+            out.move_to(points[0]);
+            return out;
+        }
+        2 => return linear_path(points),
+        _ => {}
     }
     out.move_to(points[0]);
-    for i in 0..points.len().saturating_sub(1) {
-        let a = points[i];
-        let b = points[i + 1];
-        let prev = if i == 0 { a } else { points[i - 1] };
-        let next = points.get(i + 2).copied().unwrap_or(b);
+    let alpha = 0.5;
+    let mut first_square = 0.0;
+    let first_length = catmull_length(points[0], points[1], alpha, &mut first_square);
+    let mut lengths = [0.0, first_length, 0.0];
+    let mut squares = [0.0, first_square, 0.0];
+    for i in 2..points.len() {
+        lengths[2] = catmull_length(points[i - 1], points[i], alpha, &mut squares[2]);
+        let x0 = if i >= 3 { points[i - 3] } else { points[i - 2] };
+        let (x1, x2, x3) = (points[i - 2], points[i - 1], points[i]);
+        let (l01, l12, l23) = (lengths[0], lengths[1], lengths[2]);
+        let (l01_2, l12_2, l23_2) = (squares[0], squares[1], squares[2]);
+        let mut c1 = x1;
+        let mut c2 = x2;
+        if l01 > f64::EPSILON {
+            let a = 2.0 * l01_2 + 3.0 * l01 * l12 + l12_2;
+            let n = 3.0 * l01 * (l01 + l12);
+            c1 = Point::new(
+                (x1.x * a - x0.x * l12_2 + x2.x * l01_2) / n,
+                (x1.y * a - x0.y * l12_2 + x2.y * l01_2) / n,
+            );
+        }
+        if l23 > f64::EPSILON {
+            let b = 2.0 * l23_2 + 3.0 * l23 * l12 + l12_2;
+            let m = 3.0 * l23 * (l23 + l12);
+            c2 = Point::new(
+                (x2.x * b + x1.x * l23_2 - x3.x * l12_2) / m,
+                (x2.y * b + x1.y * l23_2 - x3.y * l12_2) / m,
+            );
+        }
+        out.cubic_to(c1, c2, x2);
+        lengths = [lengths[1], lengths[2], 0.0];
+        squares = [squares[1], squares[2], 0.0];
+    }
+    let (x0, x1, x2) = (
+        points[points.len() - 3],
+        points[points.len() - 2],
+        *points.last().unwrap(),
+    );
+    let (l01, l12) = (lengths[0], lengths[1]);
+    let (l01_2, l12_2) = (squares[0], squares[1]);
+    let mut c1 = x1;
+    if l01 > f64::EPSILON {
+        let a = 2.0 * l01_2 + 3.0 * l01 * l12 + l12_2;
+        let n = 3.0 * l01 * (l01 + l12);
+        c1 = Point::new(
+            (x1.x * a - x0.x * l12_2 + x2.x * l01_2) / n,
+            (x1.y * a - x0.y * l12_2 + x2.y * l01_2) / n,
+        );
+    }
+    out.cubic_to(c1, x2, x2);
+    out
+}
+
+fn catmull_length(a: Point, b: Point, alpha: f64, square: &mut f64) -> f64 {
+    let dx = a.x - b.x;
+    let dy = a.y - b.y;
+    *square = (dx * dx + dy * dy).powf(alpha);
+    square.sqrt()
+}
+
+fn monotone_path(points: &[Point], reflect: bool) -> Path {
+    let mut out = Path::new();
+    let mut filtered = Vec::with_capacity(points.len());
+    for &point in points {
+        if filtered.last() != Some(&point) {
+            filtered.push(point);
+        }
+    }
+    let points = filtered;
+    let Some(&first) = points.first() else {
+        return out;
+    };
+    let transform = |p: Point| if reflect { Point::new(p.y, p.x) } else { p };
+    let first = transform(first);
+    out.move_to(if reflect {
+        Point::new(first.y, first.x)
+    } else {
+        first
+    });
+    if points.len() == 1 {
+        return out;
+    }
+    let mut p0 = transform(points[0]);
+    let mut p1 = transform(points[1]);
+    if points.len() == 2 {
+        out.line_to(points[1]);
+        return out;
+    }
+    let t1 = monotone_slope3(p0, p1, transform(points[2]));
+    let mut t0 = monotone_slope2(p0, p1, t1);
+    monotone_bezier(&mut out, p0, p1, t0, t1, reflect);
+    p0 = p1;
+    p1 = transform(points[2]);
+    t0 = t1;
+    for point in points.iter().skip(3) {
+        let p2 = transform(*point);
+        let next_t = monotone_slope3(p0, p1, p2);
+        monotone_bezier(&mut out, p0, p1, t0, next_t, reflect);
+        p0 = p1;
+        p1 = p2;
+        t0 = next_t;
+    }
+    monotone_bezier(&mut out, p0, p1, t0, monotone_slope2(p0, p1, t0), reflect);
+    out
+}
+
+fn monotone_slope3(p0: Point, p1: Point, p2: Point) -> f64 {
+    let h0 = p1.x - p0.x;
+    let h1 = p2.x - p1.x;
+    let s0 = (p1.y - p0.y)
+        / if h0 != 0.0 {
+            h0
+        } else if h1 < 0.0 {
+            -0.0
+        } else {
+            0.0
+        };
+    let s1 = (p2.y - p1.y)
+        / if h1 != 0.0 {
+            h1
+        } else if h0 < 0.0 {
+            -0.0
+        } else {
+            0.0
+        };
+    let p = (s0 * h1 + s1 * h0) / (h0 + h1);
+    let sign = |x: f64| if x < 0.0 { -1.0 } else { 1.0 };
+    let tangent = (sign(s0) + sign(s1)) * s0.abs().min(s1.abs()).min(0.5 * p.abs());
+    if tangent.is_nan() { 0.0 } else { tangent }
+}
+
+fn monotone_slope2(p0: Point, p1: Point, t: f64) -> f64 {
+    let h = p1.x - p0.x;
+    if h != 0.0 {
+        (3.0 * (p1.y - p0.y) / h - t) / 2.0
+    } else {
+        t
+    }
+}
+
+fn monotone_bezier(out: &mut Path, p0: Point, p1: Point, t0: f64, t1: f64, reflect: bool) {
+    let dx = (p1.x - p0.x) / 3.0;
+    let point = |x: f64, y: f64| {
+        if reflect {
+            Point::new(y, x)
+        } else {
+            Point::new(x, y)
+        }
+    };
+    out.cubic_to(
+        point(p0.x + dx, p0.y + dx * t0),
+        point(p1.x - dx, p1.y - dx * t1),
+        point(p1.x, p1.y),
+    );
+}
+
+fn natural_path(points: &[Point]) -> Path {
+    let mut out = Path::new();
+    match points.len() {
+        0 => return out,
+        1 => {
+            out.move_to(points[0]);
+            return out;
+        }
+        2 => return linear_path(points),
+        _ => {}
+    }
+    out.move_to(points[0]);
+    let x: Vec<f64> = points.iter().map(|p| p.x).collect();
+    let y: Vec<f64> = points.iter().map(|p| p.y).collect();
+    let (x1, x2) = natural_controls(&x);
+    let (y1, y2) = natural_controls(&y);
+    for i in 0..points.len() - 1 {
         out.cubic_to(
-            Point::new(a.x + (b.x - prev.x) / 6.0, a.y + (b.y - prev.y) / 6.0),
-            Point::new(b.x - (next.x - a.x) / 6.0, b.y - (next.y - a.y) / 6.0),
-            b,
+            Point::new(x1[i], y1[i]),
+            Point::new(x2[i], y2[i]),
+            points[i + 1],
         );
     }
     out
+}
+
+fn natural_controls(values: &[f64]) -> (Vec<f64>, Vec<f64>) {
+    let n = values.len() - 1;
+    let mut a = vec![0.0; n];
+    let mut b = vec![0.0; n];
+    let mut r = vec![0.0; n];
+    a[0] = 0.0;
+    b[0] = 2.0;
+    r[0] = values[0] + 2.0 * values[1];
+    for i in 1..n - 1 {
+        a[i] = 1.0;
+        b[i] = 4.0;
+        r[i] = 4.0 * values[i] + 2.0 * values[i + 1];
+    }
+    a[n - 1] = 2.0;
+    b[n - 1] = 7.0;
+    r[n - 1] = 8.0 * values[n - 1] + values[n];
+    for i in 1..n {
+        let m = a[i] / b[i - 1];
+        b[i] -= m;
+        r[i] -= m * r[i - 1];
+    }
+    a[n - 1] = r[n - 1] / b[n - 1];
+    for i in (0..n - 1).rev() {
+        a[i] = (r[i] - a[i + 1]) / b[i];
+    }
+    let mut second = vec![0.0; n];
+    second[n - 1] = (values[n] + a[n - 1]) / 2.0;
+    for i in 0..n - 1 {
+        second[i] = 2.0 * values[i + 1] - a[i + 1];
+    }
+    (a, second)
 }
 
 pub fn rounded_path(points: &[Point], radius: f64) -> Path {
@@ -481,34 +689,16 @@ pub fn style_roles(
 mod tests {
     use super::*;
     use crate::scene::PathCommand;
-    #[test]
-    fn matches_d3_curve_fixture() {
-        let fixture: serde_json::Value =
-            serde_json::from_str(include_str!("testdata/edges/d3-curves.json")).unwrap();
-        let points: Vec<Point> = fixture["points"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|p| Point::new(p[0].as_f64().unwrap(), p[1].as_f64().unwrap()))
-            .collect();
-        let cases = [
-            ("Linear", Curve::Linear),
-            ("Basis", Curve::Basis),
-            ("BasisClosed", Curve::BasisClosed),
-            ("Cardinal", Curve::Cardinal),
-            ("BumpX", Curve::BumpX),
-            ("BumpY", Curve::BumpY),
-            ("Step", Curve::Step),
-            ("StepAfter", Curve::StepAfter),
-            ("StepBefore", Curve::StepBefore),
-        ];
-        fn number(v: f64) -> String {
-            let v = (v * 1000.0 + 0.5).floor() / 1000.0;
-            if v == 0.0 { "0".into() } else { v.to_string() }
-        }
+
+    fn number(v: f64) -> String {
+        let v = (v * 1000.0 + 0.5).floor() / 1000.0;
+        if v == 0.0 { "0".into() } else { v.to_string() }
+    }
+
+    fn assert_d3_paths(points: &[Point], paths: &serde_json::Value, cases: &[(&str, Curve)]) {
         for (name, curve) in cases {
             let mut actual = String::new();
-            for cmd in edge_path(&points, curve, 0.).commands {
+            for cmd in edge_path(points, *curve, 0.0).commands {
                 match cmd {
                     PathCommand::MoveTo { x, y } => {
                         actual.push_str(&format!("M{},{}", number(x), number(y)))
@@ -536,8 +726,54 @@ mod tests {
                     _ => panic!("unexpected command"),
                 }
             }
-            assert_eq!(actual, fixture["paths"][name].as_str().unwrap(), "{name}");
+            assert_eq!(actual, paths[*name].as_str().unwrap(), "{name}");
         }
+    }
+
+    #[test]
+    fn matches_d3_curve_fixture() {
+        let fixture: serde_json::Value =
+            serde_json::from_str(include_str!("testdata/edges/d3-curves.json")).unwrap();
+        let points: Vec<Point> = fixture["points"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|p| Point::new(p[0].as_f64().unwrap(), p[1].as_f64().unwrap()))
+            .collect();
+        let cases = [
+            ("Linear", Curve::Linear),
+            ("Basis", Curve::Basis),
+            ("BasisClosed", Curve::BasisClosed),
+            ("Cardinal", Curve::Cardinal),
+            ("CatmullRom", Curve::CatmullRom),
+            ("MonotoneX", Curve::MonotoneX),
+            ("MonotoneY", Curve::MonotoneY),
+            ("Natural", Curve::Natural),
+            ("BumpX", Curve::BumpX),
+            ("BumpY", Curve::BumpY),
+            ("Step", Curve::Step),
+            ("StepAfter", Curve::StepAfter),
+            ("StepBefore", Curve::StepBefore),
+        ];
+        assert_d3_paths(&points, &fixture["paths"], &cases);
+
+        let additional_points: Vec<Point> = fixture["additional"]["points"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|p| Point::new(p[0].as_f64().unwrap(), p[1].as_f64().unwrap()))
+            .collect();
+        let smooth_cases = [
+            ("CatmullRom", Curve::CatmullRom),
+            ("MonotoneX", Curve::MonotoneX),
+            ("MonotoneY", Curve::MonotoneY),
+            ("Natural", Curve::Natural),
+        ];
+        assert_d3_paths(
+            &additional_points,
+            &fixture["additional"]["paths"],
+            &smooth_cases,
+        );
     }
     #[test]
     fn cut_keeps_outside_prefix_and_boundary() {
