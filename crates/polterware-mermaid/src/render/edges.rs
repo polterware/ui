@@ -164,7 +164,7 @@ fn smooth_path(points: &[Point]) -> Path {
 
 pub fn rounded_path(points: &[Point], radius: f64) -> Path {
     let mut path = Path::new();
-    if points.is_empty() {
+    if points.len() < 2 {
         return path;
     }
     path.move_to(points[0]);
@@ -172,14 +172,23 @@ pub fn rounded_path(points: &[Point], radius: f64) -> Path {
         let prev = points[i - 1];
         let corner = points[i];
         let next = points[i + 1];
-        let r = radius
-            .max(0.0)
-            .min(prev.distance_to(corner) / 2.0)
-            .min(corner.distance_to(next) / 2.0);
-        if r == 0.0 {
+        let len1 = prev.distance_to(corner);
+        let len2 = corner.distance_to(next);
+        if len1 < 1e-5 || len2 < 1e-5 {
             path.line_to(corner);
             continue;
         }
+        let dot = ((corner.x - prev.x) * (next.x - corner.x)
+            + (corner.y - prev.y) * (next.y - corner.y))
+            / (len1 * len2);
+        let angle = dot.clamp(-1.0, 1.0).acos();
+        if angle < 1e-5 || (std::f64::consts::PI - angle).abs() < 1e-5 {
+            path.line_to(corner);
+            continue;
+        }
+        let r = (radius / (angle / 2.0).sin())
+            .min(len1 / 2.0)
+            .min(len2 / 2.0);
         let before = Point::new(
             corner.x + (prev.x - corner.x) * r / prev.distance_to(corner),
             corner.y + (prev.y - corner.y) * r / prev.distance_to(corner),
@@ -204,24 +213,13 @@ pub struct SegmentCrossing {
 }
 /// Finds strict interior intersections of axis-aligned segments, as lineJump does.
 pub fn segment_intersection(a: Point, b: Point, c: Point, d: Point) -> Option<Point> {
-    let (cmin, cmax) = (c.x.min(d.x), c.x.max(d.x));
-    if (a.x - b.x).abs() < 1e-9 && (c.y - d.y).abs() < 1e-9 {
-        let p = Point::new(a.x, c.y);
-        return (p.x > cmin && p.x < cmax && p.y > a.y.min(b.y) && p.y < a.y.max(b.y)).then_some(p);
-    }
-    if (a.y - b.y).abs() < 1e-9 && (c.x - d.x).abs() < 1e-9 {
-        return segment_intersection(c, d, a, b);
-    }
-    if (a.x - b.x).abs() < 1e-9 || (c.x - d.x).abs() < 1e-9 {
-        return None;
-    }
     let denom = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x);
-    if denom.abs() < 1e-9 {
+    if denom == 0.0 {
         return None;
     }
     let t = ((c.x - a.x) * (d.y - c.y) - (c.y - a.y) * (d.x - c.x)) / denom;
     let u = ((c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x)) / denom;
-    (t > 0.0 && t < 1.0 && u > 0.0 && u < 1.0)
+    (t > 1e-6 && t < 1.0 - 1e-6 && u > 1e-6 && u < 1.0 - 1e-6)
         .then(|| Point::new(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)))
 }
 
