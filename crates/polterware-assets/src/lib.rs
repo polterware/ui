@@ -121,6 +121,7 @@ icons! {
     MapPin => "map-pin",
     Maximize2 => "maximize2",
     MemoryStick => "memory-stick",
+    Microphone => "microphone",
     Monitor => "monitor",
     MousePointer2 => "mouse-pointer2",
     Network => "network",

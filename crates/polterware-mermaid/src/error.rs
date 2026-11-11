@@ -17,7 +17,10 @@ pub struct ParseError {
 
 impl ParseError {
     pub fn new(message: impl Into<String>, span: Option<Span>) -> Self {
-        Self { message: message.into(), span }
+        Self {
+            message: message.into(),
+            span,
+        }
     }
 
     pub fn at(message: impl Into<String>, span: Span) -> Self {

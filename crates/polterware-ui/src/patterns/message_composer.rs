@@ -14,7 +14,12 @@
 //! Shift+Enter breaks the line) and a [`ScrollHandle`] for the field's scroll, and it decides
 //! what sending does. [`message_input`] makes the field in the composer's text.
 //!
+//! [`MessageComposer::trailing_action`] adds an icon [`ComposerAction`] before Send, for a mode
+//! the message is written in (dictation): it takes a pressed face while active.
+//!
 //! [`fade_scroll`]: super::fade_scroll
+
+use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, AppContext as _, Context, ElementId, Entity, FontWeight, IntoElement,
@@ -81,6 +86,50 @@ pub fn message_composer(
         can_send: None,
         busy: false,
         footer_start: None,
+        actions: Vec::new(),
+    }
+}
+
+/// An action in the composer's footer, before Send: an icon button with a tooltip and a
+/// pressed face while active, for a mode the message is written in.
+#[derive(Clone)]
+pub struct ComposerAction {
+    id: SharedString,
+    icon: Icon,
+    label: SharedString,
+    active: bool,
+    disabled: bool,
+    on_click: Option<Handler>,
+}
+
+impl ComposerAction {
+    pub fn new(id: impl Into<SharedString>, icon: Icon, label: impl Into<SharedString>) -> Self {
+        Self {
+            id: id.into(),
+            icon,
+            label: label.into(),
+            active: false,
+            disabled: false,
+            on_click: None,
+        }
+    }
+
+    /// Whether the action is on: the button takes its pressed face.
+    pub fn active(mut self, active: bool) -> Self {
+        self.active = active;
+        self
+    }
+
+    /// Whether the action takes a press. Default: it does.
+    pub fn disabled(mut self, disabled: bool) -> Self {
+        self.disabled = disabled;
+        self
+    }
+
+    /// What the action does when pressed.
+    pub fn on_click(mut self, handler: impl Fn(&mut Window, &mut App) + 'static) -> Self {
+        self.on_click = Some(Rc::new(handler));
+        self
     }
 }
 
@@ -95,6 +144,7 @@ pub struct MessageComposer {
     can_send: Option<bool>,
     busy: bool,
     footer_start: Option<AnyElement>,
+    actions: Vec<ComposerAction>,
 }
 
 impl MessageComposer {
@@ -132,6 +182,12 @@ impl MessageComposer {
     /// What the footer holds at its start, such as a note on where the message goes.
     pub fn footer_start(mut self, element: impl IntoElement) -> Self {
         self.footer_start = Some(element.into_any_element());
+        self
+    }
+
+    /// An action before Send, such as the microphone a message is dictated with.
+    pub fn trailing_action(mut self, action: ComposerAction) -> Self {
+        self.actions.push(action);
         self
     }
 }
@@ -267,12 +323,34 @@ impl RenderOnce for MessageComposer {
         .when_some(self.on_send.filter(|_| can_send), |button, handler| {
             button.on_click_rc(handler)
         });
+        let actions = self
+            .actions
+            .into_iter()
+            .map(|action| {
+                let kind = if action.active {
+                    ButtonKind::Secondary
+                } else {
+                    ButtonKind::Ghost
+                };
+                Button::new(ElementId::Name(action.id.clone()), kind)
+                    .size(ButtonSize::Icon)
+                    .icon(action.icon)
+                    .icon_size(16.0)
+                    .tooltip(action.label)
+                    .selected(action.active)
+                    .disabled(action.disabled)
+                    .when_some(action.on_click, |button, handler| {
+                        button.on_click_rc(handler)
+                    })
+            })
+            .collect::<Vec<_>>();
         let footer = div()
             .w_full()
             .flex()
             .items_center()
             .gap(px(8.0))
             .child(div().flex_1().min_w(px(0.0)).children(self.footer_start))
+            .children(actions)
             .child(send);
 
         raised_panel(
@@ -318,6 +396,45 @@ mod tests {
     use gpui::{TestAppContext, VisualTestContext, size};
     use std::cell::RefCell;
     use std::rc::Rc;
+
+    #[gpui::test]
+    fn a_trailing_action_sits_before_send_and_reports_its_press(cx: &mut TestAppContext) {
+        let pressed = Rc::new(RefCell::new(0_usize));
+        let sink = pressed.clone();
+        let scroll = ScrollHandle::new();
+        let slot: Slot = Rc::default();
+        let held = slot.clone();
+        let handle = scroll.clone();
+        let mut cx = open(cx, size(480.0, 400.0), move |_, cx| {
+            let input = held
+                .borrow_mut()
+                .get_or_insert_with(|| message_input("Message", |_, _, _| {}, cx))
+                .clone();
+            let action = ComposerAction::new("dictate", Icon::Microphone, "Dictate")
+                .active(true)
+                .on_click({
+                    let sink = sink.clone();
+                    move |_, _| *sink.borrow_mut() += 1
+                });
+            div()
+                .w(px(480.0))
+                .child(
+                    message_composer("composer", &input, &handle)
+                        .max_height(100.0)
+                        .trailing_action(action),
+                )
+                .into_any_element()
+        });
+        draw(&mut cx);
+        let action = cx.debug_bounds("dictate").expect("the action draws");
+        let send = cx.debug_bounds("composer-send").expect("Send draws");
+        assert!(
+            action.right() <= send.left(),
+            "the action sits before Send: {action:?} and {send:?}"
+        );
+        cx.simulate_click(action.center(), gpui::Modifiers::none());
+        assert_eq!(*pressed.borrow(), 1);
+    }
 
     #[test]
     fn the_caret_is_followed_only_out_of_view() {
