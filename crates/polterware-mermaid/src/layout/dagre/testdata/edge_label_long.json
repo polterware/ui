@@ -1,0 +1,83 @@
+{
+  "name": "edge_label_long",
+  "graph": {},
+  "nodes": [
+    {
+      "id": "a",
+      "width": 50,
+      "height": 100
+    },
+    {
+      "id": "b",
+      "width": 75,
+      "height": 200
+    }
+  ],
+  "edges": [
+    {
+      "v": "a",
+      "w": "b",
+      "width": 60,
+      "height": 70,
+      "minlen": 2,
+      "labelpos": "c"
+    }
+  ],
+  "parents": [],
+  "output": {
+    "graph": {
+      "width": 75,
+      "height": 470
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 37.5,
+        "y": 50,
+        "width": 50,
+        "height": 100,
+        "rank": 0,
+        "order": 0
+      },
+      {
+        "id": "b",
+        "x": 37.5,
+        "y": 370,
+        "width": 75,
+        "height": 200,
+        "rank": 4,
+        "order": 0
+      }
+    ],
+    "edges": [
+      {
+        "v": "a",
+        "w": "b",
+        "points": [
+          {
+            "x": 37.5,
+            "y": 100
+          },
+          {
+            "x": 37.5,
+            "y": 125
+          },
+          {
+            "x": 37.5,
+            "y": 185
+          },
+          {
+            "x": 37.5,
+            "y": 245
+          },
+          {
+            "x": 37.5,
+            "y": 270
+          }
+        ],
+        "x": 37.5,
+        "y": 185
+      }
+    ]
+  }
+}

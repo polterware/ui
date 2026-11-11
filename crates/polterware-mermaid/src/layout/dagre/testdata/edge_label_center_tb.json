@@ -1,0 +1,76 @@
+{
+  "name": "edge_label_center_tb",
+  "graph": {
+    "ranksep": 300
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "width": 50,
+      "height": 100
+    },
+    {
+      "id": "b",
+      "width": 50,
+      "height": 100
+    }
+  ],
+  "edges": [
+    {
+      "v": "a",
+      "w": "b",
+      "width": 60,
+      "height": 70,
+      "labelpos": "c"
+    }
+  ],
+  "parents": [],
+  "output": {
+    "graph": {
+      "width": 60,
+      "height": 570
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 30,
+        "y": 50,
+        "width": 50,
+        "height": 100,
+        "rank": 0,
+        "order": 0
+      },
+      {
+        "id": "b",
+        "x": 30,
+        "y": 520,
+        "width": 50,
+        "height": 100,
+        "rank": 2,
+        "order": 0
+      }
+    ],
+    "edges": [
+      {
+        "v": "a",
+        "w": "b",
+        "points": [
+          {
+            "x": 30,
+            "y": 100
+          },
+          {
+            "x": 30,
+            "y": 285
+          },
+          {
+            "x": 30,
+            "y": 470
+          }
+        ],
+        "x": 30,
+        "y": 285
+      }
+    ]
+  }
+}

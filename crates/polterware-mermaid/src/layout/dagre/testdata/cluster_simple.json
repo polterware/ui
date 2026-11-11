@@ -1,0 +1,129 @@
+{
+  "name": "cluster_simple",
+  "graph": {},
+  "nodes": [
+    {
+      "id": "a",
+      "width": 50,
+      "height": 50
+    },
+    {
+      "id": "b",
+      "width": 50,
+      "height": 50
+    },
+    {
+      "id": "c",
+      "width": 50,
+      "height": 50
+    },
+    {
+      "id": "sg",
+      "parent": null
+    }
+  ],
+  "edges": [
+    {
+      "v": "a",
+      "w": "b"
+    },
+    {
+      "v": "b",
+      "w": "c"
+    }
+  ],
+  "parents": [
+    {
+      "v": "a",
+      "parent": "sg"
+    },
+    {
+      "v": "b",
+      "parent": "sg"
+    }
+  ],
+  "output": {
+    "graph": {
+      "width": 120,
+      "height": 300
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 60,
+        "y": 50,
+        "width": 50,
+        "height": 50,
+        "rank": 1,
+        "order": 1
+      },
+      {
+        "id": "b",
+        "x": 60,
+        "y": 150,
+        "width": 50,
+        "height": 50,
+        "rank": 3,
+        "order": 1
+      },
+      {
+        "id": "c",
+        "x": 60,
+        "y": 275,
+        "width": 50,
+        "height": 50,
+        "rank": 6,
+        "order": 0
+      },
+      {
+        "id": "sg",
+        "x": 60,
+        "y": 100,
+        "width": 120,
+        "height": 200
+      }
+    ],
+    "edges": [
+      {
+        "v": "a",
+        "w": "b",
+        "points": [
+          {
+            "x": 60,
+            "y": 75
+          },
+          {
+            "x": 60,
+            "y": 100
+          },
+          {
+            "x": 60,
+            "y": 125
+          }
+        ]
+      },
+      {
+        "v": "b",
+        "w": "c",
+        "points": [
+          {
+            "x": 60,
+            "y": 175
+          },
+          {
+            "x": 60,
+            "y": 200
+          },
+          {
+            "x": 60,
+            "y": 225
+          },
+          {
+            "x": 60,
+            "y": 250
+          }
+        ]
+      }
+    ]
+  }
+}

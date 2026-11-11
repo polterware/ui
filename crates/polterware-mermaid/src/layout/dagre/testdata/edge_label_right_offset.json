@@ -1,0 +1,77 @@
+{
+  "name": "edge_label_right_offset",
+  "graph": {
+    "rankdir": "LR"
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "id": "b",
+      "width": 10,
+      "height": 10
+    }
+  ],
+  "edges": [
+    {
+      "v": "a",
+      "w": "b",
+      "width": 10,
+      "height": 10,
+      "labelpos": "r",
+      "labeloffset": 1000
+    }
+  ],
+  "parents": [],
+  "output": {
+    "graph": {
+      "width": 80,
+      "height": 1015
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 5,
+        "y": 5,
+        "width": 10,
+        "height": 10,
+        "rank": 0,
+        "order": 0
+      },
+      {
+        "id": "b",
+        "x": 75,
+        "y": 5,
+        "width": 10,
+        "height": 10,
+        "rank": 2,
+        "order": 0
+      }
+    ],
+    "edges": [
+      {
+        "v": "a",
+        "w": "b",
+        "points": [
+          {
+            "x": 10,
+            "y": 5
+          },
+          {
+            "x": 40,
+            "y": 5
+          },
+          {
+            "x": 70,
+            "y": 5
+          }
+        ],
+        "x": 40,
+        "y": 1010
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "two_nodes_same_rank",
+  "graph": {
+    "nodesep": 200
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "width": 50,
+      "height": 100
+    },
+    {
+      "id": "b",
+      "width": 75,
+      "height": 200
+    }
+  ],
+  "edges": [],
+  "parents": [],
+  "output": {
+    "graph": {
+      "width": 325,
+      "height": 200
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 25,
+        "y": 100,
+        "width": 50,
+        "height": 100,
+        "rank": 0,
+        "order": 0
+      },
+      {
+        "id": "b",
+        "x": 287.5,
+        "y": 100,
+        "width": 75,
+        "height": 200,
+        "rank": 0,
+        "order": 1
+      }
+    ],
+    "edges": []
+  }
+}
