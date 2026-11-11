@@ -1,0 +1,115 @@
+{
+  "name": "lollipop",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-lollipopStart",
+        "class": "marker lollipop diagram-type",
+        "refX": "13",
+        "refY": "7",
+        "markerWidth": "190",
+        "markerHeight": "240",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "fill": "transparent",
+            "cx": "7",
+            "cy": "7",
+            "r": "6"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-lollipopEnd",
+        "class": "marker lollipop diagram-type",
+        "refX": "1",
+        "refY": "7",
+        "markerWidth": "190",
+        "markerHeight": "240",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "fill": "transparent",
+            "cx": "7",
+            "cy": "7",
+            "r": "6"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-lollipopStart-margin",
+        "class": "marker lollipop diagram-type",
+        "refX": "13",
+        "refY": "7",
+        "markerWidth": "190",
+        "markerHeight": "240",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "fill": "transparent",
+            "cx": "7",
+            "cy": "7",
+            "r": "6",
+            "stroke-width": "2"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-lollipopEnd-margin",
+        "class": "marker lollipop diagram-type",
+        "refX": "1",
+        "refY": "7",
+        "markerWidth": "190",
+        "markerHeight": "240",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "fill": "transparent",
+            "cx": "7",
+            "cy": "7",
+            "r": "6",
+            "stroke-width": "2"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}

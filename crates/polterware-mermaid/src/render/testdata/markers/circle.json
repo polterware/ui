@@ -1,0 +1,129 @@
+{
+  "name": "circle",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-circleEnd",
+        "class": "marker diagram-type",
+        "viewBox": "0 0 10 10",
+        "refX": "11",
+        "refY": "5",
+        "markerUnits": "userSpaceOnUse",
+        "markerWidth": "11",
+        "markerHeight": "11",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "cx": "5",
+            "cy": "5",
+            "r": "5",
+            "class": "arrowMarkerPath"
+          },
+          "styles": {
+            "stroke-width": "1",
+            "stroke-dasharray": "1,0"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-circleStart",
+        "class": "marker diagram-type",
+        "viewBox": "0 0 10 10",
+        "refX": "-1",
+        "refY": "5",
+        "markerUnits": "userSpaceOnUse",
+        "markerWidth": "11",
+        "markerHeight": "11",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "cx": "5",
+            "cy": "5",
+            "r": "5",
+            "class": "arrowMarkerPath"
+          },
+          "styles": {
+            "stroke-width": "1",
+            "stroke-dasharray": "1,0"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-circleEnd-margin",
+        "class": "marker diagram-type",
+        "viewBox": "0 0 10 10",
+        "refY": "5",
+        "refX": "12.25",
+        "markerUnits": "userSpaceOnUse",
+        "markerWidth": "14",
+        "markerHeight": "14",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "cx": "5",
+            "cy": "5",
+            "r": "5",
+            "class": "arrowMarkerPath"
+          },
+          "styles": {
+            "stroke-width": "0",
+            "stroke-dasharray": "1,0"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-circleStart-margin",
+        "class": "marker diagram-type",
+        "viewBox": "0 0 10 10",
+        "refX": "-2",
+        "refY": "5",
+        "markerUnits": "userSpaceOnUse",
+        "markerWidth": "14",
+        "markerHeight": "14",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "cx": "5",
+            "cy": "5",
+            "r": "5",
+            "class": "arrowMarkerPath"
+          },
+          "styles": {
+            "stroke-width": "0",
+            "stroke-dasharray": "1,0"
+          },
+          "children": []
+        }
+      ]
+    }
+  ]
+}

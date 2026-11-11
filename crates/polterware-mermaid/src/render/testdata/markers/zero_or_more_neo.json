@@ -1,0 +1,79 @@
+{
+  "name": "zero_or_more_neo",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-zeroOrMoreStart",
+        "class": "marker zeroOrMore diagram-type",
+        "refX": "18",
+        "refY": "18",
+        "markerWidth": "57",
+        "markerHeight": "36",
+        "markerUnits": "userSpaceOnUse",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "fill": "#ffffff",
+            "cx": "45.5",
+            "cy": "18",
+            "r": "6",
+            "stroke-width": "1"
+          },
+          "styles": {},
+          "children": []
+        },
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M0,18 Q18,0 36,18 Q18,36 0,18",
+            "stroke-width": "1"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-zeroOrMoreEnd",
+        "class": "marker zeroOrMore diagram-type",
+        "refX": "39",
+        "refY": "18",
+        "markerWidth": "57",
+        "markerHeight": "36",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "fill": "#ffffff",
+            "cx": "11",
+            "cy": "18",
+            "r": "6",
+            "stroke-width": "1"
+          },
+          "styles": {},
+          "children": []
+        },
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M21,18 Q39,0 57,18 Q39,36 21,18",
+            "stroke-width": "1"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "requirement_arrow_neo",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-requirement_arrowEnd",
+        "refX": "20",
+        "refY": "10",
+        "markerWidth": "20",
+        "markerHeight": "20",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse",
+        "stroke-width": "1",
+        "viewBox": "0 0 25 20"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M0,0\n      L20,10\n      M20,10\n      L0,20",
+            "stroke-linejoin": "miter"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}

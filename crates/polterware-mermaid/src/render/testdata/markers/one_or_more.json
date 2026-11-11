@@ -1,0 +1,51 @@
+{
+  "name": "one_or_more",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-oneOrMoreStart",
+        "class": "marker oneOrMore diagram-type",
+        "refX": "18",
+        "refY": "18",
+        "markerWidth": "45",
+        "markerHeight": "36",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M0,18 Q 18,0 36,18 Q 18,36 0,18 M42,9 L42,27"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-oneOrMoreEnd",
+        "class": "marker oneOrMore diagram-type",
+        "refX": "27",
+        "refY": "18",
+        "markerWidth": "45",
+        "markerHeight": "36",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M3,9 L3,27 M9,18 Q27,0 45,18 Q27,36 9,18"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}
