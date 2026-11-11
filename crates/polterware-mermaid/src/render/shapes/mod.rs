@@ -4,10 +4,108 @@
 use crate::measure::{Font, TextMeasure};
 use crate::render::intersect::{self, Intersectable};
 use crate::render::labels::{LabelOptions, create_label};
-use crate::scene::{
-    Color, Group, Item, Path, PathShape, PathStyle, Point, Rect, SourceRef, Transform,
-};
+use crate::scene::{Color, Group, Item, Path, PathStyle, Point, Rect, SourceRef, Transform};
 use std::collections::HashMap;
+
+pub mod anchor;
+pub mod bang;
+pub mod block_arrow;
+pub mod bow_tie_rect;
+pub mod bpmn_activity;
+pub mod bpmn_annotation;
+pub mod bpmn_boundary;
+pub mod bpmn_data_object;
+pub mod bpmn_data_store;
+pub mod bpmn_end;
+pub mod bpmn_event;
+pub mod bpmn_gateway;
+pub mod bpmn_icons;
+pub mod bpmn_intermediate;
+pub mod bpmn_shape_core;
+pub mod bpmn_start;
+pub mod browser;
+pub mod bucket;
+pub mod c4_label_helper;
+pub mod card;
+pub mod choice;
+pub mod circle;
+pub mod class_box;
+pub mod cloud;
+pub mod collapsed_group;
+pub mod composite;
+pub mod console;
+pub mod crossed_circle;
+pub mod curly_brace_left;
+pub mod curly_brace_right;
+pub mod curly_braces;
+pub mod curved_trapezoid;
+pub mod cylinder;
+pub mod datastore;
+pub mod default_mindmap_node;
+pub mod divided_rect;
+pub mod document;
+pub mod double_circle;
+pub mod draw_rect;
+pub mod er_box;
+pub mod filled_circle;
+pub mod flipped_triangle;
+pub mod folder;
+pub mod fork_join;
+pub mod half_rounded_rectangle;
+pub mod hand_drawn_shape_styles;
+pub mod hexagon;
+pub mod hourglass;
+pub mod icon;
+pub mod icon_circle;
+pub mod icon_rounded;
+pub mod icon_square;
+pub mod image_square;
+pub mod insert_polygon_shape;
+pub mod inverted_trapezoid;
+pub mod kanban_item;
+pub mod label_image_utils;
+pub mod label_rect;
+pub mod lean_left;
+pub mod lean_right;
+pub mod lightning_bolt;
+pub mod lined_cylinder;
+pub mod lined_wave_edged_rect;
+pub mod mindmap_circle;
+pub mod multi_rect;
+pub mod multi_wave_edged_rectangle;
+pub mod note;
+pub mod person;
+pub mod question;
+pub mod rect_left_inv_arrow;
+pub mod rect_with_title;
+pub mod requirement_box;
+pub mod rounded_rect;
+pub mod rounded_rect_path;
+pub mod shaded_process;
+pub mod sloped_rect;
+pub mod square_rect;
+pub mod stadium;
+pub mod state;
+pub mod state_end;
+pub mod state_start;
+pub mod subroutine;
+pub mod tagged_rect;
+pub mod tagged_wave_edged_rectangle;
+pub mod text;
+pub mod tilted_cylinder;
+pub mod trapezoid;
+pub mod trapezoidal_pentagon;
+pub mod triangle;
+pub mod usecase_actor;
+pub mod usecase_actor_awesome;
+pub mod usecase_actor_hollow;
+pub mod usecase_actor_icon;
+pub mod usecase_business;
+pub mod usecase_ellipse;
+pub mod usecase_json_table;
+pub mod wave_edged_rectangle;
+pub mod wave_rectangle;
+pub mod window_pane;
 
 /// Mutable geometry/state corresponding to upstream rendering `Node`.
 #[derive(Clone, Debug, PartialEq)]
@@ -575,10 +673,10 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Bucket",
+        name: "Bucket",
         short_name: "bucket",
-        description: "",
+        description: "Object storage bucket",
         aliases: &[],
         internal_aliases: &[],
         upstream_file: "shapes/bucket.js",
@@ -605,10 +703,10 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Browser",
+        name: "Browser",
         short_name: "browser",
-        description: "",
+        description: "Browser window",
         aliases: &[],
         internal_aliases: &[],
         upstream_file: "shapes/browser.js",
@@ -705,10 +803,10 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Person",
+        name: "Person",
         short_name: "person",
-        description: "",
+        description: "Person (circular head above a rounded body)",
         aliases: &[],
         internal_aliases: &[],
         upstream_file: "shapes/person.js",
@@ -725,11 +823,11 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Data Store",
+        name: "Data Store",
         short_name: "datastore",
-        description: "",
-        aliases: &[],
+        description: "Data flow diagram data store",
+        aliases: &["data-store"],
         internal_aliases: &[],
         upstream_file: "shapes/datastore.js",
         kind: ShapeKind::Unported,
@@ -785,11 +883,11 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Folder",
+        name: "Folder",
         short_name: "folder",
-        description: "",
-        aliases: &[],
+        description: "Folder or directory",
+        aliases: &["directory"],
         internal_aliases: &[],
         upstream_file: "shapes/folder.js",
         kind: ShapeKind::Unported,
@@ -825,11 +923,11 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Collate",
+        name: "Hourglass",
         short_name: "hourglass",
-        description: "",
-        aliases: &[],
+        description: "Represents a collate operation",
+        aliases: &["hourglass", "collate"],
         internal_aliases: &[],
         upstream_file: "shapes/hourglass.js",
         kind: ShapeKind::Unported,
@@ -1155,10 +1253,10 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Text Block",
+        name: "Text Block",
         short_name: "text",
-        description: "",
+        description: "Text block",
         aliases: &[],
         internal_aliases: &[],
         upstream_file: "shapes/text.js",
@@ -1275,21 +1373,21 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Bang",
+        name: "Bang",
         short_name: "bang",
-        description: "",
-        aliases: &[],
+        description: "Bang",
+        aliases: &["bang"],
         internal_aliases: &[],
         upstream_file: "shapes/bang.js",
         kind: ShapeKind::Unported,
     },
     ShapeDefinition {
-        semantic_name: "",
-        name: "",
+        semantic_name: "Cloud",
+        name: "Cloud",
         short_name: "cloud",
-        description: "",
-        aliases: &[],
+        description: "cloud",
+        aliases: &["cloud"],
         internal_aliases: &[],
         upstream_file: "shapes/cloud.js",
         kind: ShapeKind::Unported,
@@ -1404,6 +1502,196 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         upstream_file: "shapes/bpmnAnnotation.js",
         kind: ShapeKind::Unported,
     },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "drawRect",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/drawRect.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "document",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/document.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "handDrawnShapeStyles",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/handDrawnShapeStyles.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmnEvent",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnEvent.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "roundedRectPath",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/roundedRectPath.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "c4LabelHelper",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/c4LabelHelper.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "insertPolygonShape",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/insertPolygonShape.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "labelImageUtils",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/labelImageUtils.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmnIcons",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnIcons.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmnShapeCore",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnShapeCore.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-start",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnStart.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-intermediate",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnIntermediate.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-boundary",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnBoundary.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-end",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnEnd.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-gateway",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnGateway.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-activity",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnActivity.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-data",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnDataObject.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-data-store",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnDataStore.js",
+        kind: ShapeKind::Unported,
+    },
+    ShapeDefinition {
+        semantic_name: "",
+        name: "",
+        short_name: "bpmn-annotation",
+        description: "",
+        aliases: &[],
+        internal_aliases: &[],
+        upstream_file: "shapes/bpmnAnnotation.js",
+        kind: ShapeKind::Unported,
+    },
 ];
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -1431,33 +1719,19 @@ pub fn is_valid_shape(name: &str) -> bool {
     shape_definition(name).is_some()
 }
 
-/// Registry dispatch, equivalent to `insertNode`'s shape handler selection.
-pub fn render_node(
-    mut node: Node,
-    measure: &dyn TextMeasure,
-    theme: &crate::theme::ThemeVariables,
-) -> Result<RenderedNode, ShapeError> {
-    let shape = shape_definition(&node.shape).ok_or_else(|| ShapeError {
-        message: format!("No such shape: {}. Please check your syntax.", node.shape),
-    })?;
-    if shape.kind == ShapeKind::Unported {
-        return Err(ShapeError {
-            message: format!(
-                "shape not ported: {} (rendering-elements/{})",
-                node.shape, shape.upstream_file
-            ),
-        });
-    }
-    if node.shape == "rect" {
-        node.shape = if node.rx != 0.0 && node.ry != 0.0 {
-            "roundedRect"
-        } else {
-            "squareRect"
-        }
-        .into();
-    }
-    let mut group = Group::new()
-        .with_class(get_node_classes(&node, None))
+/// Inputs shared by every shape handler. The node carries its label, classes and look;
+/// the theme supplies style variables and the measure shapes labels.
+pub struct ShapeContext<'a> {
+    pub measure: &'a dyn TextMeasure,
+    pub theme: &'a crate::theme::ThemeVariables,
+}
+
+fn prepare(
+    node: &Node,
+    ctx: &ShapeContext<'_>,
+) -> Result<(Group, Group, crate::scene::Size), ShapeError> {
+    let group = Group::new()
+        .with_class(get_node_classes(node, None))
         .with_source(SourceRef::node(node.id.clone()));
     let label = create_label(
         &LabelOptions {
@@ -1469,7 +1743,7 @@ pub fn render_node(
             class: "label".into(),
             source: Some(SourceRef::node(node.id.clone())),
         },
-        measure,
+        ctx.measure,
     )
     .map_err(|e| ShapeError {
         message: e.to_string(),
@@ -1478,129 +1752,200 @@ pub fn render_node(
         Some(Item::Text(text)) => text.size,
         _ => crate::scene::Size::ZERO,
     };
-    let padding = match shape.kind {
-        ShapeKind::SquareRect => {
-            if node.look == "neo" {
-                (16.0, 12.0)
-            } else {
-                (node.padding * 2.0, node.padding)
-            }
-        }
-        ShapeKind::RoundedRect => (node.padding, node.padding),
-        ShapeKind::Stadium => {
-            if node.look == "neo" {
-                (40.0, 24.0)
-            } else {
-                (node.padding, node.padding)
-            }
-        }
-        _ => (node.padding, node.padding),
-    };
-    let (width, height) = match shape.kind {
-        ShapeKind::Circle => {
-            let r = (text_size.width.powi(2) + text_size.height.powi(2)).sqrt() / 2.0
-                + if node.look == "neo" {
-                    16.0
-                } else {
-                    node.padding / 2.0
-                };
-            (r * 2.0, r * 2.0)
-        }
-        ShapeKind::Question => {
-            let s = text_size.width + text_size.height + node.padding;
-            (s, s)
-        }
-        ShapeKind::Stadium => {
-            let h = text_size.height + padding.1;
-            (text_size.width + h / 4.0 + padding.0, h)
-        }
-        _ => (
-            (text_size.width + padding.0 * 2.0).max(node.width.unwrap_or(0.0)),
-            (text_size.height + padding.1 * 2.0).max(node.height.unwrap_or(0.0)),
-        ),
-    };
-    node.bounds = Rect::centered(Point::ZERO, crate::scene::Size::new(width, height));
-    match shape.kind {
-        ShapeKind::SquareRect | ShapeKind::RoundedRect => {
-            let radius = if shape.kind == ShapeKind::RoundedRect {
-                theme.number("borderRadius").unwrap_or(5.0)
-            } else {
-                0.0
-            };
-            let mut style = PathStyle::default();
-            style.fill = Some(Color::new("#ECECFF"));
-            style.stroke = Some(Color::new("#9370DB"));
-            group.push(
-                crate::scene::RectShape::new(node.bounds, radius, style)
-                    .with_source(SourceRef::node(node.id.clone())),
-            );
-            node.intersect = IntersectKind::Rect;
-        }
-        ShapeKind::Circle => {
-            let radius = width / 2.0;
-            let mut style = PathStyle::default();
-            style.fill = Some(Color::new("#ECECFF"));
-            style.stroke = Some(Color::new("#9370DB"));
-            group.push(
-                crate::scene::EllipseShape::new(Point::ZERO, radius, radius, style)
-                    .with_source(SourceRef::node(node.id.clone())),
-            );
-            node.intersect = IntersectKind::Circle;
-        }
-        ShapeKind::Question => {
-            let s = width;
-            let points = vec![
-                Point::new(s / 2.0, 0.0),
-                Point::new(s, s / 2.0),
-                Point::new(s / 2.0, s),
-                Point::new(0.0, s / 2.0),
-            ];
-            let local: Vec<Point> = points
-                .iter()
-                .map(|p| p.translated(-s / 2.0, -s / 2.0))
-                .collect();
-            let mut style = PathStyle::default();
-            style.fill = Some(Color::new("#ECECFF"));
-            style.stroke = Some(Color::new("#9370DB"));
-            group.push(
-                PathShape::new(Path::polygon(local.clone()), style)
-                    .with_source(SourceRef::node(node.id.clone())),
-            );
-            node.intersect = IntersectKind::Polygon(points);
-        }
-        ShapeKind::Stadium => {
-            let h = height;
-            let r = h / 2.0;
-            let x = -width / 2.0;
-            let y = -height / 2.0;
-            let right = -x;
-            let mut path = Path::new();
-            path.move_to(Point::new(x + r, y))
-                .line_to(Point::new(right - r, y))
-                .arc_to(r, r, 0.0, false, true, Point::new(right - r, y + h))
-                .line_to(Point::new(x + r, y + h))
-                .arc_to(r, r, 0.0, false, true, Point::new(x + r, y))
-                .close();
-            let mut style = PathStyle::default();
-            style.fill = Some(Color::new("#ECECFF"));
-            style.stroke = Some(Color::new("#9370DB"));
-            group.push(PathShape::new(path, style).with_source(SourceRef::node(node.id.clone())));
-            let mut polygon = vec![Point::new(r, 0.0), Point::new(width - r, 0.0)];
-            polygon.extend((0..=24).map(|i| {
-                let angle = (-90.0 + i as f64 * 180.0 / 24.0).to_radians();
-                Point::new(width - r + r * angle.cos(), r + r * angle.sin())
-            }));
-            polygon.push(Point::new(r, height));
-            polygon.extend((0..=24).map(|i| {
-                let angle = (90.0 + i as f64 * 180.0 / 24.0).to_radians();
-                Point::new(r + r * angle.cos(), r + r * angle.sin())
-            }));
-            node.intersect = IntersectKind::Polygon(polygon);
-        }
-        ShapeKind::Unported => unreachable!(),
+    Ok((group, label, text_size))
+}
+
+fn shape_style() -> PathStyle {
+    PathStyle {
+        fill: Some(Color::new("#ECECFF")),
+        stroke: Some(Color::new("#9370DB")),
+        ..Default::default()
     }
-    group.items.push(Item::Group(label));
-    Ok(RenderedNode { node, group })
+}
+
+/// Registry dispatch, equivalent to `insertNode`'s shape handler selection.
+pub fn render_node(
+    mut node: Node,
+    measure: &dyn TextMeasure,
+    theme: &crate::theme::ThemeVariables,
+) -> Result<RenderedNode, ShapeError> {
+    let shape = shape_definition(&node.shape).ok_or_else(|| ShapeError {
+        message: format!("No such shape: {}. Please check your syntax.", node.shape),
+    })?;
+    if node.shape == "rect" {
+        node.shape = if node.rx != 0.0 && node.ry != 0.0 {
+            "roundedRect"
+        } else {
+            "squareRect"
+        }
+        .into();
+    }
+    let ctx = ShapeContext { measure, theme };
+    match shape.upstream_file {
+        "shapes/anchor.js" | "shapes/anchor.ts" => anchor::draw(&node, &ctx),
+        "shapes/bang.js" | "shapes/bang.ts" => bang::draw(&node, &ctx),
+        "shapes/blockArrow.js" | "shapes/blockArrow.ts" => block_arrow::draw(&node, &ctx),
+        "shapes/bowTieRect.js" | "shapes/bowTieRect.ts" => bow_tie_rect::draw(&node, &ctx),
+        "shapes/bpmnActivity.js" | "shapes/bpmnActivity.ts" => bpmn_activity::draw(&node, &ctx),
+        "shapes/bpmnAnnotation.js" | "shapes/bpmnAnnotation.ts" => {
+            bpmn_annotation::draw(&node, &ctx)
+        }
+        "shapes/bpmnBoundary.js" | "shapes/bpmnBoundary.ts" => bpmn_boundary::draw(&node, &ctx),
+        "shapes/bpmnDataObject.js" | "shapes/bpmnDataObject.ts" => {
+            bpmn_data_object::draw(&node, &ctx)
+        }
+        "shapes/bpmnDataStore.js" | "shapes/bpmnDataStore.ts" => bpmn_data_store::draw(&node, &ctx),
+        "shapes/bpmnEnd.js" | "shapes/bpmnEnd.ts" => bpmn_end::draw(&node, &ctx),
+        "shapes/bpmnEvent.js" | "shapes/bpmnEvent.ts" => bpmn_event::draw(&node, &ctx),
+        "shapes/bpmnGateway.js" | "shapes/bpmnGateway.ts" => bpmn_gateway::draw(&node, &ctx),
+        "shapes/bpmnIcons.js" | "shapes/bpmnIcons.ts" => bpmn_icons::draw(&node, &ctx),
+        "shapes/bpmnIntermediate.js" | "shapes/bpmnIntermediate.ts" => {
+            bpmn_intermediate::draw(&node, &ctx)
+        }
+        "shapes/bpmnShapeCore.js" | "shapes/bpmnShapeCore.ts" => bpmn_shape_core::draw(&node, &ctx),
+        "shapes/bpmnStart.js" | "shapes/bpmnStart.ts" => bpmn_start::draw(&node, &ctx),
+        "shapes/browser.js" | "shapes/browser.ts" => browser::draw(&node, &ctx),
+        "shapes/bucket.js" | "shapes/bucket.ts" => bucket::draw(&node, &ctx),
+        "shapes/c4LabelHelper.js" | "shapes/c4LabelHelper.ts" => c4_label_helper::draw(&node, &ctx),
+        "shapes/card.js" | "shapes/card.ts" => card::draw(&node, &ctx),
+        "shapes/choice.js" | "shapes/choice.ts" => choice::draw(&node, &ctx),
+        "shapes/circle.js" | "shapes/circle.ts" => circle::draw(&node, &ctx),
+        "shapes/classBox.js" | "shapes/classBox.ts" => class_box::draw(&node, &ctx),
+        "shapes/cloud.js" | "shapes/cloud.ts" => cloud::draw(&node, &ctx),
+        "shapes/collapsedGroup.js" | "shapes/collapsedGroup.ts" => {
+            collapsed_group::draw(&node, &ctx)
+        }
+        "shapes/composite.js" | "shapes/composite.ts" => composite::draw(&node, &ctx),
+        "shapes/console.js" | "shapes/console.ts" => console::draw(&node, &ctx),
+        "shapes/crossedCircle.js" | "shapes/crossedCircle.ts" => crossed_circle::draw(&node, &ctx),
+        "shapes/curlyBraceLeft.js" | "shapes/curlyBraceLeft.ts" => {
+            curly_brace_left::draw(&node, &ctx)
+        }
+        "shapes/curlyBraceRight.js" | "shapes/curlyBraceRight.ts" => {
+            curly_brace_right::draw(&node, &ctx)
+        }
+        "shapes/curlyBraces.js" | "shapes/curlyBraces.ts" => curly_braces::draw(&node, &ctx),
+        "shapes/curvedTrapezoid.js" | "shapes/curvedTrapezoid.ts" => {
+            curved_trapezoid::draw(&node, &ctx)
+        }
+        "shapes/cylinder.js" | "shapes/cylinder.ts" => cylinder::draw(&node, &ctx),
+        "shapes/datastore.js" | "shapes/datastore.ts" => datastore::draw(&node, &ctx),
+        "shapes/defaultMindmapNode.js" | "shapes/defaultMindmapNode.ts" => {
+            default_mindmap_node::draw(&node, &ctx)
+        }
+        "shapes/dividedRect.js" | "shapes/dividedRect.ts" => divided_rect::draw(&node, &ctx),
+        "shapes/document.js" | "shapes/document.ts" => document::draw(&node, &ctx),
+        "shapes/doubleCircle.js" | "shapes/doubleCircle.ts" => double_circle::draw(&node, &ctx),
+        "shapes/drawRect.js" | "shapes/drawRect.ts" => draw_rect::draw(&node, &ctx),
+        "shapes/erBox.js" | "shapes/erBox.ts" => er_box::draw(&node, &ctx),
+        "shapes/filledCircle.js" | "shapes/filledCircle.ts" => filled_circle::draw(&node, &ctx),
+        "shapes/flippedTriangle.js" | "shapes/flippedTriangle.ts" => {
+            flipped_triangle::draw(&node, &ctx)
+        }
+        "shapes/folder.js" | "shapes/folder.ts" => folder::draw(&node, &ctx),
+        "shapes/forkJoin.js" | "shapes/forkJoin.ts" => fork_join::draw(&node, &ctx),
+        "shapes/halfRoundedRectangle.js" | "shapes/halfRoundedRectangle.ts" => {
+            half_rounded_rectangle::draw(&node, &ctx)
+        }
+        "shapes/handDrawnShapeStyles.js" | "shapes/handDrawnShapeStyles.ts" => {
+            hand_drawn_shape_styles::draw(&node, &ctx)
+        }
+        "shapes/hexagon.js" | "shapes/hexagon.ts" => hexagon::draw(&node, &ctx),
+        "shapes/hourglass.js" | "shapes/hourglass.ts" => hourglass::draw(&node, &ctx),
+        "shapes/icon.js" | "shapes/icon.ts" => icon::draw(&node, &ctx),
+        "shapes/iconCircle.js" | "shapes/iconCircle.ts" => icon_circle::draw(&node, &ctx),
+        "shapes/iconRounded.js" | "shapes/iconRounded.ts" => icon_rounded::draw(&node, &ctx),
+        "shapes/iconSquare.js" | "shapes/iconSquare.ts" => icon_square::draw(&node, &ctx),
+        "shapes/imageSquare.js" | "shapes/imageSquare.ts" => image_square::draw(&node, &ctx),
+        "shapes/insertPolygonShape.js" | "shapes/insertPolygonShape.ts" => {
+            insert_polygon_shape::draw(&node, &ctx)
+        }
+        "shapes/invertedTrapezoid.js" | "shapes/invertedTrapezoid.ts" => {
+            inverted_trapezoid::draw(&node, &ctx)
+        }
+        "shapes/kanbanItem.js" | "shapes/kanbanItem.ts" => kanban_item::draw(&node, &ctx),
+        "shapes/labelImageUtils.js" | "shapes/labelImageUtils.ts" => {
+            label_image_utils::draw(&node, &ctx)
+        }
+        "shapes/labelRect.js" | "shapes/labelRect.ts" => label_rect::draw(&node, &ctx),
+        "shapes/leanLeft.js" | "shapes/leanLeft.ts" => lean_left::draw(&node, &ctx),
+        "shapes/leanRight.js" | "shapes/leanRight.ts" => lean_right::draw(&node, &ctx),
+        "shapes/lightningBolt.js" | "shapes/lightningBolt.ts" => lightning_bolt::draw(&node, &ctx),
+        "shapes/linedCylinder.js" | "shapes/linedCylinder.ts" => lined_cylinder::draw(&node, &ctx),
+        "shapes/linedWaveEdgedRect.js" | "shapes/linedWaveEdgedRect.ts" => {
+            lined_wave_edged_rect::draw(&node, &ctx)
+        }
+        "shapes/mindmapCircle.js" | "shapes/mindmapCircle.ts" => mindmap_circle::draw(&node, &ctx),
+        "shapes/multiRect.js" | "shapes/multiRect.ts" => multi_rect::draw(&node, &ctx),
+        "shapes/multiWaveEdgedRectangle.js" | "shapes/multiWaveEdgedRectangle.ts" => {
+            multi_wave_edged_rectangle::draw(&node, &ctx)
+        }
+        "shapes/note.js" | "shapes/note.ts" => note::draw(&node, &ctx),
+        "shapes/person.js" | "shapes/person.ts" => person::draw(&node, &ctx),
+        "shapes/question.js" | "shapes/question.ts" => question::draw(&node, &ctx),
+        "shapes/rectLeftInvArrow.js" | "shapes/rectLeftInvArrow.ts" => {
+            rect_left_inv_arrow::draw(&node, &ctx)
+        }
+        "shapes/rectWithTitle.js" | "shapes/rectWithTitle.ts" => rect_with_title::draw(&node, &ctx),
+        "shapes/requirementBox.js" | "shapes/requirementBox.ts" => {
+            requirement_box::draw(&node, &ctx)
+        }
+        "shapes/roundedRect.js" | "shapes/roundedRect.ts" => rounded_rect::draw(&node, &ctx),
+        "shapes/roundedRectPath.js" | "shapes/roundedRectPath.ts" => {
+            rounded_rect_path::draw(&node, &ctx)
+        }
+        "shapes/shadedProcess.js" | "shapes/shadedProcess.ts" => shaded_process::draw(&node, &ctx),
+        "shapes/slopedRect.js" | "shapes/slopedRect.ts" => sloped_rect::draw(&node, &ctx),
+        "shapes/squareRect.js" | "shapes/squareRect.ts" => square_rect::draw(&node, &ctx),
+        "shapes/stadium.js" | "shapes/stadium.ts" => stadium::draw(&node, &ctx),
+        "shapes/state.js" | "shapes/state.ts" => state::draw(&node, &ctx),
+        "shapes/stateEnd.js" | "shapes/stateEnd.ts" => state_end::draw(&node, &ctx),
+        "shapes/stateStart.js" | "shapes/stateStart.ts" => state_start::draw(&node, &ctx),
+        "shapes/subroutine.js" | "shapes/subroutine.ts" => subroutine::draw(&node, &ctx),
+        "shapes/taggedRect.js" | "shapes/taggedRect.ts" => tagged_rect::draw(&node, &ctx),
+        "shapes/taggedWaveEdgedRectangle.js" | "shapes/taggedWaveEdgedRectangle.ts" => {
+            tagged_wave_edged_rectangle::draw(&node, &ctx)
+        }
+        "shapes/text.js" | "shapes/text.ts" => text::draw(&node, &ctx),
+        "shapes/tiltedCylinder.js" | "shapes/tiltedCylinder.ts" => {
+            tilted_cylinder::draw(&node, &ctx)
+        }
+        "shapes/trapezoid.js" | "shapes/trapezoid.ts" => trapezoid::draw(&node, &ctx),
+        "shapes/trapezoidalPentagon.js" | "shapes/trapezoidalPentagon.ts" => {
+            trapezoidal_pentagon::draw(&node, &ctx)
+        }
+        "shapes/triangle.js" | "shapes/triangle.ts" => triangle::draw(&node, &ctx),
+        "shapes/usecaseActor.js" | "shapes/usecaseActor.ts" => usecase_actor::draw(&node, &ctx),
+        "shapes/usecaseActorAwesome.js" | "shapes/usecaseActorAwesome.ts" => {
+            usecase_actor_awesome::draw(&node, &ctx)
+        }
+        "shapes/usecaseActorHollow.js" | "shapes/usecaseActorHollow.ts" => {
+            usecase_actor_hollow::draw(&node, &ctx)
+        }
+        "shapes/usecaseActorIcon.js" | "shapes/usecaseActorIcon.ts" => {
+            usecase_actor_icon::draw(&node, &ctx)
+        }
+        "shapes/usecaseBusiness.js" | "shapes/usecaseBusiness.ts" => {
+            usecase_business::draw(&node, &ctx)
+        }
+        "shapes/usecaseEllipse.js" | "shapes/usecaseEllipse.ts" => {
+            usecase_ellipse::draw(&node, &ctx)
+        }
+        "shapes/usecaseJsonTable.js" | "shapes/usecaseJsonTable.ts" => {
+            usecase_json_table::draw(&node, &ctx)
+        }
+        "shapes/waveEdgedRectangle.js" | "shapes/waveEdgedRectangle.ts" => {
+            wave_edged_rectangle::draw(&node, &ctx)
+        }
+        "shapes/waveRectangle.js" | "shapes/waveRectangle.ts" => wave_rectangle::draw(&node, &ctx),
+        "shapes/windowPane.js" | "shapes/windowPane.ts" => window_pane::draw(&node, &ctx),
+        _ => Err(ShapeError {
+            message: format!(
+                "shape not ported: {} (rendering-elements/{})",
+                node.shape, shape.upstream_file
+            ),
+        }),
+    }
 }
 
 /// Register a node's final element, analogous to `nodes.ts`'s nodeElems map.
@@ -1708,6 +2053,200 @@ pub fn update_node_bounds(node: &mut Node, bounds: Rect) {
 mod tests {
     use super::*;
     use crate::measure::FallbackMeasure;
+
+    #[test]
+    fn upstream_names_dispatch_to_their_files() {
+        let entries = &[
+            ("rect", "squareRect"),
+            ("proc", "squareRect"),
+            ("process", "squareRect"),
+            ("rectangle", "squareRect"),
+            ("squareRect", "squareRect"),
+            ("rounded", "roundedRect"),
+            ("event", "roundedRect"),
+            ("roundedRect", "roundedRect"),
+            ("stadium", "stadium"),
+            ("terminal", "stadium"),
+            ("pill", "stadium"),
+            ("fr-rect", "subroutine"),
+            ("subprocess", "subroutine"),
+            ("subproc", "subroutine"),
+            ("framed-rectangle", "subroutine"),
+            ("subroutine", "subroutine"),
+            ("cyl", "cylinder"),
+            ("db", "cylinder"),
+            ("database", "cylinder"),
+            ("cylinder", "cylinder"),
+            ("datastore", "datastore"),
+            ("data-store", "datastore"),
+            ("folder", "folder"),
+            ("directory", "folder"),
+            ("bucket", "bucket"),
+            ("console", "console"),
+            ("browser", "browser"),
+            ("person", "person"),
+            ("circle", "circle"),
+            ("circ", "circle"),
+            ("bang", "bang"),
+            ("bang", "bang"),
+            ("cloud", "cloud"),
+            ("cloud", "cloud"),
+            ("diam", "question"),
+            ("decision", "question"),
+            ("diamond", "question"),
+            ("question", "question"),
+            ("hex", "hexagon"),
+            ("hexagon", "hexagon"),
+            ("prepare", "hexagon"),
+            ("lean-r", "leanRight"),
+            ("lean-right", "leanRight"),
+            ("in-out", "leanRight"),
+            ("lean_right", "leanRight"),
+            ("lean-l", "leanLeft"),
+            ("lean-left", "leanLeft"),
+            ("out-in", "leanLeft"),
+            ("lean_left", "leanLeft"),
+            ("trap-b", "trapezoid"),
+            ("priority", "trapezoid"),
+            ("trapezoid-bottom", "trapezoid"),
+            ("trapezoid", "trapezoid"),
+            ("trap-t", "invertedTrapezoid"),
+            ("manual", "invertedTrapezoid"),
+            ("trapezoid-top", "invertedTrapezoid"),
+            ("inv-trapezoid", "invertedTrapezoid"),
+            ("inv_trapezoid", "invertedTrapezoid"),
+            ("dbl-circ", "doubleCircle"),
+            ("double-circle", "doubleCircle"),
+            ("doublecircle", "doubleCircle"),
+            ("text", "text"),
+            ("notch-rect", "card"),
+            ("card", "card"),
+            ("notched-rectangle", "card"),
+            ("lin-rect", "shadedProcess"),
+            ("lined-rectangle", "shadedProcess"),
+            ("lined-process", "shadedProcess"),
+            ("lin-proc", "shadedProcess"),
+            ("shaded-process", "shadedProcess"),
+            ("sm-circ", "stateStart"),
+            ("start", "stateStart"),
+            ("small-circle", "stateStart"),
+            ("stateStart", "stateStart"),
+            ("fr-circ", "stateEnd"),
+            ("stop", "stateEnd"),
+            ("framed-circle", "stateEnd"),
+            ("stateEnd", "stateEnd"),
+            ("fork", "forkJoin"),
+            ("join", "forkJoin"),
+            ("forkJoin", "forkJoin"),
+            ("hourglass", "hourglass"),
+            ("hourglass", "hourglass"),
+            ("collate", "hourglass"),
+            ("brace", "curlyBraceLeft"),
+            ("comment", "curlyBraceLeft"),
+            ("brace-l", "curlyBraceLeft"),
+            ("brace-r", "curlyBraceRight"),
+            ("braces", "curlyBraces"),
+            ("bolt", "lightningBolt"),
+            ("com-link", "lightningBolt"),
+            ("lightning-bolt", "lightningBolt"),
+            ("doc", "waveEdgedRectangle"),
+            ("doc", "waveEdgedRectangle"),
+            ("document", "waveEdgedRectangle"),
+            ("delay", "halfRoundedRectangle"),
+            ("half-rounded-rectangle", "halfRoundedRectangle"),
+            ("h-cyl", "tiltedCylinder"),
+            ("das", "tiltedCylinder"),
+            ("horizontal-cylinder", "tiltedCylinder"),
+            ("lin-cyl", "linedCylinder"),
+            ("disk", "linedCylinder"),
+            ("lined-cylinder", "linedCylinder"),
+            ("curv-trap", "curvedTrapezoid"),
+            ("curved-trapezoid", "curvedTrapezoid"),
+            ("display", "curvedTrapezoid"),
+            ("div-rect", "dividedRect"),
+            ("div-proc", "dividedRect"),
+            ("divided-rectangle", "dividedRect"),
+            ("divided-process", "dividedRect"),
+            ("tri", "triangle"),
+            ("extract", "triangle"),
+            ("triangle", "triangle"),
+            ("win-pane", "windowPane"),
+            ("internal-storage", "windowPane"),
+            ("window-pane", "windowPane"),
+            ("f-circ", "filledCircle"),
+            ("junction", "filledCircle"),
+            ("filled-circle", "filledCircle"),
+            ("notch-pent", "trapezoidalPentagon"),
+            ("loop-limit", "trapezoidalPentagon"),
+            ("notched-pentagon", "trapezoidalPentagon"),
+            ("flip-tri", "flippedTriangle"),
+            ("manual-file", "flippedTriangle"),
+            ("flipped-triangle", "flippedTriangle"),
+            ("sl-rect", "slopedRect"),
+            ("manual-input", "slopedRect"),
+            ("sloped-rectangle", "slopedRect"),
+            ("docs", "multiWaveEdgedRectangle"),
+            ("documents", "multiWaveEdgedRectangle"),
+            ("st-doc", "multiWaveEdgedRectangle"),
+            ("stacked-document", "multiWaveEdgedRectangle"),
+            ("st-rect", "multiRect"),
+            ("procs", "multiRect"),
+            ("processes", "multiRect"),
+            ("stacked-rectangle", "multiRect"),
+            ("bow-rect", "bowTieRect"),
+            ("stored-data", "bowTieRect"),
+            ("bow-tie-rectangle", "bowTieRect"),
+            ("cross-circ", "crossedCircle"),
+            ("summary", "crossedCircle"),
+            ("crossed-circle", "crossedCircle"),
+            ("tag-doc", "taggedWaveEdgedRectangle"),
+            ("tag-doc", "taggedWaveEdgedRectangle"),
+            ("tagged-document", "taggedWaveEdgedRectangle"),
+            ("tag-rect", "taggedRect"),
+            ("tagged-rectangle", "taggedRect"),
+            ("tag-proc", "taggedRect"),
+            ("tagged-process", "taggedRect"),
+            ("flag", "waveRectangle"),
+            ("paper-tape", "waveRectangle"),
+            ("odd", "rectLeftInvArrow"),
+            ("rect_left_inv_arrow", "rectLeftInvArrow"),
+            ("lin-doc", "linedWaveEdgedRect"),
+            ("lined-document", "linedWaveEdgedRect"),
+            ("bpmn-start", "bpmnStart"),
+            ("bpmn-intermediate", "bpmnIntermediate"),
+            ("bpmn-boundary", "bpmnBoundary"),
+            ("bpmn-end", "bpmnEnd"),
+            ("bpmn-gateway", "bpmnGateway"),
+            ("bpmn-activity", "bpmnActivity"),
+            ("bpmn-data", "bpmnDataObject"),
+            ("bpmn-data-store", "bpmnDataStore"),
+            ("bpmn-annotation", "bpmnAnnotation"),
+        ];
+        for &(name, file) in entries {
+            let definition = shape_definition(name).unwrap_or_else(|| panic!("missing {name}"));
+            assert!(
+                definition.upstream_file == format!("shapes/{file}.js")
+                    || definition.upstream_file == format!("shapes/{file}.ts"),
+                "{name}"
+            );
+            let result = render_node(
+                Node::new("n", "label", name),
+                &FallbackMeasure,
+                &crate::theme::ThemeVariables::default(),
+            );
+            if definition.kind == ShapeKind::Unported {
+                assert!(
+                    result
+                        .unwrap_err()
+                        .message
+                        .contains(&format!("shapes/{file}.js")),
+                    "{name}"
+                );
+            } else {
+                assert!(result.is_ok(), "{name}");
+            }
+        }
+    }
 
     #[test]
     fn resolves_upstream_aliases_and_explicit_unported_errors() {
