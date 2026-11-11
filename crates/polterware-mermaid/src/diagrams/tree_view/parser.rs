@@ -32,6 +32,7 @@ use super::ast::Ast;
 use super::box_drawing;
 use super::db;
 use super::lexer::{Lexer, Token, TokenKind};
+use crate::common::text::trim_horizontal;
 use crate::error::ParseError;
 
 /// Parses the diagram body, converts the box-drawing format, and populates the database.
@@ -275,10 +276,6 @@ fn normalize_multiline(capture: &str) -> String {
 /// `String.prototype.trim`, close enough: JavaScript's `\s` also has U+FEFF.
 fn trim(text: &str) -> &str {
     text.trim_matches(is_js_space)
-}
-
-fn trim_horizontal(text: &str) -> &str {
-    text.trim_start_matches([' ', '\t'])
 }
 
 /// `.replace(/[\t ]{2,}/gm, ' ')` on an already trimmed string.

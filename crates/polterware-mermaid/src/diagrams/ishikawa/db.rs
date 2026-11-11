@@ -6,7 +6,7 @@
 //! it, which [`Db::into_ast`] folds into the nested tree of [`Ast`].
 
 use super::ast::{Ast, IshikawaNode};
-use super::sanitize;
+use crate::common::sanitize;
 
 /// The database while parsing.
 pub(crate) struct Db {

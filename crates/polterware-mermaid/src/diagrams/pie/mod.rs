@@ -37,7 +37,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 
 pub use ast::{Ast, Section};
 

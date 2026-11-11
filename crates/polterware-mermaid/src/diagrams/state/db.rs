@@ -17,7 +17,7 @@ use super::ast::{
     Ast, Direction, Edge, EdgePattern, Link, Node, Note, NotePosition, Relation, RelationStatement,
     State, StateKind, StateStatement, Statement, StyleClass,
 };
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::ParseError;
 
 const SHAPE_STATE: &str = "rect";

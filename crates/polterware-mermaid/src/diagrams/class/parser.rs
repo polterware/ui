@@ -10,6 +10,7 @@
 
 use super::ast::*;
 use super::lexer::{self, Kind, Token};
+use crate::common::sanitize::collapse_description_indent;
 use crate::error::ParseError;
 
 pub(super) fn parse(body: &str) -> Result<Ast, ParseError> {
@@ -581,24 +582,6 @@ fn endpoint_of(kind: Kind) -> Option<Endpoint> {
 fn cleanup_label(label: &str) -> String {
     let label = label.strip_prefix(':').unwrap_or(label);
     sanitize_text(label.trim())
-}
-
-/// `setAccDescription`'s `replace(/\n\s+/g, '\n')`.
-fn collapse_description_indent(text: &str) -> String {
-    let mut out = String::with_capacity(text.len());
-    let mut chars = text.chars().peekable();
-    while let Some(c) = chars.next() {
-        out.push(c);
-        if c == '\n' {
-            while chars
-                .peek()
-                .is_some_and(|next| crate::preprocess::is_js_whitespace(*next))
-            {
-                chars.next();
-            }
-        }
-    }
-    out
 }
 
 // The database half: `classDb.ts`. The parser above calls these while it builds the

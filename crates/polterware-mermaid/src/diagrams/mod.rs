@@ -74,41 +74,45 @@ pub enum DiagramKind {
     Agentflow,
 }
 
+/// A parsed diagram: the database of the type the body declared.
+///
+/// Every variant boxes its `Ast` so the enum stays pointer-sized; the databases are large
+/// structs, and a diagram value travels through the layout and painter layers by reference.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Diagram {
-    Architecture(architecture::Ast),
-    Block(block::Ast),
-    C4(c4::Ast),
-    Class(class::Ast),
-    Cynefin(cynefin::Ast),
-    Er(er::Ast),
-    Eventmodeling(eventmodeling::Ast),
-    Flowchart(flowchart::Ast),
-    Gantt(gantt::Ast),
-    Git(git::Ast),
-    Info(info::Ast),
-    Ishikawa(ishikawa::Ast),
-    Kanban(kanban::Ast),
-    Mindmap(mindmap::Ast),
-    Packet(packet::Ast),
-    Pie(pie::Ast),
-    QuadrantChart(quadrant_chart::Ast),
-    Radar(radar::Ast),
-    Railroad(railroad::Ast),
-    Requirement(requirement::Ast),
-    Sankey(sankey::Ast),
-    Sequence(sequence::Ast),
-    State(state::Ast),
-    Swimlanes(swimlanes::Ast),
-    Timeline(timeline::Ast),
-    TreeView(tree_view::Ast),
-    Treemap(treemap::Ast),
-    Usecase(usecase::Ast),
-    UserJourney(user_journey::Ast),
-    Venn(venn::Ast),
-    Wardley(wardley::Ast),
-    Xychart(xychart::Ast),
-    Agentflow(agentflow::Ast),
+    Architecture(Box<architecture::Ast>),
+    Block(Box<block::Ast>),
+    C4(Box<c4::Ast>),
+    Class(Box<class::Ast>),
+    Cynefin(Box<cynefin::Ast>),
+    Er(Box<er::Ast>),
+    Eventmodeling(Box<eventmodeling::Ast>),
+    Flowchart(Box<flowchart::Ast>),
+    Gantt(Box<gantt::Ast>),
+    Git(Box<git::Ast>),
+    Info(Box<info::Ast>),
+    Ishikawa(Box<ishikawa::Ast>),
+    Kanban(Box<kanban::Ast>),
+    Mindmap(Box<mindmap::Ast>),
+    Packet(Box<packet::Ast>),
+    Pie(Box<pie::Ast>),
+    QuadrantChart(Box<quadrant_chart::Ast>),
+    Radar(Box<radar::Ast>),
+    Railroad(Box<railroad::Ast>),
+    Requirement(Box<requirement::Ast>),
+    Sankey(Box<sankey::Ast>),
+    Sequence(Box<sequence::Ast>),
+    State(Box<state::Ast>),
+    Swimlanes(Box<swimlanes::Ast>),
+    Timeline(Box<timeline::Ast>),
+    TreeView(Box<tree_view::Ast>),
+    Treemap(Box<treemap::Ast>),
+    Usecase(Box<usecase::Ast>),
+    UserJourney(Box<user_journey::Ast>),
+    Venn(Box<venn::Ast>),
+    Wardley(Box<wardley::Ast>),
+    Xychart(Box<xychart::Ast>),
+    Agentflow(Box<agentflow::Ast>),
 }
 
 /// The diagram type the body declares (upstream `detectType` and each diagram's
@@ -409,39 +413,55 @@ fn detects_usecase(text: &str) -> bool {
 
 pub fn parse_kind(kind: DiagramKind, body: &str) -> Result<Diagram, ParseError> {
     match kind {
-        DiagramKind::Architecture => architecture::parse(body).map(Diagram::Architecture),
-        DiagramKind::Block => block::parse(body).map(Diagram::Block),
-        DiagramKind::C4 => c4::parse(body).map(Diagram::C4),
-        DiagramKind::Class => class::parse(body).map(Diagram::Class),
-        DiagramKind::Cynefin => cynefin::parse(body).map(Diagram::Cynefin),
-        DiagramKind::Er => er::parse(body).map(Diagram::Er),
-        DiagramKind::Eventmodeling => eventmodeling::parse(body).map(Diagram::Eventmodeling),
-        DiagramKind::Flowchart => flowchart::parse(body).map(Diagram::Flowchart),
-        DiagramKind::Gantt => gantt::parse(body).map(Diagram::Gantt),
-        DiagramKind::Git => git::parse(body).map(Diagram::Git),
-        DiagramKind::Info => info::parse(body).map(Diagram::Info),
-        DiagramKind::Ishikawa => ishikawa::parse(body).map(Diagram::Ishikawa),
-        DiagramKind::Kanban => kanban::parse(body).map(Diagram::Kanban),
-        DiagramKind::Mindmap => mindmap::parse(body).map(Diagram::Mindmap),
-        DiagramKind::Packet => packet::parse(body).map(Diagram::Packet),
-        DiagramKind::Pie => pie::parse(body).map(Diagram::Pie),
-        DiagramKind::QuadrantChart => quadrant_chart::parse(body).map(Diagram::QuadrantChart),
-        DiagramKind::Radar => radar::parse(body).map(Diagram::Radar),
-        DiagramKind::Railroad => railroad::parse(body).map(Diagram::Railroad),
-        DiagramKind::Requirement => requirement::parse(body).map(Diagram::Requirement),
-        DiagramKind::Sankey => sankey::parse(body).map(Diagram::Sankey),
-        DiagramKind::Sequence => sequence::parse(body).map(Diagram::Sequence),
-        DiagramKind::State => state::parse(body).map(Diagram::State),
-        DiagramKind::Swimlanes => swimlanes::parse(body).map(Diagram::Swimlanes),
-        DiagramKind::Timeline => timeline::parse(body).map(Diagram::Timeline),
-        DiagramKind::TreeView => tree_view::parse(body).map(Diagram::TreeView),
-        DiagramKind::Treemap => treemap::parse(body).map(Diagram::Treemap),
-        DiagramKind::Usecase => usecase::parse(body).map(Diagram::Usecase),
-        DiagramKind::UserJourney => user_journey::parse(body).map(Diagram::UserJourney),
-        DiagramKind::Venn => venn::parse(body).map(Diagram::Venn),
-        DiagramKind::Wardley => wardley::parse(body).map(Diagram::Wardley),
-        DiagramKind::Xychart => xychart::parse(body).map(Diagram::Xychart),
-        DiagramKind::Agentflow => agentflow::parse(body).map(Diagram::Agentflow),
+        DiagramKind::Architecture => {
+            architecture::parse(body).map(|ast| Diagram::Architecture(Box::new(ast)))
+        }
+        DiagramKind::Block => block::parse(body).map(|ast| Diagram::Block(Box::new(ast))),
+        DiagramKind::C4 => c4::parse(body).map(|ast| Diagram::C4(Box::new(ast))),
+        DiagramKind::Class => class::parse(body).map(|ast| Diagram::Class(Box::new(ast))),
+        DiagramKind::Cynefin => cynefin::parse(body).map(|ast| Diagram::Cynefin(Box::new(ast))),
+        DiagramKind::Er => er::parse(body).map(|ast| Diagram::Er(Box::new(ast))),
+        DiagramKind::Eventmodeling => {
+            eventmodeling::parse(body).map(|ast| Diagram::Eventmodeling(Box::new(ast)))
+        }
+        DiagramKind::Flowchart => {
+            flowchart::parse(body).map(|ast| Diagram::Flowchart(Box::new(ast)))
+        }
+        DiagramKind::Gantt => gantt::parse(body).map(|ast| Diagram::Gantt(Box::new(ast))),
+        DiagramKind::Git => git::parse(body).map(|ast| Diagram::Git(Box::new(ast))),
+        DiagramKind::Info => info::parse(body).map(|ast| Diagram::Info(Box::new(ast))),
+        DiagramKind::Ishikawa => ishikawa::parse(body).map(|ast| Diagram::Ishikawa(Box::new(ast))),
+        DiagramKind::Kanban => kanban::parse(body).map(|ast| Diagram::Kanban(Box::new(ast))),
+        DiagramKind::Mindmap => mindmap::parse(body).map(|ast| Diagram::Mindmap(Box::new(ast))),
+        DiagramKind::Packet => packet::parse(body).map(|ast| Diagram::Packet(Box::new(ast))),
+        DiagramKind::Pie => pie::parse(body).map(|ast| Diagram::Pie(Box::new(ast))),
+        DiagramKind::QuadrantChart => {
+            quadrant_chart::parse(body).map(|ast| Diagram::QuadrantChart(Box::new(ast)))
+        }
+        DiagramKind::Radar => radar::parse(body).map(|ast| Diagram::Radar(Box::new(ast))),
+        DiagramKind::Railroad => railroad::parse(body).map(|ast| Diagram::Railroad(Box::new(ast))),
+        DiagramKind::Requirement => {
+            requirement::parse(body).map(|ast| Diagram::Requirement(Box::new(ast)))
+        }
+        DiagramKind::Sankey => sankey::parse(body).map(|ast| Diagram::Sankey(Box::new(ast))),
+        DiagramKind::Sequence => sequence::parse(body).map(|ast| Diagram::Sequence(Box::new(ast))),
+        DiagramKind::State => state::parse(body).map(|ast| Diagram::State(Box::new(ast))),
+        DiagramKind::Swimlanes => {
+            swimlanes::parse(body).map(|ast| Diagram::Swimlanes(Box::new(ast)))
+        }
+        DiagramKind::Timeline => timeline::parse(body).map(|ast| Diagram::Timeline(Box::new(ast))),
+        DiagramKind::TreeView => tree_view::parse(body).map(|ast| Diagram::TreeView(Box::new(ast))),
+        DiagramKind::Treemap => treemap::parse(body).map(|ast| Diagram::Treemap(Box::new(ast))),
+        DiagramKind::Usecase => usecase::parse(body).map(|ast| Diagram::Usecase(Box::new(ast))),
+        DiagramKind::UserJourney => {
+            user_journey::parse(body).map(|ast| Diagram::UserJourney(Box::new(ast)))
+        }
+        DiagramKind::Venn => venn::parse(body).map(|ast| Diagram::Venn(Box::new(ast))),
+        DiagramKind::Wardley => wardley::parse(body).map(|ast| Diagram::Wardley(Box::new(ast))),
+        DiagramKind::Xychart => xychart::parse(body).map(|ast| Diagram::Xychart(Box::new(ast))),
+        DiagramKind::Agentflow => {
+            agentflow::parse(body).map(|ast| Diagram::Agentflow(Box::new(ast)))
+        }
     }
 }
 

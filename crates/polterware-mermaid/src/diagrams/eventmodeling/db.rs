@@ -12,7 +12,7 @@ use std::collections::HashSet;
 
 use super::ast::Ast;
 use super::parser::ParsedEventModel;
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::ParseError;
 
 /// `setAst` followed by `populateCommonDb`: applies a parsed document to a fresh database.

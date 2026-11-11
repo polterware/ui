@@ -17,7 +17,7 @@
 //!
 //! * `getConfig` and `clear` are absent: this crate owns no configuration and builds one
 //!   database per parse.
-//! * `sanitizeText` is approximated in `sanitize.rs` (no DOMPurify, a DOM library), exactly as
+//! * `sanitizeText` is approximated in `common::sanitize` (no DOMPurify, a DOM library), exactly as
 //!   the pie database approximates it. It touches only the title and accessibility strings.
 //! * Nothing here lays out or draws the map; `wardleyRenderer.ts` and `styles.ts` are out of
 //!   scope.
@@ -32,7 +32,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 
 pub use ast::{
     Accelerator, Annotation, Ast, Axes, Deaccelerator, Flow, Link, Node, Note, Pipeline, Point,

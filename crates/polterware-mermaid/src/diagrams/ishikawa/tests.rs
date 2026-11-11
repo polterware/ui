@@ -257,7 +257,7 @@ fn keeps_a_carriage_return_that_a_caller_passed_in() {
 
 #[test]
 fn sanitizes_labels() {
-    // `addNode` runs `sanitizeText`, as `sanitize.rs` approximates it.
+    // `addNode` runs `sanitizeText`, as `common::sanitize` approximates it.
     assert_eq!(root(&ast("ishikawa\n a < b")).text, "a &lt; b");
     assert_eq!(root(&ast("ishikawa\n a<br/>b")).text, "a<br>b");
     assert_eq!(

@@ -22,6 +22,7 @@
 //! `SINGLE_LINE_COMMENT` overlaps: the first three are tried before `WHITESPACE` so their
 //! token keeps it, and skipping a comment's leading whitespace first consumes the same bytes.
 
+use crate::common::text::{is_line_terminator, newline};
 use crate::error::{ParseError, Span};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -267,17 +268,6 @@ fn string(rest: &str) -> Option<usize> {
     None
 }
 
-/// `NEWLINE: /\r?\n/`.
-fn newline(rest: &str) -> Option<usize> {
-    if rest.starts_with("\r\n") {
-        Some(2)
-    } else if rest.starts_with('\n') {
-        Some(1)
-    } else {
-        None
-    }
-}
-
 /// `WHITESPACE: /[\t ]+/`, a skipped hidden token.
 fn horizontal_space(rest: &str) -> Option<usize> {
     let end = rest
@@ -309,8 +299,4 @@ fn js_space(text: &str) -> usize {
 /// JavaScript's `\s`, close enough for the differ on `\u{feff}`.
 fn is_js_space(ch: char) -> bool {
     ch.is_whitespace() || ch == '\u{feff}'
-}
-
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }

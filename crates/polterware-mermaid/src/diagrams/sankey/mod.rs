@@ -25,9 +25,9 @@
 //!   and the lexer collapses a newline run inside a quoted field. A quoted field that spans a
 //!   run of blank lines therefore keeps the several newlines as one (upstream also collapses
 //!   them) but their byte offsets, and every span, still address the body the caller passed.
-//! * Comment lines are removed by the mermaid pipeline, not by the grammar. Since
-//!   [`crate::preprocess`] keeps them in [`crate::preprocess::Source::body`], this module skips
-//!   them before lexing, keeping their bytes so spans still address the body.
+//! * Comment lines are removed by the mermaid pipeline, not by the grammar.
+//!   [`crate::preprocess`] blanks them in [`crate::preprocess::Source::body`], and this module
+//!   skips one it is handed directly, keeping its bytes so spans still address the body.
 //! * Parse errors carry a [`Span`](crate::error::Span); jison reports a line and an excerpt.
 //!
 //! No app breaks: `Diagram::Sankey(Ast)` keeps its variant and the placeholder `Ast` had no
@@ -37,7 +37,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 
 pub use ast::{Ast, Link, Node};
 

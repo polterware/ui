@@ -24,6 +24,7 @@
 //! consumed without a token; the grammar concatenates every token into the YAML text. Inside
 //! the quoted state, `/\n\s*/g` becomes `<br/>`, as upstream does.
 
+use crate::common::text::is_line_terminator;
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 
@@ -452,10 +453,6 @@ fn node_description_fallback(rest: &str) -> Option<usize> {
 /// One or more characters that are not a JavaScript line terminator (what `.` matches).
 fn line_run(rest: &str) -> Option<usize> {
     run_while(rest, |ch| !is_line_terminator(ch))
-}
-
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }
 
 /// The length of the longest prefix made of characters accepted by `accept`, or `None` when

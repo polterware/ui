@@ -27,6 +27,7 @@
 //! [`crate::preprocess`], so `\r` only reaches the lexer when a caller passes a body
 //! directly.
 
+use crate::common::text::is_line_terminator;
 use crate::error::Span;
 use crate::preprocess::is_js_whitespace;
 
@@ -163,11 +164,6 @@ fn keyword(rest: &str, word: &str) -> Option<usize> {
 
 fn is_word_char(ch: char) -> bool {
     ch.is_ascii_alphanumeric() || ch == '_'
-}
-
-/// The characters JavaScript's `.` stops at.
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }
 
 fn run_len(text: &str, predicate: impl Fn(char) -> bool) -> usize {

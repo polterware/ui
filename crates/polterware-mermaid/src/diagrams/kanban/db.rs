@@ -14,7 +14,7 @@
 use super::ast::{Ast, Node};
 use super::metadata;
 use super::parser::{ParsedKanban, ParsedNode, ParsedShapeData, ParsedStatement};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::{ParseError, Span};
 
 /// Applies the parsed document to a fresh database.

@@ -13,7 +13,7 @@
 
 use super::ast::{Ast, Node, NodeType};
 use super::parser::{ParsedNode, ParsedTreeView};
-use super::sanitize;
+use crate::common::sanitize;
 
 /// `populate`: applies the parsed document to a fresh database.
 pub(crate) fn build(parsed: ParsedTreeView) -> Ast {

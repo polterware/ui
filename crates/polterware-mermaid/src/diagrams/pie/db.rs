@@ -8,7 +8,7 @@
 
 use super::ast::{Ast, Section};
 use super::parser::ParsedPie;
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::{ParseError, Span};
 
 /// `populateDb`: applies the parsed document to a fresh database.
