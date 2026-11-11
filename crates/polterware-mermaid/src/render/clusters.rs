@@ -2,11 +2,13 @@
 //!
 //! CSS shape counterparts are Mermaid's `.cluster`, `.outer`, `.inner`, and `.divider` rules;
 //! the grouping and title-strip behavior follows Mermaid's cluster renderers. Unlike their D3
-//! wrappers, these functions return scene groups directly. TODO: port rough.js `handDrawn`
-//! output, palette slots, CSS-derived styles, title text spans, and exact `intersectRect` updates.
+//! wrappers, these functions return scene groups directly. Rough.js output is represented by
+//! its classic geometry; painters can use the retained `data-look` role to select a later pass.
 
+use crate::measure::{FallbackMeasure, Font, TextMeasure, TextOptions, shape_text};
 use crate::scene::{
-    Color, Group, Item, Path, PathStyle, Point, Rect, RectShape, Scene, Size, SourceRef,
+    Color, Group, Item, Path, PathStyle, Point, Rect, RectShape, Scene, Size, SourceRef, TextBlock,
+    TextLine, TextRun, TextSpan,
 };
 
 /// Cluster geometry and label bounds. `width` and `height` include cluster padding adjustments.
@@ -24,6 +26,13 @@ pub struct ClusterNode {
     pub label_width: f64,
     pub label_height: f64,
     pub classes: String,
+    pub label: String,
+    pub color_index: Option<usize>,
+    pub look: String,
+    pub direction: String,
+    pub boundary_type: String,
+    pub content_top: Option<f64>,
+    pub font: Font,
 }
 
 impl ClusterNode {
@@ -41,6 +50,13 @@ impl ClusterNode {
             label_width: 0.0,
             label_height: 0.0,
             classes: String::new(),
+            label: String::new(),
+            color_index: None,
+            look: "classic".into(),
+            direction: "TB".into(),
+            boundary_type: "rect".into(),
+            content_top: None,
+            font: Font::default(),
         }
     }
 }
@@ -52,6 +68,100 @@ pub struct ClusterGeometry {
     pub diff: f64,
     pub offset_x: f64,
     pub offset_y: f64,
+}
+
+/// SVG rectangle intersection used by `intersect-rect.js`.
+pub fn intersect_rect(center: Point, size: Size, toward: Point) -> Point {
+    let dx = toward.x - center.x;
+    let dy = toward.y - center.y;
+    if dx == 0.0 && dy == 0.0 {
+        return center;
+    }
+    let sx = if dx == 0.0 {
+        f64::INFINITY
+    } else {
+        (size.width / 2.0) / dx.abs()
+    };
+    let sy = if dy == 0.0 {
+        f64::INFINITY
+    } else {
+        (size.height / 2.0) / dy.abs()
+    };
+    let t = sx.min(sy);
+    Point::new(center.x + dx * t, center.y + dy * t)
+}
+
+fn resolve_title(node: &ClusterNode, measure: &dyn TextMeasure) -> TextBlock {
+    if node.label.is_empty() {
+        TextBlock::default()
+    } else {
+        shape_text(&node.label, &TextOptions::unwrapped(), &node.font, measure).unwrap_or_default()
+    }
+}
+
+/// Mermaid's twelve-slot palette selection. The slot is a stable style role, not a color copy.
+pub fn color_slot(index: Option<usize>) -> Option<String> {
+    index.map(|i| format!("data-color-id-color-{}", i % 12))
+}
+
+pub fn cluster_paints_title(shape: Option<&str>) -> bool {
+    !matches!(shape.unwrap_or("rect"), "noteGroup" | "divider")
+}
+
+pub fn cluster_shape_registered(shape: &str) -> bool {
+    matches!(
+        shape,
+        "rect"
+            | "squareRect"
+            | "roundedWithTitle"
+            | "noteGroup"
+            | "divider"
+            | "kanbanSection"
+            | "flowGroup"
+            | "usecaseSystemBoundary"
+            | "swimlane"
+            | "pool"
+    )
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct BoundaryGeometry {
+    pub width: f64,
+    pub height: f64,
+    pub x: f64,
+    pub y: f64,
+    pub body_y: f64,
+    pub body_height: f64,
+    pub tab_height: f64,
+    pub tab_width: f64,
+}
+pub fn usecase_system_boundary_geometry(node: &ClusterNode, label: Size) -> BoundaryGeometry {
+    let package = node.boundary_type == "package";
+    let tab_height = if package { label.height + 10.0 } else { 0.0 };
+    let width = node
+        .width
+        .max(label.width + if package { 20.0 } else { node.padding });
+    let height = if package {
+        node.height.max(tab_height + node.padding * 2.0)
+    } else {
+        node.height
+    };
+    let x = node.x - width / 2.0;
+    let y = node.y - height / 2.0;
+    BoundaryGeometry {
+        width,
+        height,
+        x,
+        y,
+        body_y: y + tab_height,
+        body_height: height - tab_height,
+        tab_height,
+        tab_width: if package {
+            width.min(80.0_f64.max(label.width + 20.0))
+        } else {
+            0.0
+        },
+    }
 }
 
 fn shape_rect(
@@ -83,17 +193,50 @@ fn group(node: &ClusterNode, class: &str) -> Group {
         })
         .with_source(SourceRef::cluster(node.id.clone()))
 }
+fn style_role(role: &str, item: impl Into<Item>, source: SourceRef) -> Group {
+    let mut group = Group::new().with_class(role).with_source(source);
+    group.push(item);
+    group
+}
 
 /// Render registered upstream cluster shapes: `rect`, `roundedWithTitle`, `noteGroup`,
-/// `divider`, `kanbanSection`, `agentCluster`, `flowCluster`, and `usecaseSystemBoundary`.
+/// `divider`, `kanbanSection`, `flowGroup`, `usecaseSystemBoundary`, `swimlane`, and `pool`.
 pub fn render_cluster(
     node: &ClusterNode,
     scene: &mut Scene,
     cluster_background: &str,
     cluster_border: &str,
 ) -> ClusterGeometry {
-    let titled = !matches!(node.shape.as_str(), "noteGroup" | "divider");
-    let needed = node.label_width + node.padding;
+    render_cluster_measured(
+        node,
+        scene,
+        cluster_background,
+        cluster_border,
+        &FallbackMeasure,
+    )
+}
+
+/// Render a cluster with the caller's text system, preserving the title as scene text.
+pub fn render_cluster_measured(
+    node: &ClusterNode,
+    scene: &mut Scene,
+    cluster_background: &str,
+    cluster_border: &str,
+    measure: &dyn TextMeasure,
+) -> ClusterGeometry {
+    let measured = resolve_title(node, measure);
+    let label_width = if node.label_width > 0.0 {
+        node.label_width
+    } else {
+        measured.size.width
+    };
+    let label_height = if node.label_height > 0.0 {
+        node.label_height
+    } else {
+        measured.size.height
+    };
+    let titled = cluster_paints_title(Some(&node.shape));
+    let needed = label_width + node.padding;
     let width = node.width.max(needed);
     let diff = if node.width <= needed {
         (width - node.width) / 2.0 - node.padding
@@ -101,50 +244,147 @@ pub fn render_cluster(
         -node.padding
     };
     let source = SourceRef::cluster(node.id.clone());
-    let mut g = group(
-        node,
+    let role = format!(
+        "{} data-look-{}{}",
         match node.shape.as_str() {
-            "noteGroup" => "note-cluster",
-            "roundedWithTitle" => "",
-            "divider" => "",
+            "swimlane" => "cluster swimlane",
+            "pool" => "cluster pool swimlane",
+            "roundedWithTitle" => "composite-cluster",
+            "usecaseSystemBoundary" => "cluster usecase-system-boundary",
             _ => "cluster",
         },
+        node.look,
+        color_slot(node.color_index)
+            .map(|c| format!(" {c}"))
+            .unwrap_or_default()
     );
-    let outer_h = if node.shape == "roundedWithTitle" {
-        node.height
-    } else {
-        node.height
-    };
+    let mut g = group(node, &role);
+    g.id = Some(node.id.clone());
+    let outer_h = node.height;
     let mut background = cluster_background;
     let mut border = cluster_border;
-    if node.shape == "divider" {
-        background = "none";
-        border = cluster_border;
-    }
     if node.shape == "noteGroup" {
         background = "none";
         border = "none";
     }
-    g.push(shape_rect(
-        node,
-        if node.shape == "noteGroup" {
-            node.width
+    if node.shape == "flowGroup" {
+        background = "none";
+    }
+    if node.shape == "usecaseSystemBoundary" {
+        let b = usecase_system_boundary_geometry(node, Size::new(label_width, label_height));
+        g.push(
+            RectShape::new(
+                Rect::new(b.x, b.body_y, b.width, b.body_height),
+                node.rx,
+                PathStyle {
+                    fill: Some(Color::new(cluster_background)),
+                    stroke: Some(Color::new(cluster_border)),
+                    ..PathStyle::default()
+                },
+            )
+            .with_source(source.clone()),
+        );
+        if b.tab_height > 0.0 {
+            g.push(
+                RectShape::new(
+                    Rect::new(b.x, b.y, b.tab_width, b.tab_height),
+                    node.rx,
+                    PathStyle {
+                        fill: Some(Color::new(cluster_background)),
+                        stroke: Some(Color::new(cluster_border)),
+                        ..PathStyle::default()
+                    },
+                )
+                .with_source(source.clone()),
+            );
+        }
+    } else if node.shape == "swimlane" || node.shape == "pool" {
+        let left = node.x - width / 2.0;
+        let top = node.y - node.height / 2.0;
+        if node.direction == "LR" {
+            let title = label_height + 8.0;
+            g.push(
+                RectShape::new(
+                    Rect::new(left, top, title, node.height),
+                    node.rx,
+                    PathStyle {
+                        fill: Some(Color::new(cluster_background)),
+                        stroke: Some(Color::new(cluster_border)),
+                        ..PathStyle::default()
+                    },
+                )
+                .with_source(source.clone()),
+            );
+            g.push(
+                RectShape::new(
+                    Rect::new(left + title, top, (width - title).max(0.0), node.height),
+                    0.0,
+                    PathStyle {
+                        fill: Some(Color::new("none")),
+                        stroke: Some(Color::new(cluster_border)),
+                        ..PathStyle::default()
+                    },
+                )
+                .with_source(source.clone()),
+            );
         } else {
-            width
-        },
-        outer_h,
-        node.rx.max(node.ry),
-        Some(Color::new(background)),
-        Some(Color::new(border)),
-    ));
+            let title =
+                label_height.min((node.content_top.unwrap_or(top + label_height) - top).max(0.0));
+            g.push(
+                RectShape::new(
+                    Rect::new(left, top, width, title),
+                    node.rx,
+                    PathStyle {
+                        fill: Some(Color::new(cluster_background)),
+                        stroke: Some(Color::new(cluster_border)),
+                        ..PathStyle::default()
+                    },
+                )
+                .with_source(source.clone()),
+            );
+            g.push(
+                RectShape::new(
+                    Rect::new(left, top + title, width, (node.height - title).max(0.0)),
+                    0.0,
+                    PathStyle {
+                        fill: Some(Color::new("none")),
+                        stroke: Some(Color::new(cluster_border)),
+                        ..PathStyle::default()
+                    },
+                )
+                .with_source(source.clone()),
+            );
+        }
+    } else {
+        g.push(style_role(
+            "outer",
+            shape_rect(
+                node,
+                if node.shape == "noteGroup" {
+                    node.width
+                } else {
+                    width
+                },
+                outer_h,
+                if node.shape == "flowGroup" {
+                    10.0
+                } else {
+                    node.rx.max(node.ry)
+                },
+                Some(Color::new(background)),
+                Some(Color::new(border)),
+            ),
+            source.clone(),
+        ));
+    }
     let mut offset_y = if titled && node.shape != "roundedWithTitle" {
-        node.label_height - node.padding / 2.0
+        label_height - node.padding / 2.0
     } else {
         0.0
     };
     if node.shape == "roundedWithTitle" {
-        let inner_y = node.y - node.height / 2.0 + node.label_height + 2.0;
-        let inner_h = (node.height - node.label_height - 6.0).max(0.0);
+        let inner_y = node.y - node.height / 2.0 + label_height + 2.0;
+        let inner_h = (node.height - label_height - 6.0).max(0.0);
         let inner = RectShape::new(
             Rect::new(node.x - width / 2.0, inner_y, width, inner_h),
             0.0,
@@ -155,36 +395,58 @@ pub fn render_cluster(
             },
         )
         .with_source(source.clone());
-        g.push(inner);
-        offset_y = node.label_height - node.padding / 2.0;
+        g.push(style_role("inner", inner, source.clone()));
+        offset_y = label_height - node.padding / 2.0;
     }
-    if titled && node.label_height > 0.0 {
+    if titled && label_height > 0.0 && !node.label.trim().is_empty() {
         let mut label = Group::new()
             .with_class("cluster-label")
             .with_source(source.clone());
-        label.transform = crate::scene::Transform::translate(
-            node.x - node.label_width / 2.0,
-            node.y - node.height / 2.0,
+        if matches!(node.shape.as_str(), "swimlane" | "pool") && node.direction == "LR" {
+            label.transform = crate::scene::Transform::translate(
+                node.x - node.width / 2.0 + (label_height + 8.0) / 2.0,
+                node.y,
+            )
+            .then(crate::scene::Transform::rotate(-90.0))
+            .then(crate::scene::Transform::translate(
+                -label_width / 2.0,
+                -label_height / 2.0,
+            ));
+        } else if node.shape == "usecaseSystemBoundary" && node.boundary_type == "package" {
+            let b = usecase_system_boundary_geometry(node, Size::new(label_width, label_height));
+            label.transform = crate::scene::Transform::translate(
+                b.x + (b.tab_width - label_width) / 2.0,
+                b.y + (b.tab_height - label_height) / 2.0,
+            );
+        } else {
+            label.transform = crate::scene::Transform::translate(
+                node.x - label_width / 2.0,
+                node.y - node.height / 2.0,
+            );
+        }
+        let block = if measured.lines.is_empty() {
+            TextBlock::new(
+                vec![TextLine::new(vec![TextSpan::plain(node.label.clone())])],
+                Size::new(label_width, label_height),
+                measure.line_height(&node.font),
+            )
+        } else {
+            measured
+        };
+        label.push(
+            TextRun::new(Point::ZERO, node.font.clone(), block)
+                .with_source(source.clone())
+                .with_fill("currentColor"),
         );
         g.push(label);
     }
-    if node.shape == "divider" {
-        let mut p = Path::new();
-        p.move_to(Point::new(node.x - width / 2.0, node.y))
-            .line_to(Point::new(node.x + width / 2.0, node.y));
-        let mut style = PathStyle::default();
-        style.fill = None;
-        style.stroke = Some(Color::new(cluster_border));
-        style.dash = vec![5.0];
-        g.push(crate::scene::PathShape::new(p, style).with_source(source));
+    if let Some(slot) = color_slot(node.color_index) {
+        g.class = Some(format!("{} {slot}", g.class.unwrap_or_default()));
     }
     scene.push(Item::Group(g.clone()));
     ClusterGeometry {
         group: g,
-        label_bounds: Size::new(
-            node.label_width,
-            if titled { node.label_height } else { 0.0 },
-        ),
+        label_bounds: Size::new(label_width, if titled { label_height } else { 0.0 }),
         diff,
         offset_x: 0.0,
         offset_y,
