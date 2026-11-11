@@ -15,6 +15,7 @@ pub mod error;
 pub mod layout;
 pub mod measure;
 pub mod preprocess;
+pub mod render;
 pub mod scene;
 pub mod theme;
 
