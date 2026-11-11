@@ -31,6 +31,36 @@ pub enum ImageWidth {
     Container,
 }
 
+/// The image styles written by upstream `configureLabelImages` once an image loads or fails.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ImageLayout {
+    pub display: &'static str,
+    pub flex_direction: &'static str,
+    pub width_percent: Option<u8>,
+    pub min_width_px: Option<u32>,
+    pub max_width_px: Option<u32>,
+}
+
+/// Resolves the CSS decisions made after image completion. A DOM adapter applies this value.
+pub fn configured_image_layout(no_text: bool, font_size: f64) -> ImageLayout {
+    match image_width(no_text, font_size) {
+        ImageWidth::Fixed(width) => ImageLayout {
+            display: "flex",
+            flex_direction: "column",
+            width_percent: None,
+            min_width_px: Some(width.round() as u32),
+            max_width_px: Some(width.round() as u32),
+        },
+        ImageWidth::Container => ImageLayout {
+            display: "flex",
+            flex_direction: "column",
+            width_percent: Some(100),
+            min_width_px: None,
+            max_width_px: None,
+        },
+    }
+}
+
 use super::{Node, RenderedNode, ShapeContext, ShapeError};
 
 // Compatibility entry for the current registry; this upstream module is a helper, not a shape.
