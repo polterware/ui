@@ -3,6 +3,7 @@
 
 use crate::error::ParseError;
 
+pub mod agentflow;
 pub mod architecture;
 pub mod block;
 pub mod c4;
@@ -35,7 +36,6 @@ pub mod user_journey;
 pub mod venn;
 pub mod wardley;
 pub mod xychart;
-pub mod agentflow;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DiagramKind {

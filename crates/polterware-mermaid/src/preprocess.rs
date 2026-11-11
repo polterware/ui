@@ -14,5 +14,8 @@ pub struct Source {
 }
 
 pub fn preprocess(text: &str) -> Source {
-    Source { body: text.replace("\r\n", "\n"), ..Source::default() }
+    Source {
+        body: text.replace("\r\n", "\n"),
+        ..Source::default()
+    }
 }
