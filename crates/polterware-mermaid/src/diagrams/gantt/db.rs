@@ -36,9 +36,7 @@ use crate::preprocess::is_js_whitespace;
 
 /// JavaScript's `String.prototype.trim`: it also strips a byte-order mark, which Rust's
 /// `str::trim` does not.
-pub(super) fn js_trim(text: &str) -> &str {
-    text.trim_matches(is_js_whitespace)
-}
+pub(super) use crate::common::js_trim;
 
 /// The tags `getTaskTags` strips from the front of a task's data, in its order.
 const TAGS: [&str; 5] = ["active", "done", "crit", "milestone", "vert"];

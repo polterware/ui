@@ -17,6 +17,7 @@ use super::ast::{
     Relationship, RelationshipType, StatementKind, SystemBoundary, UseCase, UseCaseShape,
     UsecaseJsonNode, UsecaseNote, UsecaseSymbolKind,
 };
+use crate::common::sanitize::collapse_description_indent;
 use crate::error::{ParseError, Span};
 
 /// A source position as the visitor records it (`DraftLocation`).
@@ -372,23 +373,7 @@ fn set_acc_title(value: &str) -> String {
 
 /// `commonDb.setAccDescription`: `sanitizeText(txt).replace(/\n\s+/g, '\n')`.
 fn set_acc_description(value: &str) -> String {
-    let mut out = String::with_capacity(value.len());
-    let mut chars = value.chars();
-    while let Some(ch) = chars.next() {
-        if ch != '\n' {
-            out.push(ch);
-            continue;
-        }
-        out.push('\n');
-        while chars
-            .clone()
-            .next()
-            .is_some_and(crate::preprocess::is_js_whitespace)
-        {
-            chars.next();
-        }
-    }
-    out
+    collapse_description_indent(value)
 }
 
 fn push_unique(target: &mut Vec<String>, values: &[String]) {

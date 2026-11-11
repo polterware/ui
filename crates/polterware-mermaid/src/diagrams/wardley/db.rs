@@ -18,7 +18,7 @@ use super::ast::{
     Size, SourceStrategy, Trend,
 };
 use super::parser::{Number, ParsedEvolution, ParsedLabel, ParsedWardley};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::ParseError;
 
 /// `populateDb`: applies the parsed document to a fresh database.

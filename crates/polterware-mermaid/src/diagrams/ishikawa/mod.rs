@@ -9,14 +9,15 @@
 //! after parsing: `getRoot` and `getDiagramTitle`.
 //!
 //! The body starts with the header line (`ishikawa` or `ishikawa-beta`, case-insensitively);
-//! frontmatter and `%%{init}%%` directives are already removed by [`crate::preprocess`],
-//! while `%%` comment lines are kept and the lexer skips them as upstream's grammar does.
+//! frontmatter, `%%{init}%%` directives, and `%%` comment lines are already blanked by
+//! [`crate::preprocess`], and the lexer skips a comment it is handed directly, as upstream's
+//! grammar does.
 //!
 //! # Where the port stops short of upstream
 //!
 //! * Configuration is not owned by this crate, so `getConfig` is absent and the `%lex`
 //!   options are read from the grammar rather than from a config.
-//! * `sanitizeText` is approximated (`sanitize.rs`): `script`/`style` elements are dropped
+//! * `sanitizeText` is approximated (`common::sanitize`): `script`/`style` elements are dropped
 //!   and a stray `<` is escaped, but there is no DOMPurify (a DOM library). This affects the
 //!   labels `addNode` stores and the diagram title derived from the root.
 //! * `getAccTitle` and `getAccDescription` are not part of [`Ast`]: `ishikawa.jison` never
@@ -36,7 +37,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 
 pub use ast::{Ast, IshikawaNode};
 

@@ -17,7 +17,7 @@ use super::parser::{
     BranchStatement, CheckoutStatement, CherryPickStatement, CommitStatement, MergeStatement,
     ParsedGitGraph, Statement,
 };
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::{ParseError, Span};
 
 /// `populate`: applies the parsed document to a fresh database.

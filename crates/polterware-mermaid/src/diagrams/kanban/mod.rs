@@ -36,7 +36,6 @@ mod db;
 mod lexer;
 mod metadata;
 mod parser;
-mod sanitize;
 
 pub use ast::{Ast, DataNode, DataShape, Node, NodeType};
 

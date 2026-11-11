@@ -23,6 +23,7 @@
 //! The annotation terminals include their leading whitespace, and `BARE_NAME` stops before
 //! one of them, so `index.js :::highlight` is a name and an annotation rather than one name.
 
+use crate::common::text::newline;
 use crate::error::{ParseError, Span};
 
 /// The diagram's keyword (`TreeViewTokenBuilder`).
@@ -349,17 +350,6 @@ fn annotation_marker(text: &str) -> bool {
 fn comment(rest: &str) -> Option<usize> {
     rest.strip_prefix("%%")?;
     Some(rest.find(['\r', '\n']).unwrap_or(rest.len()))
-}
-
-/// `NL: /\r?\n/`, a hidden token.
-fn newline(rest: &str) -> Option<usize> {
-    if rest.starts_with("\r\n") {
-        Some(2)
-    } else if rest.starts_with('\n') {
-        Some(1)
-    } else {
-        None
-    }
 }
 
 /// `[ \t]+` at the start of `text`, as a byte length.

@@ -29,6 +29,7 @@
 //! `EM_YAML` and `EM_DIRECTIVE` can only appear in text preprocessing has not cleaned, but
 //! they are still tokens upstream, so they are skipped here too.
 
+use crate::common::text::is_line_terminator;
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 
@@ -538,8 +539,4 @@ fn js_space(text: &str) -> usize {
     text.char_indices()
         .find(|&(_, ch)| !is_js_whitespace(ch))
         .map_or(text.len(), |(index, _)| index)
-}
-
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }

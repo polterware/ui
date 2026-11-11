@@ -16,6 +16,8 @@ use super::ast::{
     Stroke, SubGraph, Tooltip, Vertex,
 };
 use super::metadata;
+use crate::common::sanitize::collapse_description_indent;
+use crate::common::text::is_truthy;
 use crate::error::{ParseError, Span};
 
 const MERMAID_DOM_ID_PREFIX: &str = "flowchart-";
@@ -1099,31 +1101,6 @@ fn number(value: &Value) -> Option<f64> {
         Value::String(text) => text.trim().parse().ok(),
         _ => None,
     }
-}
-
-fn is_truthy(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::Bool(value) => *value,
-        Value::Number(number) => number.as_f64().is_some_and(|value| value != 0.0),
-        Value::String(value) => !value.is_empty(),
-        Value::Array(values) => !values.is_empty(),
-        Value::Object(map) => !map.is_empty(),
-    }
-}
-
-fn collapse_description_indent(text: &str) -> String {
-    let mut out = String::with_capacity(text.len());
-    let mut chars = text.chars().peekable();
-    while let Some(ch) = chars.next() {
-        out.push(ch);
-        if ch == '\n' {
-            while chars.peek().is_some_and(|next| next.is_whitespace()) {
-                chars.next();
-            }
-        }
-    }
-    out
 }
 
 fn format_url(link: &str) -> Option<String> {

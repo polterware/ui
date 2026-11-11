@@ -9,7 +9,7 @@
 
 use super::ast::{Ast, StyleClass, TreemapNode};
 use super::parser::{Item, ItemKind, ParsedRow, ParsedTreemap};
-use super::sanitize;
+use crate::common::sanitize;
 
 /// `populate`: applies the parsed document to a fresh database.
 pub(crate) fn build(parsed: ParsedTreemap) -> Ast {

@@ -21,7 +21,7 @@ use std::collections::HashMap;
 
 use super::ast::{Ast, Block, BlockType, ClassDef, Edge};
 use super::parser::{EdgeValue, NodeValue, Parsed, Statement};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::{ParseError, Span};
 
 /// Populates a fresh database from the parsed document (`setHierarchy`).

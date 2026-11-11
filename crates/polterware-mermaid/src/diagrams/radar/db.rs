@@ -9,7 +9,7 @@
 
 use super::ast::{Ast, Axis, Curve, Options};
 use super::parser::{ParsedCurve, ParsedEntries, ParsedOption, ParsedRadar};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::{ParseError, Span};
 
 /// `MAX_TICKS`: more than this makes the gradient unreadable, and unbounded values would let

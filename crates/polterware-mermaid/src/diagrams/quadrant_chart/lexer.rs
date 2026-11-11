@@ -20,6 +20,7 @@
 //! of line. That distinction is observable: `title` without a trailing newline is a parse
 //! error, `title` followed by one is not. [`TokenKind::End`] is that `$end`.
 
+use crate::common::text::is_line_terminator;
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 
@@ -716,8 +717,4 @@ fn js_space_run(text: &str) -> usize {
 
 fn is_word_char(ch: char) -> bool {
     ch.is_ascii_alphanumeric() || ch == '_'
-}
-
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }

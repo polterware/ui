@@ -67,6 +67,7 @@
 
 use super::ast::SourceStrategy;
 use super::lexer::{Lexer, Token, TokenKind};
+use crate::common::text::{convert_string, trim_horizontal};
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 
@@ -658,32 +659,6 @@ impl<'a> Parser<'a> {
     }
 }
 
-/// Langium's default `STRING` conversion: drop the quotes and read `\` escapes.
-fn convert_string(raw: &str) -> String {
-    let inner = &raw[1..raw.len() - 1];
-    let mut out = String::with_capacity(inner.len());
-    let mut chars = inner.chars();
-    while let Some(ch) = chars.next() {
-        if ch != '\\' {
-            out.push(ch);
-            continue;
-        }
-        match chars.next() {
-            Some('b') => out.push('\u{8}'),
-            Some('f') => out.push('\u{c}'),
-            Some('n') => out.push('\n'),
-            Some('r') => out.push('\r'),
-            Some('t') => out.push('\t'),
-            Some('v') => out.push('\u{b}'),
-            Some('0') => out.push('\0'),
-            Some(other) => out.push(other),
-            // The lexer only produces a string when every backslash has a character.
-            None => {}
-        }
-    }
-    out
-}
-
 /// `wardley/valueConverter.ts`'s `LINK_LABEL`: drop the leading `;` and trim.
 fn link_label_value(raw: &str) -> String {
     trim(&raw[1..]).to_string()
@@ -750,10 +725,6 @@ fn normalize_multiline(capture: &str) -> String {
 /// `String.prototype.trim`, close enough: JavaScript's `\s` also has U+FEFF.
 fn trim(text: &str) -> &str {
     text.trim_matches(is_js_whitespace)
-}
-
-fn trim_horizontal(text: &str) -> &str {
-    text.trim_start_matches([' ', '\t'])
 }
 
 /// `.replace(/[\t ]{2,}/gm, ' ')` on an already trimmed string.

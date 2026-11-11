@@ -11,6 +11,8 @@
 //! The shape vocabulary is `shapes.ts`: the v0.8.1 aliases, the removed shapes, and the
 //! allowed shapes. `sanitizeText` is approximated the way the flowchart port does it.
 
+pub use crate::common::text::is_truthy;
+use crate::common::yaml::{depth_delta, strip_inline_comment};
 use serde_json::{Map, Number, Value};
 
 /// The v0.8.1 shape aliases (§4.3.2), from `shapes.ts` `SHAPE_ALIASES`.
@@ -393,103 +395,10 @@ pub fn strip_prototype_keys(value: Value) -> Value {
     }
 }
 
-/// JavaScript truthiness for the values js-yaml can produce.
-pub fn is_truthy(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::Bool(value) => *value,
-        Value::Number(number) => number.as_f64().is_some_and(|value| value != 0.0),
-        Value::String(value) => !value.is_empty(),
-        Value::Array(values) => !values.is_empty(),
-        Value::Object(map) => !map.is_empty(),
-    }
-}
-
-/// Approximates `common.ts` `sanitizeText`: DOMPurify drops `script` and `style` elements,
-/// escapes a `<` that opens no tag, and keeps the rest of the markup.
-pub fn sanitize_text(text: &str) -> String {
-    let mut out = String::with_capacity(text.len());
-    let mut index = 0;
-    while index < text.len() {
-        let rest = &text[index..];
-        if let Some(consumed) = strip_element(rest) {
-            index += consumed;
-            continue;
-        }
-        if rest.starts_with('<') {
-            if let Some(end) = tag_end(rest) {
-                out.push_str(&rest[..end]);
-                index += end;
-                continue;
-            }
-            out.push_str("&lt;");
-            index += 1;
-            continue;
-        }
-        let ch = rest.chars().next().expect("non-empty remainder");
-        out.push(ch);
-        index += ch.len_utf8();
-    }
-    out
-}
-
-fn strip_element(text: &str) -> Option<usize> {
-    let (name, open_end) = opening_tag(text)?;
-    let lower = name.to_ascii_lowercase();
-    if lower != "script" && lower != "style" {
-        return None;
-    }
-    let closing = format!("</{lower}");
-    let rest = &text[open_end..];
-    let lower_rest = rest.to_ascii_lowercase();
-    if let Some(found) = lower_rest.find(&closing) {
-        let after = open_end + found;
-        return Some(tag_end(&text[after..]).map_or(text.len(), |end| after + end));
-    }
-    Some(text.len())
-}
-
-fn opening_tag(text: &str) -> Option<(String, usize)> {
-    let mut chars = text.char_indices();
-    let (_, first) = chars.next()?;
-    if first != '<' {
-        return None;
-    }
-    let mut name = String::new();
-    for (index, ch) in chars {
-        if ch.is_ascii_alphabetic() {
-            name.push(ch);
-        } else if ch.is_ascii_whitespace() || ch == '>' || ch == '/' {
-            if name.is_empty() {
-                return None;
-            }
-            let end = text[index..].find('>')? + index + 1;
-            return Some((name, end));
-        } else {
-            return None;
-        }
-    }
-    if name.is_empty() {
-        None
-    } else {
-        Some((name, text.len()))
-    }
-}
-
-fn tag_end(text: &str) -> Option<usize> {
-    if !text.starts_with('<') {
-        return None;
-    }
-    let next = text[1..].chars().next()?;
-    if !(next.is_ascii_alphabetic() || next == '/' || next == '!' || next == '?') {
-        return None;
-    }
-    if text.starts_with("<!--") {
-        let end = text.find("-->")?;
-        return Some(end + 3);
-    }
-    text.find('>').map(|index| index + 1)
-}
+/// `common.ts` `sanitizeText` at the default security level: DOMPurify drops `script` and
+/// `style` elements, escapes a `<` that opens no tag, and keeps the rest of the markup. The
+/// htmlLabels path, which is the one these labels take, keeps a break tag as written.
+pub use crate::common::sanitize::sanitize_html_label as sanitize_text;
 
 /// A flow-mapping/sequence parser, shared by the single-line body and flow values.
 struct Flow<'a> {
@@ -979,22 +888,6 @@ fn quoted_closes(text: &str, quote: char) -> bool {
     false
 }
 
-fn depth_delta(text: &str) -> i32 {
-    let mut delta = 0;
-    let mut quote: Option<char> = None;
-    for ch in text.chars() {
-        match quote {
-            Some(expected) if ch == expected => quote = None,
-            Some(_) => {}
-            None if ch == '"' || ch == '\'' => quote = Some(ch),
-            None if ch == '{' || ch == '[' => delta += 1,
-            None if ch == '}' || ch == ']' => delta -= 1,
-            None => {}
-        }
-    }
-    delta
-}
-
 fn block_scalar(
     lines: &[&str],
     index: &mut usize,
@@ -1102,16 +995,6 @@ fn unquote_key(key: &str) -> String {
         }
     }
     key.to_string()
-}
-
-fn strip_inline_comment(raw: &str) -> &str {
-    let bytes = raw.as_bytes();
-    for (index, byte) in bytes.iter().enumerate() {
-        if *byte == b'#' && (index == 0 || matches!(bytes[index - 1], b' ' | b'\t')) {
-            return raw[..index].trim_end_matches([' ', '\t']);
-        }
-    }
-    raw.trim_end_matches([' ', '\t'])
 }
 
 fn plain_scalar(raw: &str) -> Value {

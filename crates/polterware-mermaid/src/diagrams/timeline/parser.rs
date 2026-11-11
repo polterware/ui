@@ -42,7 +42,6 @@ use super::ast::{Ast, Direction};
 use super::db::Db;
 use super::lexer::{Kind, Lexer, Token};
 use crate::error::ParseError;
-use crate::preprocess::is_js_whitespace;
 
 /// Parses the diagram body and returns the database's answers.
 pub(super) fn parse(body: &str) -> Result<Ast, ParseError> {
@@ -145,5 +144,5 @@ fn after_chars(text: &str, count: usize) -> String {
 
 /// `String.prototype.trim`.
 fn js_trim(text: &str) -> String {
-    text.trim_matches(is_js_whitespace).to_string()
+    crate::common::js_trim(text).to_string()
 }

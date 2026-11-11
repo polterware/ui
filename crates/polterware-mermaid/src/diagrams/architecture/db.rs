@@ -20,7 +20,7 @@ use super::ast::{
     Node, Service, group_alignment_key,
 };
 use super::parser::ParsedArchitecture;
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::{ParseError, Span};
 
 /// `populateDb`: applies the parsed document to a fresh database.

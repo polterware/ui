@@ -11,7 +11,7 @@
 
 use super::ast::{Ast, Axis, Orientation, Plot, PlotKind, PlotPoint};
 use super::parser::{ParsedPoint, Statement};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::preprocess::is_js_whitespace;
 
 /// Applies the parsed statements to a fresh database, in order.

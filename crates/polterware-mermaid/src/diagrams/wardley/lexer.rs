@@ -36,6 +36,7 @@
 //! The JavaScript regexes are matched by hand, including the backtracking the `INT` lookahead
 //! and the `NAME_WITH_SPACES` repetitions allow.
 
+use crate::common::text::{is_line_terminator, newline};
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 
@@ -561,17 +562,6 @@ fn id(rest: &str) -> Option<usize> {
     Some(end)
 }
 
-/// `NEWLINE: /\r?\n/`.
-fn newline(rest: &str) -> Option<usize> {
-    if rest.starts_with("\r\n") {
-        Some(2)
-    } else if rest.starts_with('\n') {
-        Some(1)
-    } else {
-        None
-    }
-}
-
 /// `WHITESPACE` and `WS`: `[\t ]+`, a skipped hidden token.
 fn horizontal_space(rest: &str) -> Option<usize> {
     let end = rest
@@ -606,8 +596,4 @@ fn char_at(text: &str, offset: usize) -> Option<char> {
     } else {
         None
     }
-}
-
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }

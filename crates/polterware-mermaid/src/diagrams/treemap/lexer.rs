@@ -26,6 +26,7 @@
 //!
 //! Every JavaScript regex is matched by hand, including the backtracking the patterns allow.
 
+use crate::common::text::newline;
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 
@@ -368,17 +369,6 @@ fn string(rest: &str) -> Option<usize> {
     }
     let end = rest[quote.len_utf8()..].find(quote)?;
     Some(quote.len_utf8() + end + quote.len_utf8())
-}
-
-/// `NEWLINE: /\r?\n/`.
-fn newline(rest: &str) -> Option<usize> {
-    if rest.starts_with("\r\n") {
-        Some(2)
-    } else if rest.starts_with('\n') {
-        Some(1)
-    } else {
-        None
-    }
 }
 
 /// The length of `[^\n\r]*?(?=%%)|[^\n\r]*` at the start of `text`.

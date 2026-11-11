@@ -32,7 +32,7 @@
 //!   an error, with the same parse result.
 //! * Blank lines, and the line breaks comments leave behind, are skipped before the header.
 //!   Upstream deletes the frontmatter block and comment lines before parsing, while
-//!   [`crate::preprocess`] keeps their lines so spans and editor lines agree; the skip makes
+//!   [`crate::preprocess`] blanks their lines so spans and editor lines agree; the skip makes
 //!   the two agree.
 
 mod ast;

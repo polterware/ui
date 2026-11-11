@@ -43,6 +43,7 @@
 //! trailing whitespace still leaves an `INDENTATION` token and fails, exactly as it does
 //! upstream, because `INDENTATION` matches before the dead `WS` terminal.
 
+use crate::common::text::trim_horizontal;
 use std::collections::VecDeque;
 
 use super::ast::Ast;
@@ -403,10 +404,6 @@ fn normalize_multiline(capture: &str) -> String {
 /// `String.prototype.trim`, close enough: JavaScript's `\s` also has U+FEFF.
 fn trim(text: &str) -> &str {
     text.trim_matches(is_js_whitespace)
-}
-
-fn trim_horizontal(text: &str) -> &str {
-    text.trim_start_matches([' ', '\t'])
 }
 
 /// `.replace(/[\t ]{2,}/gm, ' ')` on an already trimmed string.

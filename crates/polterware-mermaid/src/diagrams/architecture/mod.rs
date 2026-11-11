@@ -43,7 +43,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 
 pub use ast::{
     Alignment, AlignmentDirection, Ast, DataStructures, Direction, DirectionPair, Edge, Group,

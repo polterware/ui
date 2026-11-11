@@ -943,22 +943,8 @@ fn leading_run(s: &str, predicate: impl Fn(char) -> bool) -> Option<usize> {
     (len > 0).then_some(len)
 }
 
-/// JavaScript's `\s` (ECMAScript WhiteSpace and LineTerminator).
-pub(crate) fn is_space(ch: char) -> bool {
-    matches!(
-        ch,
-        '\t' | '\n' | '\u{000b}' | '\u{000c}' | '\r' | ' ' | '\u{00a0}' | '\u{1680}' | '\u{2000}'
-            ..='\u{200a}'
-                | '\u{2028}'
-                | '\u{2029}'
-                | '\u{202f}'
-                | '\u{205f}'
-                | '\u{3000}'
-                | '\u{feff}'
-    )
-}
+/// JavaScript's `\s` (ECMAScript WhiteSpace and LineTerminator), from the shared helper.
+pub(crate) use crate::common::is_js_whitespace as is_space;
 
 /// JavaScript's `String.prototype.trim`.
-pub(crate) fn js_trim(text: &str) -> &str {
-    text.trim_matches(is_space)
-}
+pub(crate) use crate::common::js_trim;
