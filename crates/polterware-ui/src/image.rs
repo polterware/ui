@@ -190,6 +190,8 @@ pub struct ImageAction {
     pub icon: Icon,
     pub label: SharedString,
     pub handler: Handler,
+    /// The button's kind: Secondary unless set, Danger for a destructive one such as Delete.
+    pub kind: ButtonKind,
 }
 
 impl ImageAction {
@@ -204,7 +206,14 @@ impl ImageAction {
             icon,
             label: label.into(),
             handler: Rc::new(handler),
+            kind: ButtonKind::Secondary,
         }
+    }
+
+    /// Draws the button as `kind`, such as Danger or Primary.
+    pub fn kind(mut self, kind: ButtonKind) -> Self {
+        self.kind = kind;
+        self
     }
 }
 
@@ -216,6 +225,7 @@ pub struct ImageViewer {
     image: ImageData,
     title: SharedString,
     caption: Option<SharedString>,
+    details: Option<AnyElement>,
     natural: (f32, f32),
     actions: Vec<ImageAction>,
     presence: f32,
@@ -234,6 +244,7 @@ impl ImageViewer {
             image,
             title: title.into(),
             caption: None,
+            details: None,
             natural: (0.0, 0.0),
             actions: Vec::new(),
             presence: 1.0,
@@ -251,6 +262,13 @@ impl ImageViewer {
     /// A line under the picture, such as its format, size, and pixels.
     pub fn caption(mut self, caption: impl Into<SharedString>) -> Self {
         self.caption = Some(caption.into());
+        self
+    }
+
+    /// The host's own content between the picture and the footer, such as the prompt that
+    /// made it and where it came from.
+    pub fn details(mut self, details: impl IntoElement) -> Self {
+        self.details = Some(details.into_any_element());
         self
     }
 
@@ -332,7 +350,7 @@ impl RenderOnce for ImageViewer {
             .actions
             .into_iter()
             .map(|action| {
-                Button::new(action.id, ButtonKind::Secondary)
+                Button::new(action.id, action.kind)
                     .size(ButtonSize::Sm)
                     .icon(action.icon)
                     .label(action.label)
@@ -361,6 +379,7 @@ impl RenderOnce for ImageViewer {
         )
         .child(header)
         .child(picture)
+        .children(self.details)
         .children(footer);
         fn ignore(_: &mut Window, _: &mut App) {}
         let dismiss: Handler = self.on_close.unwrap_or_else(|| Rc::new(ignore));
@@ -426,6 +445,11 @@ mod tests {
             )
             .natural(1024.0, 768.0)
             .caption("PNG · 1024×768")
+            .details(
+                div()
+                    .debug_selector(|| "viewer-details".to_string())
+                    .child("a bar chart"),
+            )
             .action(ImageAction::new(
                 "viewer-reveal",
                 Icon::Folder,
@@ -435,6 +459,10 @@ mod tests {
             .on_close(move |_, _| close.set(close.get() + 1))
             .into_any_element()
         });
+        assert!(
+            cx.debug_bounds("viewer-details").is_some(),
+            "the host's details are drawn"
+        );
         for id in ["viewer-reveal", "viewer-close"] {
             let bounds = cx.debug_bounds(id).unwrap_or_else(|| panic!("no {id}"));
             cx.simulate_click(bounds.center(), gpui::Modifiers::none());
