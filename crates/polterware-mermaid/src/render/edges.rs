@@ -10,6 +10,7 @@ pub const EDGE_STEP_DURATION: f64 = 1.0;
 pub enum Curve {
     Linear,
     Basis,
+    BasisClosed,
     Cardinal,
     BumpX,
     BumpY,
@@ -40,6 +41,7 @@ impl Curve {
             "stepBefore" => Self::StepBefore,
             "rounded" => Self::Rounded,
             "basis" => Self::Basis,
+            "basisClosed" => Self::BasisClosed,
             _ => Self::Basis,
         }
     }
@@ -70,7 +72,23 @@ pub struct EdgeLabelPosition {
 
 /// Places an edge label at the middle point, matching the d3 edge label anchor.
 pub fn position_edge_label(points: &[Point], width: f64, height: f64) -> Option<EdgeLabelPosition> {
-    let center = points.get(points.len() / 2).copied()?;
+    if let [center] = points {
+        return Some(EdgeLabelPosition {
+            center: *center,
+            bounds: Rect::new(
+                center.x - width / 2.0,
+                center.y - height / 2.0,
+                width,
+                height,
+            ),
+        });
+    }
+    let distance = points
+        .windows(2)
+        .map(|p| p[0].distance_to(p[1]))
+        .sum::<f64>()
+        / 2.0;
+    let center = calculate_point(points, distance)?;
     Some(EdgeLabelPosition {
         center,
         bounds: Rect::new(
@@ -82,21 +100,92 @@ pub fn position_edge_label(points: &[Point], width: f64, height: f64) -> Option<
     })
 }
 
-/// d3 line generators share the source points; this scene representation preserves every point
-/// for linear/rounded edges and provides deterministic cubic approximations for the common curves.
+/// Returns the point at a distance along the polyline, following `utils.calculatePoint`.
+pub fn calculate_point(points: &[Point], mut distance: f64) -> Option<Point> {
+    for pair in points.windows(2) {
+        let length = pair[0].distance_to(pair[1]);
+        if length == 0.0 {
+            return Some(pair[0]);
+        }
+        if length < distance {
+            distance -= length;
+            continue;
+        }
+        let ratio = distance / length;
+        if ratio <= 0.0 {
+            return Some(pair[0]);
+        }
+        if ratio >= 1.0 {
+            return Some(pair[1]);
+        }
+        let round = |v: f64| (v * 100_000.0 + 0.5).floor() / 100_000.0;
+        return Some(Point::new(
+            round((1.0 - ratio) * pair[0].x + ratio * pair[1].x),
+            round((1.0 - ratio) * pair[0].y + ratio * pair[1].y),
+        ));
+    }
+    None
+}
+
+/// Terminal position names accepted by `calcTerminalLabelPosition`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TerminalPosition {
+    StartLeft,
+    StartRight,
+    EndLeft,
+    EndRight,
+}
+
+/// Finds the center of a terminal label, or returns `None` if the path is too short.
+pub fn terminal_label_position(
+    points: &[Point],
+    position: TerminalPosition,
+    marker_size: f64,
+) -> Option<Point> {
+    let mut path = points.to_vec();
+    if matches!(
+        position,
+        TerminalPosition::EndLeft | TerminalPosition::EndRight
+    ) {
+        path.reverse();
+    }
+    let start = *path.first()?;
+    let center = calculate_point(&path, 25.0 + marker_size)?;
+    let mut angle = (start.y - center.y).atan2(start.x - center.x);
+    match position {
+        TerminalPosition::StartLeft => angle += std::f64::consts::PI,
+        TerminalPosition::EndRight => angle -= std::f64::consts::PI,
+        _ => {}
+    }
+    let offset = 10.0 + marker_size * 0.5;
+    Some(Point::new(
+        angle.sin() * offset + (start.x + center.x) / 2.0,
+        -angle.cos() * offset + (start.y + center.y) / 2.0,
+    ))
+}
+
+/// Generates the edge path. Catmull-Rom, monotone and natural curves are still approximations.
 pub fn edge_path(points: &[Point], curve: Curve, radius: f64) -> Path {
     match curve {
         Curve::Rounded => rounded_path(points, radius),
         Curve::Step | Curve::StepAfter | Curve::StepBefore => step_path(points, curve),
         Curve::BumpX | Curve::BumpY => bump_path(points, curve),
-        Curve::Linear => Path::polyline(points.iter().copied()),
-        Curve::Basis
-        | Curve::Cardinal
-        | Curve::CatmullRom
-        | Curve::MonotoneX
-        | Curve::MonotoneY
-        | Curve::Natural => smooth_path(points),
+        Curve::Linear => linear_path(points),
+        Curve::Basis => basis_path(points, false),
+        Curve::BasisClosed => basis_path(points, true),
+        Curve::Cardinal => cardinal_path(points),
+        Curve::CatmullRom | Curve::MonotoneX | Curve::MonotoneY | Curve::Natural => {
+            smooth_path(points)
+        }
     }
+}
+
+fn linear_path(points: &[Point]) -> Path {
+    let mut path = Path::polyline(points.iter().copied());
+    if points.len() == 1 {
+        path.close();
+    }
+    path
 }
 
 fn step_path(points: &[Point], curve: Curve) -> Path {
@@ -106,22 +195,96 @@ fn step_path(points: &[Point], curve: Curve) -> Path {
     }
     for pair in points.windows(2) {
         let (a, b) = (pair[0], pair[1]);
-        let mid = (a.x + b.x) / 2.0;
         match curve {
-            Curve::StepAfter => {
-                out.line_to(Point::new(b.x, a.y));
-                out.line_to(b);
-            }
             Curve::StepBefore => {
-                out.line_to(Point::new(a.x, b.y));
-                out.line_to(b);
+                out.line_to(Point::new(a.x, b.y)).line_to(b);
             }
             _ => {
-                out.line_to(Point::new(mid, a.y));
-                out.line_to(Point::new(mid, b.y));
-                out.line_to(b);
+                let x = if curve == Curve::StepAfter {
+                    b.x
+                } else {
+                    (a.x + b.x) / 2.0
+                };
+                out.line_to(Point::new(x, a.y)).line_to(Point::new(x, b.y));
             }
         }
+    }
+    if points.len() == 1 {
+        out.close();
+    } else if curve == Curve::Step && points.len() > 1 {
+        out.line_to(*points.last().unwrap());
+    }
+    out
+}
+
+fn weighted(a: Point, wa: f64, b: Point, wb: f64, c: Point, wc: f64, d: f64) -> Point {
+    Point::new(
+        (wa * a.x + wb * b.x + wc * c.x) / d,
+        (wa * a.y + wb * b.y + wc * c.y) / d,
+    )
+}
+fn basis_cubic(out: &mut Path, a: Point, b: Point, c: Point) {
+    out.cubic_to(
+        weighted(a, 2., b, 1., c, 0., 3.),
+        weighted(a, 1., b, 2., c, 0., 3.),
+        weighted(a, 1., b, 4., c, 1., 6.),
+    );
+}
+fn basis_path(points: &[Point], closed: bool) -> Path {
+    let mut out = Path::new();
+    match (closed, points.len()) {
+        (_, 0) => {}
+        (_, 1) => {
+            out.move_to(points[0]).close();
+        }
+        (true, 2) => {
+            out.move_to(weighted(points[0], 1., points[1], 2., points[0], 0., 3.));
+            out.line_to(weighted(points[1], 1., points[0], 2., points[0], 0., 3.))
+                .close();
+        }
+        (false, 2) => {
+            out.move_to(points[0]).line_to(points[1]);
+        }
+        (false, _) => {
+            out.move_to(points[0])
+                .line_to(weighted(points[0], 5., points[1], 1., points[0], 0., 6.));
+            for i in 2..points.len() {
+                basis_cubic(&mut out, points[i - 2], points[i - 1], points[i]);
+            }
+            let n = points.len();
+            basis_cubic(&mut out, points[n - 2], points[n - 1], points[n - 1]);
+            out.line_to(points[n - 1]);
+        }
+        (true, n) => {
+            out.move_to(weighted(points[0], 1., points[1], 4., points[2], 1., 6.));
+            for i in 3..n + 3 {
+                basis_cubic(
+                    &mut out,
+                    points[(i - 2) % n],
+                    points[(i - 1) % n],
+                    points[i % n],
+                );
+            }
+        }
+    }
+    out
+}
+fn cardinal_path(points: &[Point]) -> Path {
+    if points.len() < 3 {
+        return linear_path(points);
+    }
+    let mut out = Path::new();
+    out.move_to(points[0]);
+    for i in 0..points.len() - 1 {
+        let a = points[i];
+        let b = points[i + 1];
+        let prev = if i == 0 { b } else { points[i - 1] };
+        let next = points.get(i + 2).copied().unwrap_or(a);
+        out.cubic_to(
+            Point::new(a.x + (b.x - prev.x) / 6., a.y + (b.y - prev.y) / 6.),
+            Point::new(b.x + (a.x - next.x) / 6., b.y + (a.y - next.y) / 6.),
+            b,
+        );
     }
     out
 }
@@ -139,6 +302,9 @@ fn bump_path(points: &[Point], curve: Curve) -> Path {
             let mid = (a.y + b.y) / 2.0;
             out.cubic_to(Point::new(a.x, mid), Point::new(b.x, mid), b);
         }
+    }
+    if points.len() == 1 {
+        out.close();
     }
     out
 }
@@ -258,23 +424,32 @@ fn rect_intersection(rect: Rect, inside: Point, outside: Point) -> Point {
         .unwrap_or(inside)
 }
 
-/// Cut the polyline at the first intersection with a cluster rectangle, retaining the outside
-/// portion. This is used for edges entering/exiting clusters before curve generation.
+/// Cut the polyline at the first entry into a cluster rectangle, retaining the outside prefix.
 pub fn cut_path_at_intersection(points: &[Point], bounds: Rect) -> Vec<Point> {
-    if points.len() < 2 {
-        return points.to_vec();
-    }
-    for i in 0..points.len() - 1 {
-        let a = points[i];
-        let b = points[i + 1];
-        let hit = rect_intersection(bounds, a, b);
-        if (hit.x - a.x).hypot(hit.y - a.y) > 1e-8 && (hit.x - b.x).hypot(hit.y - b.y) > 1e-8 {
-            let mut out = vec![hit];
-            out.extend_from_slice(&points[i + 1..]);
-            return out;
+    let Some(&first) = points.first() else {
+        return Vec::new();
+    };
+    let outside = |p: Point| {
+        p.x <= bounds.x || p.x >= bounds.right() || p.y <= bounds.y || p.y >= bounds.bottom()
+    };
+    let mut result = Vec::new();
+    let mut last_outside = first;
+    let mut inside = false;
+    for &point in points {
+        if !outside(point) && !inside {
+            let hit = rect_intersection(bounds, last_outside, point);
+            if !result.contains(&hit) {
+                result.push(hit);
+            }
+            inside = true;
+        } else {
+            last_outside = point;
+            if !inside {
+                result.push(point);
+            }
         }
     }
-    points.to_vec()
+    result
 }
 
 pub fn style_roles(
@@ -307,6 +482,87 @@ mod tests {
     use super::*;
     use crate::scene::PathCommand;
     #[test]
+    fn matches_d3_curve_fixture() {
+        let fixture: serde_json::Value =
+            serde_json::from_str(include_str!("testdata/edges/d3-curves.json")).unwrap();
+        let points: Vec<Point> = fixture["points"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|p| Point::new(p[0].as_f64().unwrap(), p[1].as_f64().unwrap()))
+            .collect();
+        let cases = [
+            ("Linear", Curve::Linear),
+            ("Basis", Curve::Basis),
+            ("BasisClosed", Curve::BasisClosed),
+            ("Cardinal", Curve::Cardinal),
+            ("BumpX", Curve::BumpX),
+            ("BumpY", Curve::BumpY),
+            ("Step", Curve::Step),
+            ("StepAfter", Curve::StepAfter),
+            ("StepBefore", Curve::StepBefore),
+        ];
+        fn number(v: f64) -> String {
+            let v = (v * 1000.0 + 0.5).floor() / 1000.0;
+            if v == 0.0 { "0".into() } else { v.to_string() }
+        }
+        for (name, curve) in cases {
+            let mut actual = String::new();
+            for cmd in edge_path(&points, curve, 0.).commands {
+                match cmd {
+                    PathCommand::MoveTo { x, y } => {
+                        actual.push_str(&format!("M{},{}", number(x), number(y)))
+                    }
+                    PathCommand::LineTo { x, y } => {
+                        actual.push_str(&format!("L{},{}", number(x), number(y)))
+                    }
+                    PathCommand::CubicTo {
+                        c1x,
+                        c1y,
+                        c2x,
+                        c2y,
+                        x,
+                        y,
+                    } => actual.push_str(&format!(
+                        "C{},{},{},{},{},{}",
+                        number(c1x),
+                        number(c1y),
+                        number(c2x),
+                        number(c2y),
+                        number(x),
+                        number(y)
+                    )),
+                    PathCommand::Close => actual.push('Z'),
+                    _ => panic!("unexpected command"),
+                }
+            }
+            assert_eq!(actual, fixture["paths"][name].as_str().unwrap(), "{name}");
+        }
+    }
+    #[test]
+    fn cut_keeps_outside_prefix_and_boundary() {
+        let bounds = Rect::new(10., 0., 10., 10.);
+        let points = [
+            Point::new(0., 5.),
+            Point::new(5., 5.),
+            Point::new(15., 5.),
+            Point::new(25., 5.),
+        ];
+        assert_eq!(
+            cut_path_at_intersection(&points, bounds),
+            vec![points[0], points[1], Point::new(10., 5.)]
+        );
+    }
+    #[test]
+    fn single_point_label_is_positioned() {
+        assert_eq!(
+            position_edge_label(&[Point::new(3., 4.)], 2., 2.)
+                .unwrap()
+                .center,
+            Point::new(3., 4.)
+        );
+    }
+    #[test]
     fn curve_names_keep_upstream_fallback_and_types() {
         assert_eq!(Curve::from_name("linear"), Curve::Linear);
         assert_eq!(Curve::from_name("unknown"), Curve::Basis);
@@ -336,13 +592,13 @@ mod tests {
     #[test]
     fn label_uses_midpoint_and_measured_size() {
         let p = position_edge_label(
-            &[Point::new(0., 0.), Point::new(5., 6.), Point::new(8., 9.)],
+            &[Point::new(0., 0.), Point::new(5., 0.), Point::new(10., 0.)],
             4.,
             2.,
         )
         .unwrap();
-        assert_eq!(p.center, Point::new(5., 6.));
-        assert_eq!(p.bounds, Rect::new(3., 5., 4., 2.));
+        assert_eq!(p.center, Point::new(5., 0.));
+        assert_eq!(p.bounds, Rect::new(3., -1., 4., 2.));
     }
     #[test]
     fn markerless_crossing_and_axis_crossing_are_detected() {
