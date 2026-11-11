@@ -88,8 +88,8 @@ pub use document_page::{
 };
 pub use jump_to_end::{JUMP_TO_END_REST, jump_to_end};
 pub use message_composer::{
-    MESSAGE_COMPOSER_MAX_HEIGHT, MESSAGE_COMPOSER_RADIUS, MessageComposer, message_composer,
-    message_input,
+    ComposerAction, MESSAGE_COMPOSER_MAX_HEIGHT, MESSAGE_COMPOSER_RADIUS, MessageComposer,
+    message_composer, message_input,
 };
 pub use morph::{MORPH_WIDTH, Morph, MorphAlign};
 #[cfg(feature = "bots")]
