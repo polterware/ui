@@ -8,11 +8,13 @@
 //! describes a [`scene`]. `polterware-ui` paints the scene; the Polterware core uses the parser
 //! to validate what agents write.
 
+pub mod config;
 pub mod diagrams;
 pub mod error;
 pub mod layout;
 pub mod preprocess;
 pub mod scene;
+pub mod theme;
 
 pub use diagrams::{Diagram, DiagramKind};
 pub use error::{ParseError, Span};
