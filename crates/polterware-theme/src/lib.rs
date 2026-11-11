@@ -407,7 +407,7 @@ impl Theme {
             color_app_background: rgb(0x161616),
             color_shell_background: rgb(0x161616),
             color_sidebar_background: rgb(0x161616),
-            color_shell_glass: rgba(0x131313b3),
+            color_shell_glass: rgba(0x13131380),
             color_surface: rgb(0x1b1b1b),
             color_surface_subtle: rgb(0x242424),
             color_surface_raised: rgb(0x292929),
