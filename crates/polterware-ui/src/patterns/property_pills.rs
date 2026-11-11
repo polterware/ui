@@ -30,6 +30,11 @@
 //! without a change and clears the search for the next time. As in the Solid picker, a digit
 //! typed into the empty search picks that option.
 //!
+//! A row with actions (a repository's Reveal or Remove) carries them in a menu: its ⋯ at the
+//! lit row's end, or a right click anywhere on the row. The menu hangs from the ⋯ under it,
+//! from the pointer of a right click, and stays inside the window; the row's path tooltip
+//! stays away while it is open.
+//!
 //! The pills can sit inside a scrolling body, which clips. So the open picker is not drawn
 //! with them: the host draws [`PropertyPills::overlay`] outside that body (the Composer card
 //! has a slot for it), and the picker hangs from its pill in window coordinates.
@@ -46,7 +51,7 @@ use gpui::{
 
 use crate::menu::{Menu, MenuEntry, MenuItem};
 
-use super::shell::window_layer;
+use super::shell::{AnchorSlot, window_layer};
 use crate::button::{Button, ButtonKind, ButtonSize};
 use crate::checkbox::checkbox_mark;
 use crate::hang::{SLIDE, hang};
@@ -421,9 +426,12 @@ pub struct PropertyPicker {
     open: bool,
     progress: SpringValue,
     animator: Animator,
-    /// A row's context menu, and where in the window the right click that opened it was.
+    /// A row's context menu, and where in the window it hangs from: the ⋯ that opened it, or
+    /// the pointer of the right click.
     row_menu: Entity<Menu>,
     row_menu_at: Option<Point<Pixels>>,
+    /// Where the lit row's ⋯ sat in the window last frame, which its menu hangs from.
+    more_anchor: AnchorSlot,
     /// Where the panel sat in the window last frame. The row menu is drawn inside it (the
     /// picker is in a deferred layer already, which gpui cannot nest), placed from it.
     panel_origin: Rc<Cell<Point<Pixels>>>,
@@ -460,6 +468,7 @@ impl PropertyPicker {
             applied_query: String::new(),
             row_menu: cx.new(Menu::new),
             row_menu_at: None,
+            more_anchor: AnchorSlot::default(),
             panel_origin: Rc::new(Cell::new(Point::default())),
             open: false,
             progress: SpringValue::new(0.0, SpringTier::Fast),
@@ -568,7 +577,8 @@ impl PropertyPicker {
         cx.notify();
     }
 
-    /// Opens the context menu of the option at `row` where the right click was.
+    /// Opens the context menu of the option at `row`, hung from `at` in window coordinates:
+    /// the ⋯ button that opened it, or the pointer of a right click.
     fn open_row_menu(&mut self, row: usize, at: Point<Pixels>, cx: &mut Context<Self>) {
         let Some(option) = self
             .matched
@@ -809,6 +819,7 @@ impl PropertyPicker {
         }
         div()
             .id(("property-option", row))
+            .debug_selector(move || format!("property-option-{row}"))
             .w_full()
             .min_h(px(if option.hint.is_some() { 40.0 } else { 32.0 }))
             .px(px(10.0))
@@ -825,7 +836,10 @@ impl PropertyPicker {
             .map(|line| match disabled {
                 Some(reason) => line.opacity(0.5).tooltip(tooltip(reason)),
                 None => line
-                    .when_some(option.tip.clone(), |line, tip| line.tooltip(tooltip(tip)))
+                    // A row's menu is the row's: its path tooltip would open beside it.
+                    .when(self.row_menu_at.is_none(), |line| {
+                        line.when_some(option.tip.clone(), |line, tip| line.tooltip(tooltip(tip)))
+                    })
                     .cursor_pointer()
                     .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
                         if *hovered && this.active != Some(row) {
@@ -890,6 +904,7 @@ impl PropertyPicker {
                     .child(
                         div()
                             .id(("property-option-more", row))
+                            .debug_selector(move || format!("property-option-more-{row}"))
                             .size(px(24.0))
                             .flex()
                             .items_center()
@@ -902,10 +917,16 @@ impl PropertyPicker {
                                 14.0,
                                 theme.color_text_secondary,
                             ))
+                            .child(self.more_anchor.probe())
                             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                             .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                                 cx.stop_propagation();
-                                let at = event.position();
+                                // The menu hangs from the button, not from the pointer in it.
+                                let at = this
+                                    .more_anchor
+                                    .get()
+                                    .map(|bounds| bounds.origin)
+                                    .unwrap_or_else(|| event.position());
                                 this.open_row_menu(row, at, cx);
                             })),
                     ),
@@ -931,6 +952,7 @@ impl PropertyPicker {
         };
         div()
             .id(("property-action", row))
+            .debug_selector(move || format!("property-action-{row}"))
             .w_full()
             .min_h(px(32.0))
             .px(px(10.0))
@@ -1098,6 +1120,7 @@ impl Render for PropertyPicker {
             )
             .child(list);
         let panel = div()
+            .debug_selector(|| "property-picker-panel".into())
             .occlude()
             .key_context("PropertyPicker")
             .track_focus(&self.focus)
@@ -1124,6 +1147,10 @@ impl Render for PropertyPicker {
                     |_, _, _, _| {},
                 )
                 .absolute()
+                // A size_full probe with no inset would sit at its static position in the
+                // column, after the search and the list: the panel's bottom edge.
+                .top_0()
+                .left_0()
                 .size_full()
             })
             .children(self.row_menu_at.map(|at| {
@@ -1934,6 +1961,85 @@ mod tests {
             assert!(this.is_open());
             assert!(!this.row_menu_open(cx));
         });
+    }
+
+    /// The row menu hangs from the ⋯ it came from, and stays in the window: it flips up at
+    /// the bottom edge and back inside at the right one.
+    #[gpui::test]
+    fn a_rows_menu_hangs_from_its_more_button_inside_the_window(cx: &mut TestAppContext) {
+        use gpui::{AppContext as _, IntoElement, Modifiers, div, prelude::*, size};
+
+        let view = cx.update(|cx| cx.new(PropertyPicker::new));
+        let picker = view.clone();
+        let mut visual = crate::test_support::open(cx, size(600.0, 500.0), move |_, _| {
+            div()
+                .absolute()
+                .left(px(100.0))
+                .top(px(60.0))
+                .w(px(240.0))
+                .h(px(28.0))
+                .child(picker.clone())
+                .into_any_element()
+        });
+        visual.update(|window, cx| {
+            view.update(cx, |picker, cx| {
+                let options = vec![
+                    PropertyOption::new("repo", "repo")
+                        .tooltip("/tmp/repo")
+                        .row_action("reveal", "Reveal in Finder", false)
+                        .row_rule()
+                        .row_action("remove", "Remove repository", true),
+                    PropertyOption::new("add", "Add repository").action(),
+                ];
+                picker.set_options("Repository", options, None, 320.0, cx);
+                picker.open(window, cx);
+            })
+        });
+        crate::test_support::draw(&mut visual);
+
+        // The row's ⋯ shows on hover; its menu hangs from its own lower left corner.
+        let row = visual.debug_bounds("property-option-0").expect("the row");
+        visual.simulate_mouse_move(row.center(), None, Modifiers::none());
+        crate::test_support::draw(&mut visual);
+        let more = visual
+            .debug_bounds("property-option-more-0")
+            .expect("the row's ⋯");
+        view.update(&mut visual, |picker, cx| {
+            let at = picker.more_anchor.get().expect("the ⋯'s bounds").origin;
+            picker.open_row_menu(0, at, cx);
+        });
+        crate::test_support::draw(&mut visual);
+        let menu = visual.debug_bounds("menu-panel").expect("the row's menu");
+        assert_eq!(menu.left(), more.left(), "the menu left its ⋯");
+        assert!(
+            menu.top() >= more.bottom(),
+            "the menu covers the ⋯ it came from: {menu:?} under {more:?}"
+        );
+        assert!(menu.right() <= px(600.0), "the menu runs past the window");
+        assert!(menu.bottom() <= px(500.0), "the menu runs past the window");
+
+        // No room below: the menu opens above the point and stays inside the window.
+        view.update(&mut visual, |picker, cx| {
+            picker.open_row_menu(0, gpui::point(px(300.0), px(470.0)), cx);
+        });
+        crate::test_support::draw(&mut visual);
+        let menu = visual.debug_bounds("menu-panel").expect("the row's menu");
+        assert!(
+            menu.bottom() <= px(470.0),
+            "the menu did not flip up at the window's end: {menu:?}"
+        );
+        assert!(menu.top() >= px(0.0), "the menu runs past the window");
+
+        // Past the right edge: it comes back inside, still under the point.
+        view.update(&mut visual, |picker, cx| {
+            picker.open_row_menu(0, gpui::point(px(590.0), px(100.0)), cx);
+        });
+        crate::test_support::draw(&mut visual);
+        let menu = visual.debug_bounds("menu-panel").expect("the row's menu");
+        assert!(
+            menu.right() <= px(600.0),
+            "the menu hangs off the window's right edge: {menu:?}"
+        );
     }
 
     #[test]
