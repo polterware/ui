@@ -1,0 +1,28 @@
+{
+  "name": "barb",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-barbEnd",
+        "refX": "19",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "14",
+        "markerUnits": "userSpaceOnUse",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 19,7 L9,13 L14,7 L9,1 Z"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}

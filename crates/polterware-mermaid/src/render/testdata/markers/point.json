@@ -1,0 +1,121 @@
+{
+  "name": "point",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-pointEnd",
+        "class": "marker diagram-type",
+        "viewBox": "0 0 10 10",
+        "refX": "5",
+        "refY": "5",
+        "markerUnits": "userSpaceOnUse",
+        "markerWidth": "8",
+        "markerHeight": "8",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 0 0 L 10 5 L 0 10 z",
+            "class": "arrowMarkerPath"
+          },
+          "styles": {
+            "stroke-width": "1",
+            "stroke-dasharray": "1,0"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-pointStart",
+        "class": "marker diagram-type",
+        "viewBox": "0 0 10 10",
+        "refX": "4.5",
+        "refY": "5",
+        "markerUnits": "userSpaceOnUse",
+        "markerWidth": "8",
+        "markerHeight": "8",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 0 5 L 10 10 L 10 0 z",
+            "class": "arrowMarkerPath"
+          },
+          "styles": {
+            "stroke-width": "1",
+            "stroke-dasharray": "1,0"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-pointEnd-margin",
+        "class": "marker diagram-type",
+        "viewBox": "0 0 11.5 14",
+        "refX": "11.5",
+        "refY": "7",
+        "markerUnits": "userSpaceOnUse",
+        "markerWidth": "10.5",
+        "markerHeight": "14",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 0 0 L 11.5 7 L 0 14 z",
+            "class": "arrowMarkerPath"
+          },
+          "styles": {
+            "stroke-width": "0",
+            "stroke-dasharray": "1,0"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-pointStart-margin",
+        "class": "marker diagram-type",
+        "viewBox": "0 0 11.5 14",
+        "refX": "1",
+        "refY": "7",
+        "markerUnits": "userSpaceOnUse",
+        "markerWidth": "11.5",
+        "markerHeight": "14",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "polygon",
+          "attrs": {
+            "points": "0,7 11.5,14 11.5,0",
+            "class": "arrowMarkerPath"
+          },
+          "styles": {
+            "stroke-width": "0",
+            "stroke-dasharray": "1,0"
+          },
+          "children": []
+        }
+      ]
+    }
+  ]
+}

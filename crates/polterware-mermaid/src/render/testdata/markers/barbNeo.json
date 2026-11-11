@@ -1,0 +1,52 @@
+{
+  "name": "barbNeo",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-barbEnd",
+        "refX": "19",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "14",
+        "markerUnits": "strokeWidth",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 19,7 L11,14 L13,7 L11,0 Z"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-barbEnd-margin",
+        "refX": "17",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "14",
+        "markerUnits": "userSpaceOnUse",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 19,7 L11,14 L13,7 L11,0 Z",
+            "fill": "#000000"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}

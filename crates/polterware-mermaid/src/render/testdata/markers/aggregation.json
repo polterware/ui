@@ -1,0 +1,105 @@
+{
+  "name": "aggregation",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-aggregationStart",
+        "class": "marker aggregation diagram-type",
+        "refX": "18",
+        "refY": "7",
+        "markerWidth": "190",
+        "markerHeight": "240",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 18,7 L9,13 L1,7 L9,1 Z"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-aggregationEnd",
+        "class": "marker aggregation diagram-type",
+        "refX": "1",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "28",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 18,7 L9,13 L1,7 L9,1 Z"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-aggregationStart-margin",
+        "class": "marker aggregation diagram-type",
+        "refX": "15",
+        "refY": "7",
+        "markerWidth": "190",
+        "markerHeight": "240",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 18,7 L9,13 L1,7 L9,1 Z"
+          },
+          "styles": {
+            "stroke-width": "2"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-aggregationEnd-margin",
+        "class": "marker aggregation diagram-type",
+        "refX": "1",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "28",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 18,7 L9,13 L1,7 L9,1 Z"
+          },
+          "styles": {
+            "stroke-width": "2"
+          },
+          "children": []
+        }
+      ]
+    }
+  ]
+}

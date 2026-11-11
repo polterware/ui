@@ -1,0 +1,109 @@
+{
+  "name": "extension",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-extensionStart",
+        "class": "marker extension diagram-type",
+        "refX": "18",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "28",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 1,7 L18,13 V 1 Z"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-extensionEnd",
+        "class": "marker extension diagram-type",
+        "refX": "1",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "28",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M 1,1 V 13 L18,7 Z"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-extensionStart-margin",
+        "class": "marker extension diagram-type",
+        "refX": "18",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "28",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse",
+        "viewBox": "0 0 20 14"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "polygon",
+          "attrs": {
+            "points": "10,7 18,13 18,1"
+          },
+          "styles": {
+            "stroke-width": "2",
+            "stroke-dasharray": "0"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-extensionEnd-margin",
+        "class": "marker extension diagram-type",
+        "refX": "9",
+        "refY": "7",
+        "markerWidth": "20",
+        "markerHeight": "28",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse",
+        "viewBox": "0 0 20 14"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "polygon",
+          "attrs": {
+            "points": "10,1 10,13 18,7"
+          },
+          "styles": {
+            "stroke-width": "2",
+            "stroke-dasharray": "0"
+          },
+          "children": []
+        }
+      ]
+    }
+  ]
+}

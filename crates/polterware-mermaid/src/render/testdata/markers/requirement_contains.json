@@ -1,0 +1,59 @@
+{
+  "name": "requirement_contains",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-requirement_containsStart",
+        "refX": "0",
+        "refY": "10",
+        "markerWidth": "20",
+        "markerHeight": "20",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "g",
+          "attrs": {},
+          "styles": {},
+          "children": [
+            {
+              "tag": "circle",
+              "attrs": {
+                "cx": "10",
+                "cy": "10",
+                "r": "9",
+                "fill": "none"
+              },
+              "styles": {},
+              "children": []
+            },
+            {
+              "tag": "line",
+              "attrs": {
+                "x1": "1",
+                "x2": "19",
+                "y1": "10",
+                "y2": "10"
+              },
+              "styles": {},
+              "children": []
+            },
+            {
+              "tag": "line",
+              "attrs": {
+                "y1": "1",
+                "y2": "19",
+                "x1": "10",
+                "x2": "10"
+              },
+              "styles": {},
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

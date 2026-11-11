@@ -1,0 +1,55 @@
+{
+  "name": "only_one_neo",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-onlyOneStart",
+        "class": "marker onlyOne diagram-type",
+        "refX": "0",
+        "refY": "9",
+        "markerWidth": "18",
+        "markerHeight": "18",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M9,0 L9,18 M15,0 L15,18",
+            "stroke-width": "1"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-onlyOneEnd",
+        "class": "marker onlyOne diagram-type",
+        "refX": "18",
+        "refY": "9",
+        "markerWidth": "18",
+        "markerHeight": "18",
+        "orient": "auto",
+        "markerUnits": "userSpaceOnUse"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M3,0 L3,18 M9,0 L9,18",
+            "stroke-width": "1"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}

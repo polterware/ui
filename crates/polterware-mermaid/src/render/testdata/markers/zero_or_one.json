@@ -1,0 +1,73 @@
+{
+  "name": "zero_or_one",
+  "definitions": [
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-zeroOrOneStart",
+        "class": "marker zeroOrOne diagram-type",
+        "refX": "0",
+        "refY": "9",
+        "markerWidth": "30",
+        "markerHeight": "18",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "fill": "white",
+            "cx": "21",
+            "cy": "9",
+            "r": "6"
+          },
+          "styles": {},
+          "children": []
+        },
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M9,0 L9,18"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "marker",
+      "attrs": {
+        "id": "diagram-id_diagram-type-zeroOrOneEnd",
+        "class": "marker zeroOrOne diagram-type",
+        "refX": "30",
+        "refY": "9",
+        "markerWidth": "30",
+        "markerHeight": "18",
+        "orient": "auto"
+      },
+      "styles": {},
+      "children": [
+        {
+          "tag": "circle",
+          "attrs": {
+            "fill": "white",
+            "cx": "9",
+            "cy": "9",
+            "r": "6"
+          },
+          "styles": {},
+          "children": []
+        },
+        {
+          "tag": "path",
+          "attrs": {
+            "d": "M21,0 L21,18"
+          },
+          "styles": {},
+          "children": []
+        }
+      ]
+    }
+  ]
+}
