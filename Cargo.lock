@@ -7766,3 +7766,23 @@ dependencies = [
  "syn 3.0.9",
  "winnow 1.0.4",
 ]
+
+[[patch.unused]]
+name = "polterware-assets"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "polterware-motion"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "polterware-theme"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "polterware-ui"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "polterware-window"
+version = "0.1.0"
