@@ -38,6 +38,8 @@ macro_rules! icons {
 }
 
 icons! {
+    AudioWave => "audio-wave",
+    Image => "image",
     Activity => "activity",
     Activity03Icon => "activity03-icon",
     AddTeam => "add-team",

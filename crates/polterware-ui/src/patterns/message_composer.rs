@@ -47,6 +47,9 @@ const PAD_TOP: f32 = 14.0;
 const PAD_BOTTOM: f32 = 10.0;
 /// Between the field and the footer.
 const GAP: f32 = 8.0;
+/// A compact composer's padding above and below its row, and at its right, beside Send.
+const COMPACT_PAD_Y: f32 = 8.0;
+const COMPACT_PAD_RIGHT: f32 = 8.0;
 /// The field's text and line height.
 const TEXT_SIZE: f32 = 13.5;
 const LINE_HEIGHT: f32 = 20.0;
@@ -88,6 +91,8 @@ pub fn message_composer(
         footer_start: None,
         footer_end: None,
         actions: Vec::new(),
+        idle_action: None,
+        compact: false,
     }
 }
 
@@ -147,6 +152,8 @@ pub struct MessageComposer {
     footer_start: Option<AnyElement>,
     footer_end: Option<AnyElement>,
     actions: Vec<ComposerAction>,
+    idle_action: Option<ComposerAction>,
+    compact: bool,
 }
 
 impl MessageComposer {
@@ -197,6 +204,20 @@ impl MessageComposer {
     /// An action before Send, such as the microphone a message is dictated with.
     pub fn trailing_action(mut self, action: ComposerAction) -> Self {
         self.actions.push(action);
+        self
+    }
+
+    /// What the primary button does while the field is empty, in Send's place: a voice
+    /// conversation, say. Once text is written the button sends it again.
+    pub fn idle_action(mut self, action: ComposerAction) -> Self {
+        self.idle_action = Some(action);
+        self
+    }
+
+    /// One row: the field between the footer's start and its actions, for a conversation
+    /// already under way. Default: the field over a footer row.
+    pub fn compact(mut self, compact: bool) -> Self {
+        self.compact = compact;
         self
     }
 }
@@ -320,18 +341,31 @@ impl RenderOnce for MessageComposer {
             .when(bottom > 0.5, |area| area.child(fade(bottom, false)))
             .child(watcher);
 
-        let send = Button::new(
-            ElementId::Name(format!("{}-send", self.id).into()),
-            ButtonKind::Primary,
-        )
-        .size(ButtonSize::Icon)
-        .icon(Icon::ArrowUp)
-        .icon_size(16.0)
-        .tooltip(self.send_label)
-        .disabled(!can_send)
-        .when_some(self.on_send.filter(|_| can_send), |button, handler| {
-            button.on_click_rc(handler)
-        });
+        let idle = self.idle_action.filter(|_| !has_text && !self.busy);
+        let send = match idle {
+            Some(action) => Button::new(ElementId::Name(action.id.clone()), ButtonKind::Primary)
+                .size(ButtonSize::Icon)
+                .icon(action.icon)
+                .icon_size(16.0)
+                .tooltip(action.label)
+                .selected(action.active)
+                .disabled(action.disabled)
+                .when_some(action.on_click, |button, handler| {
+                    button.on_click_rc(handler)
+                }),
+            None => Button::new(
+                ElementId::Name(format!("{}-send", self.id).into()),
+                ButtonKind::Primary,
+            )
+            .size(ButtonSize::Icon)
+            .icon(Icon::ArrowUp)
+            .icon_size(16.0)
+            .tooltip(self.send_label)
+            .disabled(!can_send)
+            .when_some(self.on_send.filter(|_| can_send), |button, handler| {
+                button.on_click_rc(handler)
+            }),
+        };
         let actions = self
             .actions
             .into_iter()
@@ -353,15 +387,48 @@ impl RenderOnce for MessageComposer {
                     })
             })
             .collect::<Vec<_>>();
-        let footer = div()
-            .w_full()
-            .flex()
-            .items_center()
-            .gap(px(8.0))
-            .child(div().flex_1().min_w(px(0.0)).children(self.footer_start))
-            .children(self.footer_end.map(|end| div().flex_none().child(end)))
-            .children(actions)
-            .child(send);
+        let footer_end = self.footer_end.map(|end| div().flex_none().child(end));
+        let body = if self.compact {
+            // One row: the start slot, the field, then the end, the actions, and Send.
+            div()
+                .relative()
+                .w_full()
+                .flex()
+                .items_end()
+                .gap(px(8.0))
+                .py(px(COMPACT_PAD_Y))
+                .pl(px(PAD_X))
+                .pr(px(COMPACT_PAD_RIGHT))
+                .children(
+                    self.footer_start
+                        .map(|start| div().flex_none().pb(px(4.0)).child(start)),
+                )
+                .child(div().flex_1().min_w(px(0.0)).pb(px(6.0)).child(field))
+                .children(footer_end)
+                .children(actions)
+                .child(send)
+        } else {
+            let footer = div()
+                .w_full()
+                .flex()
+                .items_center()
+                .gap(px(8.0))
+                .child(div().flex_1().min_w(px(0.0)).children(self.footer_start))
+                .children(footer_end)
+                .children(actions)
+                .child(send);
+            div()
+                .relative()
+                .w_full()
+                .flex()
+                .flex_col()
+                .gap(px(GAP))
+                .pt(px(PAD_TOP))
+                .pb(px(PAD_BOTTOM))
+                .px(px(PAD_X))
+                .child(field)
+                .child(footer)
+        };
 
         raised_panel(
             div()
@@ -383,19 +450,7 @@ impl RenderOnce for MessageComposer {
             MESSAGE_COMPOSER_RADIUS,
             &theme,
         )
-        .child(
-            div()
-                .relative()
-                .w_full()
-                .flex()
-                .flex_col()
-                .gap(px(GAP))
-                .pt(px(PAD_TOP))
-                .pb(px(PAD_BOTTOM))
-                .px(px(PAD_X))
-                .child(field)
-                .child(footer),
-        )
+        .child(body)
     }
 }
 
@@ -537,5 +592,52 @@ mod tests {
         cx.simulate_keystrokes("enter");
         assert_eq!(sent.borrow().len(), 1);
         assert!(sent.borrow()[0].starts_with("one\ntwo\nmore"));
+    }
+
+    /// A composer with Talk as its idle action, compact or not, focused.
+    fn talking(cx: &mut TestAppContext, compact: bool) -> VisualTestContext {
+        let slot: Slot = Rc::default();
+        let held = slot.clone();
+        let handle = ScrollHandle::new();
+        let mut cx = open(cx, size(480.0, 400.0), move |_, cx| {
+            let input = held
+                .borrow_mut()
+                .get_or_insert_with(|| message_input("Message", |_, _, _| {}, cx))
+                .clone();
+            div()
+                .w(px(480.0))
+                .child(
+                    message_composer("composer", &input, &handle)
+                        .compact(compact)
+                        .idle_action(ComposerAction::new("talk", Icon::AudioWave, "Talk")),
+                )
+                .into_any_element()
+        });
+        let input = slot.borrow().clone().unwrap();
+        cx.update(|window, cx| input.focus_handle(cx).focus(window));
+        draw(&mut cx);
+        cx
+    }
+
+    #[gpui::test]
+    fn an_empty_field_offers_the_idle_action_and_text_brings_send_back(cx: &mut TestAppContext) {
+        let mut cx = talking(cx, false);
+        assert!(cx.debug_bounds("talk").is_some(), "empty: the idle action");
+        assert!(cx.debug_bounds("composer-send").is_none(), "empty: no Send");
+        cx.simulate_input("hi");
+        draw(&mut cx);
+        assert!(cx.debug_bounds("composer-send").is_some(), "text: Send");
+    }
+
+    #[gpui::test]
+    fn a_compact_composer_keeps_the_field_and_its_button_on_one_row(cx: &mut TestAppContext) {
+        let mut cx = talking(cx, true);
+        let field = cx.debug_bounds("composer").expect("the card");
+        let talk = cx.debug_bounds("talk").expect("the idle action");
+        assert!(
+            f32::from(field.size.height) < 56.0,
+            "one row tall: {field:?}"
+        );
+        assert!(talk.top() >= field.top() && talk.bottom() <= field.bottom());
     }
 }
