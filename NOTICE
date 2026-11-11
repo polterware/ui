@@ -11,3 +11,8 @@ This repository bundles third-party assets in crates/polterware-assets/assets:
 
 The bot avatars come from bot-avatar (https://github.com/polterware/bot-avatar),
 a Rust port of bot-avatars by Jakub Antalik (MIT License).
+
+crates/polterware-mermaid is a Rust port of mermaid (https://github.com/mermaid-js/mermaid,
+MIT License, Copyright (c) 2014 - 2022 Knut Sveidqvist) and of its layout engines dagre
+(https://github.com/dagrejs/dagre) and graphlib (https://github.com/dagrejs/graphlib)
+(MIT License, Copyright (c) 2012-2014 Chris Pettitt).
