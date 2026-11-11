@@ -22,6 +22,7 @@ mod empty;
 mod filter_popover;
 mod floating_toolbar;
 mod icon_tile;
+mod image;
 mod keyboard_key;
 mod message_composer;
 mod morph;
@@ -70,6 +71,7 @@ pub fn all() -> Vec<Example> {
     examples.extend(collapsible_section::examples());
     examples.extend(tree_view::examples());
     examples.extend(icon_tile::examples());
+    examples.extend(image::examples());
     examples.extend(keyboard_key::examples());
     examples.extend(tooltip::examples());
     examples.extend(commander::examples());
