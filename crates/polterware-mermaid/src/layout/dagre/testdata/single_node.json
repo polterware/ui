@@ -1,0 +1,31 @@
+{
+  "name": "single_node",
+  "graph": {},
+  "nodes": [
+    {
+      "id": "a",
+      "width": 50,
+      "height": 100
+    }
+  ],
+  "edges": [],
+  "parents": [],
+  "output": {
+    "graph": {
+      "width": 50,
+      "height": 100
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 25,
+        "y": 50,
+        "width": 50,
+        "height": 100,
+        "rank": 0,
+        "order": 0
+      }
+    ],
+    "edges": []
+  }
+}

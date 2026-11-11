@@ -1,0 +1,76 @@
+{
+  "name": "rankdir_lowercase_lr",
+  "graph": {
+    "rankdir": "lr"
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "width": 40,
+      "height": 20
+    },
+    {
+      "id": "b",
+      "width": 40,
+      "height": 20
+    }
+  ],
+  "edges": [
+    {
+      "v": "a",
+      "w": "b",
+      "width": 20,
+      "height": 10,
+      "labelpos": "r"
+    }
+  ],
+  "parents": [],
+  "output": {
+    "graph": {
+      "width": 150,
+      "height": 30
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 20,
+        "y": 10,
+        "width": 40,
+        "height": 20,
+        "rank": 0,
+        "order": 0
+      },
+      {
+        "id": "b",
+        "x": 130,
+        "y": 10,
+        "width": 40,
+        "height": 20,
+        "rank": 2,
+        "order": 0
+      }
+    ],
+    "edges": [
+      {
+        "v": "a",
+        "w": "b",
+        "points": [
+          {
+            "x": 40,
+            "y": 10
+          },
+          {
+            "x": 75,
+            "y": 10
+          },
+          {
+            "x": 110,
+            "y": 10
+          }
+        ],
+        "x": 75,
+        "y": 25
+      }
+    ]
+  }
+}
