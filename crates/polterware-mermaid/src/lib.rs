@@ -9,12 +9,14 @@
 //! to validate what agents write.
 
 pub mod common;
+pub mod config;
 pub mod diagrams;
 pub mod error;
 pub mod layout;
 pub mod measure;
 pub mod preprocess;
 pub mod scene;
+pub mod theme;
 
 pub use diagrams::{Diagram, DiagramKind};
 pub use error::{ParseError, Span};
