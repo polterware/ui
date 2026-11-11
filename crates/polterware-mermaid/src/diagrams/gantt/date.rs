@@ -1064,10 +1064,7 @@ fn js_trunc(value: f64) -> i64 {
     value.trunc() as i64
 }
 
-/// JavaScript's `String.prototype.trim`.
-fn js_trim(text: &str) -> &str {
-    text.trim_matches(crate::preprocess::is_js_whitespace)
-}
+use crate::common::js_trim;
 
 fn is_leap_year(year: i64) -> bool {
     year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)

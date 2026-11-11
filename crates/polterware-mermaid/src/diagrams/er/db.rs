@@ -5,7 +5,7 @@
 //! `sanitizeText` (DOMPurify) is not applied; see the module docs in [`super`].
 
 use super::ast::{Ast, Attribute, Entity, EntityClass, LabelType, RelSpec, Relationship, SubGraph};
-use super::lexer::is_space;
+use crate::common::sanitize::collapse_description_indent;
 
 /// A value a `document` collected: what upstream's grammar concatenates into the list
 /// `addSubGraph` receives.
@@ -237,7 +237,7 @@ impl Db {
 
     /// `setAccDescription`: `sanitizeText(txt).replace(/\n\s+/g, '\n')`.
     pub(crate) fn set_acc_description(&mut self, description: &str) {
-        self.acc_description = collapse_indented_lines(description);
+        self.acc_description = collapse_description_indent(description);
     }
 
     pub(crate) fn into_ast(self) -> Ast {
@@ -269,20 +269,4 @@ fn sanitize_label_type(label_type: Option<&str>) -> LabelType {
         Some("string") => LabelType::String,
         _ => LabelType::Markdown,
     }
-}
-
-/// `txt.replace(/\n\s+/g, '\n')`: every newline and the whitespace that follows it becomes
-/// a single newline.
-fn collapse_indented_lines(text: &str) -> String {
-    let mut out = String::with_capacity(text.len());
-    let mut chars = text.chars();
-    while let Some(ch) = chars.next() {
-        out.push(ch);
-        if ch == '\n' {
-            while chars.clone().next().is_some_and(is_space) {
-                chars.next();
-            }
-        }
-    }
-    out
 }

@@ -26,6 +26,7 @@
 //! `title` is metadata even where the grammar expects a rule name. None of the three matches
 //! leading whitespace: `RR_WHITESPACE` has already skipped it at the previous position.
 
+use crate::common::text::is_line_terminator;
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 
@@ -365,8 +366,4 @@ fn horizontal_space(rest: &str) -> Option<usize> {
 /// `\w`, which JavaScript without the `u` flag reads as ASCII.
 fn is_word(byte: u8) -> bool {
     byte.is_ascii_alphanumeric() || byte == b'_'
-}
-
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }

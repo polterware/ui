@@ -9,7 +9,7 @@
 use super::DEFAULT_BITS_PER_ROW;
 use super::ast::{Ast, Block};
 use super::parser::ParsedPacket;
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::ParseError;
 
 /// `maxPacketSize`: `populate` stops pushing rows at this count, so hostile input cannot make

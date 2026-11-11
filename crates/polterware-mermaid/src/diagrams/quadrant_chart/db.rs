@@ -13,7 +13,7 @@
 
 use super::ast::{Ast, ClassStyle, Point, Styles};
 use super::parser::{ParsedClass, ParsedDiagram, ParsedPoint};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 

@@ -32,6 +32,7 @@
 
 use super::ast::DomainName;
 use super::lexer::{Lexer, Token, TokenKind};
+use crate::common::text::{convert_string, trim_horizontal};
 use crate::error::ParseError;
 
 /// The `Cynefin` AST node after parsing, before the database is populated.
@@ -232,32 +233,6 @@ fn domain_name(token: &Token) -> Result<DomainName, ParseError> {
         .ok_or_else(|| ParseError::at(format!("unknown domain '{}'", token.text), token.span))
 }
 
-/// Langium's default `STRING` conversion: drop the quotes and read `\` escapes.
-fn convert_string(raw: &str) -> String {
-    let inner = &raw[1..raw.len() - 1];
-    let mut out = String::with_capacity(inner.len());
-    let mut chars = inner.chars();
-    while let Some(ch) = chars.next() {
-        if ch != '\\' {
-            out.push(ch);
-            continue;
-        }
-        match chars.next() {
-            Some('b') => out.push('\u{8}'),
-            Some('f') => out.push('\u{c}'),
-            Some('n') => out.push('\n'),
-            Some('r') => out.push('\r'),
-            Some('t') => out.push('\t'),
-            Some('v') => out.push('\u{b}'),
-            Some('0') => out.push('\0'),
-            Some(other) => out.push(other),
-            // The lexer only produces a string when every backslash has a character.
-            None => {}
-        }
-    }
-    out
-}
-
 /// `common/valueConverter.ts`'s `titleRegex`: `/title([\t ][^\n\r]*|)/`, capture trimmed and
 /// with runs of two or more spaces or tabs collapsed to one.
 fn title_value(raw: &str) -> String {
@@ -321,10 +296,6 @@ fn normalize_multiline(capture: &str) -> String {
 /// `String.prototype.trim`, close enough: JavaScript's `\s` also has U+FEFF.
 fn trim(text: &str) -> &str {
     text.trim_matches(is_js_space)
-}
-
-fn trim_horizontal(text: &str) -> &str {
-    text.trim_start_matches([' ', '\t'])
 }
 
 /// `.replace(/[\t ]{2,}/gm, ' ')` on an already trimmed string.

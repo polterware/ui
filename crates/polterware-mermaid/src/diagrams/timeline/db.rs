@@ -20,6 +20,7 @@
 //!   reports it and the parser turns it into an error with the event's span.
 
 use super::ast::{Ast, Direction, Task};
+use crate::common::sanitize::collapse_description_indent;
 use crate::preprocess::is_js_whitespace;
 
 /// The state upstream's module-level timeline database keeps.
@@ -97,7 +98,7 @@ impl Db {
     /// `setAccDescription`: every line break followed by whitespace collapses to one line
     /// break (`.replace(/\n\s+/g, '\n')`).
     pub(super) fn set_acc_description(&mut self, description: String) {
-        self.acc_description = collapse_indented_lines(&description);
+        self.acc_description = collapse_description_indent(&description);
     }
 
     /// The getters' answers after parsing.
@@ -111,15 +112,4 @@ impl Db {
             acc_description: self.acc_description,
         }
     }
-}
-
-fn collapse_indented_lines(text: &str) -> String {
-    let mut out = String::with_capacity(text.len());
-    let mut rest = text;
-    while let Some(newline) = rest.find('\n') {
-        out.push_str(&rest[..=newline]);
-        rest = rest[newline + 1..].trim_start_matches(is_js_whitespace);
-    }
-    out.push_str(rest);
-    out
 }

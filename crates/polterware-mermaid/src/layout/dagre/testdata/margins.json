@@ -1,0 +1,72 @@
+{
+  "name": "margins",
+  "graph": {
+    "marginx": 10,
+    "marginy": 20
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "width": 40,
+      "height": 30
+    },
+    {
+      "id": "b",
+      "width": 40,
+      "height": 30
+    }
+  ],
+  "edges": [
+    {
+      "v": "a",
+      "w": "b"
+    }
+  ],
+  "parents": [],
+  "output": {
+    "graph": {
+      "width": 60,
+      "height": 150
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 30,
+        "y": 35,
+        "width": 40,
+        "height": 30,
+        "rank": 0,
+        "order": 0
+      },
+      {
+        "id": "b",
+        "x": 30,
+        "y": 115,
+        "width": 40,
+        "height": 30,
+        "rank": 2,
+        "order": 0
+      }
+    ],
+    "edges": [
+      {
+        "v": "a",
+        "w": "b",
+        "points": [
+          {
+            "x": 30,
+            "y": 50
+          },
+          {
+            "x": 30,
+            "y": 75
+          },
+          {
+            "x": 30,
+            "y": 100
+          }
+        ]
+      }
+    ]
+  }
+}

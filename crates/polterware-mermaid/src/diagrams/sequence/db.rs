@@ -5,6 +5,7 @@
 use super::ast::{Actor, Ast, Box, Label, LineType, Message, MessageText, Placement};
 use super::lexer::js_trim;
 use super::metadata;
+use crate::common::sanitize::collapse_description_indent;
 use crate::error::{ParseError, Span};
 
 /// A statement, in the shape upstream's parser passes to `SequenceDB.apply`.
@@ -639,17 +640,7 @@ fn set_acc_title(text: &str) -> String {
 
 /// `setAccDescription`: `sanitizeText(txt).replace(/\n\s+/g, '\n')`.
 fn set_acc_description(text: &str) -> String {
-    let mut out = String::with_capacity(text.len());
-    let mut chars = text.chars().peekable();
-    while let Some(ch) = chars.next() {
-        out.push(ch);
-        if ch == '\n' {
-            while chars.peek().is_some_and(|next| next.is_whitespace()) {
-                chars.next();
-            }
-        }
-    }
-    out
+    collapse_description_indent(text)
 }
 
 fn is_js_space(ch: char) -> bool {

@@ -8,16 +8,24 @@
 //! describes a [`scene`]. `polterware-ui` paints the scene; the Polterware core uses the parser
 //! to validate what agents write.
 
+pub mod common;
 pub mod config;
 pub mod diagrams;
 pub mod error;
 pub mod layout;
+pub mod measure;
 pub mod preprocess;
 pub mod scene;
 pub mod theme;
 
 pub use diagrams::{Diagram, DiagramKind};
 pub use error::{ParseError, Span};
+pub use measure::{
+    FallbackMeasure, Font, MarkdownLine, MarkdownWord, MarkdownWordKind, TextDimensions, TextError,
+    TextMeasure, TextOptions, markdown_to_lines, non_markdown_to_lines, shape_text,
+    split_line_to_fit_width, split_line_to_words, split_text_to_chars, split_word_to_fit_width,
+};
+pub use scene::{Scene, SourceKind, SourceRef};
 
 /// Preprocesses `text`, detects its type, and parses it.
 pub fn parse(text: &str) -> Result<Diagram, ParseError> {

@@ -21,7 +21,7 @@
 //!   absent. That is why the `getConfig` case of `cynefin.spec.ts` is not ported.
 //! * A self-loop transition is skipped as `setTransitions` does, but the `log.warn` upstream
 //!   emits for it has no logger here.
-//! * `sanitizeText` is approximated (`sanitize.rs`): `script`/`style` elements are dropped and
+//! * `sanitizeText` is approximated (`common::sanitize`): `script`/`style` elements are dropped and
 //!   a stray `<` is escaped, but there is no DOMPurify (a DOM library). This affects only the
 //!   title and the accessibility strings; domain item labels are not sanitized upstream
 //!   either.
@@ -37,7 +37,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 
 pub use ast::{Ast, Domain, DomainName, Item, Transition};
 

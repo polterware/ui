@@ -6,7 +6,7 @@
 //! parser applies each statement here as it finishes it, in grammar order.
 
 use super::ast::{Ast, StyleEntry, Subset, TextNode};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::{ParseError, Span};
 
 /// The module state `vennDB.ts` keeps.

@@ -36,7 +36,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 #[cfg(test)]
 mod tests;
 

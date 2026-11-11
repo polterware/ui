@@ -19,6 +19,7 @@
 //! that difference is kept too. This crate receives `\n`-normalized text from
 //! [`crate::preprocess`], so `\r` only survives in text a caller passes directly.
 
+use crate::common::text::is_line_terminator;
 use crate::error::{ParseError, Span};
 
 /// A jison start condition (`%x`), pushed and popped by the rules below.
@@ -421,11 +422,6 @@ fn is_word_char(ch: char) -> bool {
     ch.is_ascii_alphanumeric() || ch == '_'
 }
 
-/// The characters JavaScript's `.` stops at.
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
-}
-
 fn run_len(s: &str, predicate: impl Fn(char) -> bool) -> usize {
     s.chars()
         .take_while(|&ch| predicate(ch))
@@ -438,19 +434,5 @@ fn leading_run(s: &str, predicate: impl Fn(char) -> bool) -> Option<usize> {
     (len > 0).then_some(len)
 }
 
-/// JavaScript's `\s` (ECMAScript WhiteSpace and LineTerminator). Every one of these
-/// characters is in the Basic Multilingual Plane, so its JavaScript string length and its
-/// count of `char`s agree — the indentation level is counted in these units.
-pub(crate) fn is_space(ch: char) -> bool {
-    matches!(
-        ch,
-        '\t' | '\n' | '\u{000b}' | '\u{000c}' | '\r' | ' ' | '\u{00a0}' | '\u{1680}' | '\u{2000}'
-            ..='\u{200a}'
-                | '\u{2028}'
-                | '\u{2029}'
-                | '\u{202f}'
-                | '\u{205f}'
-                | '\u{3000}'
-                | '\u{feff}'
-    )
-}
+/// JavaScript's `\s` (ECMAScript WhiteSpace and LineTerminator), from the shared helper.
+pub(crate) use crate::common::is_js_whitespace as is_space;

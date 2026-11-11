@@ -10,7 +10,7 @@ use super::ast::{
     Direction, Note, NotePosition, RelationStatement, StateKind, StateStatement, Statement,
 };
 use super::lexer::{Lexer, Token, TokenKind};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::error::ParseError;
 
 /// What the parser leaves behind: the root document and the accessibility fields, which

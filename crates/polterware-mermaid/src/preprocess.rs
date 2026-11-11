@@ -1,17 +1,16 @@
 //! What upstream does before a diagram's parser runs (`preprocess.ts`,
-//! `diagram-api/frontmatter.ts`, `diagram-api/regexes.ts`, and the directive helpers in
-//! `utils.ts`): line-ending and HTML-attribute cleanup, YAML frontmatter (`title`, `config`,
-//! `displayMode`), `%%{init: ...}%%` directives, and configuration merging.
+//! `diagram-api/frontmatter.ts`, `diagram-api/comments.ts`, `diagram-api/regexes.ts`, and the
+//! directive helpers in `utils.ts`): line-ending and HTML-attribute cleanup, YAML frontmatter
+//! (`title`, `config`, `displayMode`), `%%{init: ...}%%` directives, comment lines, and
+//! configuration merging.
 //!
 //! The body keeps the input's line numbers: every removed line becomes an empty line, so a
 //! parser's spans and an editor's lines agree. Upstream hands parsers the comment-stripped
-//! text (`cleaned`); this crate keeps comments in [`Source::body`] and lets
-//! [`crate::diagrams::detect`] skip them, so a comment cannot shift a line either.
+//! text (`cleaned`), which shifts the lines a comment occupied; this crate leaves an empty
+//! line in their place, so a comment cannot shift a line either.
 //!
-//! The YAML reader is the subset of `js-yaml`'s `JSON_SCHEMA` that frontmatter uses:
-//! mappings, nested mappings, sequences, flow collections on one line, block scalars,
-//! quoted and plain scalars, and booleans, numbers, and null. Anchors, aliases, tags, and
-//! multi-document streams are not read; upstream's own frontmatter tests do not need them.
+//! The YAML reader is [`crate::common::yaml`], the subset of `js-yaml`'s `JSON_SCHEMA` that
+//! frontmatter and `@{ ... }` metadata share.
 //!
 //! Where `js-yaml` or `JSON.parse` would throw, [`preprocess`] records the message in
 //! [`Source::error`] instead: upstream's `preprocessDiagram` throws, and this crate's
@@ -20,13 +19,18 @@
 
 use serde_json::{Map, Value};
 
+use crate::common::yaml;
 use crate::diagrams;
+
+/// True for the characters JavaScript's `\s` matches. The shared helper lives in
+/// [`crate::common`]; the parsers still import it from here.
+pub(crate) use crate::common::is_js_whitespace;
 
 /// The source split into what the parsers read and the configuration around it.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Source {
-    /// The diagram text a parser reads, same line count as the input. Comments are kept;
-    /// frontmatter and directives are blanked to empty lines.
+    /// The diagram text a parser reads, same line count as the input. Frontmatter,
+    /// directives, and `%%` comment lines are blanked to empty lines.
     pub body: String,
     pub title: Option<String>,
     /// Frontmatter `config` and every directive merged in order, as JSON.
@@ -46,7 +50,7 @@ pub fn preprocess(text: &str) -> Source {
             ..Source::default()
         },
         FrontMatter::Missing => Source {
-            body: remove_directives(&normalized),
+            body: cleanup_comments(&remove_directives(&normalized)),
             config: directive_config(&normalized),
             title: None,
             error: None,
@@ -68,7 +72,7 @@ pub fn preprocess(text: &str) -> Source {
             let rest = &normalized[length..];
             let config = clean_and_merge(config, Value::Object(directive_config(rest)));
             let mut body = "\n".repeat(normalized[..length].matches('\n').count());
-            body.push_str(&remove_directives(rest));
+            body.push_str(&cleanup_comments(&remove_directives(rest)));
             Source {
                 body,
                 title,
@@ -87,25 +91,6 @@ pub(crate) fn detection_text(text: &str) -> String {
         None => text,
     };
     strip_comments(&remove_directives(text))
-}
-
-/// True for the characters JavaScript's `\s` matches, which every upstream token pattern
-/// uses. `char::is_whitespace` differs on `\u{85}` and the BOM, so the set is spelled out.
-pub(crate) fn is_js_whitespace(c: char) -> bool {
-    matches!(
-        c,
-        '\u{0009}'..='\u{000d}'
-            | '\u{0020}'
-            | '\u{00a0}'
-            | '\u{1680}'
-            | '\u{2000}'..='\u{200a}'
-            | '\u{2028}'
-            | '\u{2029}'
-            | '\u{202f}'
-            | '\u{205f}'
-            | '\u{3000}'
-            | '\u{feff}'
-    )
 }
 
 /// `preprocess.ts`'s `cleanupText`: normalize line endings, then single-quote HTML
@@ -185,7 +170,7 @@ fn extract_front_matter(text: &str) -> FrontMatter {
         return FrontMatter::Missing;
     };
     let body = dedent(&found.body, &found.indent);
-    let parsed = match parse_yaml(&body) {
+    let parsed = match yaml::parse_document(&body) {
         Ok(parsed) => parsed,
         Err(error) => return FrontMatter::Invalid(error),
     };
@@ -379,6 +364,34 @@ pub(crate) fn remove_directives(text: &str) -> String {
     }
     out.push_str(&text[cursor..]);
     out
+}
+
+/// `diagram-api/comments.ts`'s `cleanupComments`: a line whose first non-whitespace
+/// characters are `%%`, and whose next character is not `{` (a directive), is a comment.
+///
+/// Upstream deletes those lines and trims the blank lines before the diagram. [`Source::body`]
+/// keeps the input's line numbers, so a comment line becomes an empty line here, and the
+/// parsers read a body they already skip.
+pub(crate) fn cleanup_comments(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    for (index, line) in text.split('\n').enumerate() {
+        if index > 0 {
+            out.push('\n');
+        }
+        if !is_comment_line(line) {
+            out.push_str(line);
+        }
+    }
+    out
+}
+
+/// `^\s*%%(?!{)[^\n]+`, matched within one line.
+fn is_comment_line(line: &str) -> bool {
+    let rest = line.trim_start_matches(is_js_whitespace);
+    match rest.strip_prefix("%%") {
+        Some(after) => !after.is_empty() && !after.starts_with('{'),
+        None => false,
+    }
 }
 
 /// `diagram-api/regexes.ts`'s `stripAnyComments`, the linear replacement for
@@ -766,650 +779,6 @@ fn assign_with_depth(destination: &mut Value, source: &Value, depth: i32) {
                 }
             } else if !destination.get(key).is_some_and(Value::is_object) {
                 destination.insert(key.clone(), value.clone());
-            }
-        }
-    }
-}
-
-/// js-yaml's `JSON_SCHEMA` reader, limited to what frontmatter holds.
-fn parse_yaml(text: &str) -> Result<Value, String> {
-    let mut parser = YamlParser {
-        lines: text.split('\n').collect(),
-        index: 0,
-    };
-    parser.parse_document()
-}
-
-/// Frontmatter is a handful of lines. A block indented deeper than this is hostile
-/// input that would overflow the stack of a recursive reader (js-yaml overflows the
-/// JavaScript stack on the same text).
-const MAX_YAML_INDENT: usize = 1024;
-
-/// The same bound for flow collections, which nest without indentation.
-const MAX_FLOW_DEPTH: usize = 64;
-
-struct YamlParser<'a> {
-    lines: Vec<&'a str>,
-    index: usize,
-}
-
-impl<'a> YamlParser<'a> {
-    fn parse_document(&mut self) -> Result<Value, String> {
-        self.skip_ignorable();
-        if self.at_end() {
-            return Ok(Value::Null);
-        }
-        let indent = indent_of(self.current());
-        let value = self.parse_block(indent)?;
-        self.skip_ignorable();
-        if !self.at_end() {
-            return Err(format!("unexpected content on line {}", self.index + 1));
-        }
-        Ok(value)
-    }
-
-    fn at_end(&self) -> bool {
-        self.index >= self.lines.len()
-    }
-
-    fn current(&self) -> &'a str {
-        self.lines[self.index]
-    }
-
-    fn skip_ignorable(&mut self) {
-        while !self.at_end() {
-            let content = content_of(self.current());
-            if content.is_empty() || content.starts_with('#') {
-                self.index += 1;
-            } else {
-                break;
-            }
-        }
-    }
-
-    fn parse_block(&mut self, indent: usize) -> Result<Value, String> {
-        if indent > MAX_YAML_INDENT {
-            return Err("excessive indentation in the frontmatter".to_string());
-        }
-        let content = content_of(self.current());
-        if is_sequence_entry(content) {
-            self.parse_sequence(indent)
-        } else if mapping_split(content).is_some() {
-            self.parse_mapping(indent)
-        } else {
-            self.parse_plain_block(indent)
-        }
-    }
-
-    fn parse_mapping(&mut self, indent: usize) -> Result<Value, String> {
-        let mut map = Map::new();
-        loop {
-            self.skip_ignorable();
-            if self.at_end() {
-                break;
-            }
-            let line_indent = indent_of(self.current());
-            if line_indent < indent {
-                break;
-            }
-            let content = content_of(self.current());
-            if line_indent > indent {
-                return Err(format!("bad indentation on line {}", self.index + 1));
-            }
-            if is_sequence_entry(content) {
-                break;
-            }
-            let Some((key, rest)) = mapping_split(content) else {
-                return Err(format!(
-                    "could not find expected ':' on line {}",
-                    self.index + 1
-                ));
-            };
-            self.index += 1;
-            let value = self.parse_mapping_value(rest, indent)?;
-            map.insert(key, value);
-        }
-        Ok(Value::Object(map))
-    }
-
-    fn parse_mapping_value(&mut self, rest: &str, indent: usize) -> Result<Value, String> {
-        let rest = rest.trim_end();
-        if let Some(header) = block_scalar_header(rest) {
-            return Ok(Value::String(self.parse_block_scalar(header, indent)?));
-        }
-        if rest.starts_with('[') || rest.starts_with('{') {
-            return parse_flow(rest);
-        }
-        if !rest.is_empty() {
-            if rest.starts_with('!') {
-                return Err(tag_error());
-            }
-            return Ok(resolve_scalar(strip_inline_comment(rest)));
-        }
-        self.skip_ignorable();
-        if self.at_end() {
-            return Ok(Value::Null);
-        }
-        let line_indent = indent_of(self.current());
-        let content = content_of(self.current());
-        if line_indent > indent {
-            self.parse_block(line_indent)
-        } else if line_indent == indent && is_sequence_entry(content) {
-            self.parse_sequence(indent)
-        } else {
-            Ok(Value::Null)
-        }
-    }
-
-    fn parse_sequence(&mut self, indent: usize) -> Result<Value, String> {
-        let mut items = Vec::new();
-        loop {
-            self.skip_ignorable();
-            if self.at_end() {
-                break;
-            }
-            if indent_of(self.current()) != indent {
-                break;
-            }
-            let content = content_of(self.current());
-            let Some(rest) = content.strip_prefix('-') else {
-                break;
-            };
-            if !rest.is_empty() && !rest.starts_with([' ', '\t']) {
-                break;
-            }
-            let rest = rest.trim_start_matches([' ', '\t']);
-            self.index += 1;
-            if rest.is_empty() {
-                self.skip_ignorable();
-                if !self.at_end() && indent_of(self.current()) > indent {
-                    let nested = indent_of(self.current());
-                    items.push(self.parse_block(nested)?);
-                } else {
-                    items.push(Value::Null);
-                }
-                continue;
-            }
-            if let Some(header) = block_scalar_header(rest) {
-                items.push(Value::String(self.parse_block_scalar(header, indent)?));
-                continue;
-            }
-            if rest.starts_with('[') || rest.starts_with('{') {
-                items.push(parse_flow(rest)?);
-                continue;
-            }
-            if let Some((key, value_rest)) = mapping_split(rest) {
-                items.push(self.parse_compact_mapping(indent, key, value_rest)?);
-                continue;
-            }
-            items.push(resolve_scalar(strip_inline_comment(rest)));
-        }
-        Ok(Value::Array(items))
-    }
-
-    /// `- key: value` followed by more keys indented under the dash.
-    fn parse_compact_mapping(
-        &mut self,
-        sequence_indent: usize,
-        key: String,
-        rest: &str,
-    ) -> Result<Value, String> {
-        let mut map = Map::new();
-        let value = self.parse_mapping_value(rest, sequence_indent + 1)?;
-        map.insert(key, value);
-        loop {
-            self.skip_ignorable();
-            if self.at_end() {
-                break;
-            }
-            let line_indent = indent_of(self.current());
-            if line_indent <= sequence_indent {
-                break;
-            }
-            let content = content_of(self.current());
-            let Some((key, rest)) = mapping_split(content) else {
-                break;
-            };
-            self.index += 1;
-            let value = self.parse_mapping_value(rest, line_indent)?;
-            map.insert(key, value);
-        }
-        Ok(Value::Object(map))
-    }
-
-    fn parse_plain_block(&mut self, indent: usize) -> Result<Value, String> {
-        let first = content_of(self.current());
-        if first.starts_with('!') {
-            return Err(tag_error());
-        }
-        let mut parts = vec![strip_inline_comment(first).to_string()];
-        self.index += 1;
-        while !self.at_end() {
-            let line = self.current();
-            let trimmed = line.trim_start_matches([' ', '\t']);
-            let line_indent = line.len() - trimmed.len();
-            let content = trimmed.trim_end();
-            if content.is_empty() || content.starts_with('#') || line_indent < indent {
-                break;
-            }
-            parts.push(strip_inline_comment(content).to_string());
-            self.index += 1;
-        }
-        Ok(resolve_scalar(&parts.join(" ")))
-    }
-
-    fn parse_block_scalar(
-        &mut self,
-        header: BlockScalarHeader,
-        parent_indent: usize,
-    ) -> Result<String, String> {
-        let start = self.index;
-        let mut content_indent = header.explicit_indent.map(|extra| parent_indent + extra);
-        let mut end = start;
-        while end < self.lines.len() {
-            let line = self.lines[end];
-            let trimmed = line.trim_start_matches([' ', '\t']);
-            if trimmed.trim_end().is_empty() {
-                end += 1;
-                continue;
-            }
-            let indent = line.len() - trimmed.len();
-            if indent <= parent_indent {
-                break;
-            }
-            content_indent.get_or_insert(indent);
-            end += 1;
-        }
-        let content_indent = content_indent.unwrap_or(parent_indent + 1);
-        let lines: Vec<&str> = self.lines[start..end]
-            .iter()
-            .map(|line| {
-                if line.trim().is_empty() {
-                    ""
-                } else {
-                    line.get(content_indent..).unwrap_or("").trim_end()
-                }
-            })
-            .collect();
-        self.index = end;
-        let text = if header.literal {
-            lines.join("\n")
-        } else {
-            fold_lines(&lines)
-        };
-        Ok(chomp(text, header.chomp))
-    }
-}
-
-fn indent_of(line: &str) -> usize {
-    line.len() - line.trim_start_matches([' ', '\t']).len()
-}
-
-fn content_of(line: &str) -> &str {
-    line.trim_start_matches([' ', '\t']).trim_end()
-}
-
-fn is_sequence_entry(content: &str) -> bool {
-    content == "-" || content.starts_with("- ") || content.starts_with("-\t")
-}
-
-/// Split `key: value`; the colon must be followed by whitespace or end the line, as YAML
-/// requires for block mappings.
-fn mapping_split(content: &str) -> Option<(String, &str)> {
-    let first = content.chars().next()?;
-    if first == '"' || first == '\'' {
-        let (key, used) = parse_quoted(content)?;
-        let rest = content[used..].trim_start_matches([' ', '\t']);
-        let rest = rest.strip_prefix(':')?;
-        if !rest.is_empty() && !rest.starts_with([' ', '\t']) {
-            return None;
-        }
-        return Some((key, rest.trim_start_matches([' ', '\t'])));
-    }
-    let bytes = content.as_bytes();
-    for (index, byte) in bytes.iter().enumerate() {
-        if *byte == b'#' && index > 0 && matches!(bytes[index - 1], b' ' | b'\t') {
-            return None;
-        }
-        if *byte != b':' {
-            continue;
-        }
-        let next = content[index + 1..].chars().next();
-        if next.is_some_and(|c| c != ' ' && c != '\t') {
-            continue;
-        }
-        let key = content[..index].trim_end();
-        if key.is_empty() {
-            return None;
-        }
-        return Some((
-            key.to_string(),
-            content[index + 1..].trim_start_matches([' ', '\t']),
-        ));
-    }
-    None
-}
-
-/// Strip a trailing `#` comment from a plain scalar and trailing whitespace with it.
-fn strip_inline_comment(raw: &str) -> &str {
-    let bytes = raw.as_bytes();
-    for (index, byte) in bytes.iter().enumerate() {
-        if *byte == b'#' && (index == 0 || matches!(bytes[index - 1], b' ' | b'\t')) {
-            return raw[..index].trim_end_matches([' ', '\t']);
-        }
-    }
-    raw.trim_end_matches([' ', '\t'])
-}
-
-fn tag_error() -> String {
-    // js-yaml's message for the `!!!` document upstream's frontmatter spec rejects.
-    "tag suffix cannot contain exclamation marks".to_string()
-}
-
-fn resolve_scalar(raw: &str) -> Value {
-    let raw = raw.trim();
-    if raw.is_empty() {
-        return Value::Null;
-    }
-    if (raw.starts_with('"') || raw.starts_with('\''))
-        && let Some((text, used)) = parse_quoted(raw)
-        && used == raw.len()
-    {
-        return Value::String(text);
-    }
-    if raw.starts_with('"') || raw.starts_with('\'') {
-        return Value::String(raw.to_string());
-    }
-    match raw {
-        "null" | "Null" | "NULL" | "~" => Value::Null,
-        "true" | "True" | "TRUE" => Value::Bool(true),
-        "false" | "False" | "FALSE" => Value::Bool(false),
-        _ => match parse_number(raw) {
-            Some(number) => Value::Number(number),
-            None => Value::String(raw.to_string()),
-        },
-    }
-}
-
-fn parse_number(raw: &str) -> Option<serde_json::Number> {
-    if let Ok(integer) = raw.parse::<i64>() {
-        return Some(integer.into());
-    }
-    if raw.contains(['.', 'e', 'E'])
-        && let Ok(float) = raw.parse::<f64>()
-    {
-        return serde_json::Number::from_f64(float);
-    }
-    None
-}
-
-/// Read one quoted YAML scalar, returning its value and how many bytes it used.
-fn parse_quoted(input: &str) -> Option<(String, usize)> {
-    let quote = input.chars().next()?;
-    if quote != '"' && quote != '\'' {
-        return None;
-    }
-    let mut out = String::new();
-    let mut chars = input.char_indices().skip(1);
-    while let Some((index, c)) = chars.next() {
-        if c == quote {
-            if quote == '\''
-                && let Some((_, '\'')) = chars.clone().next()
-            {
-                out.push('\'');
-                chars.next();
-                continue;
-            }
-            return Some((out, index + c.len_utf8()));
-        }
-        if quote == '"' && c == '\\' {
-            let (_, escaped) = chars.next()?;
-            match escaped {
-                'n' => out.push('\n'),
-                't' => out.push('\t'),
-                'r' => out.push('\r'),
-                'b' => out.push('\u{0008}'),
-                'f' => out.push('\u{000c}'),
-                '0' => out.push('\0'),
-                '"' => out.push('"'),
-                '\\' => out.push('\\'),
-                '/' => out.push('/'),
-                'u' => {
-                    let hex: String = chars.by_ref().take(4).map(|(_, c)| c).collect();
-                    out.push(char::from_u32(u32::from_str_radix(&hex, 16).ok()?)?);
-                }
-                other => {
-                    out.push('\\');
-                    out.push(other);
-                }
-            }
-            continue;
-        }
-        out.push(c);
-    }
-    None
-}
-
-struct FlowParser<'a> {
-    text: &'a str,
-    pos: usize,
-    depth: usize,
-}
-
-fn parse_flow(text: &str) -> Result<Value, String> {
-    let mut parser = FlowParser {
-        text,
-        pos: 0,
-        depth: 0,
-    };
-    let value = parser.value()?;
-    parser.skip_whitespace();
-    let rest = &text[parser.pos..];
-    if !rest.is_empty() && !rest.starts_with('#') {
-        return Err("unexpected content after a flow collection".to_string());
-    }
-    Ok(value)
-}
-
-impl FlowParser<'_> {
-    fn skip_whitespace(&mut self) {
-        self.pos = skip_whitespace(self.text, self.pos);
-    }
-
-    fn value(&mut self) -> Result<Value, String> {
-        self.depth += 1;
-        if self.depth > MAX_FLOW_DEPTH {
-            return Err("excessive nesting in a flow collection".to_string());
-        }
-        let value = self.value_inner();
-        self.depth -= 1;
-        value
-    }
-
-    fn value_inner(&mut self) -> Result<Value, String> {
-        self.skip_whitespace();
-        match char_at(self.text, self.pos) {
-            Some('[') => self.sequence(),
-            Some('{') => self.mapping(),
-            Some('"') | Some('\'') => {
-                let (value, used) = parse_quoted(&self.text[self.pos..])
-                    .ok_or_else(|| "unterminated quoted scalar".to_string())?;
-                self.pos += used;
-                Ok(Value::String(value))
-            }
-            _ => Ok(self.scalar()),
-        }
-    }
-
-    fn scalar(&mut self) -> Value {
-        let start = self.pos;
-        while let Some(c) = char_at(self.text, self.pos) {
-            if c == ',' || c == ']' || c == '}' {
-                break;
-            }
-            self.pos += c.len_utf8();
-        }
-        resolve_scalar(&self.text[start..self.pos])
-    }
-
-    fn sequence(&mut self) -> Result<Value, String> {
-        self.pos += 1;
-        let mut items = Vec::new();
-        self.skip_whitespace();
-        if char_at(self.text, self.pos) == Some(']') {
-            self.pos += 1;
-            return Ok(Value::Array(items));
-        }
-        loop {
-            items.push(self.value()?);
-            self.skip_whitespace();
-            match char_at(self.text, self.pos) {
-                Some(',') => {
-                    self.pos += 1;
-                    self.skip_whitespace();
-                    if char_at(self.text, self.pos) == Some(']') {
-                        self.pos += 1;
-                        break;
-                    }
-                }
-                Some(']') => {
-                    self.pos += 1;
-                    break;
-                }
-                _ => return Err("unterminated flow sequence".to_string()),
-            }
-        }
-        Ok(Value::Array(items))
-    }
-
-    fn mapping(&mut self) -> Result<Value, String> {
-        self.pos += 1;
-        let mut map = Map::new();
-        self.skip_whitespace();
-        if char_at(self.text, self.pos) == Some('}') {
-            self.pos += 1;
-            return Ok(Value::Object(map));
-        }
-        loop {
-            self.skip_whitespace();
-            let key = match char_at(self.text, self.pos) {
-                Some('"') | Some('\'') => {
-                    let (key, used) = parse_quoted(&self.text[self.pos..])
-                        .ok_or_else(|| "unterminated quoted scalar".to_string())?;
-                    self.pos += used;
-                    key
-                }
-                _ => {
-                    let start = self.pos;
-                    while let Some(c) = char_at(self.text, self.pos) {
-                        if c == ':' || c == ',' || c == '}' {
-                            break;
-                        }
-                        self.pos += c.len_utf8();
-                    }
-                    self.text[start..self.pos].trim().to_string()
-                }
-            };
-            self.skip_whitespace();
-            if char_at(self.text, self.pos) != Some(':') {
-                return Err("expected ':' in a flow mapping".to_string());
-            }
-            self.pos += 1;
-            let value = self.value()?;
-            map.insert(key, value);
-            self.skip_whitespace();
-            match char_at(self.text, self.pos) {
-                Some(',') => {
-                    self.pos += 1;
-                    self.skip_whitespace();
-                    if char_at(self.text, self.pos) == Some('}') {
-                        self.pos += 1;
-                        break;
-                    }
-                }
-                Some('}') => {
-                    self.pos += 1;
-                    break;
-                }
-                _ => return Err("unterminated flow mapping".to_string()),
-            }
-        }
-        Ok(Value::Object(map))
-    }
-}
-
-struct BlockScalarHeader {
-    literal: bool,
-    chomp: Chomp,
-    explicit_indent: Option<usize>,
-}
-
-#[derive(Clone, Copy, PartialEq)]
-enum Chomp {
-    Strip,
-    Clip,
-    Keep,
-}
-
-fn block_scalar_header(raw: &str) -> Option<BlockScalarHeader> {
-    let mut chars = raw.chars();
-    let literal = match chars.next()? {
-        '|' => true,
-        '>' => false,
-        _ => return None,
-    };
-    let mut chomp = Chomp::Clip;
-    let mut explicit_indent = None;
-    for c in chars {
-        match c {
-            '+' => chomp = Chomp::Keep,
-            '-' => chomp = Chomp::Strip,
-            '1'..='9' => explicit_indent = Some(c.to_digit(10)? as usize),
-            ' ' | '\t' => break,
-            _ => return None,
-        }
-    }
-    Some(BlockScalarHeader {
-        literal,
-        chomp,
-        explicit_indent,
-    })
-}
-
-/// Folded (`>`) block scalars: single breaks become spaces, blank lines become breaks.
-fn fold_lines(lines: &[&str]) -> String {
-    let mut out = String::new();
-    let mut first = true;
-    let mut blanks = 0usize;
-    for line in lines {
-        if line.is_empty() {
-            blanks += 1;
-            continue;
-        }
-        if !first {
-            if blanks > 0 {
-                out.push_str(&"\n".repeat(blanks));
-            } else {
-                out.push(' ');
-            }
-        }
-        out.push_str(line);
-        blanks = 0;
-        first = false;
-    }
-    out
-}
-
-fn chomp(text: String, chomp: Chomp) -> String {
-    match chomp {
-        Chomp::Keep => text,
-        Chomp::Strip => text.trim_end_matches('\n').to_string(),
-        Chomp::Clip => {
-            let trimmed = text.trim_end_matches('\n');
-            if trimmed.is_empty() {
-                String::new()
-            } else {
-                format!("{trimmed}\n")
             }
         }
     }
@@ -1861,41 +1230,6 @@ mod tests {
     }
 
     #[test]
-    fn parse_yaml_reads_flow_collections() {
-        let value = parse_yaml("a: [1, 2]\nb: {c: true, d: 'x'}").unwrap();
-        assert_eq!(value, json!({ "a": [1, 2], "b": { "c": true, "d": "x" } }));
-    }
-
-    #[test]
-    fn parse_yaml_allows_a_comment_after_a_flow_collection() {
-        assert_eq!(
-            parse_yaml("a: [1, 2] # numbers").unwrap(),
-            json!({ "a": [1, 2] })
-        );
-    }
-
-    #[test]
-    fn parse_yaml_reads_sequences_and_quoted_scalars() {
-        let value = parse_yaml("list:\n  - a\n  - 'b''c'\n  - 3").unwrap();
-        assert_eq!(value, json!({ "list": ["a", "b'c", 3] }));
-    }
-
-    #[test]
-    fn parse_yaml_reads_folded_block_scalars() {
-        let value = parse_yaml("title: >\n  one\n  two\n").unwrap();
-        assert_eq!(value, json!({ "title": "one two\n" }));
-    }
-
-    #[test]
-    fn parse_yaml_resolves_json_scalars() {
-        assert_eq!(parse_yaml("null").unwrap(), Value::Null);
-        assert_eq!(parse_yaml("14").unwrap(), json!(14));
-        assert_eq!(parse_yaml("1.5").unwrap(), json!(1.5));
-        assert_eq!(parse_yaml("FALSE").unwrap(), json!(false));
-        assert_eq!(parse_yaml("value").unwrap(), json!("value"));
-    }
-
-    #[test]
     fn rejects_deeply_nested_flow_collections_instead_of_overflowing() {
         let nested = format!("value: {}{}", "[".repeat(200), "]".repeat(200));
         let text = format!("---\n{nested}\n---\ndiagram");
@@ -1917,6 +1251,26 @@ mod tests {
     fn match_front_matter_requires_a_trailing_line_break() {
         assert!(match_front_matter("---\ntitle: foo\n---").is_none());
         assert!(match_front_matter("---\ntitle: foo\n---\n").is_some());
+    }
+
+    #[test]
+    fn cleanup_comments_blanks_a_comment_line_and_keeps_its_line() {
+        let source = preprocess("%% a comment\ngraph LR\n  %% another\nA --> B");
+        assert_eq!(source.body, "\ngraph LR\n\nA --> B");
+        assert_eq!(line_count(&source.body), 4);
+    }
+
+    #[test]
+    fn cleanup_comments_leaves_a_line_that_only_starts_with_the_marker() {
+        // Upstream's pattern needs a character after `%%`.
+        assert_eq!(preprocess("%%\ngraph LR").body, "%%\ngraph LR");
+    }
+
+    #[test]
+    fn cleanup_comments_leaves_a_directive_like_line_to_the_directive_rule() {
+        let source = preprocess("%%{init: {'theme': 'dark'}}%%\ngraph LR");
+        assert_eq!(source.body, "\ngraph LR");
+        assert_eq!(config(&source), json!({ "theme": "dark" }));
     }
 
     #[test]

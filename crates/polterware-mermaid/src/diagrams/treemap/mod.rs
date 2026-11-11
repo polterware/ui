@@ -26,11 +26,12 @@
 //! * `TreemapTokenBuilder`'s keyword restriction is inert: `treemap` is one alternative of the
 //!   `TREEMAP_KEYWORD` terminal, and Langium turns terminal keywords into regex terminals,
 //!   not keyword tokens, so the generated keyword list is empty.
-//! * The body this crate hands a parser keeps `%%` comments, while mermaid removes whole
-//!   comment lines (`diagram-api/comments.ts`'s `cleanupComments`) before Langium sees the
-//!   text. The lexer therefore removes those lines itself, leading indentation included, and
-//!   the parser skips the whitespace `cleanupComments` trims before the header. A comment
-//!   that follows other text on its line is still a hidden `ML_COMMENT`, as in the grammar.
+//! * Mermaid removes whole comment lines (`diagram-api/comments.ts`'s `cleanupComments`)
+//!   before Langium sees the text; [`crate::preprocess`] blanks them to empty lines instead.
+//!   A body handed to the parser directly still carries them, so the lexer removes those
+//!   lines itself, leading indentation included, and the parser skips the whitespace
+//!   `cleanupComments` trims before the header. A comment that follows other text on its line
+//!   is still a hidden `ML_COMMENT`, as in the grammar.
 //! * `NUMBER2` goes through the `MyNumber` data type rule, so the custom converter's
 //!   `parseFloat(input.replace(/,/g, ''))` result is stringified and parsed again by the
 //!   `number` return type; the value is the same, and this port computes it directly.
@@ -41,7 +42,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 
 pub use ast::{Ast, StyleClass, TreemapNode};
 

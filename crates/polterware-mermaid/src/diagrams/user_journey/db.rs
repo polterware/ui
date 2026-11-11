@@ -22,9 +22,7 @@ use crate::preprocess::is_js_whitespace;
 use super::ast::{Ast, Task};
 
 /// `String.prototype.trim`, JavaScript's whitespace included.
-pub(super) fn js_trim(text: &str) -> &str {
-    text.trim_matches(is_js_whitespace)
-}
+pub(super) use crate::common::js_trim;
 
 /// The module state `journeyDb.js` keeps.
 #[derive(Debug, Default)]

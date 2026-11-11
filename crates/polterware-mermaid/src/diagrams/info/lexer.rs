@@ -17,6 +17,7 @@
 //! lexer at the `u` instead of lexing `unsupported` as an `ID`, exactly as `info.spec.ts`
 //! expects upstream.
 
+use crate::common::text::newline;
 use crate::error::{ParseError, Span};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -197,17 +198,6 @@ fn title(rest: &str) -> Option<usize> {
         start += line_before_comment(&rest[start..]);
     }
     Some(start)
-}
-
-/// `NEWLINE: /\r?\n/`.
-fn newline(rest: &str) -> Option<usize> {
-    if rest.starts_with("\r\n") {
-        Some(2)
-    } else if rest.starts_with('\n') {
-        Some(1)
-    } else {
-        None
-    }
 }
 
 /// `WHITESPACE: /[\t ]+/`, a skipped hidden token.

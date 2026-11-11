@@ -7,7 +7,7 @@
 
 use super::ast::{Ast, Link, Node};
 use super::parser::ParsedRecord;
-use super::sanitize;
+use crate::common::sanitize;
 
 /// Applies the parsed records to a fresh database, the way the grammar actions do.
 pub(crate) fn build(records: Vec<ParsedRecord>) -> Ast {

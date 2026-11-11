@@ -28,6 +28,7 @@
 //! the `INT` `1` followed by the `REFERENCE` `2.0` rather than failing: the matchers below
 //! shorten the match the same way.
 
+use crate::common::text::{is_line_terminator, newline};
 use crate::error::{ParseError, Span};
 use crate::preprocess::is_js_whitespace;
 
@@ -363,17 +364,6 @@ fn string(rest: &str) -> Option<usize> {
     None
 }
 
-/// `NEWLINE: /\r?\n/`.
-fn newline(rest: &str) -> Option<usize> {
-    if rest.starts_with("\r\n") {
-        Some(2)
-    } else if rest.starts_with('\n') {
-        Some(1)
-    } else {
-        None
-    }
-}
-
 /// `WHITESPACE: /[\t ]+/`, a skipped hidden token.
 fn horizontal_space(rest: &str) -> Option<usize> {
     let end = rest
@@ -429,8 +419,4 @@ fn js_space(text: &str) -> usize {
     text.char_indices()
         .find(|&(_, ch)| !is_js_whitespace(ch))
         .map_or(text.len(), |(index, _)| index)
-}
-
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }

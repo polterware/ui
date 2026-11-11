@@ -7,7 +7,7 @@
 
 use super::ast::{Ast, Domain, Item, Transition};
 use super::parser::{ParsedCynefin, ParsedDomain, ParsedTransition};
-use super::sanitize;
+use crate::common::sanitize;
 
 /// `populate`: applies the parsed document to a fresh database.
 pub(crate) fn build(parsed: ParsedCynefin) -> Ast {

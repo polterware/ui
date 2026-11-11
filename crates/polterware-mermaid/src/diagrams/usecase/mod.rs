@@ -32,9 +32,9 @@
 //!   scope.
 //! * The Chevrotain lexer has three modes; this port keeps them. A lexer error names the
 //!   offending character rather than Chevrotain's `Unable to tokenize` diagnostic.
-//! * `preprocess` blanks removed frontmatter and directive lines and keeps `%%` comment lines,
-//!   while upstream hands this parser the cleaned text. Leading blank and comment lines are
-//!   skipped before the header so the crate entry point accepts both shapes.
+//! * `preprocess` blanks removed frontmatter, directive, and `%%` comment lines, while
+//!   upstream hands this parser the cleaned text. Leading blank and comment lines are skipped
+//!   before the header so the crate entry point accepts both shapes.
 
 mod ast;
 mod db;

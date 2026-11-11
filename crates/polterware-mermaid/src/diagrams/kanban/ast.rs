@@ -11,7 +11,7 @@
 
 use serde_json::Value;
 
-use super::sanitize;
+use crate::common::sanitize;
 
 /// The grammar's node type numbers (`kanbanDb.ts` `nodeType`). `DEFAULT` and `NO_BORDER` are
 /// both 0 upstream, so there is one variant.

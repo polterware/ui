@@ -23,7 +23,7 @@
 //! * A point's `x` and `y` stay the token text the grammar passed to `addPoint` (`"0.1"`), as
 //!   the database holds it; `scaleLinear` turns it into a number in `getQuadrantPoints`, which
 //!   is layout. `radius` is an `f64`, `parseInt`'s JavaScript number.
-//! * `sanitizeText` is approximated (`sanitize.rs`): `script`/`style` elements are dropped and a
+//! * `sanitizeText` is approximated (`common::sanitize`): `script`/`style` elements are dropped and a
 //!   stray `<` is escaped, but there is no DOMPurify (a DOM library).
 //! * The grammar's `text` objects carry a `type` (`'text'` or `'markdown'`); the database drops
 //!   it, so it is not modelled.
@@ -34,7 +34,6 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
-mod sanitize;
 
 pub use ast::{Ast, ClassStyle, Point, Styles};
 

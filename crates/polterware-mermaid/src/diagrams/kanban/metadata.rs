@@ -10,6 +10,7 @@
 //! Scalars resolve the way `JSON_SCHEMA` does: `null`/`true`/`false` variants, integers and
 //! floats, and every other plain scalar is a string, so `icon: star` is the string `star`.
 
+use crate::common::yaml::{depth_delta, strip_inline_comment};
 use serde_json::{Map, Number, Value};
 
 /// Parses the metadata text the lexer assembled from a `@{ ... }` block.
@@ -213,22 +214,6 @@ fn collect_flow(lines: &[&str], index: &mut usize, first: &str) -> Result<String
     Ok(text)
 }
 
-fn depth_delta(text: &str) -> i32 {
-    let mut delta = 0;
-    let mut quote: Option<char> = None;
-    for ch in text.chars() {
-        match quote {
-            Some(expected) if ch == expected => quote = None,
-            Some(_) => {}
-            None if ch == '"' || ch == '\'' => quote = Some(ch),
-            None if ch == '{' || ch == '[' => delta += 1,
-            None if ch == '}' || ch == ']' => delta -= 1,
-            None => {}
-        }
-    }
-    delta
-}
-
 #[derive(Clone, Copy)]
 enum Chomp {
     Strip,
@@ -326,16 +311,6 @@ fn fold_lines(lines: &[&str]) -> String {
 fn plain_scalar(raw: &str) -> Value {
     let raw = strip_inline_comment(raw);
     resolve_scalar(raw.trim())
-}
-
-fn strip_inline_comment(raw: &str) -> &str {
-    let bytes = raw.as_bytes();
-    for (index, byte) in bytes.iter().enumerate() {
-        if *byte == b'#' && (index == 0 || matches!(bytes[index - 1], b' ' | b'\t')) {
-            return raw[..index].trim_end_matches([' ', '\t']);
-        }
-    }
-    raw.trim_end_matches([' ', '\t'])
 }
 
 fn resolve_scalar(raw: &str) -> Value {

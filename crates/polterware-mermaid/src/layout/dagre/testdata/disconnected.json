@@ -1,0 +1,133 @@
+{
+  "name": "disconnected",
+  "graph": {},
+  "nodes": [
+    {
+      "id": "a",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "id": "b",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "id": "c",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "id": "d",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "id": "e",
+      "width": 30,
+      "height": 30
+    }
+  ],
+  "edges": [
+    {
+      "v": "a",
+      "w": "b"
+    },
+    {
+      "v": "c",
+      "w": "d"
+    }
+  ],
+  "parents": [],
+  "output": {
+    "graph": {
+      "width": 190,
+      "height": 110
+    },
+    "nodes": [
+      {
+        "id": "a",
+        "x": 15,
+        "y": 15,
+        "width": 30,
+        "height": 30,
+        "rank": 0,
+        "order": 0
+      },
+      {
+        "id": "b",
+        "x": 15,
+        "y": 95,
+        "width": 30,
+        "height": 30,
+        "rank": 2,
+        "order": 0
+      },
+      {
+        "id": "c",
+        "x": 95,
+        "y": 15,
+        "width": 30,
+        "height": 30,
+        "rank": 0,
+        "order": 1
+      },
+      {
+        "id": "d",
+        "x": 95,
+        "y": 95,
+        "width": 30,
+        "height": 30,
+        "rank": 2,
+        "order": 1
+      },
+      {
+        "id": "e",
+        "x": 175,
+        "y": 15,
+        "width": 30,
+        "height": 30,
+        "rank": 0,
+        "order": 2
+      }
+    ],
+    "edges": [
+      {
+        "v": "a",
+        "w": "b",
+        "points": [
+          {
+            "x": 15,
+            "y": 30
+          },
+          {
+            "x": 15,
+            "y": 55
+          },
+          {
+            "x": 15,
+            "y": 80
+          }
+        ]
+      },
+      {
+        "v": "c",
+        "w": "d",
+        "points": [
+          {
+            "x": 95,
+            "y": 30
+          },
+          {
+            "x": 95,
+            "y": 55
+          },
+          {
+            "x": 95,
+            "y": 80
+          }
+        ]
+      }
+    ]
+  }
+}

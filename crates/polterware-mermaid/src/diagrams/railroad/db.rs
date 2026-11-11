@@ -12,7 +12,7 @@
 
 use super::ast::{Ast, Node, Rule};
 use super::parser::ParsedRailroad;
-use super::sanitize;
+use crate::common::sanitize;
 
 /// `populateDb`: applies the parsed document to a fresh database.
 pub(crate) fn build(parsed: ParsedRailroad) -> Ast {

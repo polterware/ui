@@ -33,6 +33,7 @@
 //! as `60.6` (the fraction gives one digit back) rather than failing: the matcher below
 //! shortens the match the same way.
 
+use crate::common::text::{is_line_terminator, newline};
 use crate::error::{ParseError, Span};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -454,17 +455,6 @@ fn id(rest: &str) -> Option<usize> {
     Some(last_word_end)
 }
 
-/// `NEWLINE: /\r?\n/`.
-fn newline(rest: &str) -> Option<usize> {
-    if rest.starts_with("\r\n") {
-        Some(2)
-    } else if rest.starts_with('\n') {
-        Some(1)
-    } else {
-        None
-    }
-}
-
 /// `WHITESPACE: /[\t ]+/`, a skipped hidden token.
 fn horizontal_space(rest: &str) -> Option<usize> {
     let end = rest
@@ -496,8 +486,4 @@ fn js_space(text: &str) -> usize {
 /// JavaScript's `\w`: an ASCII letter, digit, or underscore.
 fn is_word(byte: u8) -> bool {
     byte.is_ascii_alphanumeric() || byte == b'_'
-}
-
-fn is_line_terminator(ch: char) -> bool {
-    matches!(ch, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }

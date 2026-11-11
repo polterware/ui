@@ -22,7 +22,7 @@
 //!   same reason.
 
 use super::ast::{Ast, Boundary, Rel, Shape, Text, TextValue};
-use super::sanitize;
+use crate::common::sanitize;
 use crate::preprocess::is_js_whitespace;
 
 /// One parsed argument: `attribute` in the jison grammar.
