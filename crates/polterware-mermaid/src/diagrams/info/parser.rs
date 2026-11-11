@@ -1,0 +1,239 @@
+//! The info grammar: a hand-written recursive-descent port of `info.langium` with the
+//! `TitleAndAccessibilities` fragment and the `EOL` rule of `common.langium`.
+//!
+//! ```text
+//! Info:
+//!   NEWLINE*
+//!   "info" NEWLINE*
+//!   ("showInfo" NEWLINE*)?
+//!   TitleAndAccessibilities?
+//! TitleAndAccessibilities:
+//!   ((accDescr=ACC_DESCR | accTitle=ACC_TITLE | title=TITLE) EOL)+
+//! EOL:
+//!   NEWLINE+ | EOF
+//! ```
+//!
+//! The entry rule has no action, so every assignment lands on one `Info` node. Title,
+//! accessible title, and accessible description are single-valued, so a later line overwrites
+//! an earlier one, as Langium's AST builder does. The terminal values go through
+//! `common/valueConverter.ts`'s regex-driven trimming of `TITLE`, `ACC_TITLE`, and
+//! `ACC_DESCR`. The keyword `showInfo` has no assignment, so it is not stored, and the rule
+//! ends after the optional title lines: anything else is an error, as Chevrotain's implicit
+//! end-of-input check reports upstream.
+
+use super::ast::Ast;
+use super::lexer::{Lexer, Token, TokenKind};
+use crate::error::ParseError;
+
+/// Parses the diagram body.
+pub(crate) fn parse(body: &str) -> Result<Ast, ParseError> {
+    Parser::new(body).parse_info()
+}
+
+struct Parser<'a> {
+    lexer: Lexer<'a>,
+    lookahead: Option<Token>,
+}
+
+impl<'a> Parser<'a> {
+    fn new(body: &'a str) -> Self {
+        Self {
+            lexer: Lexer::new(body),
+            lookahead: None,
+        }
+    }
+
+    fn fill(&mut self) -> Result<&Token, ParseError> {
+        if self.lookahead.is_none() {
+            self.lookahead = Some(self.lexer.next_token()?);
+        }
+        Ok(self.lookahead.as_ref().expect("just filled"))
+    }
+
+    fn peek(&mut self) -> Result<TokenKind, ParseError> {
+        Ok(self.fill()?.kind)
+    }
+
+    fn bump(&mut self) -> Result<Token, ParseError> {
+        self.fill()?;
+        Ok(self.lookahead.take().expect("filled above"))
+    }
+
+    fn expect(&mut self, expected: TokenKind) -> Result<Token, ParseError> {
+        if self.peek()? != expected {
+            return Err(self.unexpected(expected.name()));
+        }
+        self.bump()
+    }
+
+    fn unexpected(&mut self, expected: &str) -> ParseError {
+        match self.fill() {
+            Ok(token) => ParseError::at(
+                format!("expected {expected}, got '{}'", token.kind.name()),
+                token.span,
+            ),
+            Err(error) => error,
+        }
+    }
+
+    /// `EOL: NEWLINE+ | EOF`.
+    fn expect_eol(&mut self) -> Result<(), ParseError> {
+        match self.peek()? {
+            TokenKind::Eof => Ok(()),
+            TokenKind::Newline => {
+                while self.peek()? == TokenKind::Newline {
+                    self.bump()?;
+                }
+                Ok(())
+            }
+            _ => Err(self.unexpected("a newline or end of input")),
+        }
+    }
+
+    fn skip_newlines(&mut self) -> Result<(), ParseError> {
+        while self.peek()? == TokenKind::Newline {
+            self.bump()?;
+        }
+        Ok(())
+    }
+
+    fn parse_info(mut self) -> Result<Ast, ParseError> {
+        self.skip_newlines()?;
+        self.expect(TokenKind::Info)?;
+        self.skip_newlines()?;
+        if self.peek()? == TokenKind::ShowInfo {
+            self.bump()?;
+            self.skip_newlines()?;
+        }
+
+        let mut ast = Ast::default();
+        loop {
+            match self.peek()? {
+                TokenKind::AccDescr => {
+                    let token = self.bump()?;
+                    ast.acc_description = Some(acc_descr_value(&token.text));
+                    self.expect_eol()?;
+                }
+                TokenKind::AccTitle => {
+                    let token = self.bump()?;
+                    ast.acc_title = Some(acc_title_value(&token.text));
+                    self.expect_eol()?;
+                }
+                TokenKind::Title => {
+                    let token = self.bump()?;
+                    ast.title = Some(title_value(&token.text));
+                    self.expect_eol()?;
+                }
+                _ => break,
+            }
+        }
+
+        if self.peek()? != TokenKind::Eof {
+            return Err(self.unexpected("end of input"));
+        }
+        Ok(ast)
+    }
+}
+
+/// `common/valueConverter.ts`'s `titleRegex`: `/title([\t ][^\n\r]*|)/`, capture trimmed and
+/// with runs of two or more spaces or tabs collapsed to one.
+fn title_value(raw: &str) -> String {
+    let Some(start) = raw.find("title") else {
+        return String::new();
+    };
+    let rest = &raw[start + "title".len()..];
+    if rest.starts_with(' ') || rest.starts_with('\t') {
+        collapse(rest)
+    } else {
+        String::new()
+    }
+}
+
+/// `accessibilityTitleRegex`: `/accTitle[\t ]*:([^\n\r]*)/`.
+fn acc_title_value(raw: &str) -> String {
+    let Some(start) = raw.find("accTitle") else {
+        return String::new();
+    };
+    let rest = trim_horizontal(&raw[start + "accTitle".len()..]);
+    let Some(value) = rest.strip_prefix(':') else {
+        return String::new();
+    };
+    collapse(&value[..line_end(value)])
+}
+
+/// `accessibilityDescrRegex`: `/accDescr(?:[\t ]*:([^\n\r]*)|\s*{([^}]*)})/`.
+fn acc_descr_value(raw: &str) -> String {
+    let Some(start) = raw.find("accDescr") else {
+        return String::new();
+    };
+    let rest = &raw[start + "accDescr".len()..];
+    let after_colon_space = trim_horizontal(rest);
+    if let Some(value) = after_colon_space.strip_prefix(':') {
+        return collapse(&value[..line_end(value)]);
+    }
+    let Some(value) = rest.trim_start_matches(is_js_space).strip_prefix('{') else {
+        return String::new();
+    };
+    let capture = &value[..value.find('}').unwrap_or(value.len())];
+    normalize_multiline(capture)
+}
+
+/// The multiline branch of the accessible description conversion: strip whitespace at both
+/// ends of every line, collapse runs of two or more spaces or tabs, collapse line breaks, and
+/// collapse consecutive blank lines. For the regex sequence
+/// `.replace(/^\s*/gm,'').replace(/\s+$/gm,'').replace(/[\t ]{2,}/gm,' ').replace(/[\n\r]{2,}/gm,'\n')`
+/// this is the same result, including the blank lines the first replacement swallows.
+fn normalize_multiline(capture: &str) -> String {
+    let mut lines = Vec::new();
+    for line in capture.split(['\n', '\r']) {
+        let line = trim(line);
+        if line.is_empty() {
+            continue;
+        }
+        lines.push(collapse(line));
+    }
+    lines.join("\n")
+}
+
+/// `String.prototype.trim`, close enough: JavaScript's `\s` also has U+FEFF.
+fn trim(text: &str) -> &str {
+    text.trim_matches(is_js_space)
+}
+
+fn trim_horizontal(text: &str) -> &str {
+    text.trim_start_matches([' ', '\t'])
+}
+
+/// `.replace(/[\t ]{2,}/gm, ' ')` on an already trimmed string.
+fn collapse(text: &str) -> String {
+    let text = trim(text);
+    let bytes = text.as_bytes();
+    let mut out = String::with_capacity(text.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b' ' || bytes[i] == b'\t' {
+            let start = i;
+            while i < bytes.len() && (bytes[i] == b' ' || bytes[i] == b'\t') {
+                i += 1;
+            }
+            if i - start > 1 {
+                out.push(' ');
+            } else {
+                out.push_str(&text[start..i]);
+            }
+        } else {
+            let ch = text[i..].chars().next().expect("non-empty remainder");
+            out.push(ch);
+            i += ch.len_utf8();
+        }
+    }
+    out
+}
+
+fn line_end(text: &str) -> usize {
+    text.find(['\r', '\n']).unwrap_or(text.len())
+}
+
+fn is_js_space(ch: char) -> bool {
+    ch.is_whitespace() || ch == '\u{feff}'
+}
