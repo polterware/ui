@@ -4,7 +4,7 @@
 
 use std::time::Duration;
 
-use gpui::{App, IntoElement, SharedString, div, prelude::*, px};
+use gpui::{App, IntoElement, SharedString, deferred, div, prelude::*, px};
 
 use crate::theme::Theme;
 use crate::{Handler, ValueHandler};
@@ -52,6 +52,9 @@ pub struct ToastAction {
 
 /// `TOAST_ACTION_MS` in Electron's `toast.tsx`.
 pub const TOAST_ACTION_LIFETIME: Duration = Duration::from_millis(6000);
+
+/// Where toasts draw among the deferred layers: above modals.
+const TOAST_PRIORITY: usize = crate::patterns::shell::MODAL_PRIORITY + 10;
 
 pub fn toast_stack(
     toasts: &[Toast],
@@ -167,7 +170,8 @@ pub fn toast_stack_with_actions(
                     })),
             );
     }
-    stack
+    // Over every deferred layer, modals included: a toast raised from a dialog shows on it.
+    deferred(stack).with_priority(TOAST_PRIORITY)
 }
 
 #[cfg(test)]

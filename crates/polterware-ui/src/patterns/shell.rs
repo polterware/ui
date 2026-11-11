@@ -37,7 +37,7 @@ pub fn main_surface(page: impl IntoElement, theme: &Theme) -> Div {
 }
 
 /// Where modals draw among the deferred layers: over menus, popovers, and hover cards.
-const MODAL_PRIORITY: usize = 100;
+pub(crate) const MODAL_PRIORITY: usize = 100;
 
 /// A full-window layer with the overlay scrim at `presence` (0 to 1) and `content` centered
 /// on it, as the Solid `Dialog` portals to the body: wherever a view declares it (the app's
