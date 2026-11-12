@@ -62,6 +62,12 @@ pub struct FDLayout<V = ()> {
     pub use_smart_ideal_edge_length_calculation: bool,
     /// Ideal length of an edge.
     pub ideal_edge_length: f64,
+    /// Ideal length of an edge when an edge carries none, upstream's
+    /// `DEFAULT_EDGE_LENGTH`. cytoscape-fcose replaces it with the average of its edges'
+    /// ideal lengths before a run.
+    pub default_edge_length: f64,
+    /// The smallest distance repulsion uses, upstream's `MIN_REPULSION_DIST`.
+    pub min_repulsion_dist: f64,
     /// Spring strength.
     pub spring_constant: f64,
     /// Repulsion strength.
@@ -122,6 +128,8 @@ impl<V> FDLayout<V> {
             use_smart_ideal_edge_length_calculation:
                 constants::DEFAULT_USE_SMART_IDEAL_EDGE_LENGTH_CALCULATION,
             ideal_edge_length: constants::DEFAULT_EDGE_LENGTH,
+            default_edge_length: constants::DEFAULT_EDGE_LENGTH,
+            min_repulsion_dist: constants::MIN_REPULSION_DIST,
             spring_constant: constants::DEFAULT_SPRING_STRENGTH,
             repulsion_constant: constants::DEFAULT_REPULSION_STRENGTH,
             gravity_constant: constants::DEFAULT_GRAVITY_STRENGTH,
@@ -290,7 +298,7 @@ impl<V> FDLayout<V> {
                 let lca_depth = self.layout.graph_manager.graph_inclusion_tree_depth(lca)?;
 
                 let level_base = match self.version {
-                    LayoutVersion::V1 => constants::DEFAULT_EDGE_LENGTH,
+                    LayoutVersion::V1 => self.default_edge_length,
                     LayoutVersion::V2 => original_ideal_length,
                 };
 
@@ -720,7 +728,7 @@ impl<V> FDLayout<V> {
                 &rect_a,
                 &rect_b,
                 &mut overlap_amount,
-                constants::DEFAULT_EDGE_LENGTH / 2.0,
+                self.default_edge_length / 2.0,
             )
             .is_err()
             {
@@ -766,12 +774,12 @@ impl<V> FDLayout<V> {
             let mut distance_x = distance_x;
             let mut distance_y = distance_y;
 
-            if distance_x.abs() < constants::MIN_REPULSION_DIST {
-                distance_x = i_math::sign(distance_x) * constants::MIN_REPULSION_DIST;
+            if distance_x.abs() < self.min_repulsion_dist {
+                distance_x = i_math::sign(distance_x) * self.min_repulsion_dist;
             }
 
-            if distance_y.abs() < constants::MIN_REPULSION_DIST {
-                distance_y = i_math::sign(distance_y) * constants::MIN_REPULSION_DIST;
+            if distance_y.abs() < self.min_repulsion_dist {
+                distance_y = i_math::sign(distance_y) * self.min_repulsion_dist;
             }
 
             let distance_squared = distance_x * distance_x + distance_y * distance_y;

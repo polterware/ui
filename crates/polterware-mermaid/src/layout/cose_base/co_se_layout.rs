@@ -17,8 +17,9 @@
 //! can see the CoSE state; the repulsion-range override is applied right after
 //! [`FDLayout::init_spring_embedder`] ([`CoSELayout::init_spring_embedder`]).
 //!
-//! `Math.random()` in `findPlaceforPrunedNode` goes through layout-base's
-//! [`random_seed`], so a run repeats; upstream's has no seed.
+//! `Math.random()` in `findPlaceforPrunedNode` goes through the thread's
+//! [`random_seed`], so a run repeats; upstream's has no seed. cytoscape-fcose selects
+//! Mermaid's seeded `Math.random` there, and cose-bilkent selects layout-base's seed.
 //!
 //! `shiftToLastRow` reads `node.width`, which `LNode` does not define, so its guard is
 //! always false and the body never runs; the port keeps the method and says so instead of
@@ -226,6 +227,29 @@ pub struct CoSELayout<V = ()> {
     pub gravity_range_compound: Option<f64>,
     /// Initial energy on incremental layout.
     pub initial_energy_on_incremental: Option<f64>,
+    /// Whether zero-degree members and compound members are tiled, upstream's `TILE`.
+    pub tile: bool,
+    /// Radial separation of the trees of a forest layout, upstream's
+    /// `DEFAULT_RADIAL_SEPARATION`.
+    pub default_radial_separation: f64,
+    /// Whether tree reduction runs on an incremental run, upstream's
+    /// `TREE_REDUCTION_ON_INCREMENTAL`.
+    pub tree_reduction_on_incremental: bool,
+    /// Whether the constraint handler transforms the draft layout first, upstream's
+    /// `TRANSFORM_ON_CONSTRAINT_HANDLING`.
+    pub transform_on_constraint_handling: bool,
+    /// Whether the constraint handler enforces constraints, upstream's
+    /// `ENFORCE_CONSTRAINTS`.
+    pub enforce_constraints: bool,
+    /// Whether the spring embedder runs, upstream's `APPLY_LAYOUT`.
+    pub apply_layout: bool,
+    /// Whether the run is a pure incremental one, upstream's `PURE_INCREMENTAL`.
+    pub pure_incremental: bool,
+    /// Whether a run starts from its previous positions, upstream's `DEFAULT_INCREMENTAL`.
+    pub default_incremental: bool,
+    /// The relative position of each pruned node when [`CoSELayout::pure_incremental`]
+    /// is set, aligned with [`CoSELayout::pruned_nodes_all`].
+    pub pruned_relative_positions: Vec<Vec<(f64, f64)>>,
 }
 
 impl<V> Default for CoSELayout<V> {
@@ -284,6 +308,15 @@ impl<V> CoSELayout<V> {
             gravity_compound: None,
             gravity_range_compound: None,
             initial_energy_on_incremental: None,
+            tile: constants::TILE,
+            default_radial_separation: constants::DEFAULT_RADIAL_SEPARATION,
+            tree_reduction_on_incremental: constants::TREE_REDUCTION_ON_INCREMENTAL,
+            transform_on_constraint_handling: constants::TRANSFORM_ON_CONSTRAINT_HANDLING,
+            enforce_constraints: constants::ENFORCE_CONSTRAINTS,
+            apply_layout: constants::APPLY_LAYOUT,
+            pure_incremental: constants::PURE_INCREMENTAL,
+            default_incremental: layout_constants::DEFAULT_INCREMENTAL,
+            pruned_relative_positions: Vec::new(),
         }
     }
 
@@ -293,6 +326,7 @@ impl<V> CoSELayout<V> {
         let mut layout = Self::new();
         layout.version = CoSEVersion::V2;
         layout.fd.version = super::super::layout_base::fd::fd_layout::LayoutVersion::V2;
+        layout.tree_reduction_on_incremental = constants::TREE_REDUCTION_ON_INCREMENTAL_V2;
         layout
     }
 
@@ -321,10 +355,10 @@ impl<V> CoSELayout<V> {
         self.fd.init_parameters();
 
         if !self.fd.layout.is_sub_layout {
-            if constants::DEFAULT_EDGE_LENGTH < 10.0 {
+            if self.fd.default_edge_length < 10.0 {
                 self.fd.ideal_edge_length = 10.0;
             } else {
-                self.fd.ideal_edge_length = constants::DEFAULT_EDGE_LENGTH;
+                self.fd.ideal_edge_length = self.fd.default_edge_length;
             }
 
             self.fd.use_smart_ideal_edge_length_calculation =
@@ -373,6 +407,7 @@ impl<V> CoSELayout<V> {
 
             // Variables for tree reduction support.
             self.pruned_nodes_all = Vec::new();
+            self.pruned_relative_positions = Vec::new();
             self.grow_tree_iterations = 0;
             self.after_growth_iterations = 0;
             self.is_tree_growing = false;
@@ -386,6 +421,10 @@ impl<V> CoSELayout<V> {
                 constants::CONVERGENCE_CHECK_PERIOD as f64 / self.fd.max_iterations as f64;
             self.cooling_adjuster = 1.0;
         }
+
+        // Upstream reads `LayoutConstants.DEFAULT_INCREMENTAL`, which cytoscape-fcose
+        // raises to `true` for every run.
+        self.fd.layout.incremental = self.default_incremental;
     }
 
     /// Upstream `CoSELayout.prototype.layout`.
@@ -444,10 +483,7 @@ impl<V> CoSELayout<V> {
                 self.update_nodes_with_gravity()?;
                 self.fd.layout.position_nodes_randomly(None);
             }
-        } else if match self.version {
-            CoSEVersion::V1 => constants::TREE_REDUCTION_ON_INCREMENTAL,
-            CoSEVersion::V2 => constants::TREE_REDUCTION_ON_INCREMENTAL_V2,
-        } {
+        } else if self.tree_reduction_on_incremental {
             // Reduce the trees in incremental mode as well.
             self.reduce_trees()?;
             self.update_nodes_with_gravity()?;
@@ -460,7 +496,7 @@ impl<V> CoSELayout<V> {
 
         self.init_spring_embedder();
 
-        if self.version == CoSEVersion::V1 || constants::APPLY_LAYOUT {
+        if self.version == CoSEVersion::V1 || self.apply_layout {
             self.run_spring_embedder()?;
         }
 
@@ -1124,7 +1160,11 @@ impl<V> CoSELayout<V> {
 
                     self.fd.layout.graph_manager.update_bounds()?;
                     self.fd.update_grid();
-                    self.fd.cooling_factor = constants::DEFAULT_COOLING_FACTOR_INCREMENTAL;
+                    self.fd.cooling_factor = if self.pure_incremental {
+                        constants::DEFAULT_COOLING_FACTOR_INCREMENTAL / 2.0
+                    } else {
+                        constants::DEFAULT_COOLING_FACTOR_INCREMENTAL
+                    };
                 } else {
                     self.is_tree_growing = false;
                     self.is_growth_finished = true;
@@ -1144,8 +1184,13 @@ impl<V> CoSELayout<V> {
                 self.fd.update_grid();
             }
 
-            self.fd.cooling_factor = constants::DEFAULT_COOLING_FACTOR_INCREMENTAL
-                * ((100.0 - self.after_growth_iterations as f64) / 100.0);
+            self.fd.cooling_factor = if self.pure_incremental {
+                constants::DEFAULT_COOLING_FACTOR_INCREMENTAL / 2.0
+                    * ((100.0 - self.after_growth_iterations as f64) / 100.0)
+            } else {
+                constants::DEFAULT_COOLING_FACTOR_INCREMENTAL
+                    * ((100.0 - self.after_growth_iterations as f64) / 100.0)
+            };
             self.after_growth_iterations += 1;
         }
 
@@ -1347,6 +1392,7 @@ impl<V> CoSELayout<V> {
                 &tree,
                 center_node,
                 &current_starting_point,
+                self.default_radial_separation,
             );
 
             if point.y > height {
@@ -1371,9 +1417,9 @@ impl<V> CoSELayout<V> {
         tree: &[NodeId],
         center_node: NodeId,
         starting_point: &Point,
+        default_radial_separation: f64,
     ) -> PointD {
-        let radial_sep =
-            Self::max_diagonal_in_tree(manager, tree).max(constants::DEFAULT_RADIAL_SEPARATION);
+        let radial_sep = Self::max_diagonal_in_tree(manager, tree).max(default_radial_separation);
         Self::branch_radial_layout(manager, center_node, None, 0.0, 359.0, 0.0, radial_sep);
 
         let bounds = manager.calc_bounds(tree);
@@ -1525,7 +1571,7 @@ impl<V> CoSELayout<V> {
 
     /// Upstream `CoSELayout.prototype.tilingPreLayout`.
     pub fn tiling_pre_layout(&mut self) -> Result<(), LayoutError> {
-        if constants::TILE {
+        if self.tile {
             // Find zero-degree nodes and create a compound for each level.
             self.group_zero_degree_members()?;
             // Tile and clear the children of each compound.
@@ -1539,7 +1585,7 @@ impl<V> CoSELayout<V> {
 
     /// Upstream `CoSELayout.prototype.tilingPostLayout`.
     pub fn tiling_post_layout(&mut self) -> Result<(), LayoutError> {
-        if constants::TILE {
+        if self.tile {
             self.repopulate_zero_degree_members();
             self.repopulate_compounds();
         }
@@ -2202,11 +2248,13 @@ impl<V> CoSELayout<V> {
     /// at a time, remembering the node, its edge, and its owner.
     pub fn reduce_trees(&mut self) -> Result<(), LayoutError> {
         let mut pruned_nodes_all: Vec<Vec<PrunedNode>> = Vec::new();
+        let mut pruned_relative_all: Vec<Vec<(f64, f64)>> = Vec::new();
         let mut contains_leaf = true;
 
         while contains_leaf {
             let all_nodes = self.fd.layout.get_all_nodes();
             let mut pruned_nodes_in_step_temp: Vec<PrunedNode> = Vec::new();
+            let mut pruned_relative_in_step_temp: Vec<Option<(f64, f64)>> = Vec::new();
             contains_leaf = false;
 
             for node in all_nodes {
@@ -2227,21 +2275,34 @@ impl<V> CoSELayout<V> {
                         .owner
                         .ok_or(LayoutError("assert failed"))?;
 
+                    let relative = if self.pure_incremental {
+                        self.relative_position_to_other_end(node, edges[0])
+                    } else {
+                        None
+                    };
                     pruned_nodes_in_step_temp.push(PrunedNode {
                         node,
                         edge: edges[0],
                         owner,
                     });
+                    pruned_relative_in_step_temp.push(relative);
                     contains_leaf = true;
                 }
             }
 
             if contains_leaf {
                 let mut pruned_nodes_in_step: Vec<PrunedNode> = Vec::new();
+                let mut pruned_relative_in_step: Vec<(f64, f64)> = Vec::new();
 
-                for data in pruned_nodes_in_step_temp {
+                for (data, relative) in pruned_nodes_in_step_temp
+                    .into_iter()
+                    .zip(pruned_relative_in_step_temp)
+                {
                     if self.fd.layout.graph_manager.node(data.node).edges.len() == 1 {
                         pruned_nodes_in_step.push(data);
+                        if let Some(relative) = relative {
+                            pruned_relative_in_step.push(relative);
+                        }
                         self.fd
                             .layout
                             .graph_manager
@@ -2250,6 +2311,7 @@ impl<V> CoSELayout<V> {
                 }
 
                 pruned_nodes_all.push(pruned_nodes_in_step);
+                pruned_relative_all.push(pruned_relative_in_step);
 
                 self.fd.layout.graph_manager.reset_all_nodes();
                 self.fd.layout.graph_manager.reset_all_edges();
@@ -2257,8 +2319,27 @@ impl<V> CoSELayout<V> {
         }
 
         self.pruned_nodes_all = pruned_nodes_all;
+        self.pruned_relative_positions = pruned_relative_all;
 
         Ok(())
+    }
+
+    /// The center of `node` minus the center of the other end of `edge`, upstream's
+    /// `relativePosition` of a pure incremental run.
+    fn relative_position_to_other_end(&self, node: NodeId, edge: EdgeId) -> Option<(f64, f64)> {
+        let edge = self.fd.layout.graph_manager.edge(edge);
+        let other = if edge.source == Some(node) {
+            edge.target
+        } else {
+            edge.source
+        }?;
+        let node = self.fd.layout.graph_manager.node(node);
+        let other = self.fd.layout.graph_manager.node(other);
+
+        Some((
+            node.get_center_x() - other.get_center_x(),
+            node.get_center_y() - other.get_center_y(),
+        ))
     }
 
     /// Upstream `CoSELayout.prototype.growTree`: put the nodes of the last pruned step
@@ -2267,9 +2348,14 @@ impl<V> CoSELayout<V> {
         let Some(pruned_nodes_in_step) = self.pruned_nodes_all.last().cloned() else {
             return Ok(());
         };
+        let relative_in_step = self.pruned_relative_positions.last().cloned();
 
-        for data in &pruned_nodes_in_step {
-            self.find_place_for_pruned_node(data)?;
+        for (index, data) in pruned_nodes_in_step.iter().enumerate() {
+            let relative = relative_in_step
+                .as_ref()
+                .and_then(|relative| relative.get(index))
+                .copied();
+            self.find_place_for_pruned_node_with_relative(data, relative)?;
 
             let (source, target) = {
                 let edge = self.fd.layout.graph_manager.edge(data.edge);
@@ -2290,6 +2376,9 @@ impl<V> CoSELayout<V> {
         }
 
         self.pruned_nodes_all.pop();
+        if !self.pruned_relative_positions.is_empty() {
+            self.pruned_relative_positions.pop();
+        }
         self.fd.layout.graph_manager.reset_all_nodes();
         self.fd.layout.graph_manager.reset_all_edges();
 
@@ -2301,6 +2390,16 @@ impl<V> CoSELayout<V> {
     pub fn find_place_for_pruned_node(
         &mut self,
         node_data: &PrunedNode,
+    ) -> Result<(), LayoutError> {
+        self.find_place_for_pruned_node_with_relative(node_data, None)
+    }
+
+    /// [`CoSELayout::find_place_for_pruned_node`] with the relative position upstream
+    /// keeps for a pure incremental run.
+    fn find_place_for_pruned_node_with_relative(
+        &mut self,
+        node_data: &PrunedNode,
+        relative: Option<(f64, f64)>,
     ) -> Result<(), LayoutError> {
         self.fd.sync_arenas();
 
@@ -2316,6 +2415,20 @@ impl<V> CoSELayout<V> {
             }
             .ok_or(LayoutError("assert failed"))?
         };
+
+        if let Some((relative_x, relative_y)) = relative {
+            let center = {
+                let node = self.fd.layout.graph_manager.node(node_to_connect);
+                (node.get_center_x(), node.get_center_y())
+            };
+            self.fd
+                .layout
+                .graph_manager
+                .node_mut(pruned_node)
+                .set_center(center.0 + relative_x, center.1 + relative_y);
+
+            return Ok(());
+        }
 
         let (start_grid_x, finish_grid_x, start_grid_y, finish_grid_y) = {
             let node = self.fd.node(node_to_connect);
@@ -2426,21 +2539,22 @@ impl<V> CoSELayout<V> {
             )
         };
 
+        let default_edge_length = self.fd.default_edge_length;
         let (x, y) = match grid_for_pruned_node {
             0 => (
                 center_x,
-                center_y - height / 2.0 - constants::DEFAULT_EDGE_LENGTH - pruned_height / 2.0,
+                center_y - height / 2.0 - default_edge_length - pruned_height / 2.0,
             ),
             1 => (
-                center_x + width / 2.0 + constants::DEFAULT_EDGE_LENGTH + pruned_width / 2.0,
+                center_x + width / 2.0 + default_edge_length + pruned_width / 2.0,
                 center_y,
             ),
             2 => (
                 center_x,
-                center_y + height / 2.0 + constants::DEFAULT_EDGE_LENGTH + pruned_height / 2.0,
+                center_y + height / 2.0 + default_edge_length + pruned_height / 2.0,
             ),
             _ => (
-                center_x - width / 2.0 - constants::DEFAULT_EDGE_LENGTH - pruned_width / 2.0,
+                center_x - width / 2.0 - default_edge_length - pruned_width / 2.0,
                 center_y,
             ),
         };

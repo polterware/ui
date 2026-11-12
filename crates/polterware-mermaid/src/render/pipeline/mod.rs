@@ -11,6 +11,7 @@
 //! - [`edge_corner_radius`]: `edgeCornerRadius.ts`
 //! - [`dagre`]: `layout-algorithms/dagre/index.js`
 //! - [`cose_bilkent`][]: `layout-algorithms/cose-bilkent/index.js`
+//! - [`fcose`]: the `fcose` layout of cytoscape-fcose, run by the architecture renderer
 
 pub mod clone_layout_data_for_measure;
 pub mod cose_bilkent;
@@ -18,6 +19,7 @@ pub mod create_graph;
 pub mod dagre;
 pub mod edge_corner_radius;
 pub mod edge_step;
+pub mod fcose;
 pub mod label_transform;
 pub mod setup_view_port_for_svg;
 pub mod types;
@@ -35,6 +37,7 @@ pub use create_graph::*;
 pub use dagre::*;
 pub use edge_corner_radius::*;
 pub use edge_step::*;
+pub use fcose::*;
 pub use label_transform::*;
 pub use setup_view_port_for_svg::*;
 pub use types::*;
@@ -76,6 +79,13 @@ fn get_registry() -> HashMap<String, LayoutLoaderDefinition> {
         },
     );
     map.insert(
+        "fcose".to_string(),
+        LayoutLoaderDefinition {
+            name: "fcose".to_string(),
+            algorithm: None,
+        },
+    );
+    map.insert(
         "swimlane".to_string(),
         LayoutLoaderDefinition {
             name: "swimlane".to_string(),
@@ -101,6 +111,13 @@ pub fn register_layout_loaders(loaders: Vec<LayoutLoaderDefinition>) {
             "cose-bilkent".to_string(),
             LayoutLoaderDefinition {
                 name: "cose-bilkent".to_string(),
+                algorithm: None,
+            },
+        );
+        m.insert(
+            "fcose".to_string(),
+            LayoutLoaderDefinition {
+                name: "fcose".to_string(),
                 algorithm: None,
             },
         );
@@ -133,6 +150,10 @@ pub fn register_default_layout_loaders() {
         },
         LayoutLoaderDefinition {
             name: "cose-bilkent".to_string(),
+            algorithm: None,
+        },
+        LayoutLoaderDefinition {
+            name: "fcose".to_string(),
             algorithm: None,
         },
         LayoutLoaderDefinition {
@@ -181,6 +202,7 @@ pub fn render(
 
     match resolved_algo.as_str() {
         "cose-bilkent" => cose_bilkent_render(data4_layout, measure),
+        "fcose" => fcose_render(data4_layout, measure),
         _ => dagre_render(data4_layout, measure),
     }
 }

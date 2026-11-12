@@ -1,0 +1,134 @@
+{
+  "name": "star-proof",
+  "input": {
+    "nodes": [
+      {
+        "id": "hub",
+        "parentId": null,
+        "x": 100,
+        "y": 100,
+        "width": 60,
+        "height": 60,
+        "padding": 0
+      },
+      {
+        "id": "a",
+        "parentId": null,
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "b",
+        "parentId": null,
+        "x": 200,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "c",
+        "parentId": null,
+        "x": 200,
+        "y": 200,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "d",
+        "parentId": null,
+        "x": 0,
+        "y": 200,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "e",
+        "parentId": null,
+        "x": 100,
+        "y": 300,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": "ha",
+        "source": "hub",
+        "target": "a"
+      },
+      {
+        "id": "hb",
+        "source": "hub",
+        "target": "b"
+      },
+      {
+        "id": "hc",
+        "source": "hub",
+        "target": "c"
+      },
+      {
+        "id": "hd",
+        "source": "hub",
+        "target": "d"
+      },
+      {
+        "id": "he",
+        "source": "hub",
+        "target": "e"
+      }
+    ],
+    "options": {
+      "quality": "proof",
+      "randomize": true,
+      "seed": 2,
+      "nodeSeparation": 75,
+      "sampleSize": 25,
+      "numIter": 500,
+      "piTol": 1e-7,
+      "samplingType": true,
+      "idealEdgeLength": 50,
+      "edgeElasticity": 0.45
+    }
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "hub",
+        "x": 100.47996044865482,
+        "y": 150.74560437009805
+      },
+      {
+        "id": "a",
+        "x": -5.106467517611094,
+        "y": 141.58867634010508
+      },
+      {
+        "id": "b",
+        "x": 131.16094422446082,
+        "y": 254.8426097280152
+      },
+      {
+        "id": "c",
+        "x": 93.66659082452331,
+        "y": 45.15739027198484
+      },
+      {
+        "id": "d",
+        "x": 33.063522309729564,
+        "y": 244.2321402046103
+      },
+      {
+        "id": "e",
+        "x": 205.10646751761107,
+        "y": 145.27410074717812
+      }
+    ]
+  }
+}

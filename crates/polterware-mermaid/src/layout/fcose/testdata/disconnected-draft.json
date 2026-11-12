@@ -1,0 +1,124 @@
+{
+  "name": "disconnected-draft",
+  "input": {
+    "nodes": [
+      {
+        "id": "a",
+        "parentId": null,
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "b",
+        "parentId": null,
+        "x": 80,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "c",
+        "parentId": null,
+        "x": 0,
+        "y": 120,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "d",
+        "parentId": null,
+        "x": 80,
+        "y": 120,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "e",
+        "parentId": null,
+        "x": 0,
+        "y": 240,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "f",
+        "parentId": null,
+        "x": 80,
+        "y": 240,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": "ab",
+        "source": "a",
+        "target": "b"
+      },
+      {
+        "id": "cd",
+        "source": "c",
+        "target": "d"
+      },
+      {
+        "id": "ef",
+        "source": "e",
+        "target": "f"
+      }
+    ],
+    "options": {
+      "quality": "draft",
+      "randomize": true,
+      "seed": 5,
+      "nodeSeparation": 50,
+      "sampleSize": 25,
+      "numIter": 2500,
+      "piTol": 1e-7,
+      "samplingType": true,
+      "idealEdgeLength": 50,
+      "edgeElasticity": 0.45
+    }
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 86.19936907608789,
+        "y": 74.59674334562754
+      },
+      {
+        "id": "b",
+        "x": 139.27725754674668,
+        "y": 51.89535993813957
+      },
+      {
+        "id": "c",
+        "x": -13.077888470658799,
+        "y": 62.68208534763778
+      },
+      {
+        "id": "d",
+        "x": -59.2772575467467,
+        "y": 28.066043942160036
+      },
+      {
+        "id": "e",
+        "x": 26.242343797129173,
+        "y": 154.61604140547774
+      },
+      {
+        "id": "f",
+        "x": 19.363206988829244,
+        "y": 211.93395605783996
+      }
+    ]
+  }
+}

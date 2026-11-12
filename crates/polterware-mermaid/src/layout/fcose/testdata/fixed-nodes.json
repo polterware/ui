@@ -1,0 +1,131 @@
+{
+  "name": "fixed-nodes",
+  "input": {
+    "nodes": [
+      {
+        "id": "a",
+        "parentId": null,
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "b",
+        "parentId": null,
+        "x": 100,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "c",
+        "parentId": null,
+        "x": 200,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "d",
+        "parentId": null,
+        "x": 200,
+        "y": 100,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "e",
+        "parentId": null,
+        "x": 300,
+        "y": 200,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": "ab",
+        "source": "a",
+        "target": "b"
+      },
+      {
+        "id": "bc",
+        "source": "b",
+        "target": "c"
+      },
+      {
+        "id": "cd",
+        "source": "c",
+        "target": "d"
+      },
+      {
+        "id": "de",
+        "source": "d",
+        "target": "e"
+      }
+    ],
+    "options": {
+      "quality": "proof",
+      "randomize": false,
+      "seed": 1,
+      "nodeSeparation": 75,
+      "sampleSize": 25,
+      "numIter": 2500,
+      "piTol": 1e-7,
+      "samplingType": true,
+      "idealEdgeLength": 50,
+      "edgeElasticity": 0.45,
+      "fixedNodeConstraint": [
+        {
+          "nodeId": "a",
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "nodeId": "e",
+          "position": {
+            "x": 300,
+            "y": 200
+          }
+        }
+      ]
+    }
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "b",
+        "x": 93.83670108204316,
+        "y": -0.8084348863216775
+      },
+      {
+        "id": "c",
+        "x": 184.62351920012108,
+        "y": 31.151351663070116
+      },
+      {
+        "id": "d",
+        "x": 236.41189759766343,
+        "y": 117.26985358856463
+      },
+      {
+        "id": "e",
+        "x": 300,
+        "y": 200
+      }
+    ]
+  }
+}

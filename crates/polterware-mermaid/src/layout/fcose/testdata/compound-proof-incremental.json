@@ -1,0 +1,137 @@
+{
+  "name": "compound-proof-incremental",
+  "input": {
+    "nodes": [
+      {
+        "id": "g1",
+        "parentId": null,
+        "x": 50,
+        "y": 0,
+        "width": 222,
+        "height": 122,
+        "padding": 20
+      },
+      {
+        "id": "g2",
+        "parentId": null,
+        "x": 350,
+        "y": 100,
+        "width": 222,
+        "height": 122,
+        "padding": 20
+      },
+      {
+        "id": "a",
+        "parentId": "g1",
+        "x": 0,
+        "y": 0,
+        "width": 80,
+        "height": 80,
+        "padding": 0
+      },
+      {
+        "id": "b",
+        "parentId": "g1",
+        "x": 100,
+        "y": 0,
+        "width": 80,
+        "height": 80,
+        "padding": 0
+      },
+      {
+        "id": "c",
+        "parentId": "g2",
+        "x": 300,
+        "y": 100,
+        "width": 80,
+        "height": 80,
+        "padding": 0
+      },
+      {
+        "id": "d",
+        "parentId": "g2",
+        "x": 400,
+        "y": 100,
+        "width": 80,
+        "height": 80,
+        "padding": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": "ab",
+        "source": "a",
+        "target": "b"
+      },
+      {
+        "id": "cd",
+        "source": "c",
+        "target": "d"
+      },
+      {
+        "id": "ac",
+        "source": "a",
+        "target": "c"
+      },
+      {
+        "id": "bd",
+        "source": "b",
+        "target": "d"
+      }
+    ],
+    "options": {
+      "quality": "proof",
+      "randomize": false,
+      "seed": 1,
+      "nodeSeparation": 75,
+      "sampleSize": 25,
+      "numIter": 2500,
+      "piTol": 1e-7,
+      "samplingType": true,
+      "idealEdgeLength": {
+        "byParent": true,
+        "same": 120,
+        "cross": 40
+      },
+      "edgeElasticity": {
+        "byParent": true,
+        "same": 0.45,
+        "cross": 0.001
+      }
+    }
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "g1",
+        "x": -12.199575147456557,
+        "y": -21.1512713074521
+      },
+      {
+        "id": "g2",
+        "x": 412.19957514745647,
+        "y": 121.1512713074521
+      },
+      {
+        "id": "a",
+        "x": -112.54285802804895,
+        "y": -21.1512713074521
+      },
+      {
+        "id": "b",
+        "x": 88.14370773313584,
+        "y": -21.1512713074521
+      },
+      {
+        "id": "c",
+        "x": 311.85629226686405,
+        "y": 121.1512713074521
+      },
+      {
+        "id": "d",
+        "x": 512.542858028049,
+        "y": 121.1512713074521
+      }
+    ]
+  }
+}

@@ -394,6 +394,18 @@ pub fn cose_bilkent_render(
 ) -> Result<Scene, LayoutError> {
     validate_layout_data(data4_layout)?;
 
+    render_layout_result(data4_layout, measure, |data| {
+        execute_cose_bilkent_layout(data, &data.config)
+    })
+}
+
+/// Measures the layout data, runs `execute` for its positions, and paints the scene.
+/// The cose-bilkent and fcose renderers differ only in `execute`.
+pub(crate) fn render_layout_result(
+    data4_layout: &mut LayoutData,
+    measure: &dyn TextMeasure,
+    execute: impl FnOnce(&LayoutData) -> Result<LayoutResult, LayoutError>,
+) -> Result<Scene, LayoutError> {
     let diagram_id = data4_layout
         .diagram_id
         .clone()
@@ -425,7 +437,7 @@ pub fn cose_bilkent_render(
     .map_err(|e| LayoutError::Dagre(format!("Measure failed: {e}")))?;
 
     // Step 2: Run layout algorithm
-    let layout_result = execute_cose_bilkent_layout(data4_layout, &data4_layout.config)?;
+    let layout_result = execute(data4_layout)?;
 
     // Step 3: Position nodes and clusters
     for pos_node in &layout_result.nodes {

@@ -1,0 +1,124 @@
+{
+  "name": "nested-compound-default",
+  "input": {
+    "nodes": [
+      {
+        "id": "outer",
+        "parentId": null,
+        "x": 144.5,
+        "y": 0,
+        "width": 413,
+        "height": 124,
+        "padding": 30
+      },
+      {
+        "id": "inner",
+        "parentId": "outer",
+        "x": 40,
+        "y": 0,
+        "width": 142,
+        "height": 62,
+        "padding": 10
+      },
+      {
+        "id": "a",
+        "parentId": "inner",
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "b",
+        "parentId": "inner",
+        "x": 80,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "c",
+        "parentId": "outer",
+        "x": 300,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "d",
+        "parentId": null,
+        "x": 200,
+        "y": 200,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": "ab",
+        "source": "a",
+        "target": "b"
+      },
+      {
+        "id": "bc",
+        "source": "b",
+        "target": "c"
+      },
+      {
+        "id": "cd",
+        "source": "c",
+        "target": "d"
+      }
+    ],
+    "options": {
+      "quality": "default",
+      "randomize": true,
+      "seed": 7,
+      "nodeSeparation": 75,
+      "sampleSize": 25,
+      "numIter": 2500,
+      "piTol": 1e-7,
+      "samplingType": true,
+      "idealEdgeLength": 50,
+      "edgeElasticity": 0.45
+    }
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "outer",
+        "x": 96.42398411615638,
+        "y": 88.25119680877793
+      },
+      {
+        "id": "inner",
+        "x": 38.75925859800271,
+        "y": 97.93823801334736
+      },
+      {
+        "id": "a",
+        "x": -9.315981571659506,
+        "y": 99.17775710215624
+      },
+      {
+        "id": "b",
+        "x": 86.83449876766493,
+        "y": 96.69871892453847
+      },
+      {
+        "id": "c",
+        "x": 213.16394980397226,
+        "y": 66.32463651539963
+      },
+      {
+        "id": "d",
+        "x": 338.3159815716595,
+        "y": 18.822242897843765
+      }
+    ]
+  }
+}
