@@ -1,0 +1,555 @@
+{
+  "name": "05-excludes-and-includes",
+  "source": "gantt\n  dateFormat YYYY-MM-DD\n  excludes weekends\n  includes 2024-05-06\n  section Sprint\n  Planning :p1, 2024-05-01, 4d\n  Development :p2, after p1, 12d\n  Release :p3, after p2, 2d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 172
+    },
+    "rawViewBox": "0 0 900 172",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": -2103
+    },
+    "excludeRects": [
+      {
+        "class": "exclude-range",
+        "x": 162,
+        "y": 35,
+        "width": 57,
+        "height": 87,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "exclude-range",
+        "x": 363,
+        "y": 35,
+        "width": 58,
+        "height": 87,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "exclude-range",
+        "x": 565,
+        "y": 35,
+        "width": 58,
+        "height": 87,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "exclude-range",
+        "x": 767,
+        "y": 35,
+        "width": 58,
+        "height": 87,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 122
+        },
+        "domain": "M0.5,-87V0.5H750.5V-87",
+        "ticks": [
+          {
+            "transform": {
+              "x": 0.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 58.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-03",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 115.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-05",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 173.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-07",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 231.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-09",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 288.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-11",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 346.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-13",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 404.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-15",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 462.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-17",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 519.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-19",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 577.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-21",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 635.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-23",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 692.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-25",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 750.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-05-27",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 72,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 96,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task task0",
+        "x": 75,
+        "y": 50,
+        "width": 173,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "161.5px 60px"
+      },
+      {
+        "class": "task task0",
+        "x": 248,
+        "y": 74,
+        "width": 462,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "479px 84px"
+      },
+      {
+        "class": "task task0",
+        "x": 710,
+        "y": 98,
+        "width": 57,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "767.5px 108px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "Planning ",
+        "class": "taskText taskText0  width-59.39999999999999",
+        "x": 161.5,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 59.39999999999999,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Development ",
+        "class": "taskText taskText0  width-79.19999999999999",
+        "x": 479,
+        "y": 87.5,
+        "dy": null,
+        "baselines": [
+          87.5
+        ],
+        "fontSize": 11,
+        "width": 79.19999999999999,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Release ",
+        "class": "taskText taskText0  width-52.8",
+        "x": 738.5,
+        "y": 111.5,
+        "dy": null,
+        "baselines": [
+          111.5
+        ],
+        "fontSize": 11,
+        "width": 52.8,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "Sprint",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 86,
+        "dy": "0em",
+        "baselines": [
+          86
+        ],
+        "fontSize": 11,
+        "width": 39.599999999999994,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": {
+      "x1": -2103,
+      "x2": -2103,
+      "y1": 25,
+      "y2": 147,
+      "style": null
+    },
+    "title": {
+      "text": "",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}

@@ -1,0 +1,409 @@
+{
+  "name": "10-compact-display",
+  "source": "%%{init: {\"gantt\": {\"displayMode\": \"compact\"}}}%%\ngantt\n  dateFormat YYYY-MM-DD\n  section Overlapping\n  One :o1, 2024-09-01, 3d\n  Two :o2, 2024-09-05, 3d\n  Three :o3, 2024-09-06, 4d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 148
+    },
+    "rawViewBox": "0 0 900 148",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": -16467
+    },
+    "excludeRects": [],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 98
+        },
+        "domain": "M0.5,-63V0.5H750.5V-63",
+        "ticks": [
+          {
+            "transform": {
+              "x": 0.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 83.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-02",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 167.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-03",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 250.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-04",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 333.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-05",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 417.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 500.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-07",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 583.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-08",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 667.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-09",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 750.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "2024-09-10",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 72,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task task0",
+        "x": 75,
+        "y": 50,
+        "width": 250,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "200px 60px"
+      },
+      {
+        "class": "task task0",
+        "x": 408,
+        "y": 50,
+        "width": 250,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "533px 60px"
+      },
+      {
+        "class": "task task0",
+        "x": 492,
+        "y": 74,
+        "width": 333,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "658.5px 84px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "One ",
+        "class": "taskText taskText0  width-26.4",
+        "x": 200,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 26.4,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Two ",
+        "class": "taskText taskText0  width-26.4",
+        "x": 533,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 26.4,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Three ",
+        "class": "taskText taskText0  width-39.599999999999994",
+        "x": 658.5,
+        "y": 87.5,
+        "dy": null,
+        "baselines": [
+          87.5
+        ],
+        "fontSize": 11,
+        "width": 39.599999999999994,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "Overlapping",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 74,
+        "dy": "0em",
+        "baselines": [
+          74
+        ],
+        "fontSize": 11,
+        "width": 72.6,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": {
+      "x1": -16467,
+      "x2": -16467,
+      "y1": 25,
+      "y2": 123,
+      "style": null
+    },
+    "title": {
+      "text": "",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}

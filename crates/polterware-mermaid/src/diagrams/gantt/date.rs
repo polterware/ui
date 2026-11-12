@@ -130,21 +130,24 @@ impl Date {
 
     /// Today's date at midnight, UTC (upstream's `new Date()` with `setHours(0, 0, 0, 0)`).
     pub(crate) fn today() -> Self {
+        Self::now().midnight()
+    }
+
+    /// The current wall clock, UTC (upstream's `new Date()` in `drawToday`).
+    pub(crate) fn now() -> Self {
         let milliseconds = match SystemTime::now().duration_since(UNIX_EPOCH) {
             Ok(elapsed) => i64::try_from(elapsed.as_millis()).unwrap_or(MAX_TIME),
             Err(error) => -i64::try_from(error.duration().as_millis()).unwrap_or(MAX_TIME),
         };
-        Self::from_epoch_milliseconds(milliseconds)
-            .unwrap_or(Self {
-                year: 1970,
-                month: 1,
-                day: 1,
-                hour: 0,
-                minute: 0,
-                second: 0,
-                millisecond: 0,
-            })
-            .midnight()
+        Self::from_epoch_milliseconds(milliseconds).unwrap_or(Self {
+            year: 1970,
+            month: 1,
+            day: 1,
+            hour: 0,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+        })
     }
 
     /// Milliseconds since the Unix epoch, read as UTC.

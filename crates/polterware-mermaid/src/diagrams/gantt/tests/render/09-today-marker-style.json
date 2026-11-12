@@ -1,0 +1,425 @@
+{
+  "name": "09-today-marker-style",
+  "source": "gantt\n  dateFormat YYYY-MM-DD\n  todayMarker stroke-width:5px,stroke:#0f0,opacity:0.5\n  section Today\n  Work :t1, 2024-02-01, 25d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 124
+    },
+    "rawViewBox": "0 0 900 124",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": 510
+    },
+    "excludeRects": [],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 74
+        },
+        "domain": "M0.5,-39V0.5H750.5V-39",
+        "ticks": [
+          {
+            "transform": {
+              "x": 0.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 60.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-03",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 120.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-05",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 180.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-07",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 240.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-09",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 300.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-11",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 360.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-13",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 420.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-15",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 480.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-17",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 540.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-19",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 600.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-21",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 660.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-23",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 720.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -39
+            },
+            "text": {
+              "text": "2024-02-25",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task task0",
+        "x": 75,
+        "y": 50,
+        "width": 750,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "450px 60px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "Work ",
+        "class": "taskText taskText0  width-33",
+        "x": 450,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 33,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "Today",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 62,
+        "dy": "0em",
+        "baselines": [
+          62
+        ],
+        "fontSize": 11,
+        "width": 33,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": {
+      "x1": 510,
+      "x2": 510,
+      "y1": 25,
+      "y2": 99,
+      "style": "stroke-width:5px;stroke:#0f0;opacity:0.5"
+    },
+    "title": {
+      "text": "",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}

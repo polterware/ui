@@ -1,0 +1,237 @@
+{
+  "name": "13-month-interval-today-off",
+  "source": "gantt\n  dateFormat YYYY-MM-DD\n  tickInterval 3month\n  todayMarker off\n  section Quarters\n  Q1 :q1, 2024-01-01, 90d\n  Q2 :q2, after q1, 91d\n  Q3 :q3, after q2, 92d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 172
+    },
+    "rawViewBox": "0 0 900 172",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": null
+    },
+    "excludeRects": [],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 122
+        },
+        "domain": "M0.5,-87V0.5H750.5V-87",
+        "ticks": [
+          {
+            "transform": {
+              "x": 0.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-01-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 250.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-04-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 500.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-07-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 72,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 96,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task task0",
+        "x": 75,
+        "y": 50,
+        "width": 247,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "198.5px 60px"
+      },
+      {
+        "class": "task task0",
+        "x": 322,
+        "y": 74,
+        "width": 250,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "447px 84px"
+      },
+      {
+        "class": "task task0",
+        "x": 572,
+        "y": 98,
+        "width": 253,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "698.5px 108px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "Q1 ",
+        "class": "taskText taskText0  width-19.799999999999997",
+        "x": 198.5,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 19.799999999999997,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Q2 ",
+        "class": "taskText taskText0  width-19.799999999999997",
+        "x": 447,
+        "y": 87.5,
+        "dy": null,
+        "baselines": [
+          87.5
+        ],
+        "fontSize": 11,
+        "width": 19.799999999999997,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Q3 ",
+        "class": "taskText taskText0  width-19.799999999999997",
+        "x": 698.5,
+        "y": 111.5,
+        "dy": null,
+        "baselines": [
+          111.5
+        ],
+        "fontSize": 11,
+        "width": 19.799999999999997,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "Quarters",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 86,
+        "dy": "0em",
+        "baselines": [
+          86
+        ],
+        "fontSize": 11,
+        "width": 52.8,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": null,
+    "title": {
+      "text": "",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}

@@ -1,0 +1,417 @@
+{
+  "name": "01-basic",
+  "source": "gantt\n  title A basic gantt\n  dateFormat YYYY-MM-DD\n  axisFormat %Y-%m-%d\n  section Design\n  Research :a1, 2024-01-01, 10d\n  Prototype :a2, after a1, 14d\n  section Build\n  Implementation :b1, 2024-02-01, 21d\n  Review :b2, after b1, 5d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 196
+    },
+    "rawViewBox": "0 0 900 196",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": 674
+    },
+    "excludeRects": [],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 146
+        },
+        "domain": "M0.5,-111V0.5H750.5V-111",
+        "ticks": [
+          {
+            "transform": {
+              "x": 79.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -111
+            },
+            "text": {
+              "text": "2024-01-07",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 171.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -111
+            },
+            "text": {
+              "text": "2024-01-14",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 263.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -111
+            },
+            "text": {
+              "text": "2024-01-21",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 355.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -111
+            },
+            "text": {
+              "text": "2024-01-28",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 447.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -111
+            },
+            "text": {
+              "text": "2024-02-04",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 539.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -111
+            },
+            "text": {
+              "text": "2024-02-11",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 632.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -111
+            },
+            "text": {
+              "text": "2024-02-18",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 724.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -111
+            },
+            "text": {
+              "text": "2024-02-25",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 72,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section1",
+        "x": 0,
+        "y": 96,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section1",
+        "x": 0,
+        "y": 120,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task task0",
+        "x": 75,
+        "y": 50,
+        "width": 132,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "141px 60px"
+      },
+      {
+        "class": "task task0",
+        "x": 207,
+        "y": 74,
+        "width": 184,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "299px 84px"
+      },
+      {
+        "class": "task task1",
+        "x": 483,
+        "y": 98,
+        "width": 276,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "621px 108px"
+      },
+      {
+        "class": "task task1",
+        "x": 759,
+        "y": 122,
+        "width": 66,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "792px 132px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "Research ",
+        "class": "taskText taskText0  width-59.39999999999999",
+        "x": 141,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 59.39999999999999,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Prototype ",
+        "class": "taskText taskText0  width-66",
+        "x": 299,
+        "y": 87.5,
+        "dy": null,
+        "baselines": [
+          87.5
+        ],
+        "fontSize": 11,
+        "width": 66,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Implementation ",
+        "class": "taskText taskText1  width-99",
+        "x": 621,
+        "y": 111.5,
+        "dy": null,
+        "baselines": [
+          111.5
+        ],
+        "fontSize": 11,
+        "width": 99,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Review ",
+        "class": "taskText taskText1  width-46.2",
+        "x": 792,
+        "y": 135.5,
+        "dy": null,
+        "baselines": [
+          135.5
+        ],
+        "fontSize": 11,
+        "width": 46.2,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "Design",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 74,
+        "dy": "0em",
+        "baselines": [
+          74
+        ],
+        "fontSize": 11,
+        "width": 39.599999999999994,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Build",
+        "class": "sectionTitle sectionTitle1",
+        "x": 10,
+        "y": 122,
+        "dy": "0em",
+        "baselines": [
+          122
+        ],
+        "fontSize": 11,
+        "width": 33,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": {
+      "x1": 674,
+      "x2": 674,
+      "y1": 25,
+      "y2": 171,
+      "style": null
+    },
+    "title": {
+      "text": "A basic gantt",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}

@@ -1,0 +1,468 @@
+{
+  "name": "03-milestones",
+  "source": "gantt\n  dateFormat YYYY-MM-DD\n  section Milestones\n  Kickoff :milestone, m1, 2024-03-01, 0d\n  Work :w1, 2024-03-04, 8d\n  Launch :milestone, m2, 2024-03-12, 0d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 172
+    },
+    "rawViewBox": "0 0 900 172",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": -914
+    },
+    "excludeRects": [],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 122
+        },
+        "domain": "M0.5,-87V0.5H750.5V-87",
+        "ticks": [
+          {
+            "transform": {
+              "x": 0.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 68.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-02",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 136.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-03",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 205.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-04",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 273.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-05",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 341.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 409.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-07",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 477.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-08",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 545.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-09",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 614.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-10",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 682.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-11",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 750.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -87
+            },
+            "text": {
+              "text": "2024-03-12",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 72,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 96,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task milestone  task0",
+        "x": 65,
+        "y": 50,
+        "width": 20,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "75px 60px"
+      },
+      {
+        "class": "task task0",
+        "x": 280,
+        "y": 74,
+        "width": 545,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "552.5px 84px"
+      },
+      {
+        "class": "task milestone  task0",
+        "x": 815,
+        "y": 98,
+        "width": 20,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "825px 108px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "Kickoff ",
+        "class": "taskTextOutsideRight taskTextOutside0  milestoneText width-52.8",
+        "x": 90,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 52.8,
+        "anchor": "start",
+        "italic": true,
+        "bold": false
+      },
+      {
+        "text": "Work ",
+        "class": "taskText taskText0  width-33",
+        "x": 552.5,
+        "y": 87.5,
+        "dy": null,
+        "baselines": [
+          87.5
+        ],
+        "fontSize": 11,
+        "width": 33,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Launch ",
+        "class": "taskTextOutsideLeft taskTextOutside0  milestoneText",
+        "x": 810,
+        "y": 111.5,
+        "dy": null,
+        "baselines": [
+          111.5
+        ],
+        "fontSize": 11,
+        "width": 46.2,
+        "anchor": "end",
+        "italic": true,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "Milestones",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 86,
+        "dy": "0em",
+        "baselines": [
+          86
+        ],
+        "fontSize": 11,
+        "width": 66,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": {
+      "x1": -914,
+      "x2": -914,
+      "y1": 25,
+      "y2": 147,
+      "style": null
+    },
+    "title": {
+      "text": "",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}

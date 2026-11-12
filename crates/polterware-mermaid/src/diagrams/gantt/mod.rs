@@ -26,15 +26,17 @@
 //! - Week tokens (`w`, `ww`) and zone names (`z`) in a `dateFormat` are not implemented: a
 //!   format using them parses as invalid.
 //!
-//! No layout or rendering: the scene work belongs to a later stage. No app consumes this
-//! yet: it replaces the placeholder `Ast`/`parse`, and `Diagram::Gantt(Ast)` keeps its
-//! shape, so no app breaks.
+//! Rendering lives in [`render`], the port of `ganttRenderer.js`: it draws with plain d3, not
+//! the unified pipeline. `Diagram::Gantt(Ast)` keeps its shape; an app that called
+//! `polterware_mermaid::render_diagram` on a gantt source now gets a scene instead of
+//! `RenderError::Unsupported`.
 
 mod ast;
 mod date;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 #[cfg(test)]
 mod tests;
 
