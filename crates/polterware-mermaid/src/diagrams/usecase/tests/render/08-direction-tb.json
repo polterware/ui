@@ -1,0 +1,81 @@
+{
+  "name": "08-direction-tb",
+  "source": "usecase-beta\ndirection TB\nactor Buyer\nBrowse\nCheckout\nBuyer --> Browse\nBrowse --> Checkout\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Buyer",
+        "x": 88,
+        "y": 66.05,
+        "width": 76,
+        "height": 116.1
+      },
+      {
+        "id": "Browse",
+        "x": 88,
+        "y": 203.29999999999998,
+        "width": 160,
+        "height": 58.4
+      },
+      {
+        "id": "Checkout",
+        "x": 88,
+        "y": 311.7,
+        "width": 160,
+        "height": 58.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 88,
+            "y": 124.1
+          },
+          {
+            "x": 88,
+            "y": 149.1
+          },
+          {
+            "x": 88,
+            "y": 174.1
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge-1",
+        "points": [
+          {
+            "x": 88,
+            "y": 232.49999999999997
+          },
+          {
+            "x": 88,
+            "y": 257.5
+          },
+          {
+            "x": 88,
+            "y": 282.5
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12,
+      "width": 200,
+      "height": 372.9
+    },
+    "rawViewBox": "-12 -12 200 372.9"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "name": "10-classes-and-styles",
+  "source": "usecase-beta\nactor Auditor:::external\nAudit[Run audit]:::critical\nReport[Export report]\nclassDef external fill:#fff,stroke-width:3px\nclassDef critical fill:#fee,stroke-dasharray:5\nclass Audit,Report critical\nAuditor --> Audit\nAudit --> Report\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Auditor",
+        "x": 47.400000000000006,
+        "y": 66.05,
+        "width": 78.80000000000001,
+        "height": 116.1
+      },
+      {
+        "id": "Audit",
+        "x": 216.8,
+        "y": 66.05,
+        "width": 160,
+        "height": 38.4
+      },
+      {
+        "id": "Report",
+        "x": 426.8,
+        "y": 66.05,
+        "width": 160,
+        "height": 56
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 86.80000000000001,
+            "y": 66.05
+          },
+          {
+            "x": 111.80000000000001,
+            "y": 66.05
+          },
+          {
+            "x": 136.8,
+            "y": 66.05
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge-1",
+        "points": [
+          {
+            "x": 296.8,
+            "y": 66.05
+          },
+          {
+            "x": 321.8,
+            "y": 66.05
+          },
+          {
+            "x": 346.8,
+            "y": 66.05
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12,
+      "width": 538.8,
+      "height": 156.1
+    },
+    "rawViewBox": "-12 -12 538.8 156.1"
+  }
+}

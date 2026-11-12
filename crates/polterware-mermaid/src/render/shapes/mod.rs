@@ -156,6 +156,14 @@ pub struct Node {
     pub text: Option<String>,
     /// `node.labelType`, which selects markdown measurement in `labelHelper` and `note.ts`.
     pub label_type: Option<String>,
+    /// The label's font size when the diagram's stylesheet gives this node one.
+    pub label_font_size: Option<f64>,
+    /// `UsecaseLayoutNode.stereotype`, drawn above the label by the actor and business shapes.
+    pub stereotype: Option<String>,
+    /// `UsecaseLayoutNode.business`, which the actor shape turns into its business marker.
+    pub business: bool,
+    /// `UsecaseLayoutNode.jsonRows`, the rows a JSON table draws.
+    pub json_rows: Vec<usecase_json_table::JsonRow>,
     /// `node.centerLabel`, which `labelHelper` uses to centre an SVG label under the node.
     pub center_label: bool,
     /// `ClassNode.members` and `ClassNode.methods`, each with its `parseClassifier()` style.
@@ -222,6 +230,10 @@ impl Node {
             css_styles: Vec::new(),
             text: None,
             label_type: None,
+            label_font_size: None,
+            stereotype: None,
+            business: false,
+            json_rows: Vec::new(),
             center_label: false,
             class_members: Vec::new(),
             class_methods: Vec::new(),
@@ -1926,19 +1938,7 @@ fn prepare_with(
     let group = Group::new()
         .with_class(get_node_classes(node, None))
         .with_source(SourceRef::node(node.id.clone()));
-    let font_size = ctx
-        .theme
-        .color("fontSize")
-        .and_then(|s| s.trim_end_matches("px").parse::<f64>().ok())
-        .or_else(|| ctx.theme.number("fontSize"))
-        .unwrap_or(12.0);
-    let font_family = ctx.theme.color("fontFamily").unwrap_or("Arial").to_string();
-    let font = Font {
-        family: font_family,
-        size: font_size,
-        weight: crate::scene::NORMAL_WEIGHT,
-        italic: false,
-    };
+    let font = label_font(node, ctx);
     // `labelHelper`: an explicit width wins over the wrapping width, and a label wraps at
     // the diagram's `wrappingWidth` when the node names none.
     let width = node.width.or(node.wrapping_width).unwrap_or(f64::INFINITY);
@@ -1980,6 +1980,34 @@ fn shape_style() -> PathStyle {
         fill: Some(Color::new("#ECECFF")),
         stroke: Some(Color::new("#9370DB")),
         ..Default::default()
+    }
+}
+
+/// The font a node's labels are measured in: the theme's `fontSize` and family, unless the
+/// diagram's stylesheet gives the node a size of its own (the use case diagram's
+/// `--mermaid-usecase-actor-font-size` and `--mermaid-usecase-font-size`).
+pub(crate) fn label_font(node: &Node, ctx: &ShapeContext<'_>) -> Font {
+    let mut font = base_label_font(ctx);
+    if let Some(size) = node.label_font_size {
+        font.size = size;
+    }
+    font
+}
+
+/// The label font without a node's own size: the theme's `fontSize` and family.
+pub(crate) fn base_label_font(ctx: &ShapeContext<'_>) -> Font {
+    let font_size = ctx
+        .theme
+        .color("fontSize")
+        .and_then(|s| s.trim_end_matches("px").parse::<f64>().ok())
+        .or_else(|| ctx.theme.number("fontSize"))
+        .unwrap_or(12.0);
+    let font_family = ctx.theme.color("fontFamily").unwrap_or("Arial").to_string();
+    Font {
+        family: font_family,
+        size: font_size,
+        weight: crate::scene::NORMAL_WEIGHT,
+        italic: false,
     }
 }
 
@@ -2137,24 +2165,58 @@ pub fn render_node(
             trapezoidal_pentagon::draw(&node, &ctx)
         }
         "shapes/triangle.js" | "shapes/triangle.ts" => triangle::draw(&node, &ctx),
-        "shapes/usecaseActor.js" | "shapes/usecaseActor.ts" => usecase_actor::draw(&node, &ctx),
+        "shapes/usecaseActor.js" | "shapes/usecaseActor.ts" => usecase_actor::draw_with(
+            &node,
+            &ctx,
+            usecase_actor::ActorVariant::Normal,
+            &usecase_actor::ActorOptions {
+                business: node.business,
+                stereotype: node.stereotype.as_deref(),
+                icon: node.icon.as_deref(),
+            },
+        ),
         "shapes/usecaseActorAwesome.js" | "shapes/usecaseActorAwesome.ts" => {
-            usecase_actor_awesome::draw(&node, &ctx)
+            usecase_actor::draw_with(
+                &node,
+                &ctx,
+                usecase_actor::ActorVariant::Awesome,
+                &usecase_actor::ActorOptions {
+                    business: node.business,
+                    stereotype: node.stereotype.as_deref(),
+                    icon: node.icon.as_deref(),
+                },
+            )
         }
         "shapes/usecaseActorHollow.js" | "shapes/usecaseActorHollow.ts" => {
-            usecase_actor_hollow::draw(&node, &ctx)
+            usecase_actor::draw_with(
+                &node,
+                &ctx,
+                usecase_actor::ActorVariant::Hollow,
+                &usecase_actor::ActorOptions {
+                    business: node.business,
+                    stereotype: node.stereotype.as_deref(),
+                    icon: node.icon.as_deref(),
+                },
+            )
         }
-        "shapes/usecaseActorIcon.js" | "shapes/usecaseActorIcon.ts" => {
-            usecase_actor_icon::draw(&node, &ctx)
-        }
+        "shapes/usecaseActorIcon.js" | "shapes/usecaseActorIcon.ts" => usecase_actor::draw_with(
+            &node,
+            &ctx,
+            usecase_actor::ActorVariant::Icon,
+            &usecase_actor::ActorOptions {
+                business: node.business,
+                stereotype: node.stereotype.as_deref(),
+                icon: node.icon.as_deref(),
+            },
+        ),
         "shapes/usecaseBusiness.js" | "shapes/usecaseBusiness.ts" => {
-            usecase_business::draw(&node, &ctx)
+            usecase_business::draw_with(&node, &ctx, node.stereotype.as_deref())
         }
         "shapes/usecaseEllipse.js" | "shapes/usecaseEllipse.ts" => {
             usecase_ellipse::draw(&node, &ctx)
         }
         "shapes/usecaseJsonTable.js" | "shapes/usecaseJsonTable.ts" => {
-            usecase_json_table::draw(&node, &ctx)
+            usecase_json_table::draw_with_rows(&node, &ctx, &node.json_rows)
         }
         "shapes/waveEdgedRectangle.js" | "shapes/waveEdgedRectangle.ts" => {
             wave_edged_rectangle::draw(&node, &ctx)

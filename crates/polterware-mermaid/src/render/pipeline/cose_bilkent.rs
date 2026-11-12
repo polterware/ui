@@ -451,6 +451,15 @@ pub fn cose_bilkent_render(
             cn.ry = node.ry.unwrap_or(0.0);
             cn.label_width = node.label_b_box.map(|b| b.width).unwrap_or(0.0);
             cn.label_height = node.label_b_box.map(|b| b.height).unwrap_or(0.0);
+            cn.shape = node.shape.clone().unwrap_or_else(|| "rect".to_string());
+            cn.classes = node.css_classes.clone().unwrap_or_default();
+            cn.look = node.look.clone().unwrap_or_else(|| "classic".to_string());
+            cn.color_index = node.color_index;
+            cn.direction = node.dir.clone().unwrap_or_else(|| "TB".to_string());
+            cn.boundary_type = node
+                .boundary_type
+                .clone()
+                .unwrap_or_else(|| "rect".to_string());
             render_cluster_measured(&cn, &mut scene, "#ECECFF", "#9370DB", measure);
         }
     }

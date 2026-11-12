@@ -93,6 +93,19 @@ pub struct ElementNodeData {
     pub doc_ref: String,
 }
 
+/// One `UsecaseJsonRow`: the visible key, the key repeated for assistive technology, and
+/// the value.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct JsonRowData {
+    #[serde(default)]
+    pub key: String,
+    #[serde(default)]
+    pub accessible_key: String,
+    #[serde(default)]
+    pub value: String,
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Node {
@@ -130,6 +143,20 @@ pub struct Node {
     pub description: Option<Vec<String>>,
     #[serde(default)]
     pub stereotype: Option<String>,
+    /// `UsecaseLayoutNode.business`: a business actor or use case.
+    #[serde(default)]
+    pub business: Option<bool>,
+    /// `UsecaseLayoutNode.jsonRows`: the key/value rows a JSON table draws.
+    #[serde(default)]
+    pub json_rows: Vec<JsonRowData>,
+    /// `UsecaseLayoutCluster.boundaryType`: the geometry a system boundary draws.
+    #[serde(default)]
+    pub boundary_type: Option<String>,
+    /// The label's font size when the diagram's stylesheet gives this node a size of its
+    /// own (`--mermaid-usecase-actor-font-size` and `--mermaid-usecase-font-size`); absent
+    /// means the theme's `fontSize`.
+    #[serde(default)]
+    pub label_font_size: Option<f64>,
     #[serde(default)]
     pub parent_id: Option<String>,
     #[serde(default)]

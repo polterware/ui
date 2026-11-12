@@ -103,6 +103,14 @@ pub fn to_shape_node(node: &Node) -> shapes::Node {
     s.constraint = node.constraint.clone();
     s.text = node.text.clone();
     s.label_type = node.label_type.clone();
+    s.label_font_size = node.label_font_size;
+    s.stereotype = node.stereotype.clone();
+    s.business = node.business.unwrap_or(false);
+    s.json_rows = node
+        .json_rows
+        .iter()
+        .map(|row| shapes::usecase_json_table::JsonRow::new(row.key.clone(), row.value.clone()))
+        .collect();
     s.center_label = node.center_label.unwrap_or(false);
     s.class_members = node.members.clone();
     s.class_methods = node.methods.clone();
