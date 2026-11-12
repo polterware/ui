@@ -1,0 +1,40 @@
+{
+  "name": "single_node_justify",
+  "nodes": [
+    {
+      "id": "Lonely"
+    }
+  ],
+  "links": [],
+  "extent": [
+    [
+      0,
+      0
+    ],
+    [
+      100,
+      100
+    ]
+  ],
+  "nodeWidth": 24,
+  "nodePadding": 8,
+  "alignment": "justify",
+  "iterations": 6,
+  "output": {
+    "nodes": [
+      {
+        "id": "Lonely",
+        "index": 0,
+        "value": 0,
+        "depth": 0,
+        "height": 0,
+        "layer": 0,
+        "x0": null,
+        "x1": null,
+        "y0": null,
+        "y1": null
+      }
+    ],
+    "links": []
+  }
+}
