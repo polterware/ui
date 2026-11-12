@@ -1,0 +1,611 @@
+{
+  "name": "02-status-and-critical",
+  "source": "gantt\n  dateFormat YYYY-MM-DD\n  section Status\n  Done task :done, d1, 2024-01-01, 5d\n  Active task :active, a1, 2024-01-06, 7d\n  Critical task :crit, c1, 2024-01-13, 6d\n  Active critical :active, crit, ac1, 2024-01-19, 4d\n  Done critical :done, crit, dc1, 2024-01-23, 6d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 220
+    },
+    "rawViewBox": "0 0 900 220",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": 1294
+    },
+    "excludeRects": [],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 170
+        },
+        "domain": "M0.5,-135V0.5H750.5V-135",
+        "ticks": [
+          {
+            "transform": {
+              "x": 0.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 54.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-03",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 107.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-05",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 161.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-07",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 214.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-09",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 268.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-11",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 321.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-13",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 375.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-15",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 429.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-17",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 482.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-19",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 536.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-21",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 589.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-23",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 643.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-25",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 696.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-27",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 750.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-01-29",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 72,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 96,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 120,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 144,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task done0",
+        "x": 75,
+        "y": 50,
+        "width": 134,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "142px 60px"
+      },
+      {
+        "class": "task active0",
+        "x": 209,
+        "y": 74,
+        "width": 187,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "302.5px 84px"
+      },
+      {
+        "class": "task crit0",
+        "x": 396,
+        "y": 98,
+        "width": 161,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "476.5px 108px"
+      },
+      {
+        "class": "task activeCrit0",
+        "x": 557,
+        "y": 122,
+        "width": 107,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "610.5px 132px"
+      },
+      {
+        "class": "task doneCrit0",
+        "x": 664,
+        "y": 146,
+        "width": 161,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "744.5px 156px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "Done task ",
+        "class": "taskText taskText0  doneText0 width-66",
+        "x": 142,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 66,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Active task ",
+        "class": "taskText taskText0 activeText0 width-79.19999999999999",
+        "x": 302.5,
+        "y": 87.5,
+        "dy": null,
+        "baselines": [
+          87.5
+        ],
+        "fontSize": 11,
+        "width": 79.19999999999999,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Critical task ",
+        "class": "taskText taskText0  critText0 width-92.4",
+        "x": 476.5,
+        "y": 111.5,
+        "dy": null,
+        "baselines": [
+          111.5
+        ],
+        "fontSize": 11,
+        "width": 92.4,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Active critical ",
+        "class": "taskText taskText0 activeCritText0 critText0 width-105.6",
+        "x": 610.5,
+        "y": 135.5,
+        "dy": null,
+        "baselines": [
+          135.5
+        ],
+        "fontSize": 11,
+        "width": 105.6,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Done critical ",
+        "class": "taskText taskText0  doneCritText0 width-92.4",
+        "x": 744.5,
+        "y": 159.5,
+        "dy": null,
+        "baselines": [
+          159.5
+        ],
+        "fontSize": 11,
+        "width": 92.4,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "Status",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 110,
+        "dy": "0em",
+        "baselines": [
+          110
+        ],
+        "fontSize": 11,
+        "width": 39.599999999999994,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": {
+      "x1": 1294,
+      "x2": 1294,
+      "y1": 25,
+      "y2": 195,
+      "style": null
+    },
+    "title": {
+      "text": "",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}

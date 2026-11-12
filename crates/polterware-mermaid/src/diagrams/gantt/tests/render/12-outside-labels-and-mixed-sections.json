@@ -1,0 +1,506 @@
+{
+  "name": "12-outside-labels-and-mixed-sections",
+  "source": "gantt\n  dateFormat YYYY-MM-DD\n  section A very long section name\n  A rather long task label that cannot fit :long, 2024-11-01, 1d\n  section B\n  Tiny :t1, 2024-11-02, 1d\n  Medium label :t2, 2024-11-03, 3d\n  section C\n  Third :t3, 2024-11-06, 5d\n  section D\n  Fourth :t4, 2024-11-11, 7d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 220
+    },
+    "rawViewBox": "0 0 900 220",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": -11374
+    },
+    "excludeRects": [],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 170
+        },
+        "domain": "M0.5,-135V0.5H750.5V-135",
+        "ticks": [
+          {
+            "transform": {
+              "x": 0.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-01",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 88.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-03",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 176.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-05",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 265.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-07",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 353.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-09",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 441.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-11",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 529.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-13",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 618.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-15",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 706.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -135
+            },
+            "text": {
+              "text": "2024-11-17",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 60,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section1",
+        "x": 0,
+        "y": 72,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section1",
+        "x": 0,
+        "y": 96,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section2",
+        "x": 0,
+        "y": 120,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section3",
+        "x": 0,
+        "y": 144,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task task0",
+        "x": 75,
+        "y": 50,
+        "width": 44,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "97px 60px"
+      },
+      {
+        "class": "task task1",
+        "x": 119,
+        "y": 74,
+        "width": 44,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "141px 84px"
+      },
+      {
+        "class": "task task1",
+        "x": 163,
+        "y": 98,
+        "width": 133,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "229.5px 108px"
+      },
+      {
+        "class": "task task2",
+        "x": 296,
+        "y": 122,
+        "width": 220,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "406px 132px"
+      },
+      {
+        "class": "task task3",
+        "x": 516,
+        "y": 146,
+        "width": 309,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "670.5px 156px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "A rather long task label that cannot fit ",
+        "class": "taskTextOutsideRight taskTextOutside0  width-270.59999999999997",
+        "x": 124,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 270.59999999999997,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Tiny ",
+        "class": "taskText taskText1  width-33",
+        "x": 141,
+        "y": 87.5,
+        "dy": null,
+        "baselines": [
+          87.5
+        ],
+        "fontSize": 11,
+        "width": 33,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Medium label ",
+        "class": "taskText taskText1  width-85.8",
+        "x": 229.5,
+        "y": 111.5,
+        "dy": null,
+        "baselines": [
+          111.5
+        ],
+        "fontSize": 11,
+        "width": 85.8,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Third ",
+        "class": "taskText taskText2  width-39.599999999999994",
+        "x": 406,
+        "y": 135.5,
+        "dy": null,
+        "baselines": [
+          135.5
+        ],
+        "fontSize": 11,
+        "width": 39.599999999999994,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Fourth ",
+        "class": "taskText taskText3  width-46.2",
+        "x": 670.5,
+        "y": 159.5,
+        "dy": null,
+        "baselines": [
+          159.5
+        ],
+        "fontSize": 11,
+        "width": 46.2,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "A very long section name",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 62,
+        "dy": "0em",
+        "baselines": [
+          62
+        ],
+        "fontSize": 11,
+        "width": 158.39999999999998,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "B",
+        "class": "sectionTitle sectionTitle1",
+        "x": 10,
+        "y": 98,
+        "dy": "0em",
+        "baselines": [
+          98
+        ],
+        "fontSize": 11,
+        "width": 6.6,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "C",
+        "class": "sectionTitle sectionTitle2",
+        "x": 10,
+        "y": 134,
+        "dy": "0em",
+        "baselines": [
+          134
+        ],
+        "fontSize": 11,
+        "width": 6.6,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "D",
+        "class": "sectionTitle sectionTitle3",
+        "x": 10,
+        "y": 158,
+        "dy": "0em",
+        "baselines": [
+          158
+        ],
+        "fontSize": 11,
+        "width": 6.6,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": {
+      "x1": -11374,
+      "x2": -11374,
+      "y1": 25,
+      "y2": 195,
+      "style": null
+    },
+    "title": {
+      "text": "",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}

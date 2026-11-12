@@ -84,6 +84,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::requirement::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Gantt => {
+            let scene = diagrams::gantt::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         DiagramKind::Info => {
             let scene = diagrams::info::render::render(&preprocessed.body, &config)?;
             Ok(scene)

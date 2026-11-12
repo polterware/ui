@@ -1,0 +1,509 @@
+{
+  "name": "06-date-format-d-and-axis-format",
+  "source": "gantt\n  dateFormat YYYY-MM-DD\n  axisFormat %d/%m\n  section Week\n  Phase one :a1, 2024-06-03, 3d\n  Phase two :a2, after a1, 4d\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 148
+    },
+    "rawViewBox": "0 0 900 148",
+    "today": {
+      "date": "2024-02-15T12:00:00",
+      "epoch": 1708009200000,
+      "x": -11550
+    },
+    "excludeRects": [],
+    "grids": [
+      {
+        "transform": {
+          "x": 75,
+          "y": 98
+        },
+        "domain": "M0.5,-63V0.5H750.5V-63",
+        "ticks": [
+          {
+            "transform": {
+              "x": 0.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "03/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 54.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "03/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 107.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "04/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 161.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "04/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 214.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "05/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 268.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "05/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 321.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "06/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 375.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "06/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 429.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "07/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 482.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "07/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 536.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "08/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 589.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "08/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 643.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "09/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 696.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "09/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          },
+          {
+            "transform": {
+              "x": 750.5,
+              "y": 0
+            },
+            "line": {
+              "x2": 0,
+              "y2": -63
+            },
+            "text": {
+              "text": "10/06",
+              "class": "",
+              "x": 0,
+              "y": 3,
+              "dy": "1em",
+              "baselines": [
+                13
+              ],
+              "fontSize": 10,
+              "width": 30,
+              "anchor": "middle",
+              "italic": false,
+              "bold": false
+            }
+          }
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 48,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      },
+      {
+        "class": "section section0",
+        "x": 0,
+        "y": 72,
+        "width": 862.5,
+        "height": 24,
+        "rx": 0,
+        "ry": 0
+      }
+    ],
+    "taskRects": [
+      {
+        "class": "task task0",
+        "x": 75,
+        "y": 50,
+        "width": 321,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "235.5px 60px"
+      },
+      {
+        "class": "task task0",
+        "x": 396,
+        "y": 74,
+        "width": 429,
+        "height": 20,
+        "rx": 3,
+        "ry": 3,
+        "transformOrigin": "610.5px 84px"
+      }
+    ],
+    "taskTexts": [
+      {
+        "text": "Phase one ",
+        "class": "taskText taskText0  width-66",
+        "x": 235.5,
+        "y": 63.5,
+        "dy": null,
+        "baselines": [
+          63.5
+        ],
+        "fontSize": 11,
+        "width": 66,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      },
+      {
+        "text": "Phase two ",
+        "class": "taskText taskText0  width-66",
+        "x": 610.5,
+        "y": 87.5,
+        "dy": null,
+        "baselines": [
+          87.5
+        ],
+        "fontSize": 11,
+        "width": 66,
+        "anchor": "middle",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "sectionTitles": [
+      {
+        "text": "Week",
+        "class": "sectionTitle sectionTitle0",
+        "x": 10,
+        "y": 74,
+        "dy": "0em",
+        "baselines": [
+          74
+        ],
+        "fontSize": 11,
+        "width": 26.4,
+        "anchor": "start",
+        "italic": false,
+        "bold": false
+      }
+    ],
+    "todayLine": {
+      "x1": -11550,
+      "x2": -11550,
+      "y1": 25,
+      "y2": 123,
+      "style": null
+    },
+    "title": {
+      "text": "",
+      "x": 450,
+      "y": 25,
+      "fontSize": 18
+    }
+  }
+}
