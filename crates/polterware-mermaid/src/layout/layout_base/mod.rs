@@ -6,8 +6,8 @@
 //! The files map one to one: [`util`] holds the geometry and collection helpers
 //! ([`util::dimension_d`], [`util::i_geometry`], [`util::linked_list`], ...), and this
 //! module the object model ([`l_graph_object`], [`l_node`], [`l_edge`], [`l_graph`],
-//! [`l_graph_manager`], [`layout`]). The `fd/` folder, the force-directed base that
-//! cose-base extends, is not part of this port yet.
+//! [`l_graph_manager`], [`layout`]), and [`fd`] the force-directed base that cose-base
+//! extends.
 //!
 //! Where upstream's object graph has references (nodes to their owner graph and child
 //! graph, edges to their endpoints, graphs to their parent node), this port owns every
@@ -35,6 +35,7 @@
 //! (reading `nodes[0]` of an empty graph, calling `Array.prototype.add`), the port does
 //! what the code around the bug intends and says so at the site.
 
+pub mod fd;
 pub mod l_edge;
 pub mod l_graph;
 pub mod l_graph_manager;
@@ -44,6 +45,7 @@ pub mod layout;
 pub mod layout_constants;
 pub mod util;
 
+pub use fd::FDLayout;
 pub use l_edge::{EdgeId, LEdge};
 pub use l_graph::{GraphId, LGraph};
 pub use l_graph_manager::LGraphManager;
