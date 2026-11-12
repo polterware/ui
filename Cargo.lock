@@ -7772,6 +7772,10 @@ name = "polterware-assets"
 version = "0.1.0"
 
 [[patch.unused]]
+name = "polterware-mermaid"
+version = "0.1.0"
+
+[[patch.unused]]
 name = "polterware-motion"
 version = "0.1.0"
 
