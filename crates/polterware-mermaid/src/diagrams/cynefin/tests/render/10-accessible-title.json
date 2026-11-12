@@ -1,0 +1,829 @@
+{
+  "name": "10-accessible-title",
+  "source": "cynefin-beta\n  title Knowledge Management\n  accTitle: Cynefin for team practices\n  accDescr: A diagram showing the five Cynefin domains\n  complex\n    \"Retrospectives\"\n    \"Pair programming\"\n  complicated\n    \"Code review\"\n  clear\n    \"Deployment checklist\"\n  chaotic\n    \"Incident response\"\n  confusion\n    \"New initiative\"\n  complex --> complicated : \"Pattern emerges\"\n  complicated --> clear : \"Best practice found\"\n  chaotic --> complex : \"Stabilized\"\n  confusion --> chaotic : \"Crisis detected\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 880,
+      "height": 680
+    },
+    "rawViewBox": "0 0 880 680",
+    "rootTransform": {
+      "x": 40,
+      "y": 40
+    },
+    "backgrounds": [
+      {
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#E8F5E9",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 400,
+        "y": 0,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#E3F2FD",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 0,
+        "y": 300,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#FBE9E7",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 400,
+        "y": 300,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#FFF8E1",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      }
+    ],
+    "boundaries": [
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 402.6251699998975,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 404.6223090644926,
+            "c1y": 42.857142857142854,
+            "c2x": 398.35416587255895,
+            "c2y": 42.857142857142854,
+            "x": 400.35130493715405,
+            "y": 85.71428571428571
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 394.7826151996851,
+            "c1y": 128.57142857142856,
+            "c2x": 403.85285890102386,
+            "c2y": 128.57142857142856,
+            "x": 398.2841691635549,
+            "y": 171.42857142857142
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 406.1397507414222,
+            "c1y": 214.28571428571428,
+            "c2x": 393.24036563560367,
+            "c2y": 214.28571428571428,
+            "x": 401.09594721347094,
+            "y": 257.1428571428571
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 395.5481951320544,
+            "c1y": 300,
+            "c2x": 402.0507338149473,
+            "c2y": 300,
+            "x": 396.50298173353076,
+            "y": 342.85714285714283
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 402.7896900065243,
+            "c1y": 385.71428571428567,
+            "c2x": 394.33162484690547,
+            "c2y": 385.71428571428567,
+            "x": 400.61833311989903,
+            "y": 428.57142857142856
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 393.6407166076824,
+            "c1y": 471.4285714285714,
+            "c2x": 405.08334655407816,
+            "c2y": 471.4285714285714,
+            "x": 398.10573004186153,
+            "y": 514.2857142857142
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 401.2908324180171,
+            "c1y": 557.1428571428571,
+            "c2x": 393.76115872804075,
+            "c2y": 557.1428571428571,
+            "x": 396.9462611041963,
+            "y": 600
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [
+          6,
+          3
+        ],
+        "markerEnd": null
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 299.39700277522206
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 57.142857142857146,
+            "c1y": 308.78014935925603,
+            "c2x": 57.142857142857146,
+            "c2y": 295.99123961851,
+            "x": 114.28571428571429,
+            "y": 305.374386202544
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 171.42857142857144,
+            "c1y": 296.3685900857672,
+            "c2x": 171.42857142857144,
+            "c2y": 310.9130599470809,
+            "x": 228.57142857142858,
+            "y": 301.90726383030415
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 285.7142857142857,
+            "c1y": 312.38507057353854,
+            "c2x": 285.7142857142857,
+            "c2y": 294.44175985082984,
+            "x": 342.8571428571429,
+            "y": 304.91956659406424
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 301.0894302800298,
+            "c2x": 400,
+            "c2y": 298.5918306969106,
+            "x": 457.14285714285717,
+            "y": 294.76169438287616
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 514.2857142857143,
+            "c1y": 302.7147205080837,
+            "c2x": 514.2857142857143,
+            "c2y": 294.087086038664,
+            "x": 571.4285714285714,
+            "y": 302.0401121638715
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 628.5714285714287,
+            "c1y": 297.8467814726755,
+            "c2x": 628.5714285714287,
+            "c2y": 311.636321795173,
+            "x": 685.7142857142858,
+            "y": 307.44299110397696
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 742.8571428571429,
+            "c1y": 313.927344430238,
+            "c2x": 742.8571428571429,
+            "c2y": 293.2608108744025,
+            "x": 800,
+            "y": 299.74516420066357
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [
+          6,
+          3
+        ],
+        "markerEnd": null
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 400,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 424,
+            "c1y": 360,
+            "c2x": 364,
+            "c2y": 465,
+            "x": 412,
+            "y": 525
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 376,
+            "c1y": 555,
+            "c2x": 407.2,
+            "c2y": 585,
+            "x": 400,
+            "y": 600
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#8B0000",
+        "strokeWidth": 4,
+        "dash": [],
+        "markerEnd": null
+      }
+    ],
+    "confusion": {
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 280,
+          "y": 300
+        },
+        {
+          "op": "arcTo",
+          "rx": 120,
+          "ry": 90,
+          "rotation": 0,
+          "large_arc": true,
+          "sweep": true,
+          "x": 520,
+          "y": 300
+        },
+        {
+          "op": "arcTo",
+          "rx": 120,
+          "ry": 90,
+          "rotation": 0,
+          "large_arc": true,
+          "sweep": true,
+          "x": 280,
+          "y": 300
+        },
+        {
+          "op": "close"
+        }
+      ],
+      "fill": "#F3E5F5",
+      "fillOpacity": 0.5,
+      "stroke": "#333333",
+      "strokeWidth": 1.5,
+      "dash": [
+        4,
+        2
+      ],
+      "markerEnd": null
+    },
+    "labels": [
+      {
+        "text": "Complex",
+        "x": 200,
+        "y": 120,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Complicated",
+        "x": 600,
+        "y": 120,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Chaotic",
+        "x": 200,
+        "y": 420,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Clear",
+        "x": 600,
+        "y": 420,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Confusion",
+        "x": 400,
+        "y": 290,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      }
+    ],
+    "subtitles": [
+      {
+        "text": "Probe → Sense → Respond",
+        "x": 200,
+        "y": 140,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Emergent Practices",
+        "x": 200,
+        "y": 155,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Sense → Analyse → Respond",
+        "x": 600,
+        "y": 140,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Good Practices",
+        "x": 600,
+        "y": 155,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Act → Sense → Respond",
+        "x": 200,
+        "y": 440,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Novel Practices",
+        "x": 200,
+        "y": 455,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Sense → Categorise → Respond",
+        "x": 600,
+        "y": 440,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Best Practices",
+        "x": 600,
+        "y": 455,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Disorder",
+        "x": 400,
+        "y": 308,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      }
+    ],
+    "items": [
+      {
+        "transform": {
+          "x": 139.6,
+          "y": 175
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 120.80000000000001,
+          "height": 26,
+          "rx": 4,
+          "ry": 4,
+          "fill": "#E8F5E9",
+          "fillOpacity": 0.95,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": []
+        },
+        "text": {
+          "text": "Retrospectives",
+          "x": 60.400000000000006,
+          "y": 13,
+          "anchor": "middle",
+          "baseline": "central",
+          "fontSize": 12,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 132.4,
+          "y": 205
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 135.2,
+          "height": 26,
+          "rx": 4,
+          "ry": 4,
+          "fill": "#E8F5E9",
+          "fillOpacity": 0.95,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": []
+        },
+        "text": {
+          "text": "Pair programming",
+          "x": 67.6,
+          "y": 13,
+          "anchor": "middle",
+          "baseline": "central",
+          "fontSize": 12,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 550.4,
+          "y": 175
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 99.19999999999999,
+          "height": 26,
+          "rx": 4,
+          "ry": 4,
+          "fill": "#E3F2FD",
+          "fillOpacity": 0.95,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": []
+        },
+        "text": {
+          "text": "Code review",
+          "x": 49.599999999999994,
+          "y": 13,
+          "anchor": "middle",
+          "baseline": "central",
+          "fontSize": 12,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 128.8,
+          "y": 475
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 142.39999999999998,
+          "height": 26,
+          "rx": 4,
+          "ry": 4,
+          "fill": "#FBE9E7",
+          "fillOpacity": 0.95,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": []
+        },
+        "text": {
+          "text": "Incident response",
+          "x": 71.19999999999999,
+          "y": 13,
+          "anchor": "middle",
+          "baseline": "central",
+          "fontSize": 12,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 518,
+          "y": 475
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 164,
+          "height": 26,
+          "rx": 4,
+          "ry": 4,
+          "fill": "#FFF8E1",
+          "fillOpacity": 0.95,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": []
+        },
+        "text": {
+          "text": "Deployment checklist",
+          "x": 82,
+          "y": 13,
+          "anchor": "middle",
+          "baseline": "central",
+          "fontSize": 12,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 339.6,
+          "y": 322
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 120.80000000000001,
+          "height": 26,
+          "rx": 4,
+          "ry": 4,
+          "fill": "#F3E5F5",
+          "fillOpacity": 0.95,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": []
+        },
+        "text": {
+          "text": "New initiative",
+          "x": 60.400000000000006,
+          "y": 13,
+          "anchor": "middle",
+          "baseline": "central",
+          "fontSize": 12,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      }
+    ],
+    "arrows": [
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 200,
+            "y": 150
+          },
+          {
+            "op": "quadTo",
+            "cx": 400,
+            "cy": 210,
+            "x": 600,
+            "y": 150
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerEnd": "url(#cynefin-arrow-cynefin)",
+        "label": {
+          "text": "Pattern emerges",
+          "x": 400,
+          "y": 204,
+          "anchor": "middle",
+          "baseline": "auto",
+          "fontSize": 11,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 600,
+            "y": 150
+          },
+          {
+            "op": "quadTo",
+            "cx": 555,
+            "cy": 300,
+            "x": 600,
+            "y": 450
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerEnd": "url(#cynefin-arrow-cynefin)",
+        "label": {
+          "text": "Best practice found",
+          "x": 555,
+          "y": 294,
+          "anchor": "middle",
+          "baseline": "auto",
+          "fontSize": 11,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 200,
+            "y": 450
+          },
+          {
+            "op": "quadTo",
+            "cx": 245,
+            "cy": 300,
+            "x": 200,
+            "y": 150
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerEnd": "url(#cynefin-arrow-cynefin)",
+        "label": {
+          "text": "Stabilized",
+          "x": 245,
+          "y": 294,
+          "anchor": "middle",
+          "baseline": "auto",
+          "fontSize": 11,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 400,
+            "y": 300
+          },
+          {
+            "op": "quadTo",
+            "cx": 277.5,
+            "cy": 345,
+            "x": 200,
+            "y": 450
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerEnd": "url(#cynefin-arrow-cynefin)",
+        "label": {
+          "text": "Crisis detected",
+          "x": 277.5,
+          "y": 339,
+          "anchor": "middle",
+          "baseline": "auto",
+          "fontSize": 11,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      }
+    ],
+    "arrowHead": {
+      "viewBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 10
+      },
+      "refX": 9,
+      "refY": 5,
+      "markerWidth": 6,
+      "markerHeight": 6,
+      "orient": "auto-start-reverse",
+      "fill": "#333333",
+      "stroke": null,
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "op": "lineTo",
+          "x": 10,
+          "y": 5
+        },
+        {
+          "op": "lineTo",
+          "x": 0,
+          "y": 10
+        },
+        {
+          "op": "close"
+        }
+      ]
+    },
+    "title": {
+      "text": "Knowledge Management",
+      "x": 400,
+      "y": -20,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fontSize": 18,
+      "bold": true,
+      "italic": false,
+      "fill": "#131300"
+    }
+  }
+}

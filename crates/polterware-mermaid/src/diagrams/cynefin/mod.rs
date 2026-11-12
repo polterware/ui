@@ -13,6 +13,11 @@
 //! The body starts with the header line; frontmatter and `%%{init}%%` directives are already
 //! removed by [`crate::preprocess`].
 //!
+//! [`render::render`] draws the map: it ports `cynefinRenderer.ts` `draw`, the geometry helpers
+//! of `cynefinBoundaries.ts`, and the declarations of `styles.ts` into a
+//! [`Scene`](crate::scene::Scene). The SVG element id upstream hashes for a default boundary
+//! seed is [`render::DIAGRAM_ID`] here.
+//!
 //! # Where the port stops short of upstream
 //!
 //! * There is no module-level database singleton: upstream's `db` is cleared and populated by
@@ -29,14 +34,12 @@
 //!   [`ParseError`](crate::error::ParseError) carries a [`Span`](crate::error::Span) instead.
 //!   Upstream tokenizes the whole input before parsing, so it can report a lexer error far
 //!   from a parser error; this lexer is driven by the parser. Both reject the same documents.
-//! * Nothing here lays out or draws the five domains, the boundaries, the transitions, or the
-//!   confusion ellipse: `cynefinRenderer.ts`, `cynefinBoundaries.ts`, `cynefinDiagram.ts`, and
-//!   `styles.ts` are out of scope.
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Domain, DomainName, Item, Transition};
 
