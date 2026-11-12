@@ -2249,22 +2249,18 @@ mod tests {
     }
 
     #[test]
-    fn resolves_upstream_aliases_and_explicit_unported_errors() {
+    fn resolves_upstream_aliases() {
         assert_eq!(
             shape_definition("process").unwrap().upstream_file,
             "shapes/squareRect.ts"
         );
         assert_eq!(shape_definition("question").unwrap().short_name, "diam");
-        let error = render_node(
+        assert!(render_node(
             Node::new("n", "x", "cyl"),
             &FallbackMeasure,
             &crate::theme::ThemeVariables::default(),
         )
-        .unwrap_err();
-        assert!(
-            error.message.contains("shape not ported")
-                && error.message.contains("shapes/cylinder.js")
-        );
+        .is_ok());
     }
 
     #[test]
