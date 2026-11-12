@@ -1,0 +1,367 @@
+{
+  "name": "11-vertical-wrapping",
+  "source": "timeline TD\n    title Vertical wrapping\n    2002 : A label long enough to wrap onto several lines\n    2003 : Short\n",
+  "expected": {
+    "viewBox": {
+      "x": 95,
+      "y": -32,
+      "width": 745,
+      "height": 272
+    },
+    "rawViewBox": "95 -32 745 272",
+    "nodes": [
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 50,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "2002"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 50,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 44.8
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 49.8
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 49.8
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 49.8,
+            "x2": 310,
+            "y2": 49.8,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 11,
+            "y": 2.5,
+            "width": 288,
+            "height": 36,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "A   label   long   enough   to",
+              "wrap   onto   several   lines"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 129.8,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "2003"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 129.8,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 131,
+            "y": 2.5,
+            "width": 48,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "Short"
+            ]
+          }
+        }
+      }
+    ],
+    "lines": [
+      {
+        "x1": 430,
+        "y1": 18,
+        "x2": 430,
+        "y2": 190,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": []
+      },
+      {
+        "x1": 430,
+        "y1": 74.9,
+        "x2": 480,
+        "y2": 74.9,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 145.9,
+        "x2": 480,
+        "y2": 145.9,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      }
+    ],
+    "title": {
+      "text": "Vertical wrapping",
+      "x": 145,
+      "y": 20,
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "fill": "#333"
+    }
+  }
+}

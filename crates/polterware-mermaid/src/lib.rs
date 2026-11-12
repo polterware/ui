@@ -108,6 +108,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::mindmap::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Timeline => {
+            let scene = diagrams::timeline::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }

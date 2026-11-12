@@ -1,0 +1,597 @@
+{
+  "name": "04-multi-event",
+  "source": "timeline\n    title Event stack\n    2001 : Alpha : Beta : Gamma : Delta\n    2002 : Epsilon\n",
+  "expected": {
+    "viewBox": {
+      "x": -5,
+      "y": -30,
+      "width": 895,
+      "height": 633.6
+    },
+    "rawViewBox": "-5 -30 895 633.6",
+    "nodes": [
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 50,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 79.8
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 185,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 190,
+                "cy": 0,
+                "x": 190,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 190,
+                "y": 84.8
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 84.8
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 84.8,
+            "x2": 190,
+            "y2": 84.8,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 75.8,
+            "y": 10,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "2001"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 200,
+        "y": 250,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 45
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 185,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 190,
+                "cy": 0,
+                "x": 190,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 190,
+                "y": 50
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 50
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 50,
+            "x2": 190,
+            "y2": 50,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 71,
+            "y": 10,
+            "width": 48,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "Alpha"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 200,
+        "y": 310,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 45
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 185,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 190,
+                "cy": 0,
+                "x": 190,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 190,
+                "y": 50
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 50
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 50,
+            "x2": 190,
+            "y2": 50,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 75.8,
+            "y": 10,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "Beta"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 200,
+        "y": 370,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 45
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 185,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 190,
+                "cy": 0,
+                "x": 190,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 190,
+                "y": 50
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 50
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 50,
+            "x2": 190,
+            "y2": 50,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 71,
+            "y": 10,
+            "width": 48,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "Gamma"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 200,
+        "y": 430,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 45
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 185,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 190,
+                "cy": 0,
+                "x": 190,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 190,
+                "y": 50
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 50
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 50,
+            "x2": 190,
+            "y2": 50,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 71,
+            "y": 10,
+            "width": 48,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "Delta"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "task",
+        "x": 400,
+        "y": 50,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 79.8
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 185,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 190,
+                "cy": 0,
+                "x": 190,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 190,
+                "y": 84.8
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 84.8
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 84.8,
+            "x2": 190,
+            "y2": 84.8,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 75.8,
+            "y": 10,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "2002"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 400,
+        "y": 250,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 45
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 185,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 190,
+                "cy": 0,
+                "x": 190,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 190,
+                "y": 50
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 50
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 50,
+            "x2": 190,
+            "y2": 50,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 61.4,
+            "y": 10,
+            "width": 67.2,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "Epsilon"
+            ]
+          }
+        }
+      }
+    ],
+    "lines": [
+      {
+        "x1": 295,
+        "y1": 134.8,
+        "x2": 295,
+        "y2": 553.6,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 495,
+        "y1": 134.8,
+        "x2": 495,
+        "y2": 553.6,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 150,
+        "y1": 184.8,
+        "x2": 840,
+        "y2": 184.8,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": []
+      }
+    ],
+    "title": {
+      "text": "Event stack",
+      "x": 45,
+      "y": 20,
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "fill": "#333"
+    }
+  }
+}
