@@ -1,0 +1,113 @@
+{
+  "name": "08-cluster-edge-label",
+  "input": {
+    "layoutAlgorithm": "dagre",
+    "diagramId": "diag",
+    "type": "flowchart-v2",
+    "direction": "LR",
+    "nodes": [
+      {
+        "id": "g1",
+        "label": "Source Group",
+        "isGroup": true
+      },
+      {
+        "id": "A",
+        "label": "Origin",
+        "shape": "rect",
+        "parentId": "g1"
+      },
+      {
+        "id": "g2",
+        "label": "Target Group",
+        "isGroup": true
+      },
+      {
+        "id": "B",
+        "label": "Destination",
+        "shape": "rect",
+        "parentId": "g2"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "start": "A",
+        "end": "B",
+        "label": "send"
+      }
+    ]
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "A",
+        "x": 61.8,
+        "y": 52.2,
+        "width": 57.599999999999994,
+        "height": 18.4
+      },
+      {
+        "id": "B",
+        "x": 285.8,
+        "y": 52.2,
+        "width": 105.6,
+        "height": 18.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "g1",
+        "x": 61.8,
+        "y": 52.2,
+        "width": 107.6,
+        "height": 88.4
+      },
+      {
+        "id": "g2",
+        "x": 285.8,
+        "y": 52.2,
+        "width": 155.60000000000002,
+        "height": 88.4
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "points": [
+          {
+            "x": 90.6,
+            "y": 52.2
+          },
+          {
+            "x": 115.6,
+            "y": 52.2
+          },
+          {
+            "x": 161.79999999999998,
+            "y": 52.2
+          },
+          {
+            "x": 208,
+            "y": 52.2
+          },
+          {
+            "x": 233,
+            "y": 52.2
+          }
+        ],
+        "x": 161.79999999999998,
+        "y": 73.4,
+        "width": 42.4,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": -3.799999999999997,
+      "y": 0,
+      "width": 375.40000000000003,
+      "height": 104.4
+    },
+    "rawViewBox": "-3.799999999999997 0 375.40000000000003 104.4"
+  }
+}

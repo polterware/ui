@@ -1,0 +1,151 @@
+{
+  "name": "04-nested-clusters",
+  "input": {
+    "layoutAlgorithm": "dagre",
+    "diagramId": "diag",
+    "type": "flowchart-v2",
+    "direction": "TB",
+    "nodes": [
+      {
+        "id": "p",
+        "label": "Parent",
+        "isGroup": true
+      },
+      {
+        "id": "c",
+        "label": "Child",
+        "isGroup": true,
+        "parentId": "p"
+      },
+      {
+        "id": "A",
+        "label": "Deep A",
+        "shape": "rect",
+        "parentId": "c"
+      },
+      {
+        "id": "B",
+        "label": "Mid B",
+        "shape": "rect",
+        "parentId": "p"
+      },
+      {
+        "id": "out",
+        "label": "Out Node",
+        "shape": "rect"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "start": "A",
+        "end": "B"
+      },
+      {
+        "id": "e2",
+        "start": "B",
+        "end": "out"
+      }
+    ]
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "A",
+        "x": 91.8,
+        "y": 67.2,
+        "width": 57.599999999999994,
+        "height": 18.4
+      },
+      {
+        "id": "B",
+        "x": 91.8,
+        "y": 160.6,
+        "width": 48,
+        "height": 18.4
+      },
+      {
+        "id": "out",
+        "x": 91.8,
+        "y": 254,
+        "width": 76.8,
+        "height": 18.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "p",
+        "x": 91.8,
+        "y": 101.4,
+        "width": 167.6,
+        "height": 186.8
+      },
+      {
+        "id": "c",
+        "x": 91.8,
+        "y": 67.2,
+        "width": 127.6,
+        "height": 68.4
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "points": [
+          {
+            "x": 91.8,
+            "y": 76.4
+          },
+          {
+            "x": 91.8,
+            "y": 101.4
+          },
+          {
+            "x": 91.8,
+            "y": 126.4
+          },
+          {
+            "x": 91.8,
+            "y": 151.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "e2",
+        "points": [
+          {
+            "x": 91.8,
+            "y": 169.79999999999998
+          },
+          {
+            "x": 91.8,
+            "y": 194.8
+          },
+          {
+            "x": 91.8,
+            "y": 219.8
+          },
+          {
+            "x": 91.8,
+            "y": 244.8
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 183.6,
+      "height": 271.2
+    },
+    "rawViewBox": "0 0 183.6 271.2"
+  }
+}

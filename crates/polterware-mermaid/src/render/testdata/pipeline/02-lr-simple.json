@@ -1,0 +1,115 @@
+{
+  "name": "02-lr-simple",
+  "input": {
+    "layoutAlgorithm": "dagre",
+    "diagramId": "diag",
+    "type": "flowchart-v2",
+    "direction": "LR",
+    "nodes": [
+      {
+        "id": "A",
+        "label": "Alpha",
+        "shape": "rect"
+      },
+      {
+        "id": "B",
+        "label": "Beta",
+        "shape": "rect"
+      },
+      {
+        "id": "C",
+        "label": "Gamma",
+        "shape": "rect"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "start": "A",
+        "end": "B"
+      },
+      {
+        "id": "e2",
+        "start": "B",
+        "end": "C"
+      }
+    ]
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "A",
+        "x": 32,
+        "y": 17.2,
+        "width": 48,
+        "height": 18.4
+      },
+      {
+        "id": "B",
+        "x": 125.2,
+        "y": 17.2,
+        "width": 38.4,
+        "height": 18.4
+      },
+      {
+        "id": "C",
+        "x": 218.4,
+        "y": 17.2,
+        "width": 48,
+        "height": 18.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "e1",
+        "points": [
+          {
+            "x": 56,
+            "y": 17.2
+          },
+          {
+            "x": 81,
+            "y": 17.2
+          },
+          {
+            "x": 106,
+            "y": 17.2
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "e2",
+        "points": [
+          {
+            "x": 144.4,
+            "y": 17.2
+          },
+          {
+            "x": 169.4,
+            "y": 17.2
+          },
+          {
+            "x": 194.4,
+            "y": 17.2
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 250.4,
+      "height": 34.4
+    },
+    "rawViewBox": "0 0 250.4 34.4"
+  }
+}

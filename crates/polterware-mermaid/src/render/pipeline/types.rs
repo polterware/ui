@@ -1,0 +1,395 @@
+//! Port of upstream `rendering-util/types.ts`: data types for diagram layout and rendering.
+
+use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
+
+use crate::config::Config;
+use crate::scene::Point;
+
+pub type MarkdownWordType = String;
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MarkdownWord {
+    pub content: String,
+    pub r#type: MarkdownWordType,
+}
+
+pub type MarkdownLine = Vec<MarkdownWord>;
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LabelBBox {
+    pub x: Option<f64>,
+    pub y: Option<f64>,
+    pub width: f64,
+    pub height: f64,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct GroupTitleRect {
+    pub left: f64,
+    pub right: f64,
+    pub top: f64,
+    pub bottom: f64,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct TerminalLabelSize {
+    pub width: f64,
+    pub height: f64,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Node {
+    pub id: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
+    pub description: Option<Vec<String>>,
+    #[serde(default)]
+    pub stereotype: Option<String>,
+    #[serde(default)]
+    pub parent_id: Option<String>,
+    #[serde(default)]
+    pub position: Option<String>,
+    #[serde(default)]
+    pub css_styles: Option<Vec<String>>,
+    #[serde(default)]
+    pub css_compiled_styles: Option<Vec<String>>,
+    #[serde(default)]
+    pub css_classes: Option<String>,
+    #[serde(default)]
+    pub label_style: Option<String>,
+    #[serde(default)]
+    pub label_type: Option<String>,
+    #[serde(default)]
+    pub dom_id: Option<String>,
+    #[serde(default)]
+    pub dir: Option<String>,
+    #[serde(default)]
+    pub have_callback: Option<bool>,
+    #[serde(default)]
+    pub link: Option<String>,
+    #[serde(default)]
+    pub link_target: Option<String>,
+    #[serde(default)]
+    pub tooltip: Option<String>,
+    #[serde(default)]
+    pub padding: Option<f64>,
+    #[serde(default)]
+    pub is_group: Option<bool>,
+    #[serde(default)]
+    pub width: Option<f64>,
+    #[serde(default)]
+    pub height: Option<f64>,
+    #[serde(default)]
+    pub wrapping_width: Option<f64>,
+    #[serde(default)]
+    pub min_width: Option<f64>,
+    #[serde(default)]
+    pub spread_ports: Option<bool>,
+    #[serde(default)]
+    pub label_b_box: Option<LabelBBox>,
+    #[serde(default)]
+    pub group_title_rect: Option<GroupTitleRect>,
+    #[serde(default)]
+    pub rx: Option<f64>,
+    #[serde(default)]
+    pub ry: Option<f64>,
+    #[serde(default)]
+    pub use_html_labels: Option<bool>,
+    #[serde(default)]
+    pub center_label: Option<bool>,
+    #[serde(default)]
+    pub background_color: Option<String>,
+    #[serde(default)]
+    pub border_color: Option<String>,
+    #[serde(default)]
+    pub border_style: Option<String>,
+    #[serde(default)]
+    pub border_width: Option<f64>,
+    #[serde(default)]
+    pub label_text_color: Option<String>,
+    #[serde(default)]
+    pub label_padding_x: Option<f64>,
+    #[serde(default)]
+    pub label_padding_y: Option<f64>,
+    #[serde(default)]
+    pub x: Option<f64>,
+    #[serde(default)]
+    pub y: Option<f64>,
+    #[serde(default)]
+    pub look: Option<String>,
+    #[serde(default)]
+    pub icon: Option<String>,
+    #[serde(default)]
+    pub pos: Option<String>,
+    #[serde(default)]
+    pub img: Option<String>,
+    #[serde(default)]
+    pub asset_width: Option<f64>,
+    #[serde(default)]
+    pub asset_height: Option<f64>,
+    #[serde(default)]
+    pub default_width: Option<f64>,
+    #[serde(default)]
+    pub image_aspect_ratio: Option<f64>,
+    #[serde(default)]
+    pub constraint: Option<String>,
+    #[serde(default)]
+    pub metadata: Option<serde_json::Value>,
+    #[serde(default)]
+    pub layer: Option<f64>,
+    #[serde(default)]
+    pub order: Option<f64>,
+    #[serde(default)]
+    pub node_id: Option<String>,
+    #[serde(default)]
+    pub level: Option<f64>,
+    #[serde(default)]
+    pub descr: Option<String>,
+    #[serde(default)]
+    pub r#type: Option<f64>,
+    #[serde(default)]
+    pub radius: Option<f64>,
+    #[serde(default)]
+    pub taper: Option<f64>,
+    #[serde(default)]
+    pub stroke: Option<String>,
+    #[serde(default)]
+    pub color_index: Option<usize>,
+    #[serde(default)]
+    pub shape: Option<String>,
+    #[serde(default)]
+    pub is_edge_label: Option<bool>,
+    #[serde(default)]
+    pub edge_start: Option<String>,
+    #[serde(default)]
+    pub edge_end: Option<String>,
+    #[serde(default)]
+    pub is_dummy: Option<bool>,
+    #[serde(default)]
+    pub diff: Option<f64>,
+    #[serde(default)]
+    pub cluster_node: Option<bool>,
+    #[serde(default)]
+    pub bounds: crate::scene::Rect,
+}
+
+impl Node {
+    pub fn new(id: impl Into<String>, label: impl Into<String>, shape: impl Into<String>) -> Self {
+        Self {
+            id: id.into(),
+            label: Some(label.into()),
+            shape: Some(shape.into()),
+            ..Default::default()
+        }
+    }
+
+    pub fn new_group(id: impl Into<String>, label: impl Into<String>) -> Self {
+        Self {
+            id: id.into(),
+            label: Some(label.into()),
+            is_group: Some(true),
+            shape: Some("rect".into()),
+            ..Default::default()
+        }
+    }
+}
+
+pub type ClusterNode = Node;
+pub type NonClusterNode = Node;
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Edge {
+    pub id: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
+    pub classes: Option<String>,
+    #[serde(default)]
+    pub style: Option<Vec<String>>,
+    #[serde(default)]
+    pub animate: Option<bool>,
+    #[serde(default)]
+    pub animation: Option<String>,
+    #[serde(default)]
+    pub step: Option<f64>,
+    #[serde(default)]
+    pub step_count: Option<f64>,
+    #[serde(default)]
+    pub step_duration: Option<f64>,
+    #[serde(default)]
+    pub show_step_number: Option<bool>,
+    #[serde(default)]
+    pub metadata: Option<serde_json::Value>,
+    #[serde(default)]
+    pub arrowhead: Option<String>,
+    #[serde(default)]
+    pub arrowhead_style: Option<String>,
+    #[serde(default)]
+    pub arrow_type_end: Option<String>,
+    #[serde(default)]
+    pub arrow_type_start: Option<String>,
+    #[serde(default)]
+    pub css_compiled_styles: Option<Vec<String>>,
+    #[serde(default)]
+    pub default_interpolate: Option<String>,
+    #[serde(default)]
+    pub end: Option<String>,
+    #[serde(default)]
+    pub interpolate: Option<String>,
+    #[serde(default)]
+    pub label_type: Option<String>,
+    #[serde(default)]
+    pub length: Option<f64>,
+    #[serde(default)]
+    pub start: Option<String>,
+    #[serde(default)]
+    pub stroke: Option<String>,
+    #[serde(default)]
+    pub text: Option<String>,
+    #[serde(default)]
+    pub r#type: Option<String>,
+    #[serde(default)]
+    pub start_label_right: Option<String>,
+    #[serde(default)]
+    pub start_label_left: Option<String>,
+    #[serde(default)]
+    pub end_label_left: Option<String>,
+    #[serde(default)]
+    pub end_label_right: Option<String>,
+    #[serde(default)]
+    pub terminal_label_sizes: Option<HashMap<String, TerminalLabelSize>>,
+    #[serde(default)]
+    pub terminal_label_centers: Option<HashMap<String, Point>>,
+    #[serde(default)]
+    pub curve: Option<String>,
+    #[serde(default)]
+    pub corner_radius: Option<f64>,
+    #[serde(default)]
+    pub port_clipping: Option<String>,
+    #[serde(default)]
+    pub skip_corner_fix: Option<bool>,
+    #[serde(default)]
+    pub labelpos: Option<String>,
+    #[serde(default)]
+    pub label_style: Option<Vec<String>>,
+    #[serde(default)]
+    pub minlen: Option<f64>,
+    #[serde(default)]
+    pub pattern: Option<String>,
+    #[serde(default)]
+    pub thickness: Option<String>,
+    #[serde(default)]
+    pub look: Option<String>,
+    #[serde(default)]
+    pub is_user_defined_id: Option<bool>,
+    #[serde(default)]
+    pub show_points: Option<bool>,
+    #[serde(default)]
+    pub width: Option<f64>,
+    #[serde(default)]
+    pub height: Option<f64>,
+    #[serde(default)]
+    pub x: Option<f64>,
+    #[serde(default)]
+    pub y: Option<f64>,
+    #[serde(default)]
+    pub points: Option<Vec<Point>>,
+    #[serde(default)]
+    pub parent_id: Option<String>,
+    #[serde(default)]
+    pub dir: Option<String>,
+    #[serde(default)]
+    pub source: Option<String>,
+    #[serde(default)]
+    pub target: Option<String>,
+    #[serde(default)]
+    pub depth: Option<f64>,
+    #[serde(default)]
+    pub is_label_edge: Option<bool>,
+    #[serde(default)]
+    pub label_node_id: Option<String>,
+    #[serde(default)]
+    pub is_layout_only: Option<bool>,
+    #[serde(default)]
+    pub from_cluster: Option<String>,
+    #[serde(default)]
+    pub to_cluster: Option<String>,
+}
+
+impl Edge {
+    pub fn new(id: impl Into<String>, start: impl Into<String>, end: impl Into<String>) -> Self {
+        Self {
+            id: id.into(),
+            start: Some(start.into()),
+            end: Some(end.into()),
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RectOptions {
+    pub rx: f64,
+    pub ry: f64,
+    pub label_padding_x: f64,
+    pub label_padding_y: f64,
+    pub classes: String,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct MindmapOptions {
+    pub padding: f64,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LayoutData {
+    #[serde(default)]
+    pub nodes: Vec<Node>,
+    #[serde(default)]
+    pub edges: Vec<Edge>,
+    #[serde(default)]
+    pub config: Config,
+    #[serde(default)]
+    pub diagram_id: Option<String>,
+    #[serde(default)]
+    pub layout_algorithm: Option<String>,
+    #[serde(default)]
+    pub direction: Option<String>,
+    #[serde(default)]
+    pub r#type: Option<String>,
+    #[serde(default)]
+    pub markers: Vec<String>,
+    #[serde(default)]
+    pub use_max_width: Option<bool>,
+    #[serde(default)]
+    pub padding: Option<f64>,
+    #[serde(default)]
+    pub node_spacing: Option<f64>,
+    #[serde(default)]
+    pub rank_spacing: Option<f64>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct RenderOptions {
+    pub algorithm: Option<String>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct CreateGraphOptions {
+    pub unwrap_group_labels: Option<bool>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct ShapeRenderOptions {
+    pub config: Config,
+    pub dir: Option<String>,
+    pub padding: Option<f64>,
+}

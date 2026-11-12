@@ -1,0 +1,117 @@
+{
+  "name": "06-edge-labels",
+  "input": {
+    "layoutAlgorithm": "dagre",
+    "diagramId": "diag",
+    "type": "flowchart-v2",
+    "direction": "TB",
+    "nodes": [
+      {
+        "id": "Q",
+        "label": "Choice",
+        "shape": "diamond"
+      },
+      {
+        "id": "Y",
+        "label": "Accept",
+        "shape": "rect"
+      },
+      {
+        "id": "N",
+        "label": "Reject",
+        "shape": "rect"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "start": "Q",
+        "end": "Y",
+        "label": "yes"
+      },
+      {
+        "id": "e2",
+        "start": "Q",
+        "end": "N",
+        "label": "no"
+      }
+    ]
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "Q",
+        "x": 90.6,
+        "y": 46,
+        "width": 76,
+        "height": 76
+      },
+      {
+        "id": "Y",
+        "x": 36.8,
+        "y": 165.6,
+        "width": 57.599999999999994,
+        "height": 18.4
+      },
+      {
+        "id": "N",
+        "x": 144.39999999999998,
+        "y": 165.6,
+        "width": 57.599999999999994,
+        "height": 18.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "e1",
+        "points": [
+          {
+            "x": 63.047439353099726,
+            "y": 84
+          },
+          {
+            "x": 36.8,
+            "y": 120.2
+          },
+          {
+            "x": 36.8,
+            "y": 156.4
+          }
+        ],
+        "x": 63.199999999999996,
+        "y": 120.2,
+        "width": 32.8,
+        "height": 22.4
+      },
+      {
+        "id": "e2",
+        "points": [
+          {
+            "x": 118.15256064690026,
+            "y": 84
+          },
+          {
+            "x": 144.39999999999998,
+            "y": 120.2
+          },
+          {
+            "x": 144.39999999999998,
+            "y": 156.4
+          }
+        ],
+        "x": 166,
+        "y": 120.2,
+        "width": 23.2,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 185.60000000000002,
+      "height": 182.8
+    },
+    "rawViewBox": "0 0 185.60000000000002 182.8"
+  }
+}
