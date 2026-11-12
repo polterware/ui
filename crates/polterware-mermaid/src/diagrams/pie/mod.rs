@@ -30,13 +30,15 @@
 //! * Langium reports lexer and parser errors without a position in the message; this crate's
 //!   [`ParseError`] carries a [`Span`](crate::error::Span) instead. The negative-value database
 //!   error keeps upstream's exact message text.
-//! * Nothing here lays out or draws the slice labels, legend, or arcs; `pieRenderer.ts` is out
-//!   of scope.
+//!
+//! The renderer is [`render`], ported from `pieRenderer.ts` `draw` and drawing directly with
+//! the d3 pie and arc layout (no unified pipeline), as upstream does.
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Section};
 
