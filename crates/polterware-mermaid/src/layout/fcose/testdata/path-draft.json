@@ -1,0 +1,96 @@
+{
+  "name": "path-draft",
+  "input": {
+    "nodes": [
+      {
+        "id": "a",
+        "parentId": null,
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "b",
+        "parentId": null,
+        "x": 100,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "c",
+        "parentId": null,
+        "x": 200,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "d",
+        "parentId": null,
+        "x": 300,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": "ab",
+        "source": "a",
+        "target": "b"
+      },
+      {
+        "id": "bc",
+        "source": "b",
+        "target": "c"
+      },
+      {
+        "id": "cd",
+        "source": "c",
+        "target": "d"
+      }
+    ],
+    "options": {
+      "quality": "draft",
+      "randomize": true,
+      "seed": 3,
+      "nodeSeparation": 75,
+      "sampleSize": 10,
+      "numIter": 2500,
+      "piTol": 1e-7,
+      "samplingType": true,
+      "idealEdgeLength": 50,
+      "edgeElasticity": 0.45
+    }
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 37.50148273311275,
+        "y": 7.478374330470364
+      },
+      {
+        "id": "b",
+        "x": 112.50049493260957,
+        "y": -7.4783708793697095
+      },
+      {
+        "id": "c",
+        "x": 187.49950644386774,
+        "y": -7.4783743304703645
+      },
+      {
+        "id": "d",
+        "x": 262.49851726688723,
+        "y": 7.478363977168336
+      }
+    ]
+  }
+}

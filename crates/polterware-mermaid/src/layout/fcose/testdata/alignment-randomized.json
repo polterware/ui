@@ -1,0 +1,159 @@
+{
+  "name": "alignment-randomized",
+  "input": {
+    "nodes": [
+      {
+        "id": "a",
+        "parentId": null,
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "b",
+        "parentId": null,
+        "x": 100,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "c",
+        "parentId": null,
+        "x": 200,
+        "y": 0,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "d",
+        "parentId": null,
+        "x": 0,
+        "y": 150,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "e",
+        "parentId": null,
+        "x": 100,
+        "y": 150,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      },
+      {
+        "id": "f",
+        "parentId": null,
+        "x": 200,
+        "y": 150,
+        "width": 40,
+        "height": 40,
+        "padding": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": "ab",
+        "source": "a",
+        "target": "b"
+      },
+      {
+        "id": "bc",
+        "source": "b",
+        "target": "c"
+      },
+      {
+        "id": "de",
+        "source": "d",
+        "target": "e"
+      },
+      {
+        "id": "ef",
+        "source": "e",
+        "target": "f"
+      },
+      {
+        "id": "ad",
+        "source": "a",
+        "target": "d"
+      },
+      {
+        "id": "be",
+        "source": "b",
+        "target": "e"
+      },
+      {
+        "id": "cf",
+        "source": "c",
+        "target": "f"
+      }
+    ],
+    "options": {
+      "quality": "proof",
+      "randomize": true,
+      "seed": 4,
+      "nodeSeparation": 75,
+      "sampleSize": 25,
+      "numIter": 2500,
+      "piTol": 1e-7,
+      "samplingType": true,
+      "idealEdgeLength": 50,
+      "edgeElasticity": 0.45,
+      "alignmentConstraint": {
+        "vertical": [
+          [
+            "a",
+            "b",
+            "c"
+          ],
+          [
+            "d",
+            "e",
+            "f"
+          ]
+        ],
+        "horizontal": []
+      }
+    }
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 54.295253891523544,
+        "y": -36.890843462853454
+      },
+      {
+        "id": "b",
+        "x": 54.295253891523544,
+        "y": 57.658751744256875
+      },
+      {
+        "id": "c",
+        "x": 54.295253891523544,
+        "y": 151.99039820119782
+      },
+      {
+        "id": "d",
+        "x": 145.70474610847646,
+        "y": -1.99039820119782
+      },
+      {
+        "id": "e",
+        "x": 145.70474610847646,
+        "y": 92.34124825574314
+      },
+      {
+        "id": "f",
+        "x": 145.70474610847646,
+        "y": 186.89084346285347
+      }
+    ]
+  }
+}

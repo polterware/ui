@@ -3,14 +3,12 @@
 //!
 //! The handler takes the draft layout and, in two passes:
 //!
-//! 1. **Transform** (when [`TRANSFORM_ON_CONSTRAINT_HANDLING`](super::co_se_constants::TRANSFORM_ON_CONSTRAINT_HANDLING)
-//!    is set): solves the orthogonal Procrustean problem of Borg and Groenen (2005),
+//! 1. **Transform** (when [`CoSELayout::transform_on_constraint_handling`] is set): solves the orthogonal Procrustean problem of Borg and Groenen (2005),
 //!    ch. 20.2, to rotate and/or reflect the draft layout so it better matches the fixed
 //!    node, alignment, and relative placement constraints. The solution uses the singular
 //!    value decomposition of [`matrix`](super::super::layout_base::util::matrix) and
 //!    [`svd`](super::super::layout_base::util::svd).
-//! 2. **Enforce** (when [`ENFORCE_CONSTRAINTS`](super::super::cose_base::co_se_constants::ENFORCE_CONSTRAINTS)
-//!    is set): translates the layout so the fixed nodes' average error is zero, aligns the
+//! 2. **Enforce** (when [`CoSELayout::enforce_constraints`] is set): translates the layout so the fixed nodes' average error is zero, aligns the
 //!    alignment groups, and lays out the relative placement constraints as directed acyclic
 //!    graphs, one for each axis, with one dummy vertex per alignment group.
 //!
@@ -31,7 +29,6 @@ use super::super::layout_base::l_node::NodeId;
 use super::super::layout_base::util::matrix;
 use super::super::layout_base::util::point_d::PointD;
 use super::super::layout_base::util::svd;
-use super::co_se_constants as constants;
 use super::co_se_layout::CoSELayout;
 
 /// A fixed node, upstream's entry of `fixedNodeConstraint`: the node's id and the
@@ -265,6 +262,9 @@ impl Handler {
 /// Upstream `ConstraintHandler.handleConstraints`: transform the draft layout for the
 /// constraints, then enforce them.
 pub fn handle_constraints<V>(layout: &mut CoSELayout<V>) -> Result<(), LayoutError> {
+    let transform_on_constraint_handling = layout.transform_on_constraint_handling;
+    let should_enforce_constraints = layout.enforce_constraints;
+    let default_edge_length = layout.fd.default_edge_length;
     let mut handler = Handler::new(layout);
 
     // If there exists a relative placement constraint without a gap value, set it to the
@@ -285,7 +285,7 @@ pub fn handle_constraints<V>(layout: &mut CoSELayout<V>) -> Result<(), LayoutErr
                         .copied()
                         .ok_or(LayoutError("assert failed"))?;
                     constraint.gap =
-                        Some(constants::DEFAULT_EDGE_LENGTH + left_width / 2.0 + right_width / 2.0);
+                        Some(default_edge_length + left_width / 2.0 + right_width / 2.0);
                 } else {
                     let top = constraint.top.clone().ok_or(LayoutError("assert failed"))?;
                     let bottom = constraint
@@ -298,9 +298,8 @@ pub fn handle_constraints<V>(layout: &mut CoSELayout<V>) -> Result<(), LayoutErr
                     let bottom_height = map_get(&handler.heights, &bottom)
                         .copied()
                         .ok_or(LayoutError("assert failed"))?;
-                    constraint.gap = Some(
-                        constants::DEFAULT_EDGE_LENGTH + top_height / 2.0 + bottom_height / 2.0,
-                    );
+                    constraint.gap =
+                        Some(default_edge_length + top_height / 2.0 + bottom_height / 2.0);
                 }
             }
         }
@@ -366,7 +365,7 @@ pub fn handle_constraints<V>(layout: &mut CoSELayout<V>) -> Result<(), LayoutErr
     let mut standard_transformation = false;
     let mut reflection_type = false;
 
-    if constants::TRANSFORM_ON_CONSTRAINT_HANDLING {
+    if transform_on_constraint_handling {
         if let Some(fixed) = &handler.constraints.fixed_node_constraint
             && fixed.len() > 1
         {
@@ -602,7 +601,7 @@ pub fn handle_constraints<V>(layout: &mut CoSELayout<V>) -> Result<(), LayoutErr
         }
     }
 
-    if constants::ENFORCE_CONSTRAINTS {
+    if should_enforce_constraints {
         enforce_constraints(&mut handler, &dag, &fixed_nodes);
     }
 
