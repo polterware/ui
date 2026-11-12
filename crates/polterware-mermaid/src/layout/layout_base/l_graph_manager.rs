@@ -593,6 +593,50 @@ impl<V> LGraphManager<V> {
 
         false
     }
+
+    /// Layout-base 2.0.1's `LGraphManager.prototype.includesInvalidEdge`: the same test as
+    /// [`LGraphManager::includes_invalid_edge`], but every invalid edge is removed from
+    /// the manager instead of only reported, and the method always reports that none are
+    /// left.
+    ///
+    /// Upstream `LGraphManager.remove` removes an inter-graph edge through
+    /// [`LGraphManager::remove_edge`] and an intra-graph edge through its owner graph;
+    /// both paths are kept.
+    pub fn remove_invalid_edges(&mut self) -> Result<(), LayoutError> {
+        let mut edges_to_remove = Vec::new();
+
+        for &edge in &self.edges {
+            let (source, target) = {
+                let edge = self.edge(edge);
+                (edge.source, edge.target)
+            };
+            if let (Some(source), Some(target)) = (source, target)
+                && self.is_one_ancestor_of_other(source, target)
+            {
+                edges_to_remove.push(edge);
+            }
+        }
+
+        for edge in edges_to_remove {
+            if self.edge(edge).is_inter_graph {
+                self.remove_edge(edge)?;
+            } else {
+                let owner = self
+                    .edge(edge)
+                    .source
+                    .and_then(|source| self.node(source).owner)
+                    .ok_or(LayoutError(
+                        "Edge owner graph or owner graph manager is null!",
+                    ))?;
+                self.graph_remove_edge(owner, edge)?;
+                if let Some(index) = self.edges.iter().position(|&candidate| candidate == edge) {
+                    self.edges.remove(index);
+                }
+            }
+        }
+
+        Ok(())
+    }
 }
 
 #[cfg(test)]

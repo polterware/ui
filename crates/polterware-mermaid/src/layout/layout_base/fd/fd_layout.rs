@@ -33,6 +33,23 @@ use super::fd_layout_constants as constants;
 use super::fd_layout_edge::FDLayoutEdge;
 use super::fd_layout_node::FDLayoutNode;
 
+/// Which layout-base version's computations a layout runs.
+///
+/// The two versions differ in how the spring, repulsion, and ideal edge length are sized:
+/// 1.0.2 (cose-bilkent 4.1.0) uses the layout-wide `springConstant` and
+/// `repulsionConstant` and resets every edge's ideal length from `idealEdgeLength`; 2.0.1
+/// (cose-base 2.x, cytoscape-fcose) uses each edge's `edgeElasticity` and each node's
+/// `nodeRepulsion`, and keeps the edge's own ideal length as the base. [`LayoutVersion::V1`]
+/// keeps cose-bilkent byte-identical.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum LayoutVersion {
+    /// layout-base 1.0.2, the base of cose-base 1.0.3.
+    #[default]
+    V1,
+    /// layout-base 2.0.1, the base of cose-base 2.2.0.
+    V2,
+}
+
 /// The force-directed layout base, upstream's `FDLayout`.
 pub struct FDLayout<V = ()> {
     /// The layout this one extends, upstream's `Layout` prototype chain.
@@ -85,6 +102,8 @@ pub struct FDLayout<V = ()> {
     pub repulsion_range: f64,
     /// How much an extra level of nesting adds to the ideal edge length.
     pub per_level_ideal_edge_length_factor: f64,
+    /// Which layout-base version's force computations to run.
+    pub version: LayoutVersion,
 }
 
 impl<V> Default for FDLayout<V> {
@@ -126,6 +145,7 @@ impl<V> FDLayout<V> {
             total_displacement_threshold: 0.0,
             repulsion_range: 0.0,
             per_level_ideal_edge_length_factor: constants::PER_LEVEL_IDEAL_EDGE_LENGTH_FACTOR,
+            version: LayoutVersion::V1,
         }
     }
 
@@ -223,7 +243,13 @@ impl<V> FDLayout<V> {
         let all_edges = self.layout.get_all_edges();
 
         for edge in all_edges {
-            let mut ideal_length = self.ideal_edge_length;
+            // 1.0.2 resets every edge's ideal length from the layout's `idealEdgeLength`;
+            // 2.0.1 starts from the edge's own value (`originalIdealLength`).
+            let original_ideal_length = self.fd_edges[edge.0].ideal_length;
+            let mut ideal_length = match self.version {
+                LayoutVersion::V1 => self.ideal_edge_length,
+                LayoutVersion::V2 => original_ideal_length,
+            };
             let is_inter_graph = self.layout.graph_manager.edge(edge).is_inter_graph;
 
             if is_inter_graph {
@@ -263,7 +289,12 @@ impl<V> FDLayout<V> {
 
                 let lca_depth = self.layout.graph_manager.graph_inclusion_tree_depth(lca)?;
 
-                ideal_length += constants::DEFAULT_EDGE_LENGTH
+                let level_base = match self.version {
+                    LayoutVersion::V1 => constants::DEFAULT_EDGE_LENGTH,
+                    LayoutVersion::V2 => original_ideal_length,
+                };
+
+                ideal_length += level_base
                     * self.per_level_ideal_edge_length_factor
                     * (self
                         .layout
@@ -463,6 +494,137 @@ impl<V> FDLayout<V> {
         node.displacement_y = 0.0;
     }
 
+    /// cose-base 2.x's `CoSENode.prototype.calculateDisplacement`: the movement of one
+    /// node by the forces of this iteration, accumulated on the node instead of applied,
+    /// so constraints can adjust it before [`FDLayout::node_move_v2`] runs.
+    ///
+    /// A compound that holds fixed nodes divides the forces by its
+    /// [`FDLayoutNode::fixed_node_weight`] instead of its children count, and the movement
+    /// is passed on to its leaves' displacements.
+    pub fn calculate_displacement(&mut self, node: NodeId) {
+        self.sync_arenas();
+
+        let cooling_factor = self.cooling_factor;
+        let max_node_displacement = self.max_node_displacement;
+        let child = self.layout.graph_manager.node(node).child;
+        let (force_x, force_y, fixed_node_weight, no_of_children) = {
+            let node = &self.fd_nodes[node.0];
+            (
+                node.spring_force_x + node.repulsion_force_x + node.gravitation_force_x,
+                node.spring_force_y + node.repulsion_force_y + node.gravitation_force_y,
+                node.fixed_node_weight,
+                node.no_of_children as f64,
+            )
+        };
+
+        {
+            let node = &mut self.fd_nodes[node.0];
+            match fixed_node_weight {
+                Some(weight) if child.is_some() => {
+                    node.displacement_x += cooling_factor * force_x / weight;
+                    node.displacement_y += cooling_factor * force_y / weight;
+                }
+                _ => {
+                    node.displacement_x += cooling_factor * force_x / no_of_children;
+                    node.displacement_y += cooling_factor * force_y / no_of_children;
+                }
+            }
+
+            if node.displacement_x.abs() > cooling_factor * max_node_displacement {
+                node.displacement_x =
+                    cooling_factor * max_node_displacement * i_math::sign(node.displacement_x);
+            }
+
+            if node.displacement_y.abs() > cooling_factor * max_node_displacement {
+                node.displacement_y =
+                    cooling_factor * max_node_displacement * i_math::sign(node.displacement_y);
+            }
+        }
+
+        // A non-empty compound passes the movement on to its children as well.
+        if let Some(child) = child
+            && !self.layout.graph_manager.graph(child).nodes.is_empty()
+        {
+            let (dx, dy) = {
+                let node = &self.fd_nodes[node.0];
+                (node.displacement_x, node.displacement_y)
+            };
+            self.propagate_displacement_to_children_v2(child, dx, dy);
+        }
+    }
+
+    /// cose-base 2.x's `CoSENode.prototype.propogateDisplacementToChildren`: adds the
+    /// movement of a compound to the displacement of its leaves, without moving them.
+    pub fn propagate_displacement_to_children_v2(&mut self, graph: GraphId, dx: f64, dy: f64) {
+        self.sync_arenas();
+
+        let nodes = self.layout.graph_manager.graph(graph).nodes.clone();
+
+        for node in nodes {
+            match self.layout.graph_manager.node(node).child {
+                None => {
+                    let node = &mut self.fd_nodes[node.0];
+                    node.displacement_x += dx;
+                    node.displacement_y += dy;
+                }
+                Some(child) => {
+                    self.propagate_displacement_to_children_v2(child, dx, dy);
+                }
+            }
+        }
+    }
+
+    /// cose-base 2.x's `CoSENode.prototype.move`: moves a simple or empty compound node by
+    /// its accumulated displacement and clears the forces and displacement of every node.
+    pub fn node_move_v2(&mut self, node: NodeId) {
+        self.sync_arenas();
+
+        let child = self.layout.graph_manager.node(node).child;
+        let (displacement_x, displacement_y) = {
+            let node = &self.fd_nodes[node.0];
+            (node.displacement_x, node.displacement_y)
+        };
+
+        let moves = match child {
+            None => true,
+            Some(child) => self.layout.graph_manager.graph(child).nodes.is_empty(),
+        };
+
+        if moves {
+            self.layout
+                .graph_manager
+                .node_mut(node)
+                .move_by(displacement_x, displacement_y);
+
+            self.total_displacement += displacement_x.abs() + displacement_y.abs();
+        }
+
+        let node = &mut self.fd_nodes[node.0];
+        node.spring_force_x = 0.0;
+        node.spring_force_y = 0.0;
+        node.repulsion_force_x = 0.0;
+        node.repulsion_force_y = 0.0;
+        node.gravitation_force_x = 0.0;
+        node.gravitation_force_y = 0.0;
+        node.displacement_x = 0.0;
+        node.displacement_y = 0.0;
+    }
+
+    /// cose-base 2.x's `CoSELayout.prototype.moveNodes`: calculate every displacement,
+    /// then move every node with [`FDLayout::node_move_v2`]. The caller that handles
+    /// constraints adjusts the displacements between the two loops.
+    pub fn move_nodes_v2(&mut self) {
+        let all_nodes = self.layout.get_all_nodes();
+
+        for node in &all_nodes {
+            self.calculate_displacement(*node);
+        }
+
+        for node in all_nodes {
+            self.node_move_v2(node);
+        }
+    }
+
     /// Upstream `CoSENode.prototype.propogateDisplacementToChildren`: moves the leaf
     /// descendants of `graph` and records the movement on them.
     pub fn propagate_displacement_to_children(&mut self, graph: GraphId, dx: f64, dy: f64) {
@@ -525,7 +687,10 @@ impl<V> FDLayout<V> {
             return;
         }
 
-        let spring_force = self.spring_constant * (length - ideal_length);
+        let spring_force = match self.version {
+            LayoutVersion::V1 => self.spring_constant * (length - ideal_length),
+            LayoutVersion::V2 => self.edge(edge).edge_elasticity * (length - ideal_length),
+        };
 
         let spring_force_x = spring_force * (length_x / length);
         let spring_force_y = spring_force * (length_y / length);
@@ -615,8 +780,19 @@ impl<V> FDLayout<V> {
             let children_a = self.fd_nodes[node_a.0].no_of_children as f64;
             let children_b = self.fd_nodes[node_b.0].no_of_children as f64;
 
-            let repulsion_force =
-                self.repulsion_constant * children_a * children_b / distance_squared;
+            let repulsion_force = match self.version {
+                LayoutVersion::V1 => {
+                    self.repulsion_constant * children_a * children_b / distance_squared
+                }
+                LayoutVersion::V2 => {
+                    let node_a = &self.fd_nodes[node_a.0];
+                    let node_b = &self.fd_nodes[node_b.0];
+                    (node_a.node_repulsion / 2.0 + node_b.node_repulsion / 2.0)
+                        * children_a
+                        * children_b
+                        / distance_squared
+                }
+            };
 
             // Project the force onto the x and y axes.
             let repulsion_force_x = repulsion_force * distance_x / distance;
@@ -927,6 +1103,108 @@ mod tests {
 
     fn assert_close(actual: f64, expected: f64) {
         assert!((actual - expected).abs() < 1e-12, "{actual} != {expected}");
+    }
+
+    /// Layout-base 2.0.1's spring: the edge's own `edgeElasticity` replaces the layout's
+    /// `springConstant`. Expected: `2.0 * (60 - 50) = 20` (1.0.2 would give
+    /// `0.45 * (60 - 50) = 4.5`).
+    #[test]
+    fn spring_force_of_layout_base_v2_uses_edge_elasticity() {
+        let mut layout: FDLayout<()> = FDLayout::new();
+        layout.version = LayoutVersion::V2;
+        layout.new_graph_manager();
+        let root = layout.add_root();
+
+        let a = add_node(&mut layout, root, "a", 0.0, 0.0, 40.0, 40.0);
+        let b = add_node(&mut layout, root, "b", 100.0, 0.0, 40.0, 40.0);
+        let edge = add_edge(&mut layout, a, b);
+
+        layout.init_parameters();
+        layout.edge_mut(edge).edge_elasticity = 2.0;
+        layout.calc_ideal_edge_lengths().unwrap();
+        layout.calc_spring_forces();
+
+        assert_close(layout.node(a).spring_force_x, 20.0);
+        assert_close(layout.node(a).spring_force_y, 0.0);
+        assert_close(layout.node(b).spring_force_x, -20.0);
+    }
+
+    /// Layout-base 2.0.1's repulsion: halve each node's `nodeRepulsion` and add them.
+    /// Expected from cose-base 2.2.0:
+    /// `-0.061023591056393434, -0.01830707731691803` on `a` and the opposite on `b`.
+    #[test]
+    fn repulsion_of_layout_base_v2_uses_node_repulsion() {
+        let mut layout: FDLayout<()> = FDLayout::new();
+        layout.version = LayoutVersion::V2;
+        layout.new_graph_manager();
+        let root = layout.add_root();
+
+        let a = add_node(&mut layout, root, "a", -20.0, -20.0, 40.0, 40.0);
+        let b = add_node(&mut layout, root, "b", 80.0, 10.0, 40.0, 40.0);
+
+        layout.init_parameters();
+        layout.calc_no_of_children_for_all_nodes();
+        layout.layout.uniform_leaf_node_sizes = false;
+        layout.use_fr_grid_variant = false;
+        layout.node_mut(a).node_repulsion = 100.0;
+        layout.node_mut(b).node_repulsion = 400.0;
+
+        layout.calc_repulsion_force(a, b);
+
+        assert_close(layout.node(a).repulsion_force_x, -0.061023591056393434);
+        assert_close(layout.node(a).repulsion_force_y, -0.01830707731691803);
+        assert_close(layout.node(b).repulsion_force_x, 0.061023591056393434);
+        assert_close(layout.node(b).repulsion_force_y, 0.01830707731691803);
+    }
+
+    /// Layout-base 2.0.1's ideal edge length: the extra nesting length multiplies the
+    /// edge's own ideal length, not `DEFAULT_EDGE_LENGTH`. Expected `132` (1.0.2 would
+    /// give `125`).
+    #[test]
+    fn ideal_length_of_layout_base_v2_scales_the_edges_own_length() {
+        let mut layout: FDLayout<()> = FDLayout::new();
+        layout.version = LayoutVersion::V2;
+        layout.new_graph_manager();
+        let root = layout.add_root();
+
+        let a = add_node(&mut layout, root, "a", 0.0, 0.0, 40.0, 40.0);
+
+        let parent = layout.new_node(None);
+        layout
+            .layout
+            .graph_manager
+            .graph_add_node(root, parent)
+            .unwrap();
+        layout
+            .layout
+            .graph_manager
+            .node_mut(parent)
+            .set_rect(&Point::new(-100.0, -100.0), &DimensionD::new(200.0, 200.0));
+        layout.node_mut(parent).id = Some("p".to_string());
+
+        let child_graph = layout.new_graph(None);
+        layout
+            .layout
+            .graph_manager
+            .add_graph(child_graph, parent)
+            .unwrap();
+        let b = add_node(&mut layout, child_graph, "b", -20.0, -20.0, 40.0, 40.0);
+
+        let edge = add_edge(&mut layout, a, b);
+
+        layout.init_parameters();
+        layout.calc_no_of_children_for_all_nodes();
+        layout
+            .layout
+            .graph_manager
+            .calc_lowest_common_ancestors()
+            .unwrap();
+        layout.layout.graph_manager.calc_inclusion_tree_depths();
+        layout.layout.graph_manager.graph_calc_estimated_size(root);
+        layout.edge_mut(edge).ideal_length = 120.0;
+        layout.calc_ideal_edge_lengths().unwrap();
+
+        assert_close(layout.edge(edge).ideal_length, 132.0);
     }
 
     #[test]

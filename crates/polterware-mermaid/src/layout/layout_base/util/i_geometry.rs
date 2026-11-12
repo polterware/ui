@@ -394,6 +394,47 @@ pub fn do_intersect(p1: &Point, p2: &Point, p3: &Point, p4: &Point) -> bool {
     }
 }
 
+/// Upstream `IGeometry.findCircleLineIntersections` (layout-base 2.0.1): the parameters
+/// `t` of the points where the ray from `(ex, ey)` to `(lx, ly)` meets the circle centered
+/// at `(cx, cy)` with radius `r`.
+///
+/// `None` is upstream's `null`: either the line misses the circle, or it meets it beyond
+/// the segment's ends. A single-element list is the nearer intersection inside the
+/// segment, which is all a caller can use.
+pub fn find_circle_line_intersections(
+    ex: f64,
+    ey: f64,
+    lx: f64,
+    ly: f64,
+    cx: f64,
+    cy: f64,
+    r: f64,
+) -> Option<Vec<f64>> {
+    // P = E + t * d, so the intersection solves a * t^2 + b * t + c = 0.
+    let a = (lx - ex) * (lx - ex) + (ly - ey) * (ly - ey);
+    let b = 2.0 * ((ex - cx) * (lx - ex) + (ey - cy) * (ly - ey));
+    let c = (ex - cx) * (ex - cx) + (ey - cy) * (ey - cy) - r * r;
+
+    let disc = b * b - 4.0 * a * c;
+
+    if disc >= 0.0 {
+        let t1 = (-b + (b * b - 4.0 * a * c).sqrt()) / (2.0 * a);
+        let t2 = (-b - (b * b - 4.0 * a * c).sqrt()) / (2.0 * a);
+
+        if (0.0..=1.0).contains(&t1) {
+            return Some(vec![t1]);
+        }
+
+        if (0.0..=1.0).contains(&t2) {
+            return Some(vec![t2]);
+        }
+
+        None
+    } else {
+        None
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

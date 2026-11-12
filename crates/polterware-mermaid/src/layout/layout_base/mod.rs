@@ -1,7 +1,11 @@
 //! Port of `layout-base` 1.0.2, the object model and geometry that cose-base 1.0.3
-//! (and so cytoscape-cose-bilkent 4.1.0) is built on: `src/` in
-//! `research/mermaid-port/upstream/mermaid/node_modules/.pnpm/layout-base@1.0.2`
-//! (MIT, Copyright: i-Vis Research Group, Bilkent University, 2007 - present).
+//! (and so cytoscape-cose-bilkent 4.1.0) is built on, plus the additions of 2.0.1 that
+//! cose-base 2.2.0 (and so cytoscape-fcose 2.2.0) uses: `util::matrix`, `util::svd`,
+//! `IGeometry::find_circle_line_intersections`, `LNode`'s label margins, and the
+//! version-flagged force computations of [`FDLayout`]. The sources are `src/` of
+//! `layout-base@1.0.2` and `layout-base@2.0.1` under
+//! `research/mermaid-port/upstream/mermaid/node_modules/.pnpm` (MIT, Copyright: i-Vis
+//! Research Group, Bilkent University, 2007 - present).
 //!
 //! The files map one to one: [`util`] holds the geometry and collection helpers
 //! ([`util::dimension_d`], [`util::i_geometry`], [`util::linked_list`], ...), and this
@@ -46,6 +50,7 @@ pub mod layout_constants;
 pub mod util;
 
 pub use fd::FDLayout;
+pub use fd::fd_layout::LayoutVersion;
 pub use l_edge::{EdgeId, LEdge};
 pub use l_graph::{GraphId, LGraph};
 pub use l_graph_manager::LGraphManager;
