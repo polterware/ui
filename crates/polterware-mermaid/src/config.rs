@@ -248,6 +248,9 @@ pub struct Config {
     pub hand_drawn_seed: f64,
     /// Layout engine. Defaults to `elk`.
     pub layout: String,
+    /// The grid layout's configuration block, read by `readGridConfig` when `layout` is `grid`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub grid: Option<serde_json::Value>,
     pub max_text_size: f64,
     pub max_edges: f64,
     pub elk: ElkConfig,
@@ -331,6 +334,7 @@ impl Default for Config {
             look: "classic".to_string(),
             hand_drawn_seed: 0.0,
             layout: "elk".to_string(),
+            grid: None,
             max_text_size: 50000.0,
             max_edges: 500.0,
             elk: ElkConfig::default(),

@@ -1,0 +1,160 @@
+{
+  "name": "04-diamond-labels",
+  "source": "---\nconfig:\n  layout: grid\n---\nflowchart TD\n  A[Start] --> B{Choice}\n  B -- yes --> C[Left]\n  B -- no --> D[Right]\n  C --> E[End]\n  D --> E\n",
+  "body": "flowchart TD\n  A[Start] --> B{Choice}\n  B -- yes --> C[Left]\n  B -- no --> D[Right]\n  C --> E[End]\n  D --> E\n",
+  "nodes": [
+    {
+      "id": "A",
+      "x": 90,
+      "y": 84.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "B",
+      "x": 320,
+      "y": 84.2,
+      "width": 168.4,
+      "height": 168.4
+    },
+    {
+      "id": "C",
+      "x": 554.8,
+      "y": 84.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "D",
+      "x": 90,
+      "y": 242.6,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "E",
+      "x": 320,
+      "y": 242.6,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "clusters": [],
+  "labels": [
+    {
+      "id": "edge-label-B-C-L_B_C_0",
+      "x": 434.5,
+      "y": 84.2,
+      "width": 28.799999999999997,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-B-D-L_B_D_0",
+      "x": 202.9,
+      "y": 162.4,
+      "width": 19.2,
+      "height": 18.4
+    }
+  ],
+  "edges": [
+    {
+      "id": "L_A_B_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 84.2
+        },
+        {
+          "x": 235.8,
+          "y": 84.2
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_B_C_0",
+      "points": [
+        {
+          "x": 404.2,
+          "y": 84.2
+        },
+        {
+          "x": 464.79999999999995,
+          "y": 84.2
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_B_D_0",
+      "points": [
+        {
+          "x": 235.8,
+          "y": 162.4
+        },
+        {
+          "x": 170,
+          "y": 162.4
+        },
+        {
+          "x": 170,
+          "y": 218.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_C_E_0",
+      "points": [
+        {
+          "x": 474.79999999999995,
+          "y": 108.4
+        },
+        {
+          "x": 474.79999999999995,
+          "y": 224.4
+        },
+        {
+          "x": 410,
+          "y": 224.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_D_E_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 242.6
+        },
+        {
+          "x": 230,
+          "y": 242.6
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ],
+  "viewBox": {
+    "x": -8,
+    "y": -8,
+    "width": 660.8,
+    "height": 282.8
+  }
+}

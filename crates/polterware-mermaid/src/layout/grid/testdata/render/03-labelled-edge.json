@@ -1,0 +1,56 @@
+{
+  "name": "03-labelled-edge",
+  "source": "---\nconfig:\n  layout: grid\n---\nflowchart TD\n  A[Source] -- a rather long label --> B[Target]\n",
+  "body": "flowchart TD\n  A[Source] -- a rather long label --> B[Target]\n",
+  "nodes": [
+    {
+      "id": "A",
+      "x": 90,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "B",
+      "x": 478.4,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "clusters": [],
+  "labels": [
+    {
+      "id": "edge-label-A-B-L_A_B_0",
+      "x": 284.2,
+      "y": 24.2,
+      "width": 182.4,
+      "height": 18.4
+    }
+  ],
+  "edges": [
+    {
+      "id": "L_A_B_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 24.2
+        },
+        {
+          "x": 388.4,
+          "y": 24.2
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ],
+  "viewBox": {
+    "x": -8,
+    "y": -8,
+    "width": 584.4,
+    "height": 64.4
+  }
+}

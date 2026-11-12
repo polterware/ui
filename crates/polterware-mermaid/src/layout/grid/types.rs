@@ -201,6 +201,13 @@ pub struct Node {
     pub metadata: Option<Value>,
     pub placement_id: Option<String>,
     pub padding: Option<f64>,
+    /// The shared renderer's shape name; label helpers carry `labelRect`.
+    pub shape: Option<String>,
+    pub is_dummy: bool,
+    pub label_style: Option<String>,
+    pub edge_start: Option<String>,
+    pub edge_end: Option<String>,
+    pub dir: Option<String>,
 }
 
 impl Node {
@@ -229,6 +236,11 @@ pub struct Edge {
     pub corner_radius: Option<f64>,
     pub port_clipping: Option<PortClipping>,
     pub skip_corner_fix: bool,
+    pub arrow_type_start: Option<String>,
+    pub arrow_type_end: Option<String>,
+    /// Upstream's `edge.type`, which carries flowchart marker semantics.
+    pub edge_type: Option<String>,
+    pub label_style: Option<Vec<String>>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]

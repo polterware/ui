@@ -1,0 +1,133 @@
+{
+  "name": "07-crossing-edges",
+  "source": "---\nconfig:\n  layout: grid\n---\nflowchart TD\n  A --> D\n  B --> C\n  A --> C\n  B --> D\n",
+  "body": "flowchart TD\n  A --> D\n  B --> C\n  A --> C\n  B --> D\n",
+  "nodes": [
+    {
+      "id": "A",
+      "x": 90,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "D",
+      "x": 320,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "B",
+      "x": 90,
+      "y": 122.60000000000001,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "C",
+      "x": 320,
+      "y": 122.60000000000001,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "clusters": [],
+  "labels": [],
+  "edges": [
+    {
+      "id": "L_A_D_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 24.2
+        },
+        {
+          "x": 230,
+          "y": 24.2
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_B_C_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 122.60000000000001
+        },
+        {
+          "x": 230,
+          "y": 122.60000000000001
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_A_C_0",
+      "points": [
+        {
+          "x": 170,
+          "y": 48.4
+        },
+        {
+          "x": 170,
+          "y": 78.4
+        },
+        {
+          "x": 236,
+          "y": 78.4
+        },
+        {
+          "x": 236,
+          "y": 98.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_B_D_0",
+      "points": [
+        {
+          "x": 174,
+          "y": 146.8
+        },
+        {
+          "x": 174,
+          "y": 166.8
+        },
+        {
+          "x": 210,
+          "y": 166.8
+        },
+        {
+          "x": 210,
+          "y": 42.4
+        },
+        {
+          "x": 230,
+          "y": 42.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ],
+  "viewBox": {
+    "x": -8,
+    "y": -8,
+    "width": 426,
+    "height": 182.8
+  }
+}

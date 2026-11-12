@@ -699,7 +699,7 @@ fn run_grid_layout_core_in_place(
         data,
         None,
         options.metrics.as_deref_mut(),
-        &GridEdgeLabelOptions,
+        &GridEdgeLabelOptions::default(),
     );
     Ok(result)
 }

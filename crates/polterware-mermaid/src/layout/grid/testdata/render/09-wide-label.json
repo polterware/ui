@@ -1,0 +1,120 @@
+{
+  "name": "09-wide-label",
+  "source": "---\nconfig:\n  layout: grid\n---\nflowchart TB\n  Left --> Right\n  Left -- a wide label that spans most of the gap --> Right\n  Top --> Bottom\n",
+  "body": "flowchart TB\n  Left --> Right\n  Left -- a wide label that spans most of the gap --> Right\n  Top --> Bottom\n",
+  "nodes": [
+    {
+      "id": "Left",
+      "x": 90,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Right",
+      "x": 670.4,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Top",
+      "x": 90,
+      "y": 122.60000000000001,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Bottom",
+      "x": 670.4,
+      "y": 122.60000000000001,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "clusters": [],
+  "labels": [
+    {
+      "id": "edge-label-Left-Right-L_Left_Right_2",
+      "x": 380.2,
+      "y": 28.2,
+      "width": 374.4,
+      "height": 18.4
+    }
+  ],
+  "edges": [
+    {
+      "id": "L_Left_Right_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 20.2
+        },
+        {
+          "x": 187,
+          "y": 20.2
+        },
+        {
+          "x": 187,
+          "y": 5
+        },
+        {
+          "x": 573.4,
+          "y": 5
+        },
+        {
+          "x": 573.4,
+          "y": 20.2
+        },
+        {
+          "x": 580.4,
+          "y": 20.2
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_Left_Right_2",
+      "points": [
+        {
+          "x": 180,
+          "y": 28.2
+        },
+        {
+          "x": 580.4,
+          "y": 28.2
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_Top_Bottom_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 122.60000000000001
+        },
+        {
+          "x": 580.4,
+          "y": 122.60000000000001
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ],
+  "viewBox": {
+    "x": -8,
+    "y": -8,
+    "width": 776.4,
+    "height": 162.8
+  }
+}

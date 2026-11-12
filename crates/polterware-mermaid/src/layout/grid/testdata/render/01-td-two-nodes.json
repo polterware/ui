@@ -1,0 +1,48 @@
+{
+  "name": "01-td-two-nodes",
+  "source": "---\nconfig:\n  layout: grid\n---\nflowchart TD\n  A[Start] --> B[End]\n",
+  "body": "flowchart TD\n  A[Start] --> B[End]\n",
+  "nodes": [
+    {
+      "id": "A",
+      "x": 90,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "B",
+      "x": 320,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "clusters": [],
+  "labels": [],
+  "edges": [
+    {
+      "id": "L_A_B_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 24.2
+        },
+        {
+          "x": 230,
+          "y": 24.2
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ],
+  "viewBox": {
+    "x": -8,
+    "y": -8,
+    "width": 426,
+    "height": 64.4
+  }
+}

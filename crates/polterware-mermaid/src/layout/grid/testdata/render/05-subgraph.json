@@ -1,0 +1,88 @@
+{
+  "name": "05-subgraph",
+  "source": "---\nconfig:\n  layout: grid\n---\nflowchart TD\n  subgraph One[Group One]\n    A --> B\n  end\n  B --> C\n",
+  "body": "flowchart TD\n  subgraph One[Group One]\n    A --> B\n  end\n  B --> C\n",
+  "nodes": [
+    {
+      "id": "A",
+      "x": 134,
+      "y": 94.60000000000001,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "B",
+      "x": 364,
+      "y": 94.60000000000001,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "C",
+      "x": 638,
+      "y": 81.4,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "clusters": [
+    {
+      "id": "One",
+      "x": 249,
+      "y": 81.4,
+      "width": 498,
+      "height": 162.8
+    }
+  ],
+  "labels": [],
+  "edges": [
+    {
+      "id": "L_A_B_0",
+      "points": [
+        {
+          "x": 224,
+          "y": 94.60000000000001
+        },
+        {
+          "x": 274,
+          "y": 94.60000000000001
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_B_C_0",
+      "points": [
+        {
+          "x": 454,
+          "y": 94.60000000000001
+        },
+        {
+          "x": 523,
+          "y": 94.60000000000001
+        },
+        {
+          "x": 523,
+          "y": 81.4
+        },
+        {
+          "x": 548,
+          "y": 81.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ],
+  "viewBox": {
+    "x": -8,
+    "y": -8,
+    "width": 744,
+    "height": 178.8
+  }
+}

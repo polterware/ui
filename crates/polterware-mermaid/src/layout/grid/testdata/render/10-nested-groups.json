@@ -1,0 +1,127 @@
+{
+  "name": "10-nested-groups",
+  "source": "---\nconfig:\n  layout: grid\n---\nflowchart TB\n  subgraph Outer\n    subgraph Inner\n      A --> B\n    end\n    B --> C\n  end\n  C --> D\n",
+  "body": "flowchart TB\n  subgraph Outer\n    subgraph Inner\n      A --> B\n    end\n    B --> C\n  end\n  C --> D\n",
+  "nodes": [
+    {
+      "id": "A",
+      "x": 178,
+      "y": 165,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "B",
+      "x": 408,
+      "y": 165,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "C",
+      "x": 682,
+      "y": 151.8,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "D",
+      "x": 956,
+      "y": 138.60000000000002,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "clusters": [
+    {
+      "id": "Outer",
+      "x": 408,
+      "y": 138.60000000000002,
+      "width": 816,
+      "height": 277.20000000000005
+    },
+    {
+      "id": "Inner",
+      "x": 293,
+      "y": 151.8,
+      "width": 498,
+      "height": 162.8
+    }
+  ],
+  "labels": [],
+  "edges": [
+    {
+      "id": "L_A_B_0",
+      "points": [
+        {
+          "x": 268,
+          "y": 165
+        },
+        {
+          "x": 318,
+          "y": 165
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_B_C_0",
+      "points": [
+        {
+          "x": 498,
+          "y": 165
+        },
+        {
+          "x": 567,
+          "y": 165
+        },
+        {
+          "x": 567,
+          "y": 151.8
+        },
+        {
+          "x": 592,
+          "y": 151.8
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_C_D_0",
+      "points": [
+        {
+          "x": 772,
+          "y": 151.8
+        },
+        {
+          "x": 841,
+          "y": 151.8
+        },
+        {
+          "x": 841,
+          "y": 138.60000000000002
+        },
+        {
+          "x": 866,
+          "y": 138.60000000000002
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ],
+  "viewBox": {
+    "x": -8,
+    "y": -8,
+    "width": 1062,
+    "height": 293.20000000000005
+  }
+}
