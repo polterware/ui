@@ -1,0 +1,89 @@
+{
+  "shape": "composite",
+  "upstream": "shapes/composite.ts",
+  "label_font_size": 12,
+  "cases": [
+    {
+      "label": "A",
+      "label_size": {
+        "width": 7.92,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "basic cluster composite label-container",
+          "x": -11.46,
+          "y": -14.399999999999999,
+          "width": 22.92,
+          "height": 28.799999999999997,
+          "rx": 0,
+          "ry": 0
+        }
+      ],
+      "bbox": {
+        "width": 22.92,
+        "height": 28.799999999999997
+      },
+      "intersects": [
+        {
+          "x": 11.46,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -14.399999999999999
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, -6.8999999999999995)",
+          "text": "A"
+        }
+      ]
+    },
+    {
+      "label": "AReallyLongLabel",
+      "label_size": {
+        "width": 95.76000000000002,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "basic cluster composite label-container",
+          "x": -55.38000000000001,
+          "y": -14.399999999999999,
+          "width": 110.76000000000002,
+          "height": 28.799999999999997,
+          "rx": 0,
+          "ry": 0
+        }
+      ],
+      "bbox": {
+        "width": 110.76000000000002,
+        "height": 28.799999999999997
+      },
+      "intersects": [
+        {
+          "x": 55.38000000000001,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -14.399999999999999
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, -6.8999999999999995)",
+          "text": "AReallyLongLabel"
+        }
+      ]
+    }
+  ]
+}

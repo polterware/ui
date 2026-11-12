@@ -1,0 +1,83 @@
+{
+  "shape": "mindmap_circle",
+  "upstream": "shapes/mindmapCircle.ts",
+  "label_font_size": 12,
+  "cases": [
+    {
+      "label": "A",
+      "label_size": {
+        "width": 7.92,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "circle",
+          "class": "basic label-container",
+          "cx": 0,
+          "cy": 0,
+          "r": 22.95560179998974
+        }
+      ],
+      "bbox": {
+        "width": 45.91120359997948,
+        "height": 45.91120359997948
+      },
+      "intersects": [
+        {
+          "x": 22.95560179998974,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -22.95560179998974
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, -6.8999999999999995)",
+          "text": "A"
+        }
+      ]
+    },
+    {
+      "label": "AReallyLongLabel",
+      "label_size": {
+        "width": 95.76000000000002,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "circle",
+          "class": "basic label-container",
+          "cx": 0,
+          "cy": 0,
+          "r": 63.37462557994636
+        }
+      ],
+      "bbox": {
+        "width": 126.74925115989272,
+        "height": 126.74925115989272
+      },
+      "intersects": [
+        {
+          "x": 63.37462557994636,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -63.37462557994636
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, -6.8999999999999995)",
+          "text": "AReallyLongLabel"
+        }
+      ]
+    }
+  ]
+}

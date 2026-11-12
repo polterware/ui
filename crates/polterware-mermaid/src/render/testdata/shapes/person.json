@@ -1,0 +1,103 @@
+{
+  "shape": "person",
+  "upstream": "shapes/person.ts",
+  "label_font_size": 12,
+  "cases": [
+    {
+      "label": "A",
+      "label_size": {
+        "width": 7.92,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": null,
+          "x": -50,
+          "y": -2.0050000000000026,
+          "width": 100,
+          "height": 43.8,
+          "rx": 17.7,
+          "ry": 17.7
+        },
+        {
+          "tag": "circle",
+          "class": null,
+          "cx": 0,
+          "cy": -18.795,
+          "r": 23
+        }
+      ],
+      "bbox": {
+        "width": 100,
+        "height": 83.59
+      },
+      "intersects": [
+        {
+          "x": 40.62247798279151,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -41.794999999999995
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, 12.994999999999997)",
+          "text": "A"
+        }
+      ]
+    },
+    {
+      "label": "AReallyLongLabel",
+      "label_size": {
+        "width": 95.76000000000002,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": null,
+          "x": -62.88000000000001,
+          "y": 3.119952000000006,
+          "width": 125.76000000000002,
+          "height": 43.8,
+          "rx": 19.71,
+          "ry": 19.71
+        },
+        {
+          "tag": "circle",
+          "class": null,
+          "cx": 0,
+          "cy": -17.995151999999997,
+          "r": 28.924800000000005
+        }
+      ],
+      "bbox": {
+        "width": 125.76000000000002,
+        "height": 93.839904
+      },
+      "intersects": [
+        {
+          "x": 22.33926095143231,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -46.91995200000001
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, 18.119952000000005)",
+          "text": "AReallyLongLabel"
+        }
+      ]
+    }
+  ]
+}

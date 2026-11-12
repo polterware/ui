@@ -1,0 +1,89 @@
+{
+  "shape": "console",
+  "upstream": "shapes/console.ts",
+  "label_font_size": 12,
+  "cases": [
+    {
+      "label": "A",
+      "label_size": {
+        "width": 7.92,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": null,
+          "x": -45,
+          "y": -31.9,
+          "width": 90,
+          "height": 63.8,
+          "rx": 12,
+          "ry": 12
+        }
+      ],
+      "bbox": {
+        "width": 90,
+        "height": 63.8
+      },
+      "intersects": [
+        {
+          "x": 45,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -31.9
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, 3.1000000000000005)",
+          "text": "A"
+        }
+      ]
+    },
+    {
+      "label": "AReallyLongLabel",
+      "label_size": {
+        "width": 95.76000000000002,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": null,
+          "x": -62.88000000000001,
+          "y": -31.9,
+          "width": 125.76000000000002,
+          "height": 63.8,
+          "rx": 12,
+          "ry": 12
+        }
+      ],
+      "bbox": {
+        "width": 125.76000000000002,
+        "height": 63.8
+      },
+      "intersects": [
+        {
+          "x": 62.88000000000001,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -31.9
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, 3.1000000000000005)",
+          "text": "AReallyLongLabel"
+        }
+      ]
+    }
+  ]
+}
