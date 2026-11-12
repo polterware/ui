@@ -912,8 +912,10 @@ pub fn offset_edge_points(edge: &mut EdgeLabel, y_offset: f64) {
 /// Make a configured compound graph with dimensions supplied by `sizes`.
 pub fn graph_from_sizes(sizes: &NodeSizes, rankdir: &str) -> LayeredGraph {
     let mut g = LayeredGraph::with_options(GraphOptions::compound());
-    let mut gl = GraphLabel::default();
-    gl.rankdir = Some(rankdir.into());
+    let gl = GraphLabel {
+        rankdir: Some(rankdir.into()),
+        ..GraphLabel::default()
+    };
     g.set_graph_label(Some(gl));
     for (id, (width, height)) in sizes {
         g.set_node_with(

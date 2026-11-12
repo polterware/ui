@@ -172,10 +172,12 @@ fn shape_rect(
     fill: Option<Color>,
     stroke: Option<Color>,
 ) -> RectShape {
-    let mut style = PathStyle::default();
-    style.fill = fill;
-    style.stroke = stroke;
-    style.stroke_width = 1.0;
+    let style = PathStyle {
+        fill,
+        stroke,
+        stroke_width: 1.0,
+        ..PathStyle::default()
+    };
     RectShape::new(
         Rect::new(node.x - width / 2.0, node.y - height / 2.0, width, height),
         radius,
