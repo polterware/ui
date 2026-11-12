@@ -168,6 +168,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::tree_view::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Eventmodeling => {
+            let scene = diagrams::eventmodeling::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }

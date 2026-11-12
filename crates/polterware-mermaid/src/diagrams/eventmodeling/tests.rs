@@ -479,3 +479,438 @@ fn a_reused_frame_id_reports_the_second_frame() {
         "Duplicate event modeling frame ID \"07\" on line 3"
     );
 }
+
+// Render fixtures: the geometry `renderer.ts` draws, recorded by the harness's
+// generate-eventmodeling-render-fixtures.mjs, compared within 0.01px.
+
+fn render_fixtures() -> Vec<(String, serde_json::Value)> {
+    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("src/diagrams/eventmodeling/tests/render");
+    let mut fixtures: Vec<(String, serde_json::Value)> = std::fs::read_dir(&dir)
+        .unwrap_or_else(|error| panic!("read {}: {error}", dir.display()))
+        .map(|entry| entry.expect("dir entry").path())
+        .filter(|path| path.extension().and_then(|extension| extension.to_str()) == Some("json"))
+        .map(|path| {
+            let text = std::fs::read_to_string(&path).expect("read fixture");
+            let value = serde_json::from_str(&text).expect("parse fixture");
+            (
+                path.file_name()
+                    .and_then(|name| name.to_str())
+                    .unwrap_or_default()
+                    .to_string(),
+                value,
+            )
+        })
+        .collect();
+    fixtures.sort_by(|left, right| left.0.cmp(&right.0));
+    fixtures
+}
+
+fn close(actual: f64, expected: f64, what: &str, file: &str) {
+    assert!(
+        (actual - expected).abs() <= 0.01,
+        "{file}: {what}: expected {expected}, got {actual}"
+    );
+}
+
+fn close_value(actual: &serde_json::Value, expected: &serde_json::Value, what: &str, file: &str) {
+    match (actual, expected) {
+        (serde_json::Value::Number(actual), serde_json::Value::Number(expected)) => {
+            close(
+                actual.as_f64().expect("number"),
+                expected.as_f64().expect("number"),
+                what,
+                file,
+            );
+        }
+        (serde_json::Value::Array(actual), serde_json::Value::Array(expected)) => {
+            assert_eq!(actual.len(), expected.len(), "{file}: {what}: length");
+            for (index, (actual, expected)) in actual.iter().zip(expected).enumerate() {
+                close_value(actual, expected, &format!("{what}[{index}]"), file);
+            }
+        }
+        (serde_json::Value::Object(actual), serde_json::Value::Object(expected)) => {
+            assert_eq!(actual.len(), expected.len(), "{file}: {what}: keys");
+            for (key, expected) in expected {
+                close_value(
+                    actual.get(key).unwrap_or(&serde_json::Value::Null),
+                    expected,
+                    &format!("{what}.{key}"),
+                    file,
+                );
+            }
+        }
+        _ => assert_eq!(actual, expected, "{file}: {what}"),
+    }
+}
+
+fn number(value: &serde_json::Value, file: &str, what: &str) -> f64 {
+    value
+        .as_f64()
+        .unwrap_or_else(|| panic!("{file}: {what} is not a number"))
+}
+
+fn text_of(run: &crate::scene::TextRun) -> String {
+    run.lines
+        .iter()
+        .map(|line| line.text())
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+#[test]
+fn renders_recorded_eventmodeling_fixtures() {
+    use crate::config::Config;
+    use crate::scene::Item;
+
+    let fixtures = render_fixtures();
+    assert!(
+        fixtures.len() >= 8,
+        "expected at least 8 fixtures, found {}",
+        fixtures.len()
+    );
+
+    for (file, fixture) in fixtures {
+        let source = fixture["source"].as_str().expect("fixture source");
+        let preprocessed = crate::preprocess::preprocess(source);
+        let config = Config::from_source_config(&preprocessed.config)
+            .unwrap_or_else(|error| panic!("{file}: config: {error}"));
+        let ast = super::parse(&preprocessed.body)
+            .unwrap_or_else(|error| panic!("{file}: parse: {error}"));
+        let scene = super::render::draw_ast(&ast, &config, &crate::measure::FallbackMeasure);
+        let expected = &fixture["expected"];
+
+        let view_box = &expected["viewBox"];
+        close(
+            scene.view_box.x,
+            number(&view_box["x"], &file, "viewBox x"),
+            "viewBox x",
+            &file,
+        );
+        close(
+            scene.view_box.y,
+            number(&view_box["y"], &file, "viewBox y"),
+            "viewBox y",
+            &file,
+        );
+        close(
+            scene.view_box.width,
+            number(&view_box["width"], &file, "viewBox width"),
+            "viewBox width",
+            &file,
+        );
+        close(
+            scene.view_box.height,
+            number(&view_box["height"], &file, "viewBox height"),
+            "viewBox height",
+            &file,
+        );
+
+        let expected_swimlanes = expected["swimlanes"].as_array().expect("swimlanes");
+        let actual_swimlanes: Vec<&crate::scene::Group> = scene
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Group(group) if group.class.as_deref() == Some("em-swimlane") => Some(group),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(
+            actual_swimlanes.len(),
+            expected_swimlanes.len(),
+            "{file}: swimlane count"
+        );
+        for (index, (group, expected)) in
+            actual_swimlanes.iter().zip(expected_swimlanes).enumerate()
+        {
+            let rect = match &group.items[0] {
+                Item::Rect(rect) => rect,
+                item => panic!("{file}: swimlane {index} first item is {item:?}"),
+            };
+            let expected_rect = &expected["rect"];
+            close(
+                rect.rect.x,
+                number(&expected_rect["x"], &file, "swimlane x"),
+                "swimlane x",
+                &file,
+            );
+            close(
+                rect.rect.y,
+                number(&expected_rect["y"], &file, "swimlane y"),
+                "swimlane y",
+                &file,
+            );
+            close(
+                rect.rect.width,
+                number(&expected_rect["width"], &file, "swimlane width"),
+                "swimlane width",
+                &file,
+            );
+            close(
+                rect.rect.height,
+                number(&expected_rect["height"], &file, "swimlane height"),
+                "swimlane height",
+                &file,
+            );
+            close(
+                rect.rx,
+                number(&expected_rect["rx"], &file, "swimlane rx"),
+                "swimlane rx",
+                &file,
+            );
+            assert_eq!(
+                rect.style.fill.as_ref().map(|color| color.0.as_str()),
+                expected_rect["fill"].as_str(),
+                "{file}: swimlane {index} fill"
+            );
+            assert_eq!(
+                rect.style.stroke.as_ref().map(|color| color.0.as_str()),
+                expected_rect["stroke"].as_str(),
+                "{file}: swimlane {index} stroke"
+            );
+
+            let text = match &group.items[1] {
+                Item::Text(text) => text,
+                item => panic!("{file}: swimlane {index} second item is {item:?}"),
+            };
+            let expected_text = &expected["text"];
+            close(
+                text.position.x,
+                number(&expected_text["x"], &file, "label x"),
+                "label x",
+                &file,
+            );
+            close(
+                text.position.y,
+                number(&expected_text["y"], &file, "label y"),
+                "label y",
+                &file,
+            );
+            assert_eq!(
+                text_of(text),
+                expected_text["text"].as_str().expect("label text"),
+                "{file}: swimlane {index} label"
+            );
+            assert!(text.font.is_bold(), "{file}: swimlane {index} label weight");
+        }
+
+        let expected_boxes = expected["boxes"].as_array().expect("boxes");
+        let actual_boxes: Vec<&crate::scene::Group> = scene
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Group(group) if group.class.as_deref() == Some("em-box") => Some(group),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(
+            actual_boxes.len(),
+            expected_boxes.len(),
+            "{file}: box count"
+        );
+        for (index, (group, expected)) in actual_boxes.iter().zip(expected_boxes).enumerate() {
+            let rect = match &group.items[0] {
+                Item::Rect(rect) => rect,
+                item => panic!("{file}: box {index} first item is {item:?}"),
+            };
+            let expected_rect = &expected["rect"];
+            close(
+                rect.rect.x,
+                number(&expected_rect["x"], &file, "box x"),
+                "box x",
+                &file,
+            );
+            close(
+                rect.rect.y,
+                number(&expected_rect["y"], &file, "box y"),
+                "box y",
+                &file,
+            );
+            close(
+                rect.rect.width,
+                number(&expected_rect["width"], &file, "box width"),
+                "box width",
+                &file,
+            );
+            close(
+                rect.rect.height,
+                number(&expected_rect["height"], &file, "box height"),
+                "box height",
+                &file,
+            );
+            close(
+                rect.rx,
+                number(&expected_rect["rx"], &file, "box rx"),
+                "box rx",
+                &file,
+            );
+            assert_eq!(
+                rect.style.fill.as_ref().map(|color| color.0.as_str()),
+                expected_rect["fill"].as_str(),
+                "{file}: box {index} fill"
+            );
+            assert_eq!(
+                rect.style.stroke.as_ref().map(|color| color.0.as_str()),
+                expected_rect["stroke"].as_str(),
+                "{file}: box {index} stroke"
+            );
+
+            // The foreignObject is the rect inset by `boxPadding`; a browser's getBBox is that
+            // rectangle, which is why the fixture holds it rather than the HTML children.
+            let foreign = &expected["foreignObject"];
+            close(
+                number(&foreign["x"], &file, "foreignObject x"),
+                rect.rect.x + 10.0,
+                "foreignObject x",
+                &file,
+            );
+            close(
+                number(&foreign["y"], &file, "foreignObject y"),
+                rect.rect.y + 10.0,
+                "foreignObject y",
+                &file,
+            );
+            close(
+                number(&foreign["width"], &file, "foreignObject width"),
+                rect.rect.width - 20.0,
+                "foreignObject width",
+                &file,
+            );
+            close(
+                number(&foreign["height"], &file, "foreignObject height"),
+                rect.rect.height - 20.0,
+                "foreignObject height",
+                &file,
+            );
+
+            let text = match &group.items[1] {
+                Item::Text(text) => text,
+                item => panic!("{file}: box {index} second item is {item:?}"),
+            };
+            close(
+                text.position.x,
+                rect.rect.x + rect.rect.width / 2.0,
+                "box label x",
+                &file,
+            );
+            close(
+                text.position.y,
+                rect.rect.y + rect.rect.height / 2.0,
+                "box label y",
+                &file,
+            );
+            let expected_lines: Vec<String> = expected["textLines"]
+                .as_array()
+                .expect("textLines")
+                .iter()
+                .map(|line| line.as_str().expect("text line").to_string())
+                .collect();
+            let actual_lines: Vec<String> = text.lines.iter().map(|line| line.text()).collect();
+            assert_eq!(
+                actual_lines, expected_lines,
+                "{file}: box {index} text lines"
+            );
+        }
+
+        let expected_relations = expected["relations"].as_array().expect("relations");
+        let actual_relations: Vec<&crate::scene::PathShape> = scene
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Path(path) => Some(path),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(
+            actual_relations.len(),
+            expected_relations.len(),
+            "{file}: relation count"
+        );
+        for (index, (path, expected)) in actual_relations.iter().zip(expected_relations).enumerate()
+        {
+            let commands =
+                serde_json::to_value(&path.path.commands).expect("serialize relation commands");
+            close_value(
+                &commands,
+                &expected["commands"],
+                &format!("relation {index} path"),
+                &file,
+            );
+            assert_eq!(
+                path.style.fill, None,
+                "{file}: relation {index} fill is none"
+            );
+            assert_eq!(
+                path.style.stroke.as_ref().map(|color| color.0.as_str()),
+                expected["stroke"].as_str(),
+                "{file}: relation {index} stroke"
+            );
+            close(
+                path.style.stroke_width,
+                number(&expected["strokeWidth"], &file, "relation stroke width"),
+                "relation stroke width",
+                &file,
+            );
+            assert_eq!(path.end_markers.len(), 1, "{file}: relation {index} marker");
+            assert_eq!(
+                path.end_markers[0].def, "em-arrowhead",
+                "{file}: relation {index} marker def"
+            );
+        }
+
+        let marker = &expected["marker"];
+        let def = scene
+            .marker_def("em-arrowhead")
+            .unwrap_or_else(|| panic!("{file}: no arrowhead marker"));
+        close(
+            def.width,
+            number(&marker["markerWidth"], &file, "marker width"),
+            "marker width",
+            &file,
+        );
+        close(
+            def.height,
+            number(&marker["markerHeight"], &file, "marker height"),
+            "marker height",
+            &file,
+        );
+        close(
+            def.reference.x,
+            number(&marker["refX"], &file, "marker refX"),
+            "marker refX",
+            &file,
+        );
+        close(
+            def.reference.y,
+            number(&marker["refY"], &file, "marker refY"),
+            "marker refY",
+            &file,
+        );
+        assert_eq!(
+            def.orient,
+            crate::scene::MarkerOrient::Auto,
+            "{file}: marker orient"
+        );
+        assert_eq!(def.shapes.len(), 1, "{file}: marker shape count");
+        close_value(
+            &serde_json::to_value(&def.shapes[0].path.commands).expect("marker commands"),
+            &serde_json::json!([
+                { "op": "moveTo", "x": 0.0, "y": 0.0 },
+                { "op": "lineTo", "x": 10.0, "y": 3.5 },
+                { "op": "lineTo", "x": 0.0, "y": 7.0 },
+                { "op": "close" }
+            ]),
+            "marker points",
+            &file,
+        );
+        assert_eq!(
+            def.shapes[0]
+                .style
+                .fill
+                .as_ref()
+                .map(|color| color.0.as_str()),
+            marker["fill"].as_str(),
+            "{file}: marker fill"
+        );
+    }
+}
