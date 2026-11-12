@@ -1,7 +1,9 @@
 //! The calls part A makes into the direction, routing, and registration parts. Part B's
-//! direction and geometry passes are ported in [`super::direction`] and reached from here;
-//! parts C and D are still stubs, each naming the pass that fills it. Until then a pass leaves
-//! the layout unchanged, and the phases that need geometry report [`super::SwimlaneError`].
+//! direction and geometry passes are ported in [`super::direction`] and reached from here, and
+//! part D's router is ported in [`super::orthogonal_router`]. Part C (the materialized-geometry
+//! and routing helpers) is still stubs, each naming the pass that fills it: until then a pass
+//! leaves the layout unchanged, and the phases that need its geometry report
+//! [`super::SwimlaneError`].
 
 use crate::render::pipeline::types::{LayoutData, Node};
 use crate::scene::Point;
@@ -125,17 +127,16 @@ pub fn straighten_aligned_cross_lane_edges(_layout: &mut LayoutData) -> bool {
 
 // ---- Part D: the orthogonal router and the diagram arm ----
 
-/// `orthogonalRouter/router.ts`. Part D fills it; it is the single source of swimlane edge
-/// geometry, so until then the layout cannot finish.
+/// `orthogonalRouter/router.ts`: the single source of swimlane edge geometry.
 pub fn route_edges_orthogonal(
-    _layout: &mut LayoutData,
-    _direction: Direction,
+    layout: &mut LayoutData,
+    direction: Direction,
 ) -> Result<(), SwimlaneError> {
-    Err(SwimlaneError::unimplemented("D", "routeEdgesOrthogonal"))
+    super::orthogonal_router::route_edges_orthogonal(layout, direction)
 }
 
-/// `rendering-elements/lineJump.ts`, run from `adjustLayout.ts`. Part D fills it together with
-/// the paint context the line hops draw into.
-pub fn apply_line_jumps_to_svg(_layout: &LayoutData, _style: &str) -> Result<(), SwimlaneError> {
-    Err(SwimlaneError::unimplemented("D", "applyLineJumpsToSvg"))
+/// `rendering-elements/lineJump.ts`, run from `adjustLayout.ts`: the hop geometry every routed
+/// crossing produces, computed from the layout polylines the renderer paints.
+pub fn apply_line_jumps_to_svg(layout: &LayoutData, style: &str) -> Result<(), SwimlaneError> {
+    super::orthogonal_router::line_jumps::apply_line_jumps_to_svg(layout, style)
 }
