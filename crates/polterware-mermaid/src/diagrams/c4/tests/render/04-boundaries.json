@@ -1,0 +1,407 @@
+{
+  "name": "04-boundaries",
+  "source": "C4Container\n  title Nested boundaries\n  Person(customer, \"Customer\")\n  System_Boundary(bank, \"Bank\") {\n    Container(api, \"API\", \"Rust\", \"Handles requests\")\n    Container_Boundary(services, \"Services\") {\n      Component(ledger, \"Ledger\", \"Rust\", \"Records entries\")\n      Component(risk, \"Risk\", \"Rust\", \"Scores risk\")\n    }\n  }\n  Rel(customer, api, \"Calls\")\n  Rel(api, ledger, \"Writes\")\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -70,
+      "width": 1032,
+      "height": 1182.8754
+    },
+    "rawViewBox": "0 -70 1032 1182.8754",
+    "shapes": [
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 252.9464,
+        "width": 216,
+        "height": 71.175,
+        "rx": 32.02875,
+        "ry": 32.02875,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "circle",
+        "cx": 258,
+        "cy": 216.68,
+        "r": 49.68,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 200,
+        "y": 531.1214,
+        "width": 216,
+        "height": 87.377,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#438DD5",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 250,
+        "y": 825.4984,
+        "width": 216,
+        "height": 87.377,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#85BBF0",
+        "stroke": "#78A8D8",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 566,
+        "y": 825.4984,
+        "width": 216,
+        "height": 87.377,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#85BBF0",
+        "stroke": "#78A8D8",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 200,
+        "y": 725.4984,
+        "width": 632,
+        "height": 237.37699999999995,
+        "rx": 2.5,
+        "ry": 2.5,
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [
+          7,
+          7
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 431.1214,
+        "width": 732,
+        "height": 581.7539999999999,
+        "rx": 2.5,
+        "ry": 2.5,
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [
+          7,
+          7
+        ]
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 269.8896140718683,
+            "y": 323.853618429428
+          },
+          {
+            "op": "lineTo",
+            "x": 301.36543566392874,
+            "y": 531.1214
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 315.42050160168765,
+            "y": 618.4984
+          },
+          {
+            "op": "quadTo",
+            "cx": 324.2102508008438,
+            "cy": 721.9984,
+            "x": 350.57949839831235,
+            "y": 825.4984
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      }
+    ],
+    "texts": [
+      {
+        "text": "Customer",
+        "lines": [
+          "Customer"
+        ],
+        "x": 258,
+        "y": 262.84639999999996,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Person]",
+        "lines": [
+          "[Person]"
+        ],
+        "x": 258,
+        "y": 281.9464,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "API",
+        "lines": [
+          "API"
+        ],
+        "x": 308,
+        "y": 541.0214,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Container: Rust]",
+        "lines": [
+          "[Container: Rust]"
+        ],
+        "x": 308,
+        "y": 560.1214,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Handles requests",
+        "lines": [
+          "Handles requests"
+        ],
+        "x": 308,
+        "y": 575.1963999999999,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Ledger",
+        "lines": [
+          "Ledger"
+        ],
+        "x": 358,
+        "y": 835.3983999999999,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Component: Rust]",
+        "lines": [
+          "[Component: Rust]"
+        ],
+        "x": 358,
+        "y": 854.4984,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Records entries",
+        "lines": [
+          "Records entries"
+        ],
+        "x": 358,
+        "y": 869.5733999999999,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Risk",
+        "lines": [
+          "Risk"
+        ],
+        "x": 674,
+        "y": 835.3983999999999,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Component: Rust]",
+        "lines": [
+          "[Component: Rust]"
+        ],
+        "x": 674,
+        "y": 854.4984,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Scores risk",
+        "lines": [
+          "Scores risk"
+        ],
+        "x": 674,
+        "y": 869.5733999999999,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Services",
+        "lines": [
+          "Services"
+        ],
+        "x": 516,
+        "y": 733.4984,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[CONTAINER]",
+        "lines": [
+          "[CONTAINER]"
+        ],
+        "x": 516,
+        "y": 756.4984,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Bank",
+        "lines": [
+          "Bank"
+        ],
+        "x": 516,
+        "y": 439.1214,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[SYSTEM]",
+        "lines": [
+          "[SYSTEM]"
+        ],
+        "x": 516,
+        "y": 462.1214,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Calls",
+        "lines": [
+          "Calls"
+        ],
+        "x": 303.6275248678985,
+        "y": 427.487509214714,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Writes",
+        "lines": [
+          "Writes"
+        ],
+        "x": 354.5,
+        "y": 721.9984,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Nested boundaries",
+        "lines": [
+          "Nested boundaries"
+        ],
+        "x": 266,
+        "y": 20,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fill": null,
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      }
+    ]
+  }
+}

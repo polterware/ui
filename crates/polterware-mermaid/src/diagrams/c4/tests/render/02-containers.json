@@ -1,0 +1,447 @@
+{
+  "name": "02-containers",
+  "source": "C4Container\n  title Container view\n  Person(user, \"User\")\n  Container(web, \"Web App\", \"Rust\", \"Serves pages\")\n  ContainerDb(db, \"Database\", \"PostgreSQL\", \"Stores data\")\n  ContainerQueue(queue, \"Queue\", \"NATS\", \"Carries events\")\n  Rel(user, web, \"Browses\")\n  Rel(web, db, \"Reads and writes\")\n  Rel(web, queue, \"Publishes\")\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -70,
+      "width": 1487.5954917560875,
+      "height": 494.1214
+    },
+    "rawViewBox": "0 -70 1487.5954917560875 494.1214",
+    "shapes": [
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 252.9464,
+        "width": 216,
+        "height": 71.175,
+        "rx": 32.02875,
+        "ry": 32.02875,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "circle",
+        "cx": 258,
+        "cy": 216.68,
+        "r": 49.68,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 466,
+        "y": 167,
+        "width": 216,
+        "height": 87.377,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#438DD5",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 782,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 998,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 782,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "lineTo",
+            "x": 782,
+            "y": 266.04855425219944
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 998,
+            "y": 266.04855425219944
+          },
+          {
+            "op": "lineTo",
+            "x": 998,
+            "y": 182.8357771260997
+          }
+        ],
+        "fill": "#438DD5",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 1105.8651639186958,
+            "y": 224.377
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.865163918695887,
+            "ry": 28.688499999999998,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 1105.8651639186958,
+            "y": 167
+          },
+          {
+            "op": "lineTo",
+            "x": 1329.7303278373915,
+            "y": 167
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.865163918695887,
+            "ry": 28.688499999999998,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 1329.7303278373915,
+            "y": 224.377
+          },
+          {
+            "op": "moveTo",
+            "x": 1329.7303278373915,
+            "y": 167
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.865163918695887,
+            "ry": 28.688499999999998,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 1329.7303278373915,
+            "y": 224.377
+          },
+          {
+            "op": "lineTo",
+            "x": 1105.8651639186958,
+            "y": 224.377
+          }
+        ],
+        "fill": "#438DD5",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 300.96636363861865,
+            "y": 240.8191442212701
+          },
+          {
+            "op": "lineTo",
+            "x": 466,
+            "y": 222.60684683544304
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 682,
+            "y": 215.38911991907645
+          },
+          {
+            "op": "quadTo",
+            "cx": 707,
+            "cy": 217.56533284457478,
+            "x": 782,
+            "y": 219.74154577007312
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 682,
+            "y": 208.17218177681244
+          },
+          {
+            "op": "quadTo",
+            "cx": 786.0093285563282,
+            "cy": 203.32593927289565,
+            "x": 1098.0373142253127,
+            "y": 198.47969676897884
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      }
+    ],
+    "texts": [
+      {
+        "text": "User",
+        "lines": [
+          "User"
+        ],
+        "x": 258,
+        "y": 262.84639999999996,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Person]",
+        "lines": [
+          "[Person]"
+        ],
+        "x": 258,
+        "y": 281.9464,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Web App",
+        "lines": [
+          "Web App"
+        ],
+        "x": 574,
+        "y": 176.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Container: Rust]",
+        "lines": [
+          "[Container: Rust]"
+        ],
+        "x": 574,
+        "y": 196,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Serves pages",
+        "lines": [
+          "Serves pages"
+        ],
+        "x": 574,
+        "y": 211.07500000000002,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Database",
+        "lines": [
+          "Database"
+        ],
+        "x": 890,
+        "y": 203.9869990224829,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Container: PostgreSQL]",
+        "lines": [
+          "[Container: PostgreSQL]"
+        ],
+        "x": 890,
+        "y": 223.0869990224829,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Stores data",
+        "lines": [
+          "Stores data"
+        ],
+        "x": 890,
+        "y": 238.1619990224829,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Queue",
+        "lines": [
+          "Queue"
+        ],
+        "x": 1209.9325819593478,
+        "y": 161.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Container: NATS]",
+        "lines": [
+          "[Container: NATS]"
+        ],
+        "x": 1209.9325819593478,
+        "y": 181,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Carries events",
+        "lines": [
+          "Carries events"
+        ],
+        "x": 1209.9325819593478,
+        "y": 196.07500000000002,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Browses",
+        "lines": [
+          "Browses"
+        ],
+        "x": 408.4831818193093,
+        "y": 231.71299552835657,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Reads and writes",
+        "lines": [
+          "Reads and writes"
+        ],
+        "x": 789.5,
+        "y": 217.56533284457478,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Publishes",
+        "lines": [
+          "Publishes"
+        ],
+        "x": 922.5186571126563,
+        "y": 203.32593927289565,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Container view",
+        "lines": [
+          "Container view"
+        ],
+        "x": 493.79774587804377,
+        "y": 20,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fill": null,
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      }
+    ]
+  }
+}

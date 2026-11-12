@@ -1,0 +1,216 @@
+{
+  "name": "13-boundary-endpoint",
+  "source": "C4Container\n  title Boundary endpoint\n  Person(customer, \"Customer\")\n  System_Boundary(bank, \"Bank\") {\n    Container(api, \"API\", \"Rust\", \"Serves\")\n  }\n  Rel(customer, bank, \"Calls\")\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -70,
+      "width": 616,
+      "height": 838.4984
+    },
+    "rawViewBox": "0 -70 616 838.4984",
+    "shapes": [
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 252.9464,
+        "width": 216,
+        "height": 71.175,
+        "rx": 32.02875,
+        "ry": 32.02875,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "circle",
+        "cx": 258,
+        "cy": 216.68,
+        "r": 49.68,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 200,
+        "y": 531.1214,
+        "width": 216,
+        "height": 87.377,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#438DD5",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 431.1214,
+        "width": 316,
+        "height": 237.37699999999995,
+        "rx": 2.5,
+        "ry": 2.5,
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [
+          7,
+          7
+        ]
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 270.8665775340457,
+            "y": 323.853618429428
+          },
+          {
+            "op": "lineTo",
+            "x": 288.49485421818696,
+            "y": 431.1214
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      }
+    ],
+    "texts": [
+      {
+        "text": "Customer",
+        "lines": [
+          "Customer"
+        ],
+        "x": 258,
+        "y": 262.84639999999996,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Person]",
+        "lines": [
+          "[Person]"
+        ],
+        "x": 258,
+        "y": 281.9464,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "API",
+        "lines": [
+          "API"
+        ],
+        "x": 308,
+        "y": 541.0214,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Container: Rust]",
+        "lines": [
+          "[Container: Rust]"
+        ],
+        "x": 308,
+        "y": 560.1214,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Serves",
+        "lines": [
+          "Serves"
+        ],
+        "x": 308,
+        "y": 575.1963999999999,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Bank",
+        "lines": [
+          "Bank"
+        ],
+        "x": 308,
+        "y": 439.1214,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[SYSTEM]",
+        "lines": [
+          "[SYSTEM]"
+        ],
+        "x": 308,
+        "y": 462.1214,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Calls",
+        "lines": [
+          "Calls"
+        ],
+        "x": 297.6807158761163,
+        "y": 377.487509214714,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Boundary endpoint",
+        "lines": [
+          "Boundary endpoint"
+        ],
+        "x": 58,
+        "y": 20,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fill": null,
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      }
+    ]
+  }
+}

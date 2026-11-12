@@ -1,5 +1,6 @@
 //! `c4` diagrams: a port of upstream mermaid 12.3.0 `packages/mermaid/src/diagrams/c4/`
-//! (`parser/c4Diagram.jison`, `c4Db.ts`, `c4Types.ts`, `c4Diagram.ts`, `c4Detector.ts`).
+//! (`parser/c4Diagram.jison`, `c4Db.ts`, `c4Types.ts`, `c4Diagram.ts`, `c4Detector.ts`,
+//! `c4Renderer.ts`, `svgDraw.ts`, `c4ShapeAdapter.ts`, `styles.js`).
 //!
 //! The grammar is jison, so the lexer in `lexer.rs` reproduces the jison start conditions,
 //! rule order, and keyword word boundaries, and the parser in `parser.rs` is the recursive
@@ -11,9 +12,9 @@
 //!
 //! # Where the port stops short of upstream
 //!
-//! * Configuration is not owned by this crate, so `getConfig`, `setWrap`, and
-//!   `DEFAULT_C4_CONFIG` are absent. `wrap` is therefore always `false`, which is what
-//!   upstream's specs see before `init` runs.
+//! * The parser owns no configuration, so `getConfig` and `setWrap` are absent and every
+//!   parsed element's `wrap` stays `false`, which is what upstream's specs see before `init`
+//!   runs. [`render`] reads `Config::c4` (including `wrap`) at draw time.
 //! * `sanitizeText` is approximated: `script`/`style` elements are dropped and a stray `<` is
 //!   escaped, but there is no DOMPurify (a DOM library). Only the title, the C4 type, and the
 //!   accessible description are sanitized.
@@ -30,13 +31,16 @@
 //!   so it is not stored.
 //! * `LINETYPE`, `ARROWTYPE`, and `PLACEMENT` are renderer constants exported next to the
 //!   database; they are not parse data and are not ported.
-//! * Nothing here lays out or draws: `c4Renderer.ts`, `svgDraw.ts`, `c4ShapeAdapter.ts`, and
-//!   `styles.js` are out of scope.
+//! * Layout and drawing live in [`render`]: the legacy C4 grid, the unified shape drawing
+//!   (person, rounded, cylinder, horizontal cylinder, subroutine), and `svgDraw.ts`'s
+//!   relationships, boundaries, markers, and title. See that module for the remaining
+//!   approximations.
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Boundary, C4Element, Rel, Shape, Text, TextValue};
 
