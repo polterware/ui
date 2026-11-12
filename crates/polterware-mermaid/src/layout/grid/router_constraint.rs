@@ -17,10 +17,20 @@ use crate::layout::grid::types::{
     GridLayoutResult, GridOrientation, GridSide, Node, RouterPoint, RouterRect, is_edge_label_node,
 };
 
-/// Upstream inspects `error.details.reason === 'pair-separation'`. Part C adds the typed bundle
-/// failure that carries that detail; until then no routed error matches.
-pub fn is_pair_separation_error(_error: &GridRoutingError) -> bool {
-    false
+/// Upstream inspects `error.details.reason === 'pair-separation'`. The routing session attaches
+/// that detail when a bundle fails strict separation but keeps distinct endpoint ports.
+pub fn is_pair_separation_error(error: &GridRoutingError) -> bool {
+    match error {
+        GridRoutingError::Grid(error) => {
+            error
+                .details
+                .as_ref()
+                .and_then(|details| details.get("reason"))
+                .and_then(|reason| reason.as_str())
+                == Some("pair-separation")
+        }
+        _ => false,
+    }
 }
 
 pub fn router_rect(node: &Node) -> RouterRect {

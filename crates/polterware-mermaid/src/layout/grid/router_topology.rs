@@ -2068,6 +2068,7 @@ mod tests {
                 );
             }
             GridRoutingError::Geometry(message) => panic!("unexpected geometry error: {message}"),
+            GridRoutingError::Grid(error) => panic!("unexpected grid error: {error}"),
         }
     }
 
@@ -2123,6 +2124,7 @@ mod tests {
                 GridRoutingError::Geometry(message) => {
                     panic!("unexpected geometry error: {message}")
                 }
+                GridRoutingError::Grid(error) => panic!("unexpected grid error: {error}"),
             }
         }
     }
