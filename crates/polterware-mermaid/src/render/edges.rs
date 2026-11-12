@@ -1,11 +1,23 @@
-//! Edge geometry and label placement corresponding to upstream `edges.js`, `lineJump.ts`,
-//! `orthogonalEdgeClipping.js`, `edgeCornerRadius.ts`, and `edgeStep.ts`.
-//! SVG CSS classes are retained as scene roles; rough.js handDrawn rendering remains a TODO.
-use crate::scene::{Path, Point, Rect};
+//! Edge geometry and label placement corresponding to upstream `edges.js`, `edgeMarker.ts`,
+//! `lineJump.ts`, `orthogonalEdgeClipping.js`, `edgeCornerRadius.ts`, and `edgeStep.ts`.
+//! SVG CSS classes are retained as scene roles; rough.js handDrawn rendering, DOM insertion,
+//! and font measurement stay with the scene consumer.
+use std::collections::BTreeMap;
+
 use serde::{Deserialize, Serialize};
+
+use crate::error::ParseError;
+use crate::render::intersect::intersect_ellipse;
+use crate::render::markers::{MarkerKind, marker_placement};
+use crate::scene::{Path, PathCommand, Point, Rect};
 
 pub const DEFAULT_EDGE_CORNER_RADIUS: f64 = 5.0;
 pub const EDGE_STEP_DURATION: f64 = 1.0;
+/// `AXIS_TOLERANCE` in `edges.js`: below this two coordinates count as one row or column.
+pub const AXIS_TOLERANCE: f64 = 0.5;
+const CORNER_EPSILON: f64 = 1e-5;
+const CORNER_JUMP_CLEARANCE: f64 = 2.0;
+const MIN_USEFUL_RADIUS_RATIO: f64 = 0.6;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Curve {
@@ -580,6 +592,386 @@ pub fn rounded_path(points: &[Point], radius: f64) -> Path {
     path
 }
 
+/// The outline an edge clips against, as `insertEdge` receives `startNode`/`endNode`.
+/// Upstream node coordinates are the node centre.
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NodeOutline {
+    pub x: f64,
+    pub y: f64,
+    pub width: f64,
+    pub height: f64,
+    #[serde(default)]
+    pub shape: NodeShape,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum NodeShape {
+    #[default]
+    Rect,
+    Ellipse,
+}
+
+impl NodeOutline {
+    pub const fn rect(x: f64, y: f64, width: f64, height: f64) -> Self {
+        Self {
+            x,
+            y,
+            width,
+            height,
+            shape: NodeShape::Rect,
+        }
+    }
+
+    pub const fn ellipse(x: f64, y: f64, width: f64, height: f64) -> Self {
+        Self {
+            x,
+            y,
+            width,
+            height,
+            shape: NodeShape::Ellipse,
+        }
+    }
+
+    /// The top-left rectangle [`Rect`] with the same geometry.
+    pub fn bounds(self) -> Rect {
+        Rect::new(
+            self.x - self.width / 2.0,
+            self.y - self.height / 2.0,
+            self.width,
+            self.height,
+        )
+    }
+
+    pub fn from_bounds(bounds: Rect) -> Self {
+        Self::rect(
+            bounds.x + bounds.width / 2.0,
+            bounds.y + bounds.height / 2.0,
+            bounds.width,
+            bounds.height,
+        )
+    }
+
+    /// The shape's attachment point, matching `intersect-rect.js`; unlike the crate's generic
+    /// rectangle helper this keeps the upstream right-face answer for a centre query.
+    pub fn intersect(self, point: Point) -> Point {
+        match self.shape {
+            NodeShape::Rect => {
+                let dx = point.x - self.x;
+                let dy = point.y - self.y;
+                let mut w = self.width / 2.0;
+                let mut h = self.height / 2.0;
+                if dy.abs() * w > dx.abs() * h {
+                    if dy < 0.0 {
+                        h = -h;
+                    }
+                    let sx = if dy == 0.0 { 0.0 } else { (h * dx) / dy };
+                    Point::new(self.x + sx, self.y + h)
+                } else {
+                    if dx < 0.0 {
+                        w = -w;
+                    }
+                    let sy = if dx == 0.0 { 0.0 } else { (w * dy) / dx };
+                    Point::new(self.x + w, self.y + sy)
+                }
+            }
+            NodeShape::Ellipse => intersect_ellipse(
+                Point::new(self.x, self.y),
+                self.width / 2.0,
+                self.height / 2.0,
+                point,
+            ),
+        }
+    }
+}
+
+/// Which layout drew the edge. Only `swimlane` uses the axis-preserving docking rules.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum EdgeLayout {
+    #[default]
+    Dagre,
+    Swimlane,
+}
+
+impl EdgeLayout {
+    pub fn from_name(name: &str) -> Self {
+        match name {
+            "swimlane" => Self::Swimlane,
+            _ => Self::Dagre,
+        }
+    }
+}
+
+fn shares_column(a: Point, b: Point) -> bool {
+    (a.x - b.x).abs() < AXIS_TOLERANCE
+}
+
+fn shares_row(a: Point, b: Point) -> bool {
+    (a.y - b.y).abs() < AXIS_TOLERANCE
+}
+
+fn coincides(a: Point, b: Point) -> bool {
+    shares_column(a, b) && shares_row(a, b)
+}
+
+/// `keepsArrivalAxis`: the shape intersection stays on the axis the final segment ran along.
+fn keeps_arrival_axis(original_last: Point, last_inner: Point, candidate: Point) -> bool {
+    if shares_column(original_last, last_inner) && !shares_row(original_last, last_inner) {
+        return shares_column(candidate, last_inner);
+    }
+    if shares_row(original_last, last_inner) && !shares_column(original_last, last_inner) {
+        return shares_row(candidate, last_inner);
+    }
+    shares_column(candidate, last_inner) || shares_row(candidate, last_inner)
+}
+
+/// `arrivalSegment`: the last segment the layout drew into the node.
+fn arrival_segment(original_last: Point, last_inner: Point, before: Point) -> (Point, Point) {
+    if coincides(original_last, last_inner) {
+        (last_inner, before)
+    } else {
+        (original_last, last_inner)
+    }
+}
+
+fn runs_against_heading(heading: Point, from: Point, last_inner: Point, candidate: Point) -> bool {
+    (heading.x - from.x) * (candidate.x - last_inner.x)
+        + (heading.y - from.y) * (candidate.y - last_inner.y)
+        < 0.0
+}
+
+fn snap_to_arrival_axis(heading: Point, from: Point, last_inner: Point, candidate: Point) -> Point {
+    if shares_row(heading, from) && !shares_column(heading, from) {
+        return Point::new(candidate.x, last_inner.y);
+    }
+    if shares_column(heading, from) && !shares_row(heading, from) {
+        return Point::new(last_inner.x, candidate.y);
+    }
+    candidate
+}
+
+/// `dockFinalPoint`: docks a swimlane edge on its head shape on the axis it arrived on.
+fn dock_final_point(
+    original_last: Point,
+    last_inner: Point,
+    before: Point,
+    candidate: Point,
+) -> Point {
+    let was_orthogonal =
+        shares_column(original_last, last_inner) || shares_row(original_last, last_inner);
+    if was_orthogonal && !keeps_arrival_axis(original_last, last_inner, candidate) {
+        return original_last;
+    }
+    let (heading, from) = arrival_segment(original_last, last_inner, before);
+    if runs_against_heading(heading, from, last_inner, candidate) {
+        return last_inner;
+    }
+    snap_to_arrival_axis(heading, from, last_inner, candidate)
+}
+
+/// `finalDockPoint`: drops a final segment that would be drawn backwards.
+fn final_dock_point(
+    original_last: Point,
+    last_inner: Point,
+    new_last: Option<Point>,
+    min_length: f64,
+) -> Option<Point> {
+    let new_last = new_last?;
+    let turned = !coincides(original_last, last_inner);
+    let length = new_last.distance_to(last_inner);
+    if length >= AXIS_TOLERANCE.max(min_length) {
+        return Some(new_last);
+    }
+    (turned && length >= AXIS_TOLERANCE).then_some(original_last)
+}
+
+/// Swimlanes' edge-label waypoint helper; a no-op for every other layout and edge.
+fn orthogonalize_to_label_clipped_points(edge: &EdgeData, points: Vec<Point>) -> Vec<Point> {
+    if !edge.is_label_edge || !edge.id.ends_with("-to-label") || points.len() != 2 {
+        return points;
+    }
+    let (start, end) = (points[0], points[1]);
+    let dx = (end.x - start.x).abs();
+    let dy = (end.y - start.y).abs();
+    if dx < 1e-3 || dy < 1e-3 {
+        return points;
+    }
+    if dy >= dx {
+        vec![start, Point::new(start.x, end.y), end]
+    } else {
+        vec![start, Point::new(end.x, start.y), end]
+    }
+}
+
+/// `outsideNode`: true when `point` is on or beyond the node's bounding box.
+fn outside_node(node: NodeOutline, point: Point) -> bool {
+    (point.x - node.x).abs() >= node.width / 2.0 || (point.y - node.y).abs() >= node.height / 2.0
+}
+
+/// `intersection` from `edges.js`: where the ray from inside to outside leaves the node box.
+pub fn intersection(node: NodeOutline, outside_point: Point, inside_point: Point) -> Point {
+    let (x, y) = (node.x, node.y);
+    let w = node.width / 2.0;
+    let h = node.height / 2.0;
+    let q = (outside_point.y - inside_point.y).abs();
+    let r_abs = (outside_point.x - inside_point.x).abs();
+    if (y - outside_point.y).abs() * w > (x - outside_point.x).abs() * h {
+        // Top or bottom of the rectangle.
+        let local_q = if inside_point.y < outside_point.y {
+            outside_point.y - h - y
+        } else {
+            y - h - outside_point.y
+        };
+        let r = (r_abs * local_q) / q;
+        let mut result = Point::new(
+            if inside_point.x < outside_point.x {
+                inside_point.x + r
+            } else {
+                inside_point.x - r_abs + r
+            },
+            if inside_point.y < outside_point.y {
+                inside_point.y + q - local_q
+            } else {
+                inside_point.y - q + local_q
+            },
+        );
+        if r == 0.0 {
+            result = outside_point;
+        }
+        if r_abs == 0.0 {
+            result.x = outside_point.x;
+        }
+        if q == 0.0 {
+            result.y = outside_point.y;
+        }
+        result
+    } else {
+        // Sides of the rectangle.
+        let r = if inside_point.x < outside_point.x {
+            outside_point.x - w - x
+        } else {
+            x - w - outside_point.x
+        };
+        let local_q = (q * r) / r_abs;
+        let mut px = if inside_point.x < outside_point.x {
+            inside_point.x + r_abs - r
+        } else {
+            inside_point.x - r_abs + r
+        };
+        let mut py = if inside_point.y < outside_point.y {
+            inside_point.y + local_q
+        } else {
+            inside_point.y - local_q
+        };
+        if r == 0.0 {
+            px = outside_point.x;
+            py = outside_point.y;
+        }
+        if r_abs == 0.0 {
+            px = outside_point.x;
+        }
+        if q == 0.0 {
+            py = outside_point.y;
+        }
+        Point::new(px, py)
+    }
+}
+
+/// `cutPathAtIntersect`: keep the outside prefix and stop at the boundary intersection.
+pub fn cut_path_at_intersect(points: &[Point], node: NodeOutline) -> Vec<Point> {
+    let Some(&first) = points.first() else {
+        return Vec::new();
+    };
+    let mut result: Vec<Point> = Vec::new();
+    let mut last_outside = first;
+    let mut is_inside = false;
+    for &point in points {
+        if !outside_node(node, point) && !is_inside {
+            let hit = intersection(node, last_outside, point);
+            if !result.iter().any(|p| p.x == hit.x && p.y == hit.y) {
+                result.push(hit);
+            }
+            is_inside = true;
+        } else {
+            last_outside = point;
+            if !is_inside {
+                result.push(point);
+            }
+        }
+    }
+    result
+}
+
+/// Clips a dagre route the way `insertEdge` does: keep the inner bends and meet both outlines.
+fn clip_dagre_points(
+    points: &[Point],
+    tail: NodeOutline,
+    head: NodeOutline,
+) -> Result<Vec<Point>, ParseError> {
+    if points.len() < 3 {
+        // Upstream reads `points[0]` of an empty inner slice and throws a TypeError.
+        return Err(ParseError::new(
+            "Cannot read properties of undefined (reading 'x')",
+            None,
+        ));
+    }
+    let inner = &points[1..points.len() - 1];
+    let mut result = Vec::with_capacity(inner.len() + 2);
+    result.push(tail.intersect(inner[0]));
+    result.extend_from_slice(inner);
+    result.push(head.intersect(inner[inner.len() - 1]));
+    Ok(result)
+}
+
+/// Clips a swimlane route with its axis-preserving docking rules.
+fn clip_swimlane_points(
+    points: &[Point],
+    tail: NodeOutline,
+    head: NodeOutline,
+    arrow_type_end: Option<&str>,
+) -> Vec<Point> {
+    if points.len() == 2 {
+        let (first, last) = (points[0], points[1]);
+        return if shares_column(first, last) || shares_row(first, last) {
+            vec![tail.intersect(first), head.intersect(last)]
+        } else {
+            vec![tail.intersect(last), head.intersect(first)]
+        };
+    }
+    if points.len() < 3 {
+        return points.to_vec();
+    }
+    let inner = &points[1..points.len() - 1];
+    let first_inner = inner[0];
+    let last_inner = inner[inner.len() - 1];
+    let new_first = tail.intersect(first_inner);
+    let original_last = *points.last().unwrap();
+    let candidate_last = head.intersect(last_inner);
+    let before = inner
+        .get(inner.len().wrapping_sub(2))
+        .copied()
+        .unwrap_or(points[0]);
+    let new_last = dock_final_point(original_last, last_inner, before, candidate_last);
+    let final_point = final_dock_point(
+        original_last,
+        last_inner,
+        Some(new_last),
+        marker_offset(arrow_type_end.unwrap_or_default()).unwrap_or(0.0),
+    );
+    let first_is_duplicate = (new_first.x - first_inner.x).abs() < AXIS_TOLERANCE
+        && (new_first.y - first_inner.y).abs() < AXIS_TOLERANCE;
+    let mut result = Vec::with_capacity(inner.len() + 2);
+    if !first_is_duplicate {
+        result.push(new_first);
+    }
+    result.extend_from_slice(inner);
+    if let Some(point) = final_point {
+        result.push(point);
+    }
+    result
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SegmentCrossing {
     pub point: Point,
@@ -635,30 +1027,7 @@ fn rect_intersection(rect: Rect, inside: Point, outside: Point) -> Point {
 
 /// Cut the polyline at the first entry into a cluster rectangle, retaining the outside prefix.
 pub fn cut_path_at_intersection(points: &[Point], bounds: Rect) -> Vec<Point> {
-    let Some(&first) = points.first() else {
-        return Vec::new();
-    };
-    let outside = |p: Point| {
-        p.x <= bounds.x || p.x >= bounds.right() || p.y <= bounds.y || p.y >= bounds.bottom()
-    };
-    let mut result = Vec::new();
-    let mut last_outside = first;
-    let mut inside = false;
-    for &point in points {
-        if !outside(point) && !inside {
-            let hit = rect_intersection(bounds, last_outside, point);
-            if !result.contains(&hit) {
-                result.push(hit);
-            }
-            inside = true;
-        } else {
-            last_outside = point;
-            if !inside {
-                result.push(point);
-            }
-        }
-    }
-    result
+    cut_path_at_intersect(points, NodeOutline::from_bounds(bounds))
 }
 
 pub fn style_roles(
@@ -686,30 +1055,92 @@ pub fn style_roles(
     v
 }
 
+/// Accepts upstream's space-separated `classes` string as well as a list.
+fn deserialize_classes<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum Classes {
+        One(String),
+        Many(Vec<String>),
+    }
+    Ok(match Classes::deserialize(deserializer)? {
+        Classes::One(value) => value.split_whitespace().map(str::to_string).collect(),
+        Classes::Many(values) => values,
+    })
+}
+
 /// Input retained from Mermaid's `EdgeData`; measurements are supplied by the caller because
 /// this crate has no DOM or font engine.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct EdgeData {
     pub id: String,
     pub points: Vec<Point>,
     pub label: Option<String>,
+    /// Measured text box of the label, before the `BACKGROUND_PADDING` the background rect adds.
+    #[serde(default)]
     pub label_width: f64,
+    #[serde(default)]
     pub label_height: f64,
+    /// Dagre's label centre (`edge.x`/`edge.y` in `positionEdgeLabel`).
+    #[serde(default)]
+    pub label_x: Option<f64>,
+    #[serde(default)]
+    pub label_y: Option<f64>,
+    /// Measured terminal label sizes, keyed by `startLeft`, `startRight`, `endLeft`, `endRight`.
+    #[serde(default)]
+    pub terminal_label_sizes: BTreeMap<String, [f64; 2]>,
     pub start_label_left: Option<String>,
     pub start_label_right: Option<String>,
     pub end_label_left: Option<String>,
     pub end_label_right: Option<String>,
     pub curve: Option<String>,
+    #[serde(default)]
     pub thickness: String,
+    #[serde(default)]
     pub pattern: String,
     pub animation: Option<String>,
+    #[serde(default)]
     pub animate: bool,
+    #[serde(default, deserialize_with = "deserialize_classes")]
     pub classes: Vec<String>,
+    #[serde(default, alias = "style")]
     pub styles: Vec<String>,
+    #[serde(default, rename = "cssCompiledStyleList")]
     pub css_compiled_styles: Vec<String>,
+    /// `edge.cssCompiledStyles`, keyed by CSS property; label properties are excluded from the
+    /// path's class styles by `isLabelStyle`.
+    #[serde(default, rename = "cssCompiledStyles")]
+    pub css_compiled_style_map: BTreeMap<String, String>,
+    /// `edge.look`: `classic`, `neo`, or `handDrawn` (hand-drawn geometry is not ported).
+    #[serde(default)]
+    pub look: Option<String>,
     pub arrow_type_start: Option<String>,
     pub arrow_type_end: Option<String>,
     pub corner_radius: Option<f64>,
+    #[serde(default)]
+    pub skip_corner_fix: bool,
+    #[serde(default)]
+    pub skip_intersect: bool,
+    /// `layoutAlgorithm ?? config.layout`; only `swimlane` changes the clipping rules.
+    #[serde(default)]
+    pub layout: Option<String>,
+    #[serde(default)]
+    pub port_clipping: Option<String>,
+    #[serde(default)]
+    pub is_label_edge: bool,
+    /// `pathNode.getTotalLength()`, measured by the consumer. Zero when unmeasured, which is
+    /// how `neo` dash arrays fall back in a DOM without measurement.
+    #[serde(default)]
+    pub path_length: Option<f64>,
+    /// Node outlines used by the layout's `startNode`/`endNode` intersection.
+    #[serde(default)]
+    pub from_node: Option<NodeOutline>,
+    #[serde(default)]
+    pub to_node: Option<NodeOutline>,
     pub to_cluster: Option<Rect>,
     pub from_cluster: Option<Rect>,
 }
@@ -719,7 +1150,17 @@ pub struct EdgeLabelScene {
     pub text: String,
     pub position: EdgeLabelPosition,
     pub role: String,
+    /// The background `<rect>` of `createFormattedText` (`addSvgBackground`), in absolute
+    /// coordinates: the measured text box plus `BACKGROUND_PADDING` on every side.
+    #[serde(default)]
+    pub background: Option<Rect>,
+    /// `computeLabelTransform`'s translate for the inner label group.
+    #[serde(default)]
+    pub transform: Point,
 }
+
+/// `createFormattedText`'s background padding, in pixels.
+pub const BACKGROUND_PADDING: f64 = 2.0;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InsertedEdge {
@@ -730,6 +1171,126 @@ pub struct InsertedEdge {
     pub styles: Vec<String>,
     pub labels: Vec<EdgeLabelScene>,
     pub curve: Curve,
+    /// `data-points`: base64 of `JSON.stringify(points)`.
+    #[serde(default)]
+    pub data_points: String,
+    /// The exact value of upstream's `class` attribute, leading space included.
+    #[serde(default)]
+    pub class_attribute: String,
+    /// The exact value of upstream's `style` attribute.
+    #[serde(default)]
+    pub style_attribute: String,
+    /// `data-look`, where a missing look stringifies as `undefined`.
+    #[serde(default)]
+    pub data_look: String,
+    /// `data-edge` (always true) and `data-et` (always `edge`) from `insertEdge`.
+    #[serde(default)]
+    pub data_edge: bool,
+    #[serde(default)]
+    pub data_et: String,
+    /// `data-id`: the edge id without the diagram prefix.
+    #[serde(default)]
+    pub data_id: String,
+    /// `marker-start`/`marker-end` attribute values (`url(#…)`).
+    #[serde(default)]
+    pub marker_start: Option<String>,
+    #[serde(default)]
+    pub marker_end: Option<String>,
+    #[serde(default)]
+    pub animated: bool,
+    /// `paths.updatedPath`: present when clipping or corner fixing moved the route.
+    #[serde(default)]
+    pub updated_path: Option<Vec<Point>>,
+    /// `paths.originalPath`: the layout's points before any clipping.
+    #[serde(default)]
+    pub original_path: Vec<Point>,
+}
+
+/// `hasEdgeLabel`: an edge has label content when any of its five label slots is non-empty.
+pub fn has_edge_label(edge: &EdgeData) -> bool {
+    [
+        &edge.label,
+        &edge.start_label_left,
+        &edge.start_label_right,
+        &edge.end_label_left,
+        &edge.end_label_right,
+    ]
+    .into_iter()
+    .flatten()
+    .any(|label| !label.is_empty())
+}
+
+/// `getLabelStyles`: upstream joins a style array with leading semicolons.
+pub fn edge_label_styles(style_array: Option<&[String]>) -> String {
+    style_array
+        .map(|styles| styles.iter().map(|style| format!(";{style}")).collect())
+        .unwrap_or_default()
+}
+
+/// `calcTerminalLabelPosition` is called with 10 when that end owns any arrow type at all.
+fn terminal_marker_size(edge: &EdgeData, position: TerminalPosition) -> f64 {
+    let arrow = if matches!(
+        position,
+        TerminalPosition::StartLeft | TerminalPosition::StartRight
+    ) {
+        &edge.arrow_type_start
+    } else {
+        &edge.arrow_type_end
+    };
+    match arrow {
+        Some(arrow) if !arrow.is_empty() => 10.0,
+        _ => 0.0,
+    }
+}
+
+/// `computeLabelTransform`: HTML labels ignore the viewport-absolute bbox origin.
+fn label_transform(x: f64, y: f64, width: f64, height: f64, html: bool) -> Point {
+    if html {
+        Point::new(-width / 2.0, -height / 2.0)
+    } else {
+        Point::new(-(x + width / 2.0), -(y + height / 2.0))
+    }
+}
+
+/// The background `<rect>` `createFormattedText` draws behind an edge label.
+pub fn label_background(bounds: Rect) -> Rect {
+    Rect::new(
+        bounds.x - BACKGROUND_PADDING,
+        bounds.y - BACKGROUND_PADDING,
+        bounds.width + 2.0 * BACKGROUND_PADDING,
+        bounds.height + 2.0 * BACKGROUND_PADDING,
+    )
+}
+
+/// `setTerminalWidth`: the HTML terminal label box never clips the measured text and keeps
+/// nine pixels per character of room.
+pub fn terminal_label_box(value: &str, measured: (f64, f64)) -> (f64, f64) {
+    (
+        (value.chars().count() as f64 * 9.0).max(measured.0),
+        measured.1,
+    )
+}
+
+fn label_scene(
+    text: &str,
+    center: Point,
+    size: (f64, f64),
+    role: &str,
+    background: bool,
+) -> EdgeLabelScene {
+    let bounds = Rect::new(
+        center.x - size.0 / 2.0,
+        center.y - size.1 / 2.0,
+        size.0,
+        size.1,
+    );
+    EdgeLabelScene {
+        text: text.to_string(),
+        position: EdgeLabelPosition { center, bounds },
+        role: role.to_string(),
+        background: background.then(|| label_background(bounds)),
+        transform: label_transform(0.0, 0.0, size.0, size.1, false),
+    }
 }
 
 /// Creates scene data for the main and terminal edge labels; unlike upstream DOM insertion,
@@ -737,14 +1298,19 @@ pub struct InsertedEdge {
 pub fn insert_edge_label(edge: &EdgeData) -> Vec<EdgeLabelScene> {
     let mut labels = Vec::new();
     if let Some(text) = edge.label.as_ref().filter(|s| !s.is_empty()) {
-        if let Some(position) =
-            position_edge_label(&edge.points, edge.label_width, edge.label_height)
-        {
-            labels.push(EdgeLabelScene {
-                text: text.clone(),
-                position,
-                role: "edgeLabel".into(),
-            });
+        let center = match (edge.label_x, edge.label_y) {
+            (Some(x), Some(y)) => Some(Point::new(x, y)),
+            _ => position_edge_label(&edge.points, edge.label_width, edge.label_height)
+                .map(|position| position.center),
+        };
+        if let Some(center) = center {
+            labels.push(label_scene(
+                text,
+                center,
+                (edge.label_width, edge.label_height),
+                "edgeLabel",
+                true,
+            ));
         }
     }
     for (text, position) in [
@@ -754,24 +1320,20 @@ pub fn insert_edge_label(edge: &EdgeData) -> Vec<EdgeLabelScene> {
         (&edge.end_label_right, TerminalPosition::EndRight),
     ] {
         if let Some(text) = text.as_ref().filter(|s| !s.is_empty()) {
-            let arrow = if matches!(
-                position,
-                TerminalPosition::StartLeft | TerminalPosition::StartRight
-            ) {
-                &edge.arrow_type_start
-            } else {
-                &edge.arrow_type_end
-            };
-            let marker_size = arrow.as_deref().and_then(marker_offset).unwrap_or(0.0);
+            let marker_size = terminal_marker_size(edge, position);
             if let Some(center) = terminal_label_position(&edge.points, position, marker_size) {
-                labels.push(EdgeLabelScene {
-                    text: text.clone(),
-                    position: EdgeLabelPosition {
-                        center,
-                        bounds: Rect::new(center.x, center.y, 0.0, 0.0),
-                    },
-                    role: "edgeTerminals".into(),
-                });
+                let key = match position {
+                    TerminalPosition::StartLeft => "startLeft",
+                    TerminalPosition::StartRight => "startRight",
+                    TerminalPosition::EndLeft => "endLeft",
+                    TerminalPosition::EndRight => "endRight",
+                };
+                let size = edge
+                    .terminal_label_sizes
+                    .get(key)
+                    .map(|size| (size[0], size[1]))
+                    .unwrap_or((0.0, 0.0));
+                labels.push(label_scene(text, center, size, "edgeTerminals", false));
             }
         }
     }
@@ -791,7 +1353,61 @@ pub fn marker_offset(kind: &str) -> Option<f64> {
     }
 }
 
-/// Positions labels from the final rendered geometry, retaining the layout position when no path exists.
+/// `markerOffsets2`, used only by the `neo` look's dash array.
+pub fn marker_offset2(kind: &str) -> Option<f64> {
+    match kind {
+        "arrow_point" => Some(4.0),
+        "arrow_cross" | "arrow_circle" => Some(12.5),
+        "arrow_open_head" => Some(4.0),
+        "arrow_hollow_circle" => Some(8.0),
+        _ => None,
+    }
+}
+
+/// `resolveEdgeLabelPosition`: a label follows the midpoint shift between the two paths.
+pub fn resolve_edge_label_position(
+    edge: &EdgeData,
+    updated_path: Option<&[Point]>,
+    original_path: Option<&[Point]>,
+) -> Point {
+    let fallback = position_edge_label(&edge.points, 0.0, 0.0)
+        .map(|position| position.center)
+        .unwrap_or(Point::ZERO);
+    let mut position = Point::new(
+        edge.label_x.unwrap_or(fallback.x),
+        edge.label_y.unwrap_or(fallback.y),
+    );
+    if let Some(updated) = updated_path {
+        let updated_mid = calculate_label_position(updated);
+        if let Some(original) = original_path {
+            let original_mid = calculate_label_position(original);
+            position.x = edge.label_x.unwrap_or(fallback.x) + (updated_mid.x - original_mid.x);
+            position.y = edge.label_y.unwrap_or(fallback.y) + (updated_mid.y - original_mid.y);
+        } else {
+            position = updated_mid;
+        }
+    }
+    position
+}
+
+/// `utils.calcLabelPosition`: a single point is its own label position.
+pub fn calculate_label_position(points: &[Point]) -> Point {
+    match points {
+        [] => Point::ZERO,
+        [point] => *point,
+        _ => {
+            let distance = points
+                .windows(2)
+                .map(|pair| pair[0].distance_to(pair[1]))
+                .sum::<f64>()
+                / 2.0;
+            calculate_point(points, distance).unwrap_or(Point::ZERO)
+        }
+    }
+}
+
+/// Positions labels from the final rendered geometry, retaining the layout position when no
+/// path exists. Main labels follow `resolveEdgeLabelPosition`; terminals follow the final path.
 pub fn position_edge_labels(
     edge: &EdgeData,
     final_points: Option<&[Point]>,
@@ -800,17 +1416,695 @@ pub fn position_edge_labels(
     if let Some(points) = final_points {
         positioned.points = points.to_vec();
     }
-    insert_edge_label(&positioned)
+    let path = final_points.unwrap_or(&edge.points);
+    let original = edge.points.as_slice();
+    let main_center =
+        resolve_edge_label_position(edge, final_points, final_points.map(|_| original));
+    let mut labels = Vec::new();
+    if let Some(text) = edge.label.as_ref().filter(|s| !s.is_empty()) {
+        labels.push(label_scene(
+            text,
+            main_center,
+            (edge.label_width, edge.label_height),
+            "edgeLabel",
+            true,
+        ));
+    }
+    for (text, position) in [
+        (&edge.start_label_left, TerminalPosition::StartLeft),
+        (&edge.start_label_right, TerminalPosition::StartRight),
+        (&edge.end_label_left, TerminalPosition::EndLeft),
+        (&edge.end_label_right, TerminalPosition::EndRight),
+    ] {
+        if let Some(text) = text.as_ref().filter(|s| !s.is_empty()) {
+            let marker_size = terminal_marker_size(edge, position);
+            if let Some(center) = terminal_label_position(path, position, marker_size) {
+                labels.push(label_scene(
+                    text,
+                    center,
+                    (0.0, 0.0),
+                    "edgeTerminals",
+                    false,
+                ));
+            }
+        }
+    }
+    labels
 }
 
-/// Builds a scene edge from Mermaid edge data, including cluster cuts, curve, styles, and roles.
-/// A missing id is an upstream `insertEdge` error; malformed/empty geometry yields an empty path.
-pub fn insert_edge(
+fn is_label_style(key: &str) -> bool {
+    matches!(
+        key,
+        "color"
+            | "font-size"
+            | "font-family"
+            | "font-weight"
+            | "font-style"
+            | "text-decoration"
+            | "text-align"
+            | "text-transform"
+            | "line-height"
+            | "letter-spacing"
+            | "word-spacing"
+            | "text-shadow"
+            | "text-overflow"
+            | "white-space"
+            | "word-wrap"
+            | "word-break"
+            | "overflow-wrap"
+            | "hyphens"
+    )
+}
+
+/// The non-label values of `edge.cssCompiledStyles`, in declaration order.
+fn class_style_values(edge: &EdgeData) -> Vec<String> {
+    let mut values: Vec<String> = edge
+        .css_compiled_style_map
+        .iter()
+        .filter(|(key, _)| !is_label_style(key))
+        .map(|(_, value)| value.clone())
+        .collect();
+    values.extend(edge.css_compiled_styles.iter().cloned());
+    values
+}
+
+/// Upstream's `style` attribute assembly, including its repeated separators.
+pub fn path_style_attribute(edge: &EdgeData) -> String {
+    let styles_from_classes = class_style_values(edge).join(";");
+    let styles = edge
+        .styles
+        .iter()
+        .map(|style| format!("{style};"))
+        .collect::<String>();
+    let head = if styles_from_classes.is_empty() {
+        styles.clone()
+    } else {
+        format!("{styles_from_classes};{styles};")
+    };
+    let tail = edge
+        .styles
+        .iter()
+        .map(|style| format!(";{style}"))
+        .collect::<String>();
+    format!("{head};{tail}")
+}
+
+/// `animatedEdge`: an explicit animation, `animate`, or an `animation` class style.
+pub fn is_animated_edge(edge: &EdgeData) -> bool {
+    edge.animate
+        || edge.animation.is_some()
+        || class_style_values(edge).join(";").contains("animation")
+}
+
+/// The `class` attribute from `insertEdge`, leading space included.
+pub fn edge_class_attribute(edge: &EdgeData) -> String {
+    let mut animation_class = String::new();
+    if edge.animate {
+        animation_class = "edge-animation-fast".into();
+    }
+    if let Some(animation) = edge.animation.as_deref() {
+        animation_class = format!("edge-animation-{animation}");
+    }
+    let mut class = format!(
+        " edge-thickness-{} edge-pattern-{}",
+        match edge.thickness.as_str() {
+            "thick" => "thick",
+            "invisible" => "invisible",
+            _ => "normal",
+        },
+        match edge.pattern.as_str() {
+            "dotted" => "dotted",
+            "dashed" => "dashed",
+            _ => "solid",
+        }
+    );
+    for class_name in &edge.classes {
+        class.push(' ');
+        class.push_str(class_name);
+    }
+    if !animation_class.is_empty() {
+        class.push(' ');
+        class.push_str(&animation_class);
+    }
+    class
+}
+
+/// `strokeColor` as `insertEdge` reads it back from the `style` attribute.
+pub fn stroke_color(edge: &EdgeData) -> Option<String> {
+    let style = path_style_attribute(edge);
+    let start = style.find("stroke:")? + "stroke:".len();
+    let value = style[start..].split(';').next().unwrap_or_default();
+    (!value.trim().is_empty()).then(|| value.to_string())
+}
+
+fn marker_margin_supported(kind: MarkerKind) -> bool {
+    matches!(
+        kind,
+        MarkerKind::Cross
+            | MarkerKind::Point
+            | MarkerKind::Circle
+            | MarkerKind::Lollipop
+            | MarkerKind::Aggregation
+            | MarkerKind::Extension
+            | MarkerKind::Composition
+            | MarkerKind::Dependency
+            | MarkerKind::Barb
+            | MarkerKind::BarbNeo
+    )
+}
+
+/// `addEdgeMarker`'s `marker-start`/`marker-end` value, including the `-margin` and coloured
+/// id variants and the diagram-type suffix.
+pub fn edge_marker_attribute(
+    arrow_type: Option<&str>,
+    at_start: bool,
+    margin: bool,
+    diagram_id: &str,
+    diagram_type: &str,
+    stroke_color: Option<&str>,
+) -> Option<String> {
+    let arrow_type = arrow_type?;
+    if arrow_type.is_empty() || arrow_type == "none" {
+        return None;
+    }
+    let Some(kind) = MarkerKind::from_arrow_type(arrow_type) else {
+        // `arrowTypesMap` is a plain object upstream: prototype keys resolve to a truthy
+        // value with no `type`, which renders a marker id with an `undefined` stem.
+        if !is_js_prototype_key(arrow_type) {
+            return None;
+        }
+        let id = format!(
+            "{diagram_id}_{diagram_type}-undefined{}",
+            if at_start { "Start" } else { "End" }
+        );
+        return Some(format!("url(#{})", colored_marker_id(id, stroke_color)));
+    };
+    let margin = margin && marker_margin_supported(kind);
+    let placement = if at_start {
+        marker_placement(Some(arrow_type), None, diagram_id, diagram_type, margin).ok()?
+    } else {
+        marker_placement(None, Some(arrow_type), diagram_id, diagram_type, margin).ok()?
+    };
+    let definition = if at_start {
+        placement.start?
+    } else {
+        placement.end?
+    };
+    Some(format!(
+        "url(#{})",
+        colored_marker_id(definition.def, stroke_color)
+    ))
+}
+
+/// JS property names that `arrowTypesMap[arrowType]` finds on `Object.prototype`.
+fn is_js_prototype_key(name: &str) -> bool {
+    matches!(
+        name,
+        "constructor"
+            | "__proto__"
+            | "toString"
+            | "toLocaleString"
+            | "valueOf"
+            | "hasOwnProperty"
+            | "isPrototypeOf"
+            | "propertyIsEnumerable"
+            | "__defineGetter__"
+            | "__defineSetter__"
+            | "__lookupGetter__"
+            | "__lookupSetter__"
+    )
+}
+
+/// A coloured marker clones the original and appends a sanitized colour to its id.
+fn colored_marker_id(id: String, stroke_color: Option<&str>) -> String {
+    match stroke_color.filter(|color| !color.trim().is_empty()) {
+        Some(color) => {
+            let suffix: String = color
+                .chars()
+                .map(|character| {
+                    if character.is_ascii_alphanumeric() {
+                        character
+                    } else {
+                        '_'
+                    }
+                })
+                .collect();
+            format!("{id}_{suffix}")
+        }
+        None => id,
+    }
+}
+
+/// `generateDashArray` for dotted/dashed `neo` edges.
+pub fn generate_dash_array(length: f64, start_offset: f64, end_offset: f64) -> String {
+    let middle_length = length - start_offset - end_offset;
+    let raw_pairs = (middle_length / 4.0).floor();
+    let pairs = if raw_pairs.is_finite() {
+        raw_pairs.max(0.0) as usize
+    } else {
+        0
+    };
+    let middle = std::iter::repeat_n("2 2", pairs)
+        .collect::<Vec<_>>()
+        .join(" ");
+    format!(
+        "0 {} {} {}",
+        js_number(start_offset),
+        middle,
+        js_number(end_offset)
+    )
+}
+
+/// The `stroke-dasharray` value `neo` prepends to the style attribute.
+pub fn neo_dash_array(length: f64, pattern: &str, start_offset: f64, end_offset: f64) -> String {
+    if matches!(pattern, "dotted" | "dashed") {
+        generate_dash_array(length, start_offset, end_offset)
+    } else {
+        format!(
+            "0 {} {} {}",
+            js_number(start_offset),
+            js_number(length - start_offset - end_offset),
+            js_number(end_offset)
+        )
+    }
+}
+
+/// `fmt` from `lineJump.ts`: round to three decimals, then print like a JS number.
+pub fn js_number(value: f64) -> String {
+    let rounded = js_round(value * 1000.0) / 1000.0;
+    if rounded == 0.0 {
+        "0".into()
+    } else {
+        format!("{rounded}")
+    }
+}
+
+/// `Math.round`, which rounds halves toward positive infinity.
+fn js_round(value: f64) -> f64 {
+    (value + 0.5).floor()
+}
+
+/// `btoa(JSON.stringify(points))` for the `data-points` attribute.
+pub fn data_points_attribute(points: &[Point]) -> String {
+    let json = format!(
+        "[{}]",
+        points
+            .iter()
+            .map(|point| format!(
+                "{{\"x\":{},\"y\":{}}}",
+                js_number(point.x),
+                js_number(point.y)
+            ))
+            .collect::<Vec<_>>()
+            .join(",")
+    );
+    base64_encode(json.as_bytes())
+}
+
+/// `decodeDataPoints` from `lineJump.ts`: the route encoded in `data-points`, if valid.
+pub fn decode_data_points(raw: &str) -> Option<Vec<Point>> {
+    let bytes = base64_decode(raw)?;
+    let value: serde_json::Value = serde_json::from_slice(&bytes).ok()?;
+    let array = value.as_array()?;
+    let mut points = Vec::with_capacity(array.len());
+    for point in array {
+        points.push(Point::new(
+            point.get("x")?.as_f64()?,
+            point.get("y")?.as_f64()?,
+        ));
+    }
+    (points.len() >= 2).then_some(points)
+}
+
+fn base64_decode(value: &str) -> Option<Vec<u8>> {
+    fn index(character: u8) -> Option<u8> {
+        Some(match character {
+            b'A'..=b'Z' => character - b'A',
+            b'a'..=b'z' => character - b'a' + 26,
+            b'0'..=b'9' => character - b'0' + 52,
+            b'+' => 62,
+            b'/' => 63,
+            _ => return None,
+        })
+    }
+    let cleaned: Vec<u8> = value
+        .bytes()
+        .filter(|byte| !byte.is_ascii_whitespace())
+        .collect();
+    let mut output = Vec::with_capacity(cleaned.len() / 4 * 3);
+    for chunk in cleaned.chunks(4) {
+        if chunk.len() < 2 {
+            return None;
+        }
+        let mut buffer = [0u8; 4];
+        let mut valid = 0;
+        for (position, &byte) in chunk.iter().enumerate() {
+            if byte == b'=' {
+                continue;
+            }
+            buffer[position] = index(byte)?;
+            valid += 1;
+        }
+        let value = (u32::from(buffer[0]) << 18)
+            | (u32::from(buffer[1]) << 12)
+            | (u32::from(buffer[2]) << 6)
+            | u32::from(buffer[3]);
+        output.push((value >> 16) as u8);
+        if valid > 2 {
+            output.push((value >> 8) as u8);
+        }
+        if valid > 3 {
+            output.push(value as u8);
+        }
+    }
+    Some(output)
+}
+
+fn base64_encode(bytes: &[u8]) -> String {
+    const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut output = String::with_capacity(bytes.len().div_ceil(3) * 4);
+    for chunk in bytes.chunks(3) {
+        let b = [
+            chunk[0],
+            *chunk.get(1).unwrap_or(&0),
+            *chunk.get(2).unwrap_or(&0),
+        ];
+        let value = (u32::from(b[0]) << 16) | (u32::from(b[1]) << 8) | u32::from(b[2]);
+        output.push(ALPHABET[(value >> 18) as usize & 63] as char);
+        output.push(ALPHABET[(value >> 12) as usize & 63] as char);
+        output.push(if chunk.len() > 1 {
+            ALPHABET[(value >> 6) as usize & 63] as char
+        } else {
+            '='
+        });
+        output.push(if chunk.len() > 2 {
+            ALPHABET[value as usize & 63] as char
+        } else {
+            '='
+        });
+    }
+    output
+}
+
+/// SVG path data for a scene path, in the form upstream reads from the `d` attribute.
+pub fn path_data(path: &Path) -> String {
+    let mut result = String::new();
+    for command in &path.commands {
+        match *command {
+            PathCommand::MoveTo { x, y } => {
+                result.push_str(&format!("M{},{} ", js_number(x), js_number(y)))
+            }
+            PathCommand::LineTo { x, y } => {
+                result.push_str(&format!("L{},{} ", js_number(x), js_number(y)))
+            }
+            PathCommand::QuadTo { cx, cy, x, y } => result.push_str(&format!(
+                "Q{},{} {},{} ",
+                js_number(cx),
+                js_number(cy),
+                js_number(x),
+                js_number(y)
+            )),
+            PathCommand::CubicTo {
+                c1x,
+                c1y,
+                c2x,
+                c2y,
+                x,
+                y,
+            } => result.push_str(&format!(
+                "C{},{} {},{} {},{} ",
+                js_number(c1x),
+                js_number(c1y),
+                js_number(c2x),
+                js_number(c2y),
+                js_number(x),
+                js_number(y)
+            )),
+            PathCommand::ArcTo {
+                rx,
+                ry,
+                sweep,
+                x,
+                y,
+                ..
+            } => result.push_str(&format!(
+                "A{},{} 0 0 {} {},{} ",
+                js_number(rx),
+                js_number(ry),
+                u8::from(sweep),
+                js_number(x),
+                js_number(y)
+            )),
+            PathCommand::Close => result.push_str("Z "),
+        }
+    }
+    result.trim_end().to_string()
+}
+
+/// `isLabelCoordinateInPath`: whether either rounded coordinate appears in the path data.
+pub fn is_label_coordinate_in_path(point: Point, path: &Path) -> bool {
+    let data = path_data(path);
+    let x = js_round(point.x).to_string();
+    let y = js_round(point.y).to_string();
+    data.contains(&x) || data.contains(&y)
+}
+
+/// `applyMarkerOffsetsToPoints`: the rounded-path marker pull-back.
+pub fn apply_marker_offsets_to_points(points: &[Point], edge: &EdgeData) -> Vec<Point> {
+    let mut new_points = points.to_vec();
+    if points.len() < 2 {
+        return new_points;
+    }
+    if let Some(offset) = edge.arrow_type_start.as_deref().and_then(marker_offset) {
+        let (a, b) = (points[0], points[1]);
+        let angle = (b.y - a.y).atan2(b.x - a.x);
+        new_points[0] = Point::new(a.x + offset * angle.cos(), a.y + offset * angle.sin());
+    }
+    if let Some(offset) = edge.arrow_type_end.as_deref().and_then(marker_offset) {
+        let n = points.len();
+        let (a, b) = (points[n - 2], points[n - 1]);
+        let angle = (b.y - a.y).atan2(b.x - a.x);
+        new_points[n - 1] = Point::new(b.x - offset * angle.cos(), b.y - offset * angle.sin());
+    }
+    new_points
+}
+
+/// `getLineFunctionsWithOffset`: d3's x/y accessors, which also nudge points near a marker.
+fn line_point_with_offsets(points: &[Point], index: usize, edge: &EdgeData) -> Point {
+    let point = points[index];
+    let last = points.len() - 1;
+    let start_marker = edge.arrow_type_start.as_deref().and_then(marker_offset);
+    let end_marker = edge.arrow_type_end.as_deref().and_then(marker_offset);
+    let first = points[0];
+    let final_point = points[last];
+
+    let mut x_offset = 0.0;
+    let direction_left = first.x < final_point.x;
+    let angle = |a: Point, b: Point| ((b.y - a.y) / (b.x - a.x)).atan();
+    if index == 0
+        && let Some(marker) = start_marker
+    {
+        let angle = angle(points[0], points[1]);
+        x_offset = marker
+            * angle.cos()
+            * if points[1].x - points[0].x >= 0.0 {
+                1.0
+            } else {
+                -1.0
+            };
+    } else if index == last
+        && let Some(marker) = end_marker
+    {
+        let angle = angle(points[last], points[last - 1]);
+        x_offset = marker
+            * angle.cos()
+            * if points[last - 1].x - points[last].x >= 0.0 {
+                1.0
+            } else {
+                -1.0
+            };
+    }
+    let difference_to_end = (point.x - final_point.x).abs();
+    let difference_in_y_end = (point.y - final_point.y).abs();
+    let difference_to_start = (point.x - first.x).abs();
+    let difference_in_y_start = (point.y - first.y).abs();
+    let extra_room = 1.0;
+    if let Some(marker_height) = end_marker
+        && difference_to_end < marker_height
+        && difference_to_end > 0.0
+        && difference_in_y_end < marker_height
+    {
+        let mut adjustment = marker_height + extra_room - difference_to_end;
+        adjustment *= if direction_left { 1.0 } else { -1.0 };
+        x_offset -= adjustment;
+    }
+    if let Some(marker_height) = start_marker
+        && difference_to_start < marker_height
+        && difference_to_start > 0.0
+        && difference_in_y_start < marker_height
+    {
+        let mut adjustment = marker_height + extra_room - difference_to_start;
+        adjustment *= if direction_left { 1.0 } else { -1.0 };
+        x_offset += adjustment;
+    }
+
+    let mut y_offset = 0.0;
+    let direction_down = first.y < final_point.y;
+    if index == 0
+        && let Some(marker) = start_marker
+    {
+        let angle = angle(points[0], points[1]);
+        y_offset = marker
+            * angle.sin().abs()
+            * if points[1].y - points[0].y >= 0.0 {
+                1.0
+            } else {
+                -1.0
+            };
+    } else if index == last
+        && let Some(marker) = end_marker
+    {
+        let angle = angle(points[last], points[last - 1]);
+        y_offset = marker
+            * angle.sin().abs()
+            * if points[last - 1].y - points[last].y >= 0.0 {
+                1.0
+            } else {
+                -1.0
+            };
+    }
+    let difference_to_end = (point.y - final_point.y).abs();
+    let difference_in_x_end = (point.x - final_point.x).abs();
+    let difference_to_start = (point.y - first.y).abs();
+    let difference_in_x_start = (point.x - first.x).abs();
+    if let Some(marker_height) = end_marker
+        && difference_to_end < marker_height
+        && difference_to_end > 0.0
+        && difference_in_x_end < marker_height
+    {
+        let mut adjustment = marker_height + extra_room - difference_to_end;
+        adjustment *= if direction_down { 1.0 } else { -1.0 };
+        y_offset -= adjustment;
+    }
+    if let Some(marker_height) = start_marker
+        && difference_to_start < marker_height
+        && difference_to_start > 0.0
+        && difference_in_x_start < marker_height
+    {
+        let mut adjustment = marker_height + extra_room - difference_to_start;
+        adjustment *= if direction_down { 1.0 } else { -1.0 };
+        y_offset += adjustment;
+    }
+    Point::new(point.x + x_offset, point.y + y_offset)
+}
+
+fn line_points_with_offsets(points: &[Point], edge: &EdgeData) -> Vec<Point> {
+    (0..points.len())
+        .map(|index| line_point_with_offsets(points, index, edge))
+        .collect()
+}
+
+/// `extractCornerPoints`: bends longer than five pixels on both sides.
+fn extract_corner_points(points: &[Point]) -> Vec<usize> {
+    let mut positions = Vec::new();
+    for index in 1..points.len().saturating_sub(1) {
+        let prev = points[index - 1];
+        let curr = points[index];
+        let next = points[index + 1];
+        let first = prev.x == curr.x
+            && curr.y == next.y
+            && (curr.x - next.x).abs() > 5.0
+            && (curr.y - prev.y).abs() > 5.0;
+        let second = prev.y == curr.y
+            && curr.x == next.x
+            && (curr.x - prev.x).abs() > 5.0
+            && (curr.y - next.y).abs() > 5.0;
+        if first || second {
+            positions.push(index);
+        }
+    }
+    positions
+}
+
+/// `findAdjacentPoint(pointA, pointB, distance)`: `distance` back from B toward A.
+fn find_adjacent_point(point_a: Point, point_b: Point, distance: f64) -> Point {
+    let x_diff = point_b.x - point_a.x;
+    let y_diff = point_b.y - point_a.y;
+    let length = (x_diff * x_diff + y_diff * y_diff).sqrt();
+    let ratio = distance / length;
+    Point::new(point_b.x - ratio * x_diff, point_b.y - ratio * y_diff)
+}
+
+/// `fixCorners`: cuts five pixels off each long bend and replaces sharp corners.
+pub fn fix_corners(points: &[Point]) -> Vec<Point> {
+    let corner_positions = extract_corner_points(points);
+    let mut result = Vec::with_capacity(points.len() + corner_positions.len() * 2);
+    for (index, &point) in points.iter().enumerate() {
+        if !corner_positions.contains(&index) {
+            result.push(point);
+            continue;
+        }
+        let prev = points[index - 1];
+        let next = points[index + 1];
+        let corner = point;
+        let new_prev = find_adjacent_point(prev, corner, 5.0);
+        let new_next = find_adjacent_point(next, corner, 5.0);
+        let x_diff = new_next.x - new_prev.x;
+        let y_diff = new_next.y - new_prev.y;
+        result.push(new_prev);
+        let a = std::f64::consts::SQRT_2 * 2.0;
+        let mut new_corner = corner;
+        if (next.x - prev.x).abs() > 10.0 && (next.y - prev.y).abs() >= 10.0 {
+            let r = 5.0;
+            new_corner = if corner.x == new_prev.x {
+                Point::new(
+                    if x_diff < 0.0 {
+                        new_prev.x - r + a
+                    } else {
+                        new_prev.x + r - a
+                    },
+                    if y_diff < 0.0 {
+                        new_prev.y - a
+                    } else {
+                        new_prev.y + a
+                    },
+                )
+            } else {
+                Point::new(
+                    if x_diff < 0.0 {
+                        new_prev.x - a
+                    } else {
+                        new_prev.x + a
+                    },
+                    if y_diff < 0.0 {
+                        new_prev.y - r + a
+                    } else {
+                        new_prev.y + r - a
+                    },
+                )
+            };
+        }
+        result.push(new_corner);
+        result.push(new_next);
+    }
+    result
+}
+
+/// Builds a scene edge from Mermaid edge data, including endpoint clipping, cluster cuts,
+/// corner fixing, curve, styles, markers, and labels. A missing id is an upstream `insertEdge`
+/// error; a dagre route with fewer than three points is upstream's TypeError.
+pub fn insert_edge(edge: &EdgeData, diagram_id: &str) -> Result<InsertedEdge, ParseError> {
+    insert_edge_with_type(edge, diagram_id, "flowchart")
+}
+
+/// `insertEdge` for a concrete diagram type, which prefixes every marker id.
+pub fn insert_edge_with_type(
     edge: &EdgeData,
     diagram_id: &str,
-) -> Result<InsertedEdge, crate::error::ParseError> {
+    diagram_type: &str,
+) -> Result<InsertedEdge, ParseError> {
     if diagram_id.is_empty() {
-        return Err(crate::error::ParseError::new(
+        return Err(ParseError::new(
             format!(
                 "insertEdge: missing diagramId for edge \"{}\" — edge IDs require a diagram prefix for uniqueness",
                 edge.id
@@ -818,24 +2112,56 @@ pub fn insert_edge(
             None,
         ));
     }
+    let layout = EdgeLayout::from_name(edge.layout.as_deref().unwrap_or("dagre"));
     let mut points = edge.points.clone();
+    if edge.port_clipping.as_deref() == Some("outline-orthogonal")
+        && !edge.skip_intersect
+        && let (Some(tail), Some(head)) = (edge.from_node, edge.to_node)
+    {
+        points = clip_orthogonal_endpoints(&points, tail.bounds(), head.bounds());
+    } else if layout == EdgeLayout::Swimlane {
+        if !edge.skip_intersect
+            && points.len() >= 2
+            && let (Some(tail), Some(head)) = (edge.from_node, edge.to_node)
+        {
+            points = clip_swimlane_points(&points, tail, head, edge.arrow_type_end.as_deref());
+        }
+        points = orthogonalize_to_label_clipped_points(edge, points);
+    } else if !edge.skip_intersect
+        && let (Some(tail), Some(head)) = (edge.from_node, edge.to_node)
+    {
+        points = clip_dagre_points(&points, tail, head)?;
+    }
+
+    let data_points = data_points_attribute(&points);
+    let mut points_changed = false;
     if let Some(bounds) = edge.to_cluster {
-        points = cut_path_at_intersection(&points, bounds);
+        points = cut_path_at_intersect(&edge.points, NodeOutline::from_bounds(bounds));
+        points_changed = true;
     }
     if let Some(bounds) = edge.from_cluster {
         points.reverse();
-        points = cut_path_at_intersection(&points, bounds);
+        points = cut_path_at_intersect(&points, NodeOutline::from_bounds(bounds));
         points.reverse();
+        points_changed = true;
     }
-    points.retain(|p| p.x.is_finite() && p.y.is_finite());
+
+    let mut line_data: Vec<Point> = points
+        .iter()
+        .copied()
+        .filter(|point| !point.y.is_nan())
+        .collect();
     let curve = Curve::from_name(edge.curve.as_deref().unwrap_or("basis"));
-    let mut path_points = points.clone();
-    apply_marker_offsets(&mut path_points, edge);
-    let path = edge_path(
-        &path_points,
-        curve,
-        resolve_edge_corner_radius(edge.corner_radius),
-    );
+    if curve != Curve::Rounded && !edge.skip_corner_fix {
+        line_data = fix_corners(&line_data);
+    }
+    let radius = resolve_edge_corner_radius(edge.corner_radius);
+    let path = if curve == Curve::Rounded {
+        rounded_path(&apply_marker_offsets_to_points(&line_data, edge), radius)
+    } else {
+        edge_path(&line_points_with_offsets(&line_data, edge), curve, radius)
+    };
+
     let mut roles = style_roles(
         &edge.thickness,
         &edge.pattern,
@@ -844,131 +2170,530 @@ pub fn insert_edge(
     );
     roles.extend(edge.classes.iter().cloned());
     roles.push("edge".into());
-    let mut styles = edge.css_compiled_styles.clone();
+    let mut styles = class_style_values(edge);
     styles.extend(edge.styles.iter().cloned());
+
+    let animated = is_animated_edge(edge);
+    let use_margin = !animated && edge.look.as_deref() == Some("neo");
+    let color = stroke_color(edge);
+    let mut style_attribute = path_style_attribute(edge);
+    if edge.look.as_deref() == Some("neo") && !animated {
+        let start_offset = edge
+            .arrow_type_start
+            .as_deref()
+            .and_then(marker_offset2)
+            .unwrap_or(0.0);
+        let end_offset = edge
+            .arrow_type_end
+            .as_deref()
+            .and_then(marker_offset2)
+            .unwrap_or(0.0);
+        let dash = neo_dash_array(
+            edge.path_length.unwrap_or(0.0),
+            &edge.pattern,
+            start_offset,
+            end_offset,
+        );
+        style_attribute =
+            format!("stroke-dasharray: {dash}; stroke-dashoffset: 0;{style_attribute}");
+    }
+
+    if !points.is_empty() {
+        let mid = points[points.len() / 2];
+        if !is_label_coordinate_in_path(mid, &path) {
+            points_changed = true;
+        }
+    }
+
     Ok(InsertedEdge {
         id: format!("{diagram_id}-{}", edge.id),
         path,
-        points,
+        points: points.clone(),
         roles,
         styles,
         labels: insert_edge_label(edge),
         curve,
+        data_points,
+        class_attribute: edge_class_attribute(edge),
+        style_attribute,
+        data_look: edge.look.clone().unwrap_or_else(|| "undefined".into()),
+        data_edge: true,
+        data_et: "edge".into(),
+        data_id: edge.id.clone(),
+        marker_start: edge_marker_attribute(
+            edge.arrow_type_start.as_deref(),
+            true,
+            use_margin,
+            diagram_id,
+            diagram_type,
+            color.as_deref(),
+        ),
+        marker_end: edge_marker_attribute(
+            edge.arrow_type_end.as_deref(),
+            false,
+            use_margin,
+            diagram_id,
+            diagram_type,
+            color.as_deref(),
+        ),
+        animated,
+        updated_path: points_changed.then_some(points),
+        original_path: edge.points.clone(),
     })
 }
 
-fn apply_marker_offsets(points: &mut [Point], edge: &EdgeData) {
-    if points.len() < 2 {
-        return;
-    }
-    for (at_start, kind) in [
-        (true, edge.arrow_type_start.as_deref()),
-        (false, edge.arrow_type_end.as_deref()),
-    ] {
-        let Some(offset) = kind.and_then(marker_offset).filter(|v| *v != 0.0) else {
-            continue;
-        };
-        let (a, b) = if at_start {
-            (points[0], points[1])
-        } else {
-            (points[points.len() - 2], points[points.len() - 1])
-        };
-        let angle = (b.y - a.y).atan2(b.x - a.x);
-        let p = if at_start {
-            Point::new(a.x + offset * angle.cos(), a.y + offset * angle.sin())
-        } else {
-            Point::new(b.x - offset * angle.cos(), b.y - offset * angle.sin())
-        };
-        let index = if at_start { 0 } else { points.len() - 1 };
-        points[index] = p;
+/// One edge's geometry for `lineJump.ts`; points are the layout polyline.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EdgeGeom {
+    pub id: String,
+    pub points: Vec<Point>,
+    #[serde(default)]
+    pub curve: Option<String>,
+    #[serde(default)]
+    pub corner_radius: Option<f64>,
+    #[serde(default)]
+    pub arrow_type_start: Option<String>,
+    #[serde(default)]
+    pub arrow_type_end: Option<String>,
+}
+
+/// A detected polyline crossing and the edge that carries its hop.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Crossing {
+    pub jump_edge_id: String,
+    pub other_edge_id: String,
+    pub seg_index: usize,
+    pub t: f64,
+    pub point: Point,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum JumpStyle {
+    Arc,
+    Gap,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LineJumpConfig {
+    pub enabled: bool,
+    pub jump_radius: f64,
+    pub jump_style: JumpStyle,
+}
+
+impl LineJumpConfig {
+    /// The `lineJump` config block: disabled when absent.
+    pub fn from_options(enabled: bool, radius: f64, gap: bool) -> Self {
+        Self {
+            enabled,
+            jump_radius: radius,
+            jump_style: if gap { JumpStyle::Gap } else { JumpStyle::Arc },
+        }
     }
 }
 
-/// Pure line-jump rewrite for orthogonal crossings. Smooth d3 curves are intentionally skipped.
+const ENDPOINT_EPSILON: f64 = 1e-6;
+
+fn segment_amount(a1: Point, a2: Point, b1: Point, b2: Point) -> Option<(Point, f64, f64)> {
+    let dx_a = a2.x - a1.x;
+    let dy_a = a2.y - a1.y;
+    let dx_b = b2.x - b1.x;
+    let dy_b = b2.y - b1.y;
+    let denominator = dx_a * dy_b - dy_a * dx_b;
+    if denominator == 0.0 {
+        return None;
+    }
+    let dx = b1.x - a1.x;
+    let dy = b1.y - a1.y;
+    let t_a = (dx * dy_b - dy * dx_b) / denominator;
+    let t_b = (dx * dy_a - dy * dx_a) / denominator;
+    if t_a <= ENDPOINT_EPSILON
+        || t_a >= 1.0 - ENDPOINT_EPSILON
+        || t_b <= ENDPOINT_EPSILON
+        || t_b >= 1.0 - ENDPOINT_EPSILON
+    {
+        return None;
+    }
+    Some((Point::new(a1.x + t_a * dx_a, a1.y + t_a * dy_a), t_a, t_b))
+}
+
+fn is_horizontal_seg(a: Point, b: Point) -> bool {
+    (b.x - a.x).abs() >= (b.y - a.y).abs()
+}
+
+#[derive(Clone, Copy, Debug)]
+struct RoundedCorner {
+    start_x: f64,
+    start_y: f64,
+    end_x: f64,
+    end_y: f64,
+    ctrl_x: f64,
+    ctrl_y: f64,
+    cut_len: f64,
+}
+
+/// `computeRoundedCorner`, mirroring `generateRoundedPath`'s bend contraction.
+fn compute_rounded_corner(
+    prev: Point,
+    curr: Point,
+    next: Point,
+    radius: f64,
+) -> Option<RoundedCorner> {
+    let dx1 = curr.x - prev.x;
+    let dy1 = curr.y - prev.y;
+    let dx2 = next.x - curr.x;
+    let dy2 = next.y - curr.y;
+    let len1 = dx1.hypot(dy1);
+    let len2 = dx2.hypot(dy2);
+    if len1 < CORNER_EPSILON || len2 < CORNER_EPSILON {
+        return None;
+    }
+    let nx1 = dx1 / len1;
+    let ny1 = dy1 / len1;
+    let nx2 = dx2 / len2;
+    let ny2 = dy2 / len2;
+    let dot = nx1 * nx2 + ny1 * ny2;
+    let angle = dot.clamp(-1.0, 1.0).acos();
+    if angle < CORNER_EPSILON || (std::f64::consts::PI - angle).abs() < CORNER_EPSILON {
+        return None;
+    }
+    let cut_len = (radius / (angle / 2.0).sin())
+        .min(len1 / 2.0)
+        .min(len2 / 2.0);
+    Some(RoundedCorner {
+        start_x: curr.x - nx1 * cut_len,
+        start_y: curr.y - ny1 * cut_len,
+        end_x: curr.x + nx2 * cut_len,
+        end_y: curr.y + ny2 * cut_len,
+        ctrl_x: curr.x,
+        ctrl_y: curr.y,
+        cut_len,
+    })
+}
+
+fn crossing_sits_in_rounded_corner(edge: &EdgeGeom, seg_index: usize, t: f64) -> bool {
+    if edge.curve.as_deref() != Some("rounded") {
+        return false;
+    }
+    let points = &edge.points;
+    let (Some(&a), Some(&b)) = (points.get(seg_index), points.get(seg_index + 1)) else {
+        return false;
+    };
+    let seg_len = (b.x - a.x).hypot(b.y - a.y);
+    let d = t * seg_len;
+    let radius = resolve_edge_corner_radius(edge.corner_radius);
+    if seg_index > 0
+        && let Some(entering) = compute_rounded_corner(points[seg_index - 1], a, b, radius)
+        && d < entering.cut_len
+    {
+        return true;
+    }
+    if seg_index + 2 < points.len()
+        && let Some(leaving) = compute_rounded_corner(a, b, points[seg_index + 2], radius)
+        && seg_len - d < leaving.cut_len
+    {
+        return true;
+    }
+    false
+}
+
+/// `findEdgeIntersections`: every true crossing, assigned to the horizontal segment when the
+/// pair is orthogonal and to the later edge otherwise.
+pub fn find_edge_intersections(edges: &[EdgeGeom]) -> Vec<Crossing> {
+    let mut crossings = Vec::new();
+    for (i, edge_a) in edges.iter().enumerate() {
+        for edge_b in edges.iter().skip(i + 1) {
+            for (si, a_pair) in edge_a.points.windows(2).enumerate() {
+                for (sj, b_pair) in edge_b.points.windows(2).enumerate() {
+                    let Some((point, t_a, t_b)) =
+                        segment_amount(a_pair[0], a_pair[1], b_pair[0], b_pair[1])
+                    else {
+                        continue;
+                    };
+                    if crossing_sits_in_rounded_corner(edge_a, si, t_a)
+                        || crossing_sits_in_rounded_corner(edge_b, sj, t_b)
+                    {
+                        continue;
+                    }
+                    let a_horizontal = is_horizontal_seg(a_pair[0], a_pair[1]);
+                    let b_horizontal = is_horizontal_seg(b_pair[0], b_pair[1]);
+                    let orthogonal_pair = a_horizontal != b_horizontal;
+                    let jump_on_a = orthogonal_pair && a_horizontal;
+                    if jump_on_a {
+                        crossings.push(Crossing {
+                            jump_edge_id: edge_a.id.clone(),
+                            other_edge_id: edge_b.id.clone(),
+                            seg_index: si,
+                            t: t_a,
+                            point,
+                        });
+                    } else {
+                        crossings.push(Crossing {
+                            jump_edge_id: edge_b.id.clone(),
+                            other_edge_id: edge_a.id.clone(),
+                            seg_index: sj,
+                            t: t_b,
+                            point,
+                        });
+                    }
+                }
+            }
+        }
+    }
+    crossings
+}
+
+fn apply_line_jump_marker_offsets(points: &[Point], edge: &EdgeGeom) -> Vec<Point> {
+    let mut new_points = points.to_vec();
+    if points.len() < 2 {
+        return new_points;
+    }
+    if let Some(offset) = edge
+        .arrow_type_start
+        .as_deref()
+        .and_then(marker_offset)
+        .filter(|offset| *offset != 0.0)
+    {
+        let (a, b) = (points[0], points[1]);
+        let angle = (b.y - a.y).atan2(b.x - a.x);
+        new_points[0] = Point::new(a.x + offset * angle.cos(), a.y + offset * angle.sin());
+    }
+    if let Some(offset) = edge
+        .arrow_type_end
+        .as_deref()
+        .and_then(marker_offset)
+        .filter(|offset| *offset != 0.0)
+    {
+        let n = points.len();
+        let (a, b) = (points[n - 2], points[n - 1]);
+        let angle = (b.y - a.y).atan2(b.x - a.x);
+        new_points[n - 1] = Point::new(b.x - offset * angle.cos(), b.y - offset * angle.sin());
+    }
+    new_points
+}
+
+/// `getArcSweepFlag`: horizontal hops bump up, vertical hops bump right.
+fn arc_sweep_flag(a: Point, b: Point) -> bool {
+    let dx = b.x - a.x;
+    let dy = b.y - a.y;
+    if dx.abs() >= dy.abs() {
+        dx >= 0.0
+    } else {
+        dy >= 0.0
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct JumpOnSegment {
+    t: f64,
+    point: Point,
+    d: f64,
+    r: f64,
+}
+
+/// `rewriteEdgePath`: plain polylines with hops, rounded corners re-emitted for `rounded`.
+fn rewrite_edge_path(edge: &EdgeGeom, jumps: &[Crossing], config: LineJumpConfig) -> Path {
+    let raw_points = &edge.points;
+    let mut path = Path::new();
+    if raw_points.len() < 2 {
+        return path;
+    }
+    let points = apply_line_jump_marker_offsets(raw_points, edge);
+    let rounded = edge.curve.as_deref() == Some("rounded");
+    let corner_radius = resolve_edge_corner_radius(edge.corner_radius);
+    let segments: Vec<(Point, Point)> = points.windows(2).map(|pair| (pair[0], pair[1])).collect();
+    let mut by_segment: BTreeMap<usize, Vec<JumpOnSegment>> = BTreeMap::new();
+    for crossing in jumps {
+        let Some(&(a, b)) = segments.get(crossing.seg_index) else {
+            continue;
+        };
+        let seg_len = (b.x - a.x).hypot(b.y - a.y);
+        by_segment
+            .entry(crossing.seg_index)
+            .or_default()
+            .push(JumpOnSegment {
+                t: crossing.t,
+                point: crossing.point,
+                d: crossing.t * seg_len,
+                r: config.jump_radius,
+            });
+    }
+
+    path.move_to(points[0]);
+    for (i, &(a, b)) in segments.iter().enumerate() {
+        let seg_len = (b.x - a.x).hypot(b.y - a.y);
+        let (ux, uy) = if seg_len == 0.0 {
+            (0.0, 0.0)
+        } else {
+            ((b.x - a.x) / seg_len, (b.y - a.y) / seg_len)
+        };
+        let sweep = arc_sweep_flag(a, b);
+
+        let mut seg_start_consumed = 0.0;
+        if rounded
+            && i > 0
+            && let Some(corner) = compute_rounded_corner(
+                points[i - 1],
+                points[i],
+                points.get(i + 1).copied().unwrap_or(points[i]),
+                corner_radius,
+            )
+        {
+            seg_start_consumed = corner.cut_len;
+        }
+        let mut seg_end_stop = seg_len;
+        let mut upcoming_corner = None;
+        if rounded && i < segments.len() - 1 {
+            let corner = compute_rounded_corner(
+                points[i],
+                points[i + 1],
+                points.get(i + 2).copied().unwrap_or(points[i + 1]),
+                corner_radius,
+            );
+            if let Some(corner) = corner {
+                seg_end_stop = seg_len - corner.cut_len;
+                upcoming_corner = Some(corner);
+            }
+        }
+
+        let min_useful_radius = config.jump_radius * MIN_USEFUL_RADIUS_RATIO;
+        let mut seg_jumps: Vec<JumpOnSegment> = by_segment
+            .get(&i)
+            .cloned()
+            .unwrap_or_default()
+            .into_iter()
+            .map(|mut jump| {
+                let room = (jump.d - seg_start_consumed).min(seg_end_stop - jump.d)
+                    - CORNER_JUMP_CLEARANCE;
+                jump.r = jump.r.min(room);
+                jump
+            })
+            .filter(|jump| jump.r >= min_useful_radius)
+            .collect();
+        seg_jumps.sort_by(|a, b| a.t.total_cmp(&b.t));
+        for k in 0..seg_jumps.len().saturating_sub(1) {
+            let gap = seg_jumps[k + 1].d - seg_jumps[k].d;
+            if seg_jumps[k].r + seg_jumps[k + 1].r > gap {
+                let half = gap / 2.0;
+                seg_jumps[k].r = seg_jumps[k].r.min(half);
+                seg_jumps[k + 1].r = seg_jumps[k + 1].r.min(half);
+            }
+        }
+        for jump in &seg_jumps {
+            if jump.r < min_useful_radius {
+                continue;
+            }
+            let pre = Point::new(jump.point.x - ux * jump.r, jump.point.y - uy * jump.r);
+            let post = Point::new(jump.point.x + ux * jump.r, jump.point.y + uy * jump.r);
+            path.line_to(pre);
+            match config.jump_style {
+                JumpStyle::Arc => {
+                    path.arc_to(jump.r, jump.r, 0.0, false, sweep, post);
+                }
+                JumpStyle::Gap => {
+                    path.move_to(post);
+                }
+            }
+        }
+        if let Some(corner) = upcoming_corner.filter(|_| rounded) {
+            path.line_to(Point::new(corner.start_x, corner.start_y));
+            path.quad_to(
+                Point::new(corner.ctrl_x, corner.ctrl_y),
+                Point::new(corner.end_x, corner.end_y),
+            );
+        } else {
+            path.line_to(b);
+        }
+    }
+    path
+}
+
+fn plain_path(points: &[Point]) -> Path {
+    let mut path = Path::new();
+    if let Some(first) = points.first() {
+        path.move_to(*first);
+        for point in points.iter().skip(1) {
+            path.line_to(*point);
+        }
+    }
+    path
+}
+
+/// `processEdgesWithJumps`: one path per edge, plain when it owns no crossing.
+pub fn process_edges_with_jumps(edges: &[EdgeGeom], config: LineJumpConfig) -> Vec<(String, Path)> {
+    if !config.enabled {
+        return edges
+            .iter()
+            .map(|edge| (edge.id.clone(), plain_path(&edge.points)))
+            .collect();
+    }
+    let crossings = find_edge_intersections(edges);
+    let mut by_edge: BTreeMap<String, Vec<Crossing>> = BTreeMap::new();
+    for crossing in crossings {
+        by_edge
+            .entry(crossing.jump_edge_id.clone())
+            .or_default()
+            .push(crossing);
+    }
+    edges
+        .iter()
+        .map(|edge| {
+            let path = match by_edge.get(&edge.id) {
+                Some(jumps) if !jumps.is_empty() => rewrite_edge_path(edge, jumps, config),
+                _ => plain_path(&edge.points),
+            };
+            (edge.id.clone(), path)
+        })
+        .collect()
+}
+
+/// `isStraightPath`: only move/line commands, numbers, and separators.
+pub fn is_straight_path(data: &str) -> bool {
+    data.chars().all(|character| {
+        character.is_ascii_digit()
+            || character.is_ascii_whitespace()
+            || matches!(
+                character,
+                '+' | ',' | '.' | 'L' | 'M' | 'e' | 'l' | 'm' | '-'
+            )
+    })
+}
+
+/// `curveSupportsLineHops`: smoothing curves are not rewritten.
+pub fn curve_supports_line_hops(curve: Option<&str>) -> bool {
+    match curve {
+        None => true,
+        Some(curve) => matches!(
+            curve,
+            "linear" | "rounded" | "step" | "stepBefore" | "stepAfter"
+        ),
+    }
+}
+
+/// Pure line-jump rewrite for orthogonal crossings, following `processEdgesWithJumps`.
 pub fn line_jump_paths(
     edges: &[EdgeData],
     enabled: bool,
     radius: f64,
     gap: bool,
 ) -> Vec<(String, Path)> {
-    edges
+    let geometry: Vec<EdgeGeom> = edges
         .iter()
-        .enumerate()
-        .map(|(index, edge)| {
-            let mut jumps: Vec<(usize, f64, Point, bool)> = Vec::new();
-            if enabled
-                && edge.curve.as_deref().is_none_or(|c| {
-                    matches!(
-                        c,
-                        "linear" | "rounded" | "step" | "stepAfter" | "stepBefore"
-                    )
-                })
-            {
-                for other in edges.iter().skip(index + 1) {
-                    for (si, ab) in edge.points.windows(2).enumerate() {
-                        for cd in other.points.windows(2) {
-                            if let Some(point) = segment_intersection(ab[0], ab[1], cd[0], cd[1]) {
-                                let horiz = (ab[1].x - ab[0].x).abs() >= (ab[1].y - ab[0].y).abs();
-                                let other_horiz =
-                                    (cd[1].x - cd[0].x).abs() >= (cd[1].y - cd[0].y).abs();
-                                if horiz != other_horiz {
-                                    if horiz {
-                                        jumps.push((
-                                            si,
-                                            fraction(ab[0], ab[1], point),
-                                            point,
-                                            (ab[1].x - ab[0].x) >= 0.0,
-                                        ));
-                                    }
-                                } else { /* Later edge wins; generated when it is visited. */
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            let mut p = Path::new();
-            if let Some(first) = edge.points.first() {
-                p.move_to(*first);
-            }
-            for (i, pair) in edge.points.windows(2).enumerate() {
-                let mut found: Vec<_> = jumps.iter().filter(|j| j.0 == i).collect();
-                found.sort_by(|a, b| a.1.total_cmp(&b.1));
-                for (_, _, crossing, forward) in found {
-                    let r = radius
-                        .max(0.0)
-                        .min(pair[0].distance_to(*crossing))
-                        .min(pair[1].distance_to(*crossing));
-                    if r < 1e-5 {
-                        continue;
-                    }
-                    let unit = Point::new(
-                        (pair[1].x - pair[0].x) / pair[0].distance_to(pair[1]),
-                        (pair[1].y - pair[0].y) / pair[0].distance_to(pair[1]),
-                    );
-                    let before = Point::new(crossing.x - unit.x * r, crossing.y - unit.y * r);
-                    let after = Point::new(crossing.x + unit.x * r, crossing.y + unit.y * r);
-                    p.line_to(before);
-                    if !gap {
-                        p.arc_to(r, r, 0.0, false, *forward, after);
-                    } else {
-                        p.move_to(after);
-                    }
-                }
-                p.line_to(pair[1]);
-            }
-            (edge.id.clone(), p)
+        .map(|edge| EdgeGeom {
+            id: edge.id.clone(),
+            points: edge.points.clone(),
+            curve: edge.curve.clone(),
+            corner_radius: edge.corner_radius,
+            arrow_type_start: edge.arrow_type_start.clone(),
+            arrow_type_end: edge.arrow_type_end.clone(),
         })
-        .collect()
-}
-
-fn fraction(a: Point, b: Point, p: Point) -> f64 {
-    let length = a.distance_to(b);
-    if length == 0.0 {
-        0.0
-    } else {
-        a.distance_to(p) / length
-    }
+        .collect();
+    process_edges_with_jumps(
+        &geometry,
+        LineJumpConfig::from_options(enabled, radius, gap),
+    )
 }
 
 #[cfg(test)]
@@ -1201,7 +2926,7 @@ mod tests {
                 ..EdgeData::default()
             },
         ];
-        let arc = line_jump_paths(&edges, true, 6., false);
+        let arc = line_jump_paths(&edges, true, 1.0, false);
         assert!(
             arc[0]
                 .1
@@ -1209,7 +2934,11 @@ mod tests {
                 .iter()
                 .any(|c| matches!(c, PathCommand::ArcTo { .. }))
         );
-        let gap = line_jump_paths(&edges, true, 6., true);
+        assert_eq!(
+            path_data(&arc[0].1),
+            "M0,50 L49,50 A1,1 0 0 1 51,50 L100,50"
+        );
+        let gap = line_jump_paths(&edges, true, 1.0, true);
         assert!(
             gap[0]
                 .1
@@ -1217,41 +2946,528 @@ mod tests {
                 .iter()
                 .any(|c| matches!(c, PathCommand::MoveTo { .. }))
         );
-        let fixture: serde_json::Value =
-            serde_json::from_str(include_str!("testdata/edges/upstream-render.json")).unwrap();
-        let expected = fixture["edges"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .find(|edge| edge["id"] == "cross-h")
-            .unwrap()["jumpPath"]
-            .as_str()
-            .unwrap();
-        assert_eq!(path_data(&arc[0].1), expected);
+        assert_eq!(path_data(&gap[0].1), "M0,50 L49,50 M51,50 L100,50");
     }
 
-    fn path_data(path: &Path) -> String {
+    fn fixture() -> serde_json::Value {
+        serde_json::from_str(include_str!("testdata/edges/upstream-render.json")).unwrap()
+    }
+
+    fn full_path_data(path: &Path) -> String {
         let mut result = String::new();
         for command in &path.commands {
             match *command {
                 PathCommand::MoveTo { x, y } => result.push_str(&format!("M{x},{y}")),
-                PathCommand::LineTo { x, y } => result.push_str(&format!(" L{x},{y}")),
+                PathCommand::LineTo { x, y } => result.push_str(&format!("L{x},{y}")),
+                PathCommand::QuadTo { cx, cy, x, y } => {
+                    result.push_str(&format!("Q{cx},{cy} {x},{y}"))
+                }
+                PathCommand::CubicTo {
+                    c1x,
+                    c1y,
+                    c2x,
+                    c2y,
+                    x,
+                    y,
+                } => result.push_str(&format!("C{c1x},{c1y},{c2x},{c2y},{x},{y}")),
                 PathCommand::ArcTo {
                     rx,
                     ry,
-                    large_arc,
                     sweep,
                     x,
                     y,
                     ..
-                } => result.push_str(&format!(
-                    " A{rx},{ry} 0 {} {} {x},{y}",
-                    u8::from(large_arc),
-                    u8::from(sweep)
-                )),
-                _ => panic!("unexpected line jump command"),
+                } => result.push_str(&format!("A{rx},{ry} 0 0 {} {x},{y}", u8::from(sweep))),
+                PathCommand::Close => result.push('Z'),
             }
         }
         result
+    }
+
+    fn d3_path_data(path: &Path) -> String {
+        let mut result = String::new();
+        for command in &path.commands {
+            match *command {
+                PathCommand::MoveTo { x, y } => {
+                    result.push_str(&format!("M{},{}", js_number(x), js_number(y)))
+                }
+                PathCommand::LineTo { x, y } => {
+                    result.push_str(&format!("L{},{}", js_number(x), js_number(y)))
+                }
+                PathCommand::CubicTo {
+                    c1x,
+                    c1y,
+                    c2x,
+                    c2y,
+                    x,
+                    y,
+                } => result.push_str(&format!(
+                    "C{},{},{},{},{},{}",
+                    js_number(c1x),
+                    js_number(c1y),
+                    js_number(c2x),
+                    js_number(c2y),
+                    js_number(x),
+                    js_number(y)
+                )),
+                other => panic!("unexpected d3 command {other:?}"),
+            }
+        }
+        result
+    }
+
+    fn close(a: f64, b: f64) -> bool {
+        (a - b).abs() < 1e-9
+    }
+
+    fn points_from(value: &serde_json::Value) -> Vec<Point> {
+        value
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|point| Point::new(point["x"].as_f64().unwrap(), point["y"].as_f64().unwrap()))
+            .collect()
+    }
+
+    fn node_from(value: &serde_json::Value) -> Option<NodeOutline> {
+        value.is_object().then(|| NodeOutline {
+            x: value["x"].as_f64().unwrap(),
+            y: value["y"].as_f64().unwrap(),
+            width: value["width"].as_f64().unwrap(),
+            height: value["height"].as_f64().unwrap(),
+            shape: NodeShape::Rect,
+        })
+    }
+
+    #[test]
+    fn insert_edge_matches_upstream_node_and_cluster_clipping() {
+        let fixture = fixture();
+        let cases = fixture["insertEdge"].as_array().unwrap();
+        assert!(cases.len() >= 30);
+        for case in cases {
+            let name = case["name"].as_str().unwrap();
+            let mut edge_value = case["edge"].clone();
+            let object = edge_value.as_object_mut().unwrap();
+            let to_cluster = object
+                .remove("toCluster")
+                .and_then(|value| value.as_str().map(str::to_string));
+            let from_cluster = object
+                .remove("fromCluster")
+                .and_then(|value| value.as_str().map(str::to_string));
+            let mut edge: EdgeData = serde_json::from_value(edge_value).unwrap();
+            edge.layout = case["layout"].as_str().map(str::to_string);
+            edge.skip_intersect = case["skipIntersect"].as_bool().unwrap_or(false);
+            edge.from_node = node_from(&case["from"]);
+            edge.to_node = node_from(&case["to"]);
+            let cluster_rect = |id: &str| {
+                let node = &case["clusterDb"][id];
+                Some(Rect::new(
+                    node["x"].as_f64().unwrap() - node["width"].as_f64().unwrap() / 2.0,
+                    node["y"].as_f64().unwrap() - node["height"].as_f64().unwrap() / 2.0,
+                    node["width"].as_f64().unwrap(),
+                    node["height"].as_f64().unwrap(),
+                ))
+            };
+            edge.to_cluster = to_cluster.as_deref().and_then(cluster_rect);
+            edge.from_cluster = from_cluster.as_deref().and_then(cluster_rect);
+
+            let expected = &case["expected"];
+            let result = insert_edge_with_type(
+                &edge,
+                case["diagramId"].as_str().unwrap(),
+                case["diagramType"].as_str().unwrap(),
+            );
+            if let Some(error) = expected.get("error") {
+                let actual = result.unwrap_err();
+                assert_eq!(actual.message, error["message"].as_str().unwrap(), "{name}");
+                continue;
+            }
+            let rendered = result.unwrap();
+            let actual_path = if edge.curve.as_deref() == Some("rounded") {
+                full_path_data(&rendered.path)
+            } else {
+                d3_path_data(&rendered.path)
+            };
+            assert_eq!(actual_path, expected["d"].as_str().unwrap(), "{name}");
+            assert_eq!(rendered.id, expected["id"].as_str().unwrap(), "{name}");
+            assert_eq!(
+                rendered.class_attribute,
+                expected["classAttribute"].as_str().unwrap(),
+                "{name}"
+            );
+            assert_eq!(
+                rendered.style_attribute,
+                expected["style"].as_str().unwrap(),
+                "{name}"
+            );
+            assert_eq!(
+                rendered.data_points,
+                data_points_attribute(&points_from(&expected["dataPoints"])),
+                "{name} data-points"
+            );
+            assert_eq!(
+                rendered.data_look,
+                expected["dataLook"].as_str().unwrap(),
+                "{name} data-look"
+            );
+            assert_eq!(
+                rendered.marker_start.as_deref(),
+                expected["markerStart"].as_str(),
+                "{name} marker-start"
+            );
+            assert_eq!(
+                rendered.marker_end.as_deref(),
+                expected["markerEnd"].as_str(),
+                "{name} marker-end"
+            );
+        }
+    }
+
+    #[test]
+    fn intersection_matches_upstream_node_boxes() {
+        let fixture = fixture();
+        for case in fixture["intersection"].as_array().unwrap() {
+            let node = node_from(&case["node"]).unwrap();
+            let outside = points_from(&serde_json::json!([case["outsidePoint"]]))[0];
+            let inside = points_from(&serde_json::json!([case["insidePoint"]]))[0];
+            let expected = points_from(&serde_json::json!([case["expected"]]))[0];
+            let actual = intersection(node, outside, inside);
+            assert!(
+                close(actual.x, expected.x) && close(actual.y, expected.y),
+                "{}: {actual:?} != {expected:?}",
+                case["name"]
+            );
+        }
+    }
+
+    fn terminal_position(name: &str) -> TerminalPosition {
+        match name {
+            "start_left" => TerminalPosition::StartLeft,
+            "start_right" => TerminalPosition::StartRight,
+            "end_left" => TerminalPosition::EndLeft,
+            "end_right" => TerminalPosition::EndRight,
+            other => panic!("unknown terminal position {other}"),
+        }
+    }
+
+    fn parse_translate(value: &str) -> Point {
+        let inner = value.trim_start_matches("translate(").trim_end_matches(')');
+        let mut parts = inner.split(", ");
+        Point::new(
+            parts.next().unwrap().parse().unwrap(),
+            parts.next().unwrap().parse().unwrap(),
+        )
+    }
+
+    #[test]
+    fn labels_match_upstream_placement_and_boxes() {
+        let fixture = fixture();
+        for case in fixture["labels"].as_array().unwrap() {
+            let name = case["name"].as_str().unwrap();
+            match case["kind"].as_str().unwrap() {
+                "terminal" => {
+                    let points = points_from(&case["points"]);
+                    let actual = terminal_label_position(
+                        &points,
+                        terminal_position(case["position"].as_str().unwrap()),
+                        case["markerSize"].as_f64().unwrap(),
+                    )
+                    .unwrap();
+                    let expected = &case["expected"];
+                    assert!(
+                        close(actual.x, expected["x"].as_f64().unwrap())
+                            && close(actual.y, expected["y"].as_f64().unwrap()),
+                        "{name}: {actual:?}"
+                    );
+                }
+                "midpoint" => {
+                    let actual = calculate_label_position(&points_from(&case["points"]));
+                    let expected = &case["expected"];
+                    assert!(
+                        close(actual.x, expected["x"].as_f64().unwrap())
+                            && close(actual.y, expected["y"].as_f64().unwrap()),
+                        "{name}: {actual:?}"
+                    );
+                }
+                "resolve" => {
+                    let edge = EdgeData {
+                        label_x: Some(case["edge"]["x"].as_f64().unwrap()),
+                        label_y: Some(case["edge"]["y"].as_f64().unwrap()),
+                        ..EdgeData::default()
+                    };
+                    let updated = points_from(&case["updatedPath"]);
+                    let original = case
+                        .get("originalPath")
+                        .filter(|value| value.is_array())
+                        .map(points_from);
+                    let actual =
+                        resolve_edge_label_position(&edge, Some(&updated), original.as_deref());
+                    let expected = &case["expected"];
+                    assert!(
+                        close(actual.x, expected["x"].as_f64().unwrap())
+                            && close(actual.y, expected["y"].as_f64().unwrap()),
+                        "{name}: {actual:?}"
+                    );
+                }
+                "transform" => {
+                    let box_ = &case["box"];
+                    let width = box_["width"].as_f64().unwrap();
+                    let height = box_["height"].as_f64().unwrap();
+                    let actual = label_transform(
+                        box_["x"].as_f64().unwrap(),
+                        box_["y"].as_f64().unwrap(),
+                        width,
+                        height,
+                        case["html"].as_bool().unwrap(),
+                    );
+                    let expected = parse_translate(case["expected"].as_str().unwrap());
+                    assert_eq!(actual, expected, "{name}");
+                }
+                "terminal-width" => {
+                    let actual = terminal_label_box(
+                        case["label"].as_str().unwrap(),
+                        (
+                            case["box"]["width"].as_f64().unwrap(),
+                            case["box"]["height"].as_f64().unwrap(),
+                        ),
+                    );
+                    let parse = |value: &serde_json::Value| {
+                        value
+                            .as_str()
+                            .unwrap()
+                            .trim_end_matches("px")
+                            .parse::<f64>()
+                            .unwrap()
+                    };
+                    assert_eq!(
+                        actual,
+                        (
+                            parse(&case["expected"]["width"]),
+                            parse(&case["expected"]["height"])
+                        ),
+                        "{name}"
+                    );
+                }
+                "background" => {
+                    let text = &case["textBox"];
+                    let actual = label_background(Rect::new(
+                        text["x"].as_f64().unwrap(),
+                        text["y"].as_f64().unwrap(),
+                        text["width"].as_f64().unwrap(),
+                        text["height"].as_f64().unwrap(),
+                    ));
+                    let expected = &case["expected"];
+                    assert_eq!(
+                        actual,
+                        Rect::new(
+                            expected["x"].as_f64().unwrap(),
+                            expected["y"].as_f64().unwrap(),
+                            expected["width"].as_f64().unwrap(),
+                            expected["height"].as_f64().unwrap(),
+                        ),
+                        "{name}"
+                    );
+                }
+                other => panic!("unknown label case {other}"),
+            }
+        }
+    }
+
+    #[test]
+    fn line_jumps_match_upstream_intersections_and_rewrites() {
+        let fixture = fixture();
+        let cases = fixture["lineJump"].as_array().unwrap();
+        assert!(cases.len() >= 17);
+        for case in cases {
+            let name = case["name"].as_str().unwrap();
+            let edges: Vec<EdgeGeom> = case["edges"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|edge| serde_json::from_value(edge.clone()).unwrap())
+                .collect();
+            let config: LineJumpConfig = serde_json::from_value(case["config"].clone()).unwrap();
+            let crossings = find_edge_intersections(&edges);
+            let expected_crossings = case["crossings"].as_array().unwrap();
+            assert_eq!(
+                crossings.len(),
+                expected_crossings.len(),
+                "{name} crossings"
+            );
+            for (actual, expected) in crossings.iter().zip(expected_crossings) {
+                assert_eq!(
+                    actual.jump_edge_id,
+                    expected["jumpEdgeId"].as_str().unwrap()
+                );
+                assert_eq!(
+                    actual.other_edge_id,
+                    expected["otherEdgeId"].as_str().unwrap()
+                );
+                assert_eq!(
+                    actual.seg_index,
+                    expected["segIndex"].as_u64().unwrap() as usize
+                );
+                assert!(close(actual.t, expected["t"].as_f64().unwrap()), "{name} t");
+                assert!(
+                    close(actual.point.x, expected["point"]["x"].as_f64().unwrap())
+                        && close(actual.point.y, expected["point"]["y"].as_f64().unwrap()),
+                    "{name} point"
+                );
+            }
+            let paths = process_edges_with_jumps(&edges, config);
+            for (id, path) in &paths {
+                let expected = case["paths"][id].as_str().unwrap();
+                assert_eq!(path_data(path), expected, "{name} {id}");
+            }
+        }
+    }
+
+    #[test]
+    fn straight_paths_and_curve_support_match_upstream() {
+        let fixture = fixture();
+        for case in fixture["straightPath"].as_array().unwrap() {
+            assert_eq!(
+                is_straight_path(case["d"].as_str().unwrap()),
+                case["expected"].as_bool().unwrap(),
+                "{}",
+                case["d"]
+            );
+        }
+        for case in fixture["curveSupport"].as_array().unwrap() {
+            assert_eq!(
+                curve_supports_line_hops(case["curve"].as_str()),
+                case["expected"].as_bool().unwrap(),
+                "{}",
+                case["curve"]
+            );
+        }
+    }
+
+    #[test]
+    fn labels_use_layout_centers_backgrounds_and_terminal_markers() {
+        let points = vec![Point::new(0., 20.), Point::new(100., 20.)];
+        let edge = EdgeData {
+            label: Some("main".into()),
+            label_width: 40.,
+            label_height: 20.,
+            label_x: Some(30.),
+            label_y: Some(40.),
+            start_label_left: Some("start".into()),
+            arrow_type_start: Some("none".into()),
+            points: points.clone(),
+            ..EdgeData::default()
+        };
+        let labels = insert_edge_label(&edge);
+        let main = &labels[0];
+        assert_eq!(main.position.center, Point::new(30., 40.));
+        assert_eq!(main.background, Some(Rect::new(8., 28., 44., 24.)));
+        assert_eq!(main.transform, Point::new(-20., -10.));
+        let terminal = &labels[1];
+        assert_eq!(terminal.background, None);
+        assert_eq!(
+            Some(terminal.position.center),
+            terminal_label_position(&points, TerminalPosition::StartLeft, 10.)
+        );
+
+        let updated = [
+            Point::new(0., 20.),
+            Point::new(60., 20.),
+            Point::new(60., 60.),
+            Point::new(100., 60.),
+        ];
+        let moved = position_edge_labels(&edge, Some(&updated));
+        assert_eq!(moved[0].position.center, Point::new(40., 50.));
+        assert_eq!(
+            Some(moved[1].position.center),
+            terminal_label_position(&updated, TerminalPosition::StartLeft, 10.)
+        );
+    }
+
+    #[test]
+    fn marker_ids_version_the_diagram_type_and_margin_support() {
+        assert_eq!(
+            edge_marker_attribute(
+                Some("arrow_circle"),
+                true,
+                true,
+                "diagram",
+                "flowchart-v2",
+                None
+            )
+            .as_deref(),
+            Some("url(#diagram_flowchart-v2-circleStart-margin)")
+        );
+        assert_eq!(
+            edge_marker_attribute(
+                Some("zero_or_one"),
+                true,
+                true,
+                "diagram",
+                "flowchart-v2",
+                None
+            )
+            .as_deref(),
+            Some("url(#diagram_flowchart-v2-zeroOrOneStart)")
+        );
+        assert_eq!(
+            edge_marker_attribute(
+                Some("arrow_point"),
+                false,
+                false,
+                "diagram",
+                "flowchart-v2",
+                Some("#ff0000")
+            )
+            .as_deref(),
+            Some("url(#diagram_flowchart-v2-pointEnd__ff0000)")
+        );
+        assert_eq!(
+            edge_marker_attribute(Some("none"), true, true, "d", "flowchart-v2", None),
+            None
+        );
+        assert_eq!(
+            edge_marker_attribute(Some("not-real"), true, true, "d", "flowchart-v2", None),
+            None
+        );
+    }
+
+    #[test]
+    fn data_points_attribute_and_background_render_upstream_shapes() {
+        assert_eq!(
+            data_points_attribute(&[Point::new(0., 20.), Point::new(20., 40.5)]),
+            "W3sieCI6MCwieSI6MjB9LHsieCI6MjAsInkiOjQwLjV9XQ=="
+        );
+        assert_eq!(
+            label_background(Rect::new(0., 0., 40., 20.)),
+            Rect::new(-2., -2., 44., 24.)
+        );
+        assert_eq!(terminal_label_box("0..1", (23.4, 21.)), (36., 21.));
+        let points = [Point::new(0., 20.), Point::new(20., 40.5)];
+        assert_eq!(
+            decode_data_points(&data_points_attribute(&points)).as_deref(),
+            Some(&points[..])
+        );
+    }
+
+    #[test]
+    fn edge_label_styles_and_animation_flags_follow_upstream() {
+        assert_eq!(
+            edge_label_styles(Some(&["stroke:#f00".into(), "fill:#eee".into()])),
+            ";stroke:#f00;fill:#eee"
+        );
+        let edge = EdgeData {
+            animate: true,
+            ..EdgeData::default()
+        };
+        assert!(is_animated_edge(&edge));
+        assert!(edge_class_attribute(&edge).ends_with("edge-animation-fast"));
+        let mut edge = EdgeData {
+            animation: Some("dash".into()),
+            ..EdgeData::default()
+        };
+        assert!(is_animated_edge(&edge));
+        assert!(edge_class_attribute(&edge).ends_with("edge-animation-dash"));
+        edge.animate = true;
+        assert!(edge_class_attribute(&edge).ends_with("edge-animation-dash"));
     }
 }

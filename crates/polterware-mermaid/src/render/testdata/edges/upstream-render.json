@@ -1,5 +1,6 @@
 {
-  "source": "mermaid 12.3.0 lineJump.ts and d3",
+  "source": "mermaid 12.3.0 edges.js, edgeMarker.ts, lineJump.ts, and label utilities (node + jsdom)",
+  "notes": "insertEdge cases record the path attributes and data-points; node outlines are centre-based like upstream (x/y are the node centre). lineJump cases record findEdgeIntersections and processEdgesWithJumps output. labels record calcTerminalLabelPosition, calcLabelPosition, resolveEdgeLabelPosition, computeLabelTransform, setTerminalWidth, and the background rect.",
   "edges": [
     {
       "id": "straight",
@@ -239,6 +240,3774 @@
       ],
       "path": "M0,110C8.333,125,16.667,140,25,140C41.667,140,58.333,120,75,120C83.333,120,91.667,135,100,150",
       "jumpPath": "M0,110 L25,140 L34.429,136.228 A6,6 0 0 1 45.571,131.772 L75,120 L100,150"
+    }
+  ],
+  "insertEdge": [
+    {
+      "name": "dagre-rect-clip",
+      "layout": "dagre",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 0,
+            "y": 100
+          },
+          {
+            "x": 50,
+            "y": 100
+          },
+          {
+            "x": 150,
+            "y": 40
+          }
+        ]
+      },
+      "from": {
+        "x": 0,
+        "y": 100,
+        "width": 100,
+        "height": 40
+      },
+      "to": {
+        "x": 200,
+        "y": 40,
+        "width": 100,
+        "height": 40
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M50,100L50,100L146.286,61.486",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 50,
+            "y": 100
+          },
+          {
+            "x": 50,
+            "y": 100
+          },
+          {
+            "x": 150,
+            "y": 60
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "dagre-rect-clip-bends",
+      "layout": "dagre",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "rounded",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 120,
+            "y": 20
+          },
+          {
+            "x": 120,
+            "y": 80
+          }
+        ]
+      },
+      "from": {
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 20
+      },
+      "to": {
+        "x": 120,
+        "y": 100,
+        "width": 40,
+        "height": 40
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,10L0,15Q0,20 5,20L112.92893218813452,20Q120,20 120,27.071067811865476L120,76",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 10
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 120,
+            "y": 20
+          },
+          {
+            "x": 120,
+            "y": 80
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "dagre-two-point-error",
+      "layout": "dagre",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 100,
+            "y": 0
+          }
+        ]
+      },
+      "from": {
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 20
+      },
+      "to": {
+        "x": 100,
+        "y": 0,
+        "width": 20,
+        "height": 20
+      },
+      "clusterDb": {},
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "Cannot read properties of undefined (reading 'x')"
+        }
+      }
+    },
+    {
+      "name": "swimlane-straight-axis",
+      "layout": "swimlane",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 75,
+            "y": 100
+          },
+          {
+            "x": 75,
+            "y": 300
+          }
+        ]
+      },
+      "from": {
+        "x": 75,
+        "y": 0,
+        "width": 60,
+        "height": 40
+      },
+      "to": {
+        "x": 75,
+        "y": 300,
+        "width": 60,
+        "height": 40
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M75,20L104.574,296.023",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 75,
+            "y": 20
+          },
+          {
+            "x": 105,
+            "y": 300
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "swimlane-straight-slanted",
+      "layout": "swimlane",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 75,
+            "y": 100
+          },
+          {
+            "x": 100,
+            "y": 300
+          }
+        ]
+      },
+      "from": {
+        "x": 75,
+        "y": 0,
+        "width": 60,
+        "height": 40
+      },
+      "to": {
+        "x": 100,
+        "y": 300,
+        "width": 60,
+        "height": 40
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M76.667,20L97.181,276.013",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 76.66666666666667,
+            "y": 20
+          },
+          {
+            "x": 97.5,
+            "y": 280
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "swimlane-inner-bends",
+      "layout": "swimlane",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 10,
+            "y": 14
+          },
+          {
+            "x": 10,
+            "y": 14
+          },
+          {
+            "x": 10,
+            "y": 60
+          },
+          {
+            "x": 90,
+            "y": 60
+          }
+        ]
+      },
+      "from": {
+        "x": 10,
+        "y": 0,
+        "width": 40,
+        "height": 20
+      },
+      "to": {
+        "x": 120,
+        "y": 60,
+        "width": 40,
+        "height": 40
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M10,10L10,14L10,55L12.172,57.828L15,60L96,60",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 10,
+            "y": 10
+          },
+          {
+            "x": 10,
+            "y": 14
+          },
+          {
+            "x": 10,
+            "y": 60
+          },
+          {
+            "x": 100,
+            "y": 60
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "swimlane-pinned-end",
+      "layout": "swimlane",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": -100,
+            "y": 20
+          },
+          {
+            "x": -100,
+            "y": 53
+          },
+          {
+            "x": -100,
+            "y": 53
+          }
+        ]
+      },
+      "from": {
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 20
+      },
+      "to": {
+        "x": -120,
+        "y": 53,
+        "width": 40,
+        "height": 40
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M10,0L5,0L0,0L0,5L0,15L-2.172,17.828L-5,20L-95,20L-97.828,22.172L-100,25L-100,49",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": -100,
+            "y": 20
+          },
+          {
+            "x": -100,
+            "y": 53
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "swimlane-vertical-final-axis",
+      "layout": "swimlane",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 20
+          },
+          {
+            "x": 40,
+            "y": 60
+          },
+          {
+            "x": 40,
+            "y": 100
+          }
+        ]
+      },
+      "from": {
+        "x": 40,
+        "y": 0,
+        "width": 20,
+        "height": 20
+      },
+      "to": {
+        "x": 100,
+        "y": 60,
+        "width": 90,
+        "height": 40
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M40,10L40,20L40,60L40,96",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 40,
+            "y": 10
+          },
+          {
+            "x": 40,
+            "y": 20
+          },
+          {
+            "x": 40,
+            "y": 60
+          },
+          {
+            "x": 40,
+            "y": 100
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "swimlane-stub-shorter",
+      "layout": "swimlane",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "aggregation",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 100
+          },
+          {
+            "x": 10,
+            "y": 100
+          }
+        ]
+      },
+      "from": {
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 20
+      },
+      "to": {
+        "x": 0,
+        "y": 100,
+        "width": 20,
+        "height": 20
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,10L-8.25,81.75L-8.25,100L-8.25,100L-7.25,100",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 10
+          },
+          {
+            "x": 0,
+            "y": 100
+          },
+          {
+            "x": 10,
+            "y": 100
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-aggregationEnd)"
+      }
+    },
+    {
+      "name": "swimlane-inherited-marker-key",
+      "layout": "swimlane",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "constructor",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 100
+          },
+          {
+            "x": 0,
+            "y": 100.3
+          }
+        ]
+      },
+      "from": {
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 20
+      },
+      "to": {
+        "x": 0,
+        "y": 100,
+        "width": 20,
+        "height": 20
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,10L0,100",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 10
+          },
+          {
+            "x": 0,
+            "y": 100
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-undefinedEnd)"
+      }
+    },
+    {
+      "name": "swimlane-center-off-row",
+      "layout": "swimlane",
+      "skipIntersect": false,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 300,
+            "y": -40
+          },
+          {
+            "x": 300,
+            "y": 0
+          },
+          {
+            "x": 91.25,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "from": {
+        "x": 300,
+        "y": -60,
+        "width": 40,
+        "height": 40
+      },
+      "to": {
+        "x": 0,
+        "y": 7.5,
+        "width": 180,
+        "height": 27
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M300,-40L300,-5L297.828,-2.172L295,0L91.25,0L4,0",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 300,
+            "y": -40
+          },
+          {
+            "x": 300,
+            "y": 0
+          },
+          {
+            "x": 91.25,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "swimlane-skip-intersect",
+      "layout": "swimlane",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 10,
+            "y": 14
+          },
+          {
+            "x": 10,
+            "y": 60
+          },
+          {
+            "x": 90,
+            "y": 60
+          }
+        ]
+      },
+      "from": {
+        "x": 10,
+        "y": 0,
+        "width": 40,
+        "height": 20
+      },
+      "to": {
+        "x": 120,
+        "y": 60,
+        "width": 40,
+        "height": 40
+      },
+      "clusterDb": {},
+      "expected": {
+        "d": "M10,14L10,55L12.172,57.828L15,60L86,60",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 10,
+            "y": 14
+          },
+          {
+            "x": 10,
+            "y": 60
+          },
+          {
+            "x": 90,
+            "y": 60
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "cluster-to-cut",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 40
+          },
+          {
+            "x": 30,
+            "y": 40
+          },
+          {
+            "x": 50,
+            "y": 40
+          },
+          {
+            "x": 70,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "toCluster": "to"
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {
+        "to": {
+          "x": 60,
+          "y": 40,
+          "width": 40,
+          "height": 10
+        }
+      },
+      "expected": {
+        "d": "M0,40L30,40L40,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 40
+          },
+          {
+            "x": 30,
+            "y": 40
+          },
+          {
+            "x": 50,
+            "y": 40
+          },
+          {
+            "x": 70,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "cluster-from-cut",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 40
+          },
+          {
+            "x": 30,
+            "y": 40
+          },
+          {
+            "x": 50,
+            "y": 40
+          },
+          {
+            "x": 70,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "fromCluster": "from"
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {
+        "from": {
+          "x": 40,
+          "y": 40,
+          "width": 40,
+          "height": 10
+        }
+      },
+      "expected": {
+        "d": "M60,40L70,40L100,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 40
+          },
+          {
+            "x": 30,
+            "y": 40
+          },
+          {
+            "x": 50,
+            "y": 40
+          },
+          {
+            "x": 70,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "cluster-both-cut",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 40
+          },
+          {
+            "x": 20,
+            "y": 40
+          },
+          {
+            "x": 50,
+            "y": 40
+          },
+          {
+            "x": 80,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "toCluster": "to",
+        "fromCluster": "from"
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {
+        "to": {
+          "x": 80,
+          "y": 40,
+          "width": 20,
+          "height": 10
+        },
+        "from": {
+          "x": 20,
+          "y": 40,
+          "width": 20,
+          "height": 10
+        }
+      },
+      "expected": {
+        "d": "M30,40L50,40L70,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 40
+          },
+          {
+            "x": 20,
+            "y": 40
+          },
+          {
+            "x": 50,
+            "y": 40
+          },
+          {
+            "x": 80,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "linear-fix-corners",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L35,0L37.828,2.172L40,5L40,35L42.172,37.828L45,40L100,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "linear-skip-corner-fix",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "skipCornerFix": true
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L40,0L40,40L100,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 40
+          },
+          {
+            "x": 100,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "rounded-corner-radius",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "rounded",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 40
+          }
+        ],
+        "cornerRadius": 12
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L23.029437251522857,0Q40,0 40,16.970562748477143L40,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "rounded-zero-radius",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "rounded",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 40
+          }
+        ],
+        "cornerRadius": 0
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L40,0Q40,0 40,0L40,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "styles-thick-dotted",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "thick",
+        "pattern": "dotted",
+        "classes": "custom bpmn-flow",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "style": [
+          "stroke:#f00",
+          "stroke-width:3"
+        ],
+        "cssCompiledStyles": {
+          "aa": "#eee",
+          "ab": "animation: dash 2s",
+          "color": "#123",
+          "font-size": "12px"
+        }
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-thick edge-pattern-dotted custom bpmn-flow",
+        "style": "#eee;animation: dash 2s;stroke:#f00;stroke-width:3;;;;stroke:#f00;stroke-width:3",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "styles-dashed-animate",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "dashed",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "animate": true,
+        "style": [
+          "stroke:#0f0"
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-dashed flowchart-link edge-animation-fast",
+        "style": "stroke:#0f0;;;stroke:#0f0",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "styles-animation-name",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "animation": "dash",
+        "style": []
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link edge-animation-dash",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "styles-invisible",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "invisible",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-invisible edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "markers-flowchart-neo",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "neo",
+        "arrowTypeStart": "arrow_circle",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,36",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": "stroke-dasharray: 0 12.5 -16.5 4; stroke-dashoffset: 0;;",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "neo",
+        "markerStart": "url(#diagram_flowchart-v2-circleStart-margin)",
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd-margin)"
+      }
+    },
+    {
+      "name": "markers-class-classic",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "classDiagram",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "aggregation",
+        "arrowTypeEnd": "extension",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,17.25L0,18.25L2.172,17.828L5,20L15,20L17.828,22.172L20,21.75L20,22.75",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": "url(#diagram_classDiagram-aggregationStart)",
+        "markerEnd": "url(#diagram_classDiagram-extensionEnd)"
+      }
+    },
+    {
+      "name": "markers-animated-neo",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "neo",
+        "arrowTypeStart": "lollipop",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "animate": true
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,13.5L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,36",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link edge-animation-fast",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "neo",
+        "markerStart": "url(#diagram_flowchart-v2-lollipopStart)",
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd)"
+      }
+    },
+    {
+      "name": "markers-neo-unsupported-margin",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "neo",
+        "arrowTypeStart": "zero_or_one",
+        "arrowTypeEnd": "arrow_open_head",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": "stroke-dasharray: 0 0 -4 4; stroke-dashoffset: 0;;",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "neo",
+        "markerStart": "url(#diagram_flowchart-v2-zeroOrOneStart)",
+        "markerEnd": "url(#diagram_flowchart-v2-openArrowEnd)"
+      }
+    },
+    {
+      "name": "markers-colored",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "none",
+        "arrowTypeEnd": "arrow_point",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "style": [
+          "stroke:#ff0000"
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,36",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": "stroke:#ff0000;;;stroke:#ff0000",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": "url(#diagram_flowchart-v2-pointEnd__ff0000)"
+      }
+    },
+    {
+      "name": "markers-unknown-type",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "flowchart-v2",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "classic",
+        "arrowTypeStart": "not-real",
+        "arrowTypeEnd": "none",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,0L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,25L20,40",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": ";",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "classic",
+        "markerStart": null,
+        "markerEnd": null
+      }
+    },
+    {
+      "name": "markers-bpmn-dependency",
+      "layout": "dagre",
+      "skipIntersect": true,
+      "diagramId": "diagram",
+      "diagramType": "bpmn",
+      "edge": {
+        "id": "e1",
+        "curve": "linear",
+        "thickness": "normal",
+        "pattern": "solid",
+        "classes": "flowchart-link",
+        "look": "neo",
+        "arrowTypeStart": "dependency",
+        "arrowTypeEnd": "composition",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ]
+      },
+      "from": null,
+      "to": null,
+      "clusterDb": {},
+      "expected": {
+        "d": "M0,6L0,15L2.172,17.828L5,20L15,20L17.828,22.172L20,21.75L20,22.75",
+        "id": "diagram-e1",
+        "classAttribute": " edge-thickness-normal edge-pattern-solid flowchart-link",
+        "style": "stroke-dasharray: 0 0 0 0; stroke-dashoffset: 0;;",
+        "dataPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 20
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        "dataLook": "neo",
+        "markerStart": "url(#diagram_bpmn-dependencyStart-margin)",
+        "markerEnd": "url(#diagram_bpmn-compositionEnd-margin)"
+      }
+    }
+  ],
+  "intersection": [
+    {
+      "name": "top-face",
+      "node": {
+        "x": 50,
+        "y": 50,
+        "width": 40,
+        "height": 20
+      },
+      "outsidePoint": {
+        "x": 50,
+        "y": 10
+      },
+      "insidePoint": {
+        "x": 50,
+        "y": 50
+      },
+      "expected": {
+        "x": 50,
+        "y": 10
+      }
+    },
+    {
+      "name": "bottom-face",
+      "node": {
+        "x": 50,
+        "y": 50,
+        "width": 40,
+        "height": 20
+      },
+      "outsidePoint": {
+        "x": 50,
+        "y": 90
+      },
+      "insidePoint": {
+        "x": 50,
+        "y": 50
+      },
+      "expected": {
+        "x": 50,
+        "y": 90
+      }
+    },
+    {
+      "name": "left-face",
+      "node": {
+        "x": 50,
+        "y": 50,
+        "width": 40,
+        "height": 20
+      },
+      "outsidePoint": {
+        "x": 10,
+        "y": 50
+      },
+      "insidePoint": {
+        "x": 50,
+        "y": 50
+      },
+      "expected": {
+        "x": 30,
+        "y": 50
+      }
+    },
+    {
+      "name": "right-face",
+      "node": {
+        "x": 50,
+        "y": 50,
+        "width": 40,
+        "height": 20
+      },
+      "outsidePoint": {
+        "x": 90,
+        "y": 50
+      },
+      "insidePoint": {
+        "x": 50,
+        "y": 50
+      },
+      "expected": {
+        "x": 70,
+        "y": 50
+      }
+    },
+    {
+      "name": "diagonal-top-left",
+      "node": {
+        "x": 50,
+        "y": 50,
+        "width": 40,
+        "height": 20
+      },
+      "outsidePoint": {
+        "x": 10,
+        "y": 10
+      },
+      "insidePoint": {
+        "x": 50,
+        "y": 50
+      },
+      "expected": {
+        "x": 40,
+        "y": 40
+      }
+    },
+    {
+      "name": "zero-width-ray",
+      "node": {
+        "x": 50,
+        "y": 50,
+        "width": 40,
+        "height": 20
+      },
+      "outsidePoint": {
+        "x": 50,
+        "y": 50
+      },
+      "insidePoint": {
+        "x": 50,
+        "y": 50
+      },
+      "expected": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "name": "offset-inside",
+      "node": {
+        "x": 50,
+        "y": 50,
+        "width": 40,
+        "height": 20
+      },
+      "outsidePoint": {
+        "x": 100,
+        "y": 10
+      },
+      "insidePoint": {
+        "x": 40,
+        "y": 45
+      },
+      "expected": {
+        "x": 91.42857142857143,
+        "y": 40
+      }
+    }
+  ],
+  "labels": [
+    {
+      "kind": "terminal",
+      "name": "horizontal-start_left-0",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "position": "start_left",
+      "markerSize": 0,
+      "expected": {
+        "x": 12.499999999999998,
+        "y": 10
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "horizontal-start_left-10",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "position": "start_left",
+      "markerSize": 10,
+      "expected": {
+        "x": 17.499999999999996,
+        "y": 5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "horizontal-start_right-0",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "position": "start_right",
+      "markerSize": 0,
+      "expected": {
+        "x": 12.500000000000002,
+        "y": 30
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "horizontal-start_right-10",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "position": "start_right",
+      "markerSize": 10,
+      "expected": {
+        "x": 17.500000000000004,
+        "y": 35
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "horizontal-end_left-0",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "position": "end_left",
+      "markerSize": 0,
+      "expected": {
+        "x": 87.5,
+        "y": 10
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "horizontal-end_left-10",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "position": "end_left",
+      "markerSize": 10,
+      "expected": {
+        "x": 82.5,
+        "y": 5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "horizontal-end_right-0",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "position": "end_right",
+      "markerSize": 0,
+      "expected": {
+        "x": 87.5,
+        "y": 30
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "horizontal-end_right-10",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "position": "end_right",
+      "markerSize": 10,
+      "expected": {
+        "x": 82.5,
+        "y": 35
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "vertical-start_left-0",
+      "points": [
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 20,
+          "y": 100
+        }
+      ],
+      "position": "start_left",
+      "markerSize": 0,
+      "expected": {
+        "x": 30,
+        "y": 12.5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "vertical-start_left-10",
+      "points": [
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 20,
+          "y": 100
+        }
+      ],
+      "position": "start_left",
+      "markerSize": 10,
+      "expected": {
+        "x": 35,
+        "y": 17.5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "vertical-start_right-0",
+      "points": [
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 20,
+          "y": 100
+        }
+      ],
+      "position": "start_right",
+      "markerSize": 0,
+      "expected": {
+        "x": 10,
+        "y": 12.5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "vertical-start_right-10",
+      "points": [
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 20,
+          "y": 100
+        }
+      ],
+      "position": "start_right",
+      "markerSize": 10,
+      "expected": {
+        "x": 5,
+        "y": 17.5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "vertical-end_left-0",
+      "points": [
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 20,
+          "y": 100
+        }
+      ],
+      "position": "end_left",
+      "markerSize": 0,
+      "expected": {
+        "x": 30,
+        "y": 87.5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "vertical-end_left-10",
+      "points": [
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 20,
+          "y": 100
+        }
+      ],
+      "position": "end_left",
+      "markerSize": 10,
+      "expected": {
+        "x": 35,
+        "y": 82.5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "vertical-end_right-0",
+      "points": [
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 20,
+          "y": 100
+        }
+      ],
+      "position": "end_right",
+      "markerSize": 0,
+      "expected": {
+        "x": 10,
+        "y": 87.5
+      }
+    },
+    {
+      "kind": "terminal",
+      "name": "vertical-end_right-10",
+      "points": [
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 20,
+          "y": 100
+        }
+      ],
+      "position": "end_right",
+      "markerSize": 10,
+      "expected": {
+        "x": 5,
+        "y": 82.5
+      }
+    },
+    {
+      "kind": "midpoint",
+      "name": "midpoint-horizontal",
+      "points": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "expected": {
+        "x": 50,
+        "y": 20
+      }
+    },
+    {
+      "kind": "midpoint",
+      "name": "midpoint-bend",
+      "points": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 40,
+          "y": 0
+        },
+        {
+          "x": 40,
+          "y": 80
+        }
+      ],
+      "expected": {
+        "x": 40,
+        "y": 20
+      }
+    },
+    {
+      "kind": "resolve",
+      "name": "resolve-updated-path",
+      "edge": {
+        "x": 50,
+        "y": 20
+      },
+      "originalPath": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 100,
+          "y": 20
+        }
+      ],
+      "updatedPath": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 60,
+          "y": 20
+        },
+        {
+          "x": 60,
+          "y": 60
+        },
+        {
+          "x": 100,
+          "y": 60
+        }
+      ],
+      "expected": {
+        "x": 60,
+        "y": 30
+      }
+    },
+    {
+      "kind": "resolve",
+      "name": "resolve-without-original",
+      "edge": {
+        "x": 50,
+        "y": 20
+      },
+      "originalPath": null,
+      "updatedPath": [
+        {
+          "x": 0,
+          "y": 20
+        },
+        {
+          "x": 60,
+          "y": 20
+        },
+        {
+          "x": 60,
+          "y": 60
+        },
+        {
+          "x": 100,
+          "y": 60
+        }
+      ],
+      "expected": {
+        "x": 60,
+        "y": 30
+      }
+    },
+    {
+      "kind": "transform",
+      "name": "svg-box-origin",
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 20
+      },
+      "html": false,
+      "expected": "translate(-20, -10)"
+    },
+    {
+      "kind": "transform",
+      "name": "svg-box-offset",
+      "box": {
+        "x": -2,
+        "y": -3,
+        "width": 36,
+        "height": 20
+      },
+      "html": false,
+      "expected": "translate(-16, -7)"
+    },
+    {
+      "kind": "transform",
+      "name": "html-box",
+      "box": {
+        "x": 999,
+        "y": 999,
+        "width": 40,
+        "height": 20
+      },
+      "html": true,
+      "expected": "translate(-20, -10)"
+    },
+    {
+      "kind": "terminal-width",
+      "name": "short",
+      "label": "1",
+      "box": {
+        "width": 7.8,
+        "height": 21
+      },
+      "expected": {
+        "width": "9px",
+        "height": "21px"
+      }
+    },
+    {
+      "kind": "terminal-width",
+      "name": "cardinality",
+      "label": "0..1",
+      "box": {
+        "width": 23.4,
+        "height": 21
+      },
+      "expected": {
+        "width": "36px",
+        "height": "21px"
+      }
+    },
+    {
+      "kind": "background",
+      "name": "background-padding",
+      "textBox": {
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 20
+      },
+      "padding": 2,
+      "expected": {
+        "x": -2,
+        "y": -2,
+        "width": 44,
+        "height": 24
+      }
+    }
+  ],
+  "lineJump": [
+    {
+      "name": "simple-cross",
+      "edges": [
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "id": "v",
+          "points": [
+            {
+              "x": 5,
+              "y": 0
+            },
+            {
+              "x": 5,
+              "y": 10
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v",
+          "segIndex": 0,
+          "t": 0.5,
+          "point": {
+            "x": 5,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "h": "M0,5 L10,5",
+        "v": "M5,0 L5,10"
+      }
+    },
+    {
+      "name": "gap-cross",
+      "edges": [
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "id": "v",
+          "points": [
+            {
+              "x": 5,
+              "y": 0
+            },
+            {
+              "x": 5,
+              "y": 10
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 1,
+        "jumpStyle": "gap"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v",
+          "segIndex": 0,
+          "t": 0.5,
+          "point": {
+            "x": 5,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "h": "M0,5 L4,5 M6,5 L10,5",
+        "v": "M5,0 L5,10"
+      }
+    },
+    {
+      "name": "two-crossings",
+      "edges": [
+        {
+          "id": "v1",
+          "points": [
+            {
+              "x": 3,
+              "y": 0
+            },
+            {
+              "x": 3,
+              "y": 10
+            }
+          ]
+        },
+        {
+          "id": "v2",
+          "points": [
+            {
+              "x": 7,
+              "y": 0
+            },
+            {
+              "x": 7,
+              "y": 10
+            }
+          ]
+        },
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 1,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v1",
+          "segIndex": 0,
+          "t": 0.3,
+          "point": {
+            "x": 3,
+            "y": 5
+          }
+        },
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v2",
+          "segIndex": 0,
+          "t": 0.7,
+          "point": {
+            "x": 7,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "v1": "M3,0 L3,10",
+        "v2": "M7,0 L7,10",
+        "h": "M0,5 L2,5 A1,1 0 0 1 4,5 L6,5 A1,1 0 0 1 8,5 L10,5"
+      }
+    },
+    {
+      "name": "adjacent-shrink",
+      "edges": [
+        {
+          "id": "v1",
+          "points": [
+            {
+              "x": 4.2,
+              "y": 0
+            },
+            {
+              "x": 4.2,
+              "y": 10
+            }
+          ]
+        },
+        {
+          "id": "v2",
+          "points": [
+            {
+              "x": 5.8,
+              "y": 0
+            },
+            {
+              "x": 5.8,
+              "y": 10
+            }
+          ]
+        },
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 1,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v1",
+          "segIndex": 0,
+          "t": 0.42,
+          "point": {
+            "x": 4.2,
+            "y": 5
+          }
+        },
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v2",
+          "segIndex": 0,
+          "t": 0.58,
+          "point": {
+            "x": 5.8,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "v1": "M4.2,0 L4.2,10",
+        "v2": "M5.8,0 L5.8,10",
+        "h": "M0,5 L3.4,5 A0.8,0.8 0 0 1 5,5 L5,5 A0.8,0.8 0 0 1 6.6,5 L10,5"
+      }
+    },
+    {
+      "name": "too-close-dropped",
+      "edges": [
+        {
+          "id": "v1",
+          "points": [
+            {
+              "x": 4.7,
+              "y": 0
+            },
+            {
+              "x": 4.7,
+              "y": 10
+            }
+          ]
+        },
+        {
+          "id": "v2",
+          "points": [
+            {
+              "x": 5.3,
+              "y": 0
+            },
+            {
+              "x": 5.3,
+              "y": 10
+            }
+          ]
+        },
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v1",
+          "segIndex": 0,
+          "t": 0.47,
+          "point": {
+            "x": 4.7,
+            "y": 5
+          }
+        },
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v2",
+          "segIndex": 0,
+          "t": 0.53,
+          "point": {
+            "x": 5.3,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "v1": "M4.7,0 L4.7,10",
+        "v2": "M5.3,0 L5.3,10",
+        "h": "M0,5 L10,5"
+      }
+    },
+    {
+      "name": "rounded-cramped",
+      "edges": [
+        {
+          "id": "designSystemToApp",
+          "points": [
+            {
+              "x": 395.6,
+              "y": 275.3
+            },
+            {
+              "x": 430.6,
+              "y": 275.3
+            },
+            {
+              "x": 430.6,
+              "y": 180.1
+            },
+            {
+              "x": 502.1,
+              "y": 180.1
+            }
+          ],
+          "curve": "rounded"
+        },
+        {
+          "id": "infrastructureToAuth",
+          "points": [
+            {
+              "x": 440.6,
+              "y": 120
+            },
+            {
+              "x": 440.6,
+              "y": 320
+            }
+          ],
+          "curve": "rounded"
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "designSystemToApp",
+          "otherEdgeId": "infrastructureToAuth",
+          "segIndex": 2,
+          "t": 0.13986013986013987,
+          "point": {
+            "x": 440.6,
+            "y": 180.1
+          }
+        }
+      ],
+      "paths": {
+        "designSystemToApp": "M395.6,275.3 L423.529,275.3 Q430.6,275.3 430.6,268.229 L430.6,187.171 Q430.6,180.1 437.671,180.1 L502.1,180.1",
+        "infrastructureToAuth": "M440.6,120 L440.6,320"
+      }
+    },
+    {
+      "name": "rounded-roomy",
+      "edges": [
+        {
+          "id": "designSystemToApp",
+          "points": [
+            {
+              "x": 395.6,
+              "y": 275.3
+            },
+            {
+              "x": 420.6,
+              "y": 275.3
+            },
+            {
+              "x": 420.6,
+              "y": 180.1
+            },
+            {
+              "x": 502.1,
+              "y": 180.1
+            }
+          ],
+          "curve": "rounded"
+        },
+        {
+          "id": "infrastructureToAuth",
+          "points": [
+            {
+              "x": 440.6,
+              "y": 120
+            },
+            {
+              "x": 440.6,
+              "y": 320
+            }
+          ],
+          "curve": "rounded"
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "designSystemToApp",
+          "otherEdgeId": "infrastructureToAuth",
+          "segIndex": 2,
+          "t": 0.24539877300613497,
+          "point": {
+            "x": 440.6,
+            "y": 180.1
+          }
+        }
+      ],
+      "paths": {
+        "designSystemToApp": "M395.6,275.3 L413.529,275.3 Q420.6,275.3 420.6,268.229 L420.6,187.171 Q420.6,180.1 427.671,180.1 L434.6,180.1 A6,6 0 0 1 446.6,180.1 L502.1,180.1",
+        "infrastructureToAuth": "M440.6,120 L440.6,320"
+      }
+    },
+    {
+      "name": "rounded-across-corner",
+      "edges": [
+        {
+          "id": "orgToPlatform",
+          "points": [
+            {
+              "x": 169,
+              "y": 1031.102
+            },
+            {
+              "x": 249,
+              "y": 1031.102
+            },
+            {
+              "x": 249,
+              "y": 1345.091
+            },
+            {
+              "x": 552.5,
+              "y": 1345.091
+            }
+          ],
+          "curve": "rounded"
+        },
+        {
+          "id": "designToApp",
+          "points": [
+            {
+              "x": 229,
+              "y": 1382.007
+            },
+            {
+              "x": 229,
+              "y": 1033.625
+            },
+            {
+              "x": 269,
+              "y": 1033.625
+            },
+            {
+              "x": 351.5,
+              "y": 1033.625
+            }
+          ],
+          "curve": "rounded"
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [],
+      "paths": {
+        "orgToPlatform": "M169,1031.102 L249,1031.102 L249,1345.091 L552.5,1345.091",
+        "designToApp": "M229,1382.007 L229,1033.625 L269,1033.625 L351.5,1033.625"
+      }
+    },
+    {
+      "name": "rounded-corner-clearance",
+      "edges": [
+        {
+          "id": "bend",
+          "points": [
+            {
+              "x": 100,
+              "y": 0
+            },
+            {
+              "x": 100,
+              "y": 100
+            },
+            {
+              "x": 300,
+              "y": 100
+            }
+          ],
+          "curve": "rounded"
+        },
+        {
+          "id": "crosser",
+          "points": [
+            {
+              "x": 113,
+              "y": 0
+            },
+            {
+              "x": 113,
+              "y": 200
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "bend",
+          "otherEdgeId": "crosser",
+          "segIndex": 1,
+          "t": 0.065,
+          "point": {
+            "x": 113,
+            "y": 100
+          }
+        }
+      ],
+      "paths": {
+        "bend": "M100,0 L100,92.929 Q100,100 107.071,100 L109.071,100 A3.929,3.929 0 0 1 116.929,100 L300,100",
+        "crosser": "M113,0 L113,200"
+      }
+    },
+    {
+      "name": "marker-offset-end",
+      "edges": [
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 20,
+              "y": 5
+            }
+          ],
+          "arrowTypeEnd": "arrow_point"
+        },
+        {
+          "id": "v",
+          "points": [
+            {
+              "x": 10,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 20
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 1,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v",
+          "segIndex": 0,
+          "t": 0.5,
+          "point": {
+            "x": 10,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "h": "M0,5 L9,5 A1,1 0 0 1 11,5 L16,5",
+        "v": "M10,0 L10,20"
+      }
+    },
+    {
+      "name": "rounded-custom-radius",
+      "edges": [
+        {
+          "id": "verticalLine",
+          "points": [
+            {
+              "x": 5,
+              "y": 0
+            },
+            {
+              "x": 5,
+              "y": 25
+            }
+          ],
+          "curve": "rounded",
+          "cornerRadius": 12
+        },
+        {
+          "id": "horizontalBend",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 20,
+              "y": 5
+            },
+            {
+              "x": 20,
+              "y": 25
+            }
+          ],
+          "curve": "rounded",
+          "cornerRadius": 12
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 1,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "horizontalBend",
+          "otherEdgeId": "verticalLine",
+          "segIndex": 0,
+          "t": 0.25,
+          "point": {
+            "x": 5,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "verticalLine": "M5,0 L5,25",
+        "horizontalBend": "M0,5 L4,5 A1,1 0 0 1 6,5 L10,5 Q20,5 20,15 L20,25"
+      }
+    },
+    {
+      "name": "disabled",
+      "edges": [
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "id": "v",
+          "points": [
+            {
+              "x": 5,
+              "y": 0
+            },
+            {
+              "x": 5,
+              "y": 10
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": false,
+        "jumpRadius": 1,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v",
+          "segIndex": 0,
+          "t": 0.5,
+          "point": {
+            "x": 5,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "h": "M0,5 L10,5",
+        "v": "M5,0 L5,10"
+      }
+    },
+    {
+      "name": "t-junction-ignored",
+      "edges": [
+        {
+          "id": "e1",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "points": [
+            {
+              "x": 5,
+              "y": 0
+            },
+            {
+              "x": 5,
+              "y": 5
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [],
+      "paths": {
+        "e1": "M0,5 L10,5",
+        "e2": "M5,0 L5,5"
+      }
+    },
+    {
+      "name": "shared-start-ignored",
+      "edges": [
+        {
+          "id": "e1",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": -5
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [],
+      "paths": {
+        "e1": "M0,0 L10,5",
+        "e2": "M0,0 L10,-5"
+      }
+    },
+    {
+      "name": "same-orientation-later-wins",
+      "edges": [
+        {
+          "id": "a",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 2
+            }
+          ]
+        },
+        {
+          "id": "b",
+          "points": [
+            {
+              "x": 0,
+              "y": 2
+            },
+            {
+              "x": 10,
+              "y": 0
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "b",
+          "otherEdgeId": "a",
+          "segIndex": 0,
+          "t": 0.5,
+          "point": {
+            "x": 5,
+            "y": 1
+          }
+        }
+      ],
+      "paths": {
+        "a": "M0,0 L10,2",
+        "b": "M0,2 L10,0"
+      }
+    },
+    {
+      "name": "vertical-cross-bumps-right",
+      "edges": [
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 0,
+              "y": 5
+            },
+            {
+              "x": 10,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "id": "v",
+          "points": [
+            {
+              "x": 5,
+              "y": 10
+            },
+            {
+              "x": 5,
+              "y": 0
+            }
+          ],
+          "curve": "linear"
+        },
+        {
+          "id": "v2",
+          "points": [
+            {
+              "x": 8,
+              "y": 0
+            },
+            {
+              "x": 8,
+              "y": 10
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v",
+          "segIndex": 0,
+          "t": 0.5,
+          "point": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v2",
+          "segIndex": 0,
+          "t": 0.8,
+          "point": {
+            "x": 8,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "h": "M0,5 L10,5",
+        "v": "M5,10 L5,0",
+        "v2": "M8,0 L8,10"
+      }
+    },
+    {
+      "name": "reversed-horizontal",
+      "edges": [
+        {
+          "id": "h",
+          "points": [
+            {
+              "x": 10,
+              "y": 5
+            },
+            {
+              "x": 0,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "id": "v",
+          "points": [
+            {
+              "x": 5,
+              "y": 0
+            },
+            {
+              "x": 5,
+              "y": 10
+            }
+          ]
+        }
+      ],
+      "config": {
+        "enabled": true,
+        "jumpRadius": 6,
+        "jumpStyle": "arc"
+      },
+      "crossings": [
+        {
+          "jumpEdgeId": "h",
+          "otherEdgeId": "v",
+          "segIndex": 0,
+          "t": 0.5,
+          "point": {
+            "x": 5,
+            "y": 5
+          }
+        }
+      ],
+      "paths": {
+        "h": "M10,5 L0,5",
+        "v": "M5,0 L5,10"
+      }
+    }
+  ],
+  "straightPath": [
+    {
+      "d": "M0,5 L10,5",
+      "expected": true
+    },
+    {
+      "d": "M5,0 L5,4 L5,10",
+      "expected": true
+    },
+    {
+      "d": "M0,0 C1,1 2,2 3,3",
+      "expected": false
+    },
+    {
+      "d": "M0,0 Q1,1 2,2",
+      "expected": false
+    },
+    {
+      "d": "M0,0 L1,1 A1,1 0 0 1 2,2",
+      "expected": false
+    }
+  ],
+  "curveSupport": [
+    {
+      "curve": null,
+      "expected": true
+    },
+    {
+      "curve": "linear",
+      "expected": true
+    },
+    {
+      "curve": "rounded",
+      "expected": true
+    },
+    {
+      "curve": "step",
+      "expected": true
+    },
+    {
+      "curve": "stepBefore",
+      "expected": true
+    },
+    {
+      "curve": "stepAfter",
+      "expected": true
+    },
+    {
+      "curve": "basis",
+      "expected": false
+    },
+    {
+      "curve": "monotoneX",
+      "expected": false
     }
   ]
 }
