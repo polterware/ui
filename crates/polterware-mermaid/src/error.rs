@@ -158,6 +158,8 @@ impl From<crate::diagrams::requirement::render::RequirementRenderError> for Rend
                 Self::Parse(error)
             }
             crate::diagrams::requirement::render::RequirementRenderError::Layout(error) => {
+                Self::Layout(error)
+            }
         }
     }
 }
