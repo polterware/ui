@@ -1,0 +1,119 @@
+{
+  "shape": "bpmn-gateway",
+  "measure": {
+    "char_width": 7,
+    "line_height": 16
+  },
+  "cases": [
+    {
+      "label": "Go",
+      "wrapping_width": 120,
+      "node": {
+        "width": 50,
+        "height": 94
+      },
+      "label_transform": {
+        "x": -7,
+        "y": 31
+      },
+      "label_size": {
+        "width": 14,
+        "height": 16
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "bpmn-bounds",
+          "x": -25,
+          "y": -47,
+          "width": 50,
+          "height": 94,
+          "rx": 0,
+          "opacity": 0
+        },
+        {
+          "tag": "polygon",
+          "class": "bpmn-gateway-diamond",
+          "points": "0,-25 25,0 0,25 -25,0"
+        }
+      ],
+      "intersects": [
+        {
+          "point": {
+            "x": 1000,
+            "y": 0
+          },
+          "result": {
+            "x": 25,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": 100,
+            "y": 400
+          },
+          "result": {
+            "x": 0,
+            "y": 25
+          }
+        }
+      ]
+    },
+    {
+      "label": "An extremely long caption that dwarfs the circle",
+      "wrapping_width": 120,
+      "node": {
+        "width": 119,
+        "height": 146.8
+      },
+      "label_transform": {
+        "x": -59.5,
+        "y": 31.000000000000004
+      },
+      "label_size": {
+        "width": 119,
+        "height": 42.4
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "bpmn-bounds",
+          "x": -59.5,
+          "y": -73.4,
+          "width": 119,
+          "height": 146.8,
+          "rx": 0,
+          "opacity": 0
+        },
+        {
+          "tag": "polygon",
+          "class": "bpmn-gateway-diamond",
+          "points": "0,-25 25,0 0,25 -25,0"
+        }
+      ],
+      "intersects": [
+        {
+          "point": {
+            "x": 1000,
+            "y": 0
+          },
+          "result": {
+            "x": 25,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": 100,
+            "y": 400
+          },
+          "result": {
+            "x": 0,
+            "y": 25
+          }
+        }
+      ]
+    }
+  ]
+}

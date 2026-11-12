@@ -1,0 +1,125 @@
+{
+  "shape": "bpmn-end",
+  "measure": {
+    "char_width": 7,
+    "line_height": 16
+  },
+  "cases": [
+    {
+      "label": "Go",
+      "wrapping_width": 120,
+      "node": {
+        "width": 36,
+        "height": 80
+      },
+      "label_transform": {
+        "x": -7,
+        "y": 24
+      },
+      "label_size": {
+        "width": 14,
+        "height": 16
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "bpmn-bounds",
+          "x": -18,
+          "y": -40,
+          "width": 36,
+          "height": 80,
+          "rx": 0,
+          "opacity": 0
+        },
+        {
+          "tag": "circle",
+          "class": "bpmn-event-ring",
+          "cx": 0,
+          "cy": 0,
+          "r": 18,
+          "stroke_width": 3.4
+        }
+      ],
+      "intersects": [
+        {
+          "point": {
+            "x": 1000,
+            "y": 0
+          },
+          "result": {
+            "x": 18,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": 100,
+            "y": 400
+          },
+          "result": {
+            "x": 15.299999999999999,
+            "y": 9.482088377567466
+          }
+        }
+      ]
+    },
+    {
+      "label": "An extremely long caption that dwarfs the circle",
+      "wrapping_width": 120,
+      "node": {
+        "width": 119,
+        "height": 132.8
+      },
+      "label_transform": {
+        "x": -59.5,
+        "y": 24.000000000000004
+      },
+      "label_size": {
+        "width": 119,
+        "height": 42.4
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "bpmn-bounds",
+          "x": -59.5,
+          "y": -66.4,
+          "width": 119,
+          "height": 132.8,
+          "rx": 0,
+          "opacity": 0
+        },
+        {
+          "tag": "circle",
+          "class": "bpmn-event-ring",
+          "cx": 0,
+          "cy": 0,
+          "r": 18,
+          "stroke_width": 3.4
+        }
+      ],
+      "intersects": [
+        {
+          "point": {
+            "x": 1000,
+            "y": 0
+          },
+          "result": {
+            "x": 18,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": 100,
+            "y": 400
+          },
+          "result": {
+            "x": 15.299999999999999,
+            "y": 9.482088377567466
+          }
+        }
+      ]
+    }
+  ]
+}
