@@ -1,0 +1,77 @@
+{
+  "name": "01-tb-simple",
+  "input": {
+    "layoutAlgorithm": "dagre",
+    "diagramId": "diag",
+    "type": "flowchart-v2",
+    "direction": "TB",
+    "nodes": [
+      {
+        "id": "A",
+        "label": "First",
+        "shape": "rect"
+      },
+      {
+        "id": "B",
+        "label": "Second",
+        "shape": "rect"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "start": "A",
+        "end": "B"
+      }
+    ]
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "A",
+        "x": 36.8,
+        "y": 17.2,
+        "width": 48,
+        "height": 18.4
+      },
+      {
+        "id": "B",
+        "x": 36.8,
+        "y": 85.60000000000001,
+        "width": 57.599999999999994,
+        "height": 18.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "e1",
+        "points": [
+          {
+            "x": 36.8,
+            "y": 26.4
+          },
+          {
+            "x": 36.8,
+            "y": 51.4
+          },
+          {
+            "x": 36.8,
+            "y": 76.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 73.6,
+      "height": 102.80000000000001
+    },
+    "rawViewBox": "0 0 73.6 102.80000000000001"
+  }
+}

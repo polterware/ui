@@ -1,0 +1,134 @@
+{
+  "name": "03-cluster",
+  "input": {
+    "layoutAlgorithm": "dagre",
+    "diagramId": "diag",
+    "type": "flowchart-v2",
+    "direction": "TB",
+    "nodes": [
+      {
+        "id": "sub1",
+        "label": "Sub One",
+        "isGroup": true
+      },
+      {
+        "id": "A",
+        "label": "In A",
+        "shape": "rect",
+        "parentId": "sub1"
+      },
+      {
+        "id": "B",
+        "label": "In B",
+        "shape": "rect",
+        "parentId": "sub1"
+      },
+      {
+        "id": "C",
+        "label": "Out C",
+        "shape": "rect"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "start": "A",
+        "end": "B"
+      },
+      {
+        "id": "e2",
+        "start": "B",
+        "end": "C"
+      }
+    ]
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "A",
+        "x": 62.2,
+        "y": 42.2,
+        "width": 38.4,
+        "height": 18.4
+      },
+      {
+        "id": "B",
+        "x": 62.2,
+        "y": 110.60000000000001,
+        "width": 38.4,
+        "height": 18.4
+      },
+      {
+        "id": "C",
+        "x": 62.2,
+        "y": 204,
+        "width": 48,
+        "height": 18.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "sub1",
+        "x": 62.2,
+        "y": 76.4,
+        "width": 108.4,
+        "height": 136.8
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "points": [
+          {
+            "x": 62.2,
+            "y": 51.400000000000006
+          },
+          {
+            "x": 62.2,
+            "y": 76.4
+          },
+          {
+            "x": 62.2,
+            "y": 101.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "e2",
+        "points": [
+          {
+            "x": 62.2,
+            "y": 119.80000000000001
+          },
+          {
+            "x": 62.2,
+            "y": 144.8
+          },
+          {
+            "x": 62.2,
+            "y": 169.8
+          },
+          {
+            "x": 62.2,
+            "y": 194.8
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 124.4,
+      "height": 221.20000000000002
+    },
+    "rawViewBox": "0 0 124.4 221.20000000000002"
+  }
+}

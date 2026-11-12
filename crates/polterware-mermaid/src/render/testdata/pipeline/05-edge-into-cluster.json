@@ -1,0 +1,95 @@
+{
+  "name": "05-edge-into-cluster",
+  "input": {
+    "layoutAlgorithm": "dagre",
+    "diagramId": "diag",
+    "type": "flowchart-v2",
+    "direction": "TB",
+    "nodes": [
+      {
+        "id": "ext",
+        "label": "External",
+        "shape": "rect"
+      },
+      {
+        "id": "box",
+        "label": "Box",
+        "isGroup": true
+      },
+      {
+        "id": "target",
+        "label": "Target",
+        "shape": "rect",
+        "parentId": "box"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "start": "ext",
+        "end": "target"
+      }
+    ]
+  },
+  "expected": {
+    "nodes": [
+      {
+        "id": "ext",
+        "x": 71.8,
+        "y": 17.2,
+        "width": 76.8,
+        "height": 18.4
+      },
+      {
+        "id": "target",
+        "x": 71.8,
+        "y": 110.60000000000001,
+        "width": 57.599999999999994,
+        "height": 18.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "box",
+        "x": 71.8,
+        "y": 110.60000000000001,
+        "width": 127.6,
+        "height": 68.4
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "points": [
+          {
+            "x": 71.8,
+            "y": 26.4
+          },
+          {
+            "x": 71.8,
+            "y": 51.4
+          },
+          {
+            "x": 71.8,
+            "y": 76.4
+          },
+          {
+            "x": 71.8,
+            "y": 101.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 143.6,
+      "height": 152.8
+    },
+    "rawViewBox": "0 0 143.6 152.8"
+  }
+}
