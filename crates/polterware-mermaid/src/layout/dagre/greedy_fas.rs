@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/greedy-fas.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/greedy-fas.js` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
 //!
 //! Eades, Lin, and Smyth's greedy feedback arc set, adjusted for weighted edges.
 //! Buckets hold entry handles in upstream's order: sources are at the last bucket,

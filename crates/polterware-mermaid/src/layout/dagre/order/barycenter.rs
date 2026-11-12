@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/order/barycenter.ts` (MIT, Copyright (c) 2012-2014 Chris
+//! Port of `dagre-d3-es/src/dagre/order/barycenter.js` (MIT, Copyright (c) 2012-2014 Chris
 //! Pettitt).
 
 use super::super::LayeredGraph;

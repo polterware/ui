@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/rank/util.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/rank/util.js` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
 
 use std::collections::HashSet;
 

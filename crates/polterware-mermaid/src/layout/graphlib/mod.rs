@@ -1,7 +1,12 @@
-//! Port of `@dagrejs/graphlib`: a directed multigraph with compound (parent) nodes.
+//! Port of the graphlib that dagre-d3-es 7.0.14 bundles
+//! (`src/graphlib/` in
+//! `research/mermaid-port/upstream/mermaid/node_modules/.pnpm/dagre-d3-es@7.0.14`):
+//! a directed multigraph with compound (parent) nodes.
 //!
-//! Follows `graphlib/lib/graph.ts` and `lib/types.ts` (MIT, Copyright (c) 2012-2014
-//! Chris Pettitt). Node ids stay strings and graph, node, and edge labels are generics.
+//! Follows its `graph.js`, `json.js`, and `alg/` (MIT, Copyright (c) 2012-2014 Chris
+//! Pettitt), which match `@dagrejs/graphlib`, the upstream checkout this port earlier
+//! followed; no behavior differs between the two. Node ids stay strings and graph,
+//! node, and edge labels are generics.
 //! Iteration keeps upstream's insertion order (JavaScript object key order), which dagre's
 //! layout depends on. Algorithms live in [`alg`] and JSON serialization in [`json`].
 //!

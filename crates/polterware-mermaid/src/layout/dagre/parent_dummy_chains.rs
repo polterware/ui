@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/parent-dummy-chains.ts` (MIT, Copyright (c) 2012-2014 Chris
+//! Port of `dagre-d3-es/src/dagre/parent-dummy-chains.js` (MIT, Copyright (c) 2012-2014 Chris
 //! Pettitt).
 //!
 //! After ordering, puts each dummy of a long edge inside the deepest subgraph that
@@ -84,11 +84,11 @@ pub fn run(graph: &mut LayeredGraph) {
                 path_v = path.get(path_idx).cloned().flatten();
             }
 
-            if let Some(path_v) = &path_v {
-                graph
-                    .set_parent(&v, Some(path_v.as_str()))
-                    .expect("the layout graph is compound");
-            }
+            // Upstream always sets the parent; a missing path node (the root of the
+            // parent chain) re-parents the dummy to the root.
+            graph
+                .set_parent(&v, path_v.as_deref())
+                .expect("the layout graph is compound");
             let Some(next) = graph.successors(&v).and_then(|next| next.first().cloned()) else {
                 break;
             };

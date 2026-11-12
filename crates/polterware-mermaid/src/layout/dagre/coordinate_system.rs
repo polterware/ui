@@ -1,8 +1,11 @@
-//! Port of `dagre/lib/coordinate-system.ts` (MIT, Copyright (c) 2012-2014 Chris
-//! Pettitt).
+//! Port of `dagre-d3-es/src/dagre/coordinate-system.js` (MIT, Copyright (c) 2012-2014
+//! Chris Pettitt).
 //!
 //! Layout always works top to bottom; this module rotates the graph in and out of
-//! that frame for `LR` and `RL`, and flips it for `BT`.
+//! that frame for `LR` and `RL`, and flips it for `BT`. Upstream calls
+//! `rankdir.toLowerCase()` unconditionally, so a graph without a direction throws
+//! there; the layout graph always carries one (`tb` by default), and this port treats
+//! an absent direction as top to bottom instead of failing.
 
 use super::{EdgeLabel, LayeredGraph, NodeLabel};
 

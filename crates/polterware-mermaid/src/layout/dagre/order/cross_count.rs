@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/order/cross-count.ts` (MIT, Copyright (c) 2012-2014 Chris
+//! Port of `dagre-d3-es/src/dagre/order/cross-count.js` (MIT, Copyright (c) 2012-2014 Chris
 //! Pettitt).
 //!
 //! Weighted two-layer crossing count, after Barth, et al., "Bilayer Cross Counting."

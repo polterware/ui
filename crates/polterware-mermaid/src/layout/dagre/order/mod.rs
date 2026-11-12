@@ -1,9 +1,17 @@
-//! Port of `dagre/lib/order/index.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/order/index.js` (MIT, Copyright (c) 2012-2014
+//! Chris Pettitt).
 //!
 //! Minimizes edge crossings by sweeping the ranks up and down, ordering each rank
 //! with barycenters and constraints, and keeping the layering with the fewest
-//! crossings. `customOrder` is not ported because Rust labels cannot carry a
-//! callback; `disableOptimalOrderHeuristic` and `constraints` are.
+//! crossings. dagre-d3-es accepts no options here: there is no `customOrder`,
+//! `constraints`, or `disableOptimalOrderHeuristic`, and no previous layout.
+//!
+//! Upstream's layer graphs share node label objects with the layout graph, so a
+//! sweep's `order` writes land on the main graph. This port copies labels, so
+//! [`sweep_layer_graphs`] republishes the orders the shared object would have
+//! carried: into the layer graph for every node, and back into the layout graph for
+//! the nodes whose label the layer graph copied. A cluster's layer label is replaced
+//! by its border references and therefore never carries an order, as upstream's.
 
 pub mod add_subgraph_constraints;
 pub mod barycenter;
@@ -15,36 +23,8 @@ pub mod sort;
 pub mod sort_subgraph;
 
 use super::super::graphlib::Graph;
+use super::LayeredGraph;
 use super::util::{self, LayerMatrix};
-use super::{LayeredGraph, NodeLabel};
-
-/// A left-before-right constraint between two nodes.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct OrderConstraint {
-    /// The node that must come first.
-    pub left: String,
-    /// The node that must come after.
-    pub right: String,
-}
-
-impl OrderConstraint {
-    /// A constraint that `left` comes before `right`.
-    pub fn new(left: impl Into<String>, right: impl Into<String>) -> Self {
-        Self {
-            left: left.into(),
-            right: right.into(),
-        }
-    }
-}
-
-/// Options for [`order`], upstream's `OrderOptions`.
-#[derive(Clone, Debug, Default)]
-pub struct OrderOptions {
-    /// Stops after the initial ordering, without the crossing-reduction sweeps.
-    pub disable_optimal_order_heuristic: bool,
-    /// Ordering constraints, upstream's `constraints`.
-    pub constraints: Vec<OrderConstraint>,
-}
 
 /// Which edges a layer graph copies from the layout graph.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -56,23 +36,15 @@ pub enum Relationship {
 }
 
 /// Assigns `order` to every node to reduce edge crossings.
-pub fn order(
-    graph: &mut LayeredGraph,
-    opts: &OrderOptions,
-    old_nodes: Option<&[(String, NodeLabel)]>,
-) {
+pub fn order(graph: &mut LayeredGraph) {
     let max_rank = util::max_rank(graph);
     let ranks: Vec<isize> = util::range(1, max_rank as isize + 1, 1);
     let reversed_ranks: Vec<isize> = util::range(max_rank as isize - 1, -1, -1);
     let mut down_layer_graphs = build_layer_graphs(graph, &ranks, Relationship::InEdges);
     let mut up_layer_graphs = build_layer_graphs(graph, &reversed_ranks, Relationship::OutEdges);
 
-    let mut layering = init_order::init_order(graph, old_nodes);
+    let mut layering = init_order::init_order(graph);
     assign_order(graph, &layering);
-
-    if opts.disable_optimal_order_heuristic {
-        return;
-    }
 
     let mut best_cross_count = f64::INFINITY;
     let mut best: Option<LayerMatrix> = None;
@@ -84,13 +56,7 @@ pub fn order(
         } else {
             &mut up_layer_graphs
         };
-        sweep_layer_graphs(
-            layer_graphs,
-            i % 4 >= 2,
-            &opts.constraints,
-            old_nodes,
-            graph,
-        );
+        sweep_layer_graphs(layer_graphs, i % 4 >= 2, graph);
 
         layering = util::build_layer_matrix(graph);
         let cross_count = cross_count::cross_count(graph, &layering);
@@ -98,8 +64,6 @@ pub fn order(
             last_best = 0;
             best = Some(layering.clone());
             best_cross_count = cross_count;
-        } else if cross_count == best_cross_count {
-            best = Some(layering.clone());
         }
         i += 1;
         last_best += 1;
@@ -115,32 +79,26 @@ fn build_layer_graphs(
     ranks: &[isize],
     relationship: Relationship,
 ) -> Vec<LayeredGraph> {
-    let by_rank = util::nodes_by_rank(graph, ranks);
-    by_rank
+    ranks
         .iter()
-        .map(|(rank, nodes)| {
-            build_layer_graph::build_layer_graph(graph, *rank as f64, relationship, Some(nodes))
-        })
+        .map(|rank| build_layer_graph::build_layer_graph(graph, *rank as f64, relationship))
         .collect()
 }
 
 fn sweep_layer_graphs(
     layer_graphs: &mut [LayeredGraph],
-    switch_bias: bool,
-    constraints: &[OrderConstraint],
-    old_nodes: Option<&[(String, NodeLabel)]>,
+    bias_right: bool,
     graph: &mut LayeredGraph,
 ) {
-    let mut bias_right = true;
     let mut constraint_graph: Graph<(), (), ()> = Graph::new();
     for layer_graph in layer_graphs.iter_mut() {
-        for constraint in constraints {
-            constraint_graph.set_edge(&constraint.left, &constraint.right);
-        }
-
-        // Layer graph labels are copies: refresh the orders the previous layers just
-        // assigned, then publish this layer's orders back to the layout graph.
+        // Layer graph labels are copies: refresh the orders the shared labels would
+        // have seen. A cluster's label was replaced by its border references, so it
+        // carries no order in either graph.
         for v in layer_graph.nodes() {
+            if is_cluster(graph, &v) {
+                continue;
+            }
             if let Some(order) = graph.node(&v).and_then(|node| node.order)
                 && let Some(node) = layer_graph.node_mut(&v)
             {
@@ -152,21 +110,15 @@ fn sweep_layer_graphs(
             .graph()
             .and_then(|label| label.root.clone())
             .unwrap_or_default();
-        let sorted = sort_subgraph::sort_subgraph(
-            layer_graph,
-            &root,
-            &constraint_graph,
-            old_nodes,
-            bias_right,
-        );
-        if switch_bias && sorted.used_bias {
-            bias_right = !bias_right;
-        }
+        let sorted =
+            sort_subgraph::sort_subgraph(layer_graph, &root, &constraint_graph, bias_right);
         for (index, v) in sorted.vs.iter().enumerate() {
             if let Some(node) = layer_graph.node_mut(v) {
                 node.order = Some(index);
             }
-            if let Some(node) = graph.node_mut(v) {
+            if !is_cluster(graph, v)
+                && let Some(node) = graph.node_mut(v)
+            {
                 node.order = Some(index);
             }
         }
@@ -176,6 +128,12 @@ fn sweep_layer_graphs(
             &sorted.vs,
         );
     }
+}
+
+/// Whether `graph`'s label for `v` is the one a layer graph replaces: a cluster
+/// label, which `buildLayerGraph` swaps for its border references.
+fn is_cluster(graph: &LayeredGraph, v: &str) -> bool {
+    graph.node(v).is_some_and(|node| node.min_rank.is_some())
 }
 
 fn assign_order(graph: &mut LayeredGraph, layering: &LayerMatrix) {
@@ -193,7 +151,7 @@ mod tests {
     use super::super::test_support::{graph, weighted};
     use super::super::util::{LayerMatrix, build_layer_matrix};
     use super::cross_count::cross_count;
-    use super::{OrderOptions, order};
+    use super::order;
 
     fn ordered(graph: &mut super::super::LayeredGraph, v: &str, rank: f64) {
         graph.set_node_with(
@@ -218,7 +176,7 @@ mod tests {
         graph.set_path_with(&["a", "b", "c"], weighted(1.0, 1.0));
         graph.set_edge_with("b", "d", weighted(1.0, 1.0));
         graph.set_path_with(&["a", "e", "f"], weighted(1.0, 1.0));
-        order(&mut graph, &OrderOptions::default(), None);
+        order(&mut graph);
         let layering: LayerMatrix = build_layer_matrix(&graph);
         assert_eq!(cross_count(&graph, &layering), 0.0);
     }
@@ -235,7 +193,7 @@ mod tests {
         for v in ["c", "g"] {
             ordered(&mut graph, v, 3.0);
         }
-        order(&mut graph, &OrderOptions::default(), None);
+        order(&mut graph);
         let layering = build_layer_matrix(&graph);
         assert_eq!(cross_count(&graph, &layering), 0.0);
     }
@@ -251,31 +209,8 @@ mod tests {
             ordered(&mut graph, v, 3.0);
         }
         ordered(&mut graph, "d", 4.0);
-        order(&mut graph, &OrderOptions::default(), None);
+        order(&mut graph);
         let layering = build_layer_matrix(&graph);
         assert!(cross_count(&graph, &layering) <= 1.0);
-    }
-
-    #[test]
-    fn can_skip_the_optimal_ordering() {
-        let mut graph = graph();
-        ordered(&mut graph, "a", 1.0);
-        for v in ["b", "d"] {
-            ordered(&mut graph, v, 2.0);
-        }
-        for v in ["c", "e"] {
-            ordered(&mut graph, v, 3.0);
-        }
-        graph.set_path_with(&["a", "b", "c"], weighted(1.0, 1.0));
-        graph.set_path_with(&["a", "d"], weighted(1.0, 1.0));
-        graph.set_edge_with("b", "e", weighted(1.0, 1.0));
-        graph.set_edge_with("d", "c", weighted(1.0, 1.0));
-        let opts = OrderOptions {
-            disable_optimal_order_heuristic: true,
-            ..OrderOptions::default()
-        };
-        order(&mut graph, &opts, None);
-        let layering = build_layer_matrix(&graph);
-        assert_eq!(cross_count(&graph, &layering), 1.0);
     }
 }

@@ -1,4 +1,5 @@
-//! Port of `dagre/lib/position/bk.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/position/bk.js` (MIT, Copyright (c) 2012-2014 Chris
+//! Pettitt).
 //!
 //! Brandes and Köpf, "Fast and Simple Horizontal Coordinate Assignment." Four
 //! alignments (up-left, up-right, down-left, down-right) are compacted, aligned to
@@ -199,11 +200,9 @@ pub fn has_conflict(conflicts: &Conflicts, v: &str, w: &str) -> bool {
 
 /// Aligns nodes with their median neighbours, skipping conflicted segments.
 pub fn vertical_alignment(
-    graph: &LayeredGraph,
     layering: &LayerMatrix,
     conflicts: &Conflicts,
     neighbor_fn: &dyn Fn(&str) -> Vec<String>,
-    core_path: Option<&[String]>,
 ) -> AlignmentResult {
     let mut root: HashMap<String, String> = HashMap::new();
     let mut align: HashMap<String, String> = HashMap::new();
@@ -219,29 +218,10 @@ pub fn vertical_alignment(
 
     for layer in layering {
         let mut prev_idx: isize = -1;
-        let mut already_aligned_index: isize = -1;
-        let mut has_shifted = false;
-        let core_node_index = layer.iter().position(|v| {
-            core_path.is_some_and(|path| path.contains(v)) || is_in_core_path(v, graph, core_path)
-        });
-        let mut modified_layer = layer.clone();
-        if let Some(core_node_index) = core_node_index
-            && core_node_index > 0
-        {
-            modified_layer = std::iter::once(layer[core_node_index].clone())
-                .chain(layer[..core_node_index].iter().cloned())
-                .chain(layer[core_node_index + 1..].iter().cloned())
-                .collect();
-            has_shifted = true;
-        }
-
-        for v in &modified_layer {
+        for v in layer {
             let mut ws: Vec<String> = neighbor_fn(v);
             if ws.is_empty() {
                 continue;
-            }
-            if core_path.is_some_and(|path| path.contains(v)) {
-                ws.retain(|w| is_in_core_path(w, graph, core_path));
             }
             ws.sort_by(|a, b| {
                 util::cmp_f64(
@@ -254,11 +234,7 @@ pub fn vertical_alignment(
             let last = mp.ceil() as usize;
             for w in &ws[first..=last] {
                 let pos_w = pos.get(w).copied().unwrap_or(0) as isize;
-                if align.get(v) == Some(v)
-                    && prev_idx < pos_w
-                    && pos_w != already_aligned_index
-                    && !has_conflict(conflicts, v, w)
-                {
+                if align.get(v) == Some(v) && prev_idx < pos_w && !has_conflict(conflicts, v, w) {
                     let Some(root_w) = root.get(w).cloned() else {
                         continue;
                     };
@@ -266,40 +242,12 @@ pub fn vertical_alignment(
                     align.insert(v.clone(), root_w.clone());
                     root.insert(v.clone(), root_w);
                     prev_idx = pos_w;
-                    if has_shifted {
-                        prev_idx = -1;
-                        already_aligned_index = pos_w;
-                        has_shifted = false;
-                    }
                 }
             }
         }
     }
 
     AlignmentResult { root, align }
-}
-
-fn is_in_core_path(v: &str, graph: &LayeredGraph, core_path: Option<&[String]>) -> bool {
-    let Some(core_path) = core_path else {
-        return false;
-    };
-    let Some(node) = graph.node(v) else {
-        return false;
-    };
-    let Some(edge) = &node.edge_obj else {
-        return false;
-    };
-    if node.edge_label.as_ref().is_some_and(|label| label.reversed) {
-        return false;
-    }
-    let source_index = core_path.iter().position(|id| id == &edge.v);
-    let target_index = core_path.iter().position(|id| id == &edge.w);
-    let (Some(source_index), Some(target_index)) = (source_index, target_index) else {
-        return false;
-    };
-    let length = core_path.len() as isize;
-    source_index as isize == (target_index as isize + 1) % length
-        || source_index as isize == (target_index as isize - 1) % length
 }
 
 /// Packs blocks horizontally, first to the smallest then to the greatest coordinates.
@@ -343,7 +291,7 @@ pub fn horizontal_compaction(
         |elem| {
             let in_edges = block_graph.in_edges(elem, None).unwrap_or_default();
             let value = in_edges.into_iter().fold(0.0f64, |accumulator, edge| {
-                let xs_v = xs.get(&edge.v).copied().unwrap_or(0.0);
+                let xs_v = xs.get(&edge.v).copied().unwrap_or(f64::NAN);
                 let weight = block_graph.edge_object(&edge).copied().unwrap_or(0.0);
                 accumulator.max(xs_v + weight)
             });
@@ -359,7 +307,7 @@ pub fn horizontal_compaction(
             let min = out_edges
                 .into_iter()
                 .fold(f64::INFINITY, |accumulator, edge| {
-                    let xs_w = xs.get(&edge.w).copied().unwrap_or(0.0);
+                    let xs_w = xs.get(&edge.w).copied().unwrap_or(f64::NAN);
                     let weight = block_graph.edge_object(&edge).copied().unwrap_or(0.0);
                     accumulator.min(xs_w - weight)
                 });
@@ -569,12 +517,13 @@ pub fn balance(xss: &[(String, PositionMap)], align: Option<&str>) -> PositionMa
 }
 
 /// Computes the x coordinate of every node in `graph`.
-pub fn position_x(graph: &LayeredGraph, core_path: Option<&[String]>) -> PositionMap {
+pub fn position_x(graph: &LayeredGraph) -> PositionMap {
     let layering = util::build_layer_matrix(graph);
     let mut conflicts = find_type1_conflicts(graph, &layering);
-    // Upstream's `Object.assign` replaces a node's type-1 set with its type-2 set.
+    // Upstream merges the two conflict maps, so a node keeps both its type-1 and
+    // type-2 conflicts.
     for (v, targets) in find_type2_conflicts(graph, &layering) {
-        conflicts.insert(v, targets);
+        conflicts.entry(v).or_default().extend(targets);
     }
 
     let mut xss: Vec<(String, PositionMap)> = Vec::new();
@@ -600,13 +549,7 @@ pub fn position_x(graph: &LayeredGraph, core_path: Option<&[String]>) -> Positio
                 }
                 .unwrap_or_default()
             };
-            let alignment = vertical_alignment(
-                graph,
-                &adjusted_layering,
-                &conflicts,
-                &neighbor_fn,
-                core_path,
-            );
+            let alignment = vertical_alignment(&adjusted_layering, &conflicts, &neighbor_fn);
             let mut xs = horizontal_compaction(
                 graph,
                 &adjusted_layering,
@@ -818,13 +761,9 @@ mod tests {
         conflicts: &Conflicts,
         graph: &LayeredGraph,
     ) -> AlignmentResult {
-        vertical_alignment(
-            graph,
-            layering,
-            conflicts,
-            &|v: &str| graph.predecessors(v).unwrap_or_default(),
-            None,
-        )
+        vertical_alignment(layering, conflicts, &|v: &str| {
+            graph.predecessors(v).unwrap_or_default()
+        })
     }
 
     #[test]
@@ -1377,7 +1316,7 @@ mod tests {
     fn position_x_places_one_node_at_the_origin() {
         let mut graph = graph();
         graph.set_node_with("a", node(0.0, 0, 100.0));
-        assert_eq!(position_x(&graph, None), positions(&[("a", 0.0)]));
+        assert_eq!(position_x(&graph), positions(&[("a", 0.0)]));
     }
 
     #[test]
@@ -1386,10 +1325,7 @@ mod tests {
         graph.set_node_with("a", node(0.0, 0, 100.0));
         graph.set_node_with("b", node(1.0, 0, 100.0));
         graph.set_edge("a", "b");
-        assert_eq!(
-            position_x(&graph, None),
-            positions(&[("a", 0.0), ("b", 0.0)])
-        );
+        assert_eq!(position_x(&graph), positions(&[("a", 0.0), ("b", 0.0)]));
     }
 
     #[test]
@@ -1400,7 +1336,7 @@ mod tests {
         graph.set_node_with("c", node(2.0, 0, 20.0));
         graph.set_path(&["a", "b", "c"]);
         assert_eq!(
-            position_x(&graph, None),
+            position_x(&graph),
             positions(&[("a", 0.0), ("b", 0.0), ("c", 0.0)])
         );
     }
@@ -1417,7 +1353,7 @@ mod tests {
         graph.set_node_with("c", node(1.0, 1, 50.0));
         graph.set_edge("a", "b");
         graph.set_edge("a", "c");
-        let pos = position_x(&graph, None);
+        let pos = position_x(&graph);
         let a = pos["a"];
         close(pos["b"], a - 30.0);
         close(pos["c"], a + 30.0);
@@ -1435,7 +1371,7 @@ mod tests {
         graph.set_node_with("c", node(1.0, 0, 70.0));
         graph.set_node_with("d", node(1.0, 1, 80.0));
         graph.set_edge("b", "c");
-        let pos = position_x(&graph, None);
+        let pos = position_x(&graph);
         let b = pos["b"];
         close(pos["a"], b - 30.0 - 10.0 - 25.0);
         close(pos["c"], b);
@@ -1456,7 +1392,7 @@ mod tests {
         graph.set_node_with("d", with_dummy(1.0, 1, 80.0, "edge"));
         graph.set_edge("b", "c");
         graph.set_edge("a", "d");
-        let pos = position_x(&graph, None);
+        let pos = position_x(&graph);
         let a = pos["a"];
         close(pos["d"], a);
         close(pos["b"], a + 25.0 + 10.0 + 30.0);

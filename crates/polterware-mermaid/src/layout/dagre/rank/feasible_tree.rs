@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/rank/feasible-tree.ts` (MIT, Copyright (c) 2012-2014 Chris
+//! Port of `dagre-d3-es/src/dagre/rank/feasible-tree.js` (MIT, Copyright (c) 2012-2014 Chris
 //! Pettitt).
 //!
 //! Builds a spanning tree of tight edges (an edge is tight when its length equals

@@ -941,8 +941,9 @@ mod tests {
         assert_eq!(position_cluster(&n, 6.), Some(Point::new(4., 14.)));
     }
 
+    /// Ten nested flowcharts captured from Mermaid 12.3.0, which lays them out with
+    /// dagre-d3-es 7.0.14: the node and edge positions must match the capture.
     #[test]
-    #[ignore = "compound layout diverges from upstream dagre (f0A.x 127.5 vs 67.5); fixed in a follow-up run"]
     fn upstream_node_fixtures_match_ten_nested_flowcharts() {
         let fixtures: serde_json::Value = serde_json::from_str(UPSTREAM_FIXTURES).unwrap();
         for fixture in fixtures.as_array().unwrap() {

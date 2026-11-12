@@ -1,12 +1,22 @@
-//! Port of `@dagrejs/dagre` 3.1.4-pre: layered graph layout over [`super::graphlib`].
+//! Port of `dagre-d3-es` 7.0.14, the fork of
+//! [dagre](https://github.com/dagrejs/dagre) that Mermaid 12.3.0 lays diagrams out
+//! with (`src/dagre/` in
+//! `research/mermaid-port/upstream/mermaid/node_modules/.pnpm/dagre-d3-es@7.0.14`),
+//! over [`super::graphlib`] (its sibling `src/graphlib/`).
 //!
-//! Follows `dagre/lib` (MIT, Copyright (c) 2012-2014 Chris Pettitt), the fork Mermaid
-//! uses: `layout.ts` and its full pipeline, `acyclic.ts`, `normalize.ts`,
-//! `parent-dummy-chains.ts`, `nesting-graph.ts`, `add-border-segments.ts`,
-//! `coordinate-system.ts`, `greedy-fas.ts`, `data/list.ts`, `util.ts`, `rank/`,
-//! `order/`, and `position/` (`bk.ts`). Iteration orders and tie-breaking are
-//! upstream's: layout depends on graphlib's insertion order, and on the order of
-//! every JavaScript object and array it walks.
+//! Follows `src/dagre/`: `layout.js` and its full pipeline, `acyclic.js`,
+//! `normalize.js`, `parent-dummy-chains.js`, `nesting-graph.js`,
+//! `add-border-segments.js`, `coordinate-system.js`, `greedy-fas.js`,
+//! `data/list.js`, `util.js`, `rank/`, `order/`, and `position/` (`bk.js`).
+//! Iteration orders and tie-breaking are upstream's: layout depends on graphlib's
+//! insertion order, and on the order of every JavaScript object and array it walks.
+//!
+//! dagre-d3-es is the pre-3.x dagre code base, so the newer `@dagrejs/dagre`
+//! features are deliberately absent: no per-cluster `rankdir` in `layout.js`, no
+//! `customOrder`, `constraints`, or `disableOptimalOrderHeuristic` in `order`, no
+//! previous-layout memory in `acyclic`, `order`, or `position`, and no `rankalign`
+//! graph attribute. Where an earlier version of this port carried them, the port
+//! now follows dagre-d3-es instead.
 //!
 //! Where upstream labels are plain JavaScript objects, this port uses typed labels
 //! ([`GraphLabel`], [`NodeLabel`], [`EdgeLabel`]). Attribute names are the Rust
@@ -14,17 +24,18 @@
 //! `buildLayoutGraph` only copies a whitelist anyway). Upstream canonicalizes
 //! attribute names to lower case, which typed labels make unnecessary; values keep
 //! their case, as upstream's do. `undefined` numeric attributes are [`Option`]s,
-//! and `undefined`/`null` labels stay empty.
+//! and `undefined`/`null` labels stay empty. Upstream shares label objects between
+//! the input graph and the graphs it builds; typed labels are copied instead, and
+//! `order` republishes orders where the shared object would have carried them.
 //!
-//! Not ported because they carry no layout behavior: `debug.ts` (`debugOrdering`),
-//! `version.ts`, the timing wrapper of `util.time`, and the package entry points.
-//! `order` accepts no `customOrder` callback, because typed labels cannot carry one.
+//! Not ported because they carry no layout behavior: `debug.js` (`debugOrdering`),
+//! `version.js`, the timing wrapper of `util.time`, and the package entry points.
 //!
 //! These functions throw where upstream throws: [`LayoutError`]. Graph operations
 //! that layout only performs on graphs it built (setting a parent, for example) are
 //! asserted instead.
 //!
-//! Differential fixtures from the upstream build live in `testdata/` and are
+//! Differential fixtures from dagre-d3-es 7.0.14 live in `testdata/` and are
 //! compared by `differential.rs`. The upstream unit tests are ported into each
 //! module, with two adaptations: layer graphs copy node labels instead of sharing
 //! them (so `order` republishes orders after each layer), and tests that relied on
@@ -52,9 +63,7 @@ pub(crate) mod test_support;
 
 use std::cmp::Ordering;
 
-pub use layout::{
-    LayoutOptions, PreviousLayout, build_layout_graph, layout, layout_with_history, run_layout,
-};
+pub use layout::{build_layout_graph, layout, update_input_graph};
 
 /// A point in layout coordinates, upstream's `Point`.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -83,8 +92,6 @@ pub struct GraphLabel {
     pub rankdir: Option<String>,
     /// Horizontal alignment of the drawing: `UL`, `UR`, `DL`, or `DR`.
     pub align: Option<String>,
-    /// Where nodes sit inside a rank: `top`, `center`, or `bottom`.
-    pub rankalign: Option<String>,
     /// Separation between nodes in a rank.
     pub nodesep: Option<f64>,
     /// Separation between edges in a rank.
