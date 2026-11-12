@@ -192,6 +192,29 @@ mod tests {
     }
 
     #[test]
+    fn a_note_is_a_leaf_that_inherits_wrapping_and_minimum_width() {
+        // `stateDb.getData` sets `wrappingWidth` on every node and `minWidth` on every
+        // non-group node, so the note leaves (`note.ts` through `labelHelper`) are widened
+        // like states. `dataFetcher` gives the note `labelType: 'markdown'`.
+        let config = Config::default();
+        let data = layout_data(
+            &ast("stateDiagram-v2\n  [*] --> Idle\n  note right of Idle: Waiting for input\n"),
+            &config,
+            "d",
+        );
+        let note = data
+            .nodes
+            .iter()
+            .find(|node| node.shape.as_deref() == Some("note"))
+            .expect("note node");
+        assert_eq!(note.is_group, Some(false));
+        assert_eq!(note.padding, Some(15.0));
+        assert_eq!(note.wrapping_width, Some(config.state.wrapping_width));
+        assert_eq!(note.min_width, Some(config.state.min_node_width));
+        assert_eq!(note.label_type.as_deref(), Some("markdown"));
+    }
+
+    #[test]
     fn maps_edges_and_the_look_s_arrow_type() {
         let classic = Config::default();
         let data = layout_data(
