@@ -1,0 +1,113 @@
+{
+  "shape": "note",
+  "upstream": "shapes/note.ts",
+  "look": "classic",
+  "theme": "default",
+  "padding": 8,
+  "labelSize": {
+    "width": 40,
+    "height": 16
+  },
+  "cases": [
+    {
+      "label": "Hi",
+      "primitives": [
+        {
+          "kind": "rect",
+          "x": -28,
+          "y": -16,
+          "width": 56,
+          "height": 32,
+          "rx": 0,
+          "ry": 0
+        }
+      ],
+      "labelTransform": [
+        1,
+        0,
+        0,
+        1,
+        -20,
+        -8
+      ],
+      "bounds": {
+        "x": -28,
+        "y": -16,
+        "width": 56,
+        "height": 32
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 30
+          },
+          "result": {
+            "x": 28,
+            "y": 8.4
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": -70
+          },
+          "result": {
+            "x": -9.142857142857142,
+            "y": -16
+          }
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "primitives": [
+        {
+          "kind": "rect",
+          "x": -28,
+          "y": -16,
+          "width": 56,
+          "height": 32,
+          "rx": 0,
+          "ry": 0
+        }
+      ],
+      "labelTransform": [
+        1,
+        0,
+        0,
+        1,
+        -20,
+        -8
+      ],
+      "bounds": {
+        "x": -28,
+        "y": -16,
+        "width": 56,
+        "height": 32
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 30
+          },
+          "result": {
+            "x": 28,
+            "y": 8.4
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": -70
+          },
+          "result": {
+            "x": -9.142857142857142,
+            "y": -16
+          }
+        }
+      ]
+    }
+  ]
+}

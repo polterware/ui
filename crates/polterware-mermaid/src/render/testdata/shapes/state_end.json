@@ -1,0 +1,109 @@
+{
+  "shape": "state_end",
+  "upstream": "shapes/stateEnd.ts",
+  "look": "classic",
+  "theme": "default",
+  "padding": 8,
+  "labelSize": {
+    "width": 40,
+    "height": 16
+  },
+  "cases": [
+    {
+      "label": "Hi",
+      "primitives": [
+        {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0,
+          "rx": 7,
+          "ry": 7
+        },
+        {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0,
+          "rx": 2.5,
+          "ry": 2.5
+        }
+      ],
+      "labelTransform": null,
+      "bounds": {
+        "x": -7,
+        "y": -7,
+        "width": 14,
+        "height": 14
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 0
+          },
+          "result": {
+            "x": 7,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": 60
+          },
+          "result": {
+            "x": -3.882901373576604,
+            "y": 5.824352060364906
+          }
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "primitives": [
+        {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0,
+          "rx": 7,
+          "ry": 7
+        },
+        {
+          "kind": "ellipse",
+          "cx": 0,
+          "cy": 0,
+          "rx": 2.5,
+          "ry": 2.5
+        }
+      ],
+      "labelTransform": null,
+      "bounds": {
+        "x": -7,
+        "y": -7,
+        "width": 14,
+        "height": 14
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 0
+          },
+          "result": {
+            "x": 7,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": 60
+          },
+          "result": {
+            "x": -3.882901373576604,
+            "y": 5.824352060364906
+          }
+        }
+      ]
+    }
+  ]
+}

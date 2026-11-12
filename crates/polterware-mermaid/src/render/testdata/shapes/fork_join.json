@@ -1,0 +1,100 @@
+{
+  "shape": "fork_join",
+  "upstream": "shapes/forkJoin.ts",
+  "look": "classic",
+  "theme": "default",
+  "note": "The fixture runs with dir=TB (the only direction the Rust ShapeContext exposes) and the default state.padding=8, which grows the intersect bounds by 4 per axis.",
+  "padding": 8,
+  "labelSize": {
+    "width": 40,
+    "height": 16
+  },
+  "cases": [
+    {
+      "label": "Hi",
+      "primitives": [
+        {
+          "kind": "rect",
+          "x": -35,
+          "y": -5,
+          "width": 70,
+          "height": 10,
+          "rx": 0,
+          "ry": 0
+        }
+      ],
+      "labelTransform": null,
+      "bounds": {
+        "x": -37,
+        "y": -7,
+        "width": 74,
+        "height": 14
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 30
+          },
+          "result": {
+            "x": 23.333333333333332,
+            "y": 7
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": -70
+          },
+          "result": {
+            "x": -4,
+            "y": -7
+          }
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "primitives": [
+        {
+          "kind": "rect",
+          "x": -35,
+          "y": -5,
+          "width": 70,
+          "height": 10,
+          "rx": 0,
+          "ry": 0
+        }
+      ],
+      "labelTransform": null,
+      "bounds": {
+        "x": -37,
+        "y": -7,
+        "width": 74,
+        "height": 14
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 30
+          },
+          "result": {
+            "x": 23.333333333333332,
+            "y": 7
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": -70
+          },
+          "result": {
+            "x": -4,
+            "y": -7
+          }
+        }
+      ]
+    }
+  ]
+}

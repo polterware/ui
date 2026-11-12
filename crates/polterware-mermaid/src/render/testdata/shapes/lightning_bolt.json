@@ -1,0 +1,157 @@
+{
+  "shape": "lightning_bolt",
+  "upstream": "shapes/lightningBolt.ts",
+  "look": "classic",
+  "theme": "default",
+  "padding": 8,
+  "labelSize": {
+    "width": 40,
+    "height": 16
+  },
+  "cases": [
+    {
+      "label": "Hi",
+      "primitives": [
+        {
+          "kind": "path",
+          "commands": [
+            [
+              "M",
+              17.5,
+              -35
+            ],
+            [
+              "L",
+              -17.5,
+              3.5
+            ],
+            [
+              "L",
+              3.5,
+              3.5
+            ],
+            [
+              "L",
+              -17.5,
+              35
+            ],
+            [
+              "L",
+              17.5,
+              -3.5
+            ],
+            [
+              "L",
+              -3.5,
+              -3.5
+            ],
+            [
+              "Z"
+            ]
+          ]
+        }
+      ],
+      "labelTransform": null,
+      "bounds": {
+        "x": -17.5,
+        "y": -35,
+        "width": 35,
+        "height": 70
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 0
+          },
+          "result": {
+            "x": 14.318181818181818,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": -60
+          },
+          "result": {
+            "x": -6.0576923076923075,
+            "y": -9.086538461538462
+          }
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "primitives": [
+        {
+          "kind": "path",
+          "commands": [
+            [
+              "M",
+              17.5,
+              -35
+            ],
+            [
+              "L",
+              -17.5,
+              3.5
+            ],
+            [
+              "L",
+              3.5,
+              3.5
+            ],
+            [
+              "L",
+              -17.5,
+              35
+            ],
+            [
+              "L",
+              17.5,
+              -3.5
+            ],
+            [
+              "L",
+              -3.5,
+              -3.5
+            ],
+            [
+              "Z"
+            ]
+          ]
+        }
+      ],
+      "labelTransform": null,
+      "bounds": {
+        "x": -17.5,
+        "y": -35,
+        "width": 35,
+        "height": 70
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 0
+          },
+          "result": {
+            "x": 14.318181818181818,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": -60
+          },
+          "result": {
+            "x": -6.0576923076923075,
+            "y": -9.086538461538462
+          }
+        }
+      ]
+    }
+  ]
+}
