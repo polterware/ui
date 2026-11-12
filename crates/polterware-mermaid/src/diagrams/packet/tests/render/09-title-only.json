@@ -1,0 +1,21 @@
+{
+  "name": "09-title-only",
+  "source": "packet\n  title Empty packet\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1026,
+      "height": 47
+    },
+    "rawViewBox": "0 0 1026 47",
+    "rows": [],
+    "title": {
+      "text": "Empty packet",
+      "x": 513,
+      "y": 23.5,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "name": "02-explicit-ranges",
+  "source": "packet\n  0-3: \"version\"\n  4-7: \"header length\"\n  8-15: \"type of service\"\n  16-31: \"total length\"\n  32-63: \"identification and flags\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1026,
+      "height": 109
+    },
+    "rawViewBox": "0 0 1026 109",
+    "rows": [
+      {
+        "y": 15,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 15,
+            "width": 123,
+            "height": 32,
+            "label": {
+              "text": "version",
+              "x": 62.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "0",
+              "x": 1,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "3",
+              "x": 124,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 129,
+            "y": 15,
+            "width": 123,
+            "height": 32,
+            "label": {
+              "text": "header length",
+              "x": 190.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "4",
+              "x": 129,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "7",
+              "x": 252,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 257,
+            "y": 15,
+            "width": 251,
+            "height": 32,
+            "label": {
+              "text": "type of service",
+              "x": 382.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "8",
+              "x": 257,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "15",
+              "x": 508,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 513,
+            "y": 15,
+            "width": 507,
+            "height": 32,
+            "label": {
+              "text": "total length",
+              "x": 766.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "16",
+              "x": 513,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "31",
+              "x": 1020,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      },
+      {
+        "y": 62,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 62,
+            "width": 1019,
+            "height": 32,
+            "label": {
+              "text": "identification and flags",
+              "x": 510.5,
+              "y": 78,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "32",
+              "x": 1,
+              "y": 60,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "63",
+              "x": 1020,
+              "y": 60,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      }
+    ],
+    "title": {
+      "text": "",
+      "x": 513,
+      "y": 85.5,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}

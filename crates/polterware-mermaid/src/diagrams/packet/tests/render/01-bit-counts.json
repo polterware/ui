@@ -1,0 +1,145 @@
+{
+  "name": "01-bit-counts",
+  "source": "packet-beta\n  title TCP header\n  +16: \"source port\"\n  +16: \"destination port\"\n  +32: \"sequence number\"\n  +32: \"acknowledgement number\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1026,
+      "height": 188
+    },
+    "rawViewBox": "0 0 1026 188",
+    "rows": [
+      {
+        "y": 15,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 15,
+            "width": 507,
+            "height": 32,
+            "label": {
+              "text": "source port",
+              "x": 254.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "0",
+              "x": 1,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "15",
+              "x": 508,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 513,
+            "y": 15,
+            "width": 507,
+            "height": 32,
+            "label": {
+              "text": "destination port",
+              "x": 766.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "16",
+              "x": 513,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "31",
+              "x": 1020,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      },
+      {
+        "y": 62,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 62,
+            "width": 1019,
+            "height": 32,
+            "label": {
+              "text": "sequence number",
+              "x": 510.5,
+              "y": 78,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "32",
+              "x": 1,
+              "y": 60,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "63",
+              "x": 1020,
+              "y": 60,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      },
+      {
+        "y": 109,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 109,
+            "width": 1019,
+            "height": 32,
+            "label": {
+              "text": "acknowledgement number",
+              "x": 510.5,
+              "y": 125,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "64",
+              "x": 1,
+              "y": 107,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "95",
+              "x": 1020,
+              "y": 107,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      }
+    ],
+    "title": {
+      "text": "TCP header",
+      "x": 513,
+      "y": 164.5,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}

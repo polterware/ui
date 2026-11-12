@@ -1,0 +1,192 @@
+{
+  "name": "10-full-row",
+  "source": "packet\n  title Every bit\n  0: \"b0\"\n  1: \"b1\"\n  2: \"b2\"\n  3: \"b3\"\n  +4: \"nibble\"\n  +8: \"byte\"\n  +16: \"word\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1026,
+      "height": 94
+    },
+    "rawViewBox": "0 0 1026 94",
+    "rows": [
+      {
+        "y": 15,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 15,
+            "width": 27,
+            "height": 32,
+            "label": {
+              "text": "b0",
+              "x": 14.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "0",
+              "x": 14.5,
+              "y": 13,
+              "anchor": "middle",
+              "baseline": "auto"
+            },
+            "endBit": null
+          },
+          {
+            "x": 33,
+            "y": 15,
+            "width": 27,
+            "height": 32,
+            "label": {
+              "text": "b1",
+              "x": 46.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "1",
+              "x": 46.5,
+              "y": 13,
+              "anchor": "middle",
+              "baseline": "auto"
+            },
+            "endBit": null
+          },
+          {
+            "x": 65,
+            "y": 15,
+            "width": 27,
+            "height": 32,
+            "label": {
+              "text": "b2",
+              "x": 78.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "2",
+              "x": 78.5,
+              "y": 13,
+              "anchor": "middle",
+              "baseline": "auto"
+            },
+            "endBit": null
+          },
+          {
+            "x": 97,
+            "y": 15,
+            "width": 27,
+            "height": 32,
+            "label": {
+              "text": "b3",
+              "x": 110.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "3",
+              "x": 110.5,
+              "y": 13,
+              "anchor": "middle",
+              "baseline": "auto"
+            },
+            "endBit": null
+          },
+          {
+            "x": 129,
+            "y": 15,
+            "width": 123,
+            "height": 32,
+            "label": {
+              "text": "nibble",
+              "x": 190.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "4",
+              "x": 129,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "7",
+              "x": 252,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 257,
+            "y": 15,
+            "width": 251,
+            "height": 32,
+            "label": {
+              "text": "byte",
+              "x": 382.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "8",
+              "x": 257,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "15",
+              "x": 508,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 513,
+            "y": 15,
+            "width": 507,
+            "height": 32,
+            "label": {
+              "text": "word",
+              "x": 766.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "16",
+              "x": 513,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "31",
+              "x": 1020,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      }
+    ],
+    "title": {
+      "text": "Every bit",
+      "x": 513,
+      "y": 70.5,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}

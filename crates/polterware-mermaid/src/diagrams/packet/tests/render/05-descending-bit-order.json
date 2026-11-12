@@ -1,0 +1,135 @@
+{
+  "name": "05-descending-bit-order",
+  "source": "%%{init: {\"packet\": {\"bitOrder\": \"descending\"}}}%%\npacket\n  title Descending\n  0-7: \"first\"\n  8-15: \"second\"\n  16-23: \"third\"\n  24-31: \"fourth\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1026,
+      "height": 94
+    },
+    "rawViewBox": "0 0 1026 94",
+    "rows": [
+      {
+        "y": 15,
+        "blocks": [
+          {
+            "x": 769,
+            "y": 15,
+            "width": 251,
+            "height": 32,
+            "label": {
+              "text": "first",
+              "x": 894.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "7",
+              "x": 769,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "0",
+              "x": 1020,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 513,
+            "y": 15,
+            "width": 251,
+            "height": 32,
+            "label": {
+              "text": "second",
+              "x": 638.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "15",
+              "x": 513,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "8",
+              "x": 764,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 257,
+            "y": 15,
+            "width": 251,
+            "height": 32,
+            "label": {
+              "text": "third",
+              "x": 382.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "23",
+              "x": 257,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "16",
+              "x": 508,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 1,
+            "y": 15,
+            "width": 251,
+            "height": 32,
+            "label": {
+              "text": "fourth",
+              "x": 126.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "31",
+              "x": 1,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "24",
+              "x": 252,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      }
+    ],
+    "title": {
+      "text": "Descending",
+      "x": 513,
+      "y": 70.5,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}

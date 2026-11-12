@@ -1,0 +1,113 @@
+{
+  "name": "07-custom-metrics",
+  "source": "%%{init: {\"packet\": {\"rowHeight\": 40, \"bitWidth\": 24, \"paddingX\": 2, \"paddingY\": 8}}}%%\npacket\n  0-15: \"one\"\n  16-31: \"two\"\n  32-47: \"three\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 770,
+      "height": 134
+    },
+    "rawViewBox": "0 0 770 134",
+    "rows": [
+      {
+        "y": 18,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 18,
+            "width": 382,
+            "height": 40,
+            "label": {
+              "text": "one",
+              "x": 192,
+              "y": 38,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "0",
+              "x": 1,
+              "y": 16,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "15",
+              "x": 383,
+              "y": 16,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 385,
+            "y": 18,
+            "width": 382,
+            "height": 40,
+            "label": {
+              "text": "two",
+              "x": 576,
+              "y": 38,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "16",
+              "x": 385,
+              "y": 16,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "31",
+              "x": 767,
+              "y": 16,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      },
+      {
+        "y": 76,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 76,
+            "width": 382,
+            "height": 40,
+            "label": {
+              "text": "three",
+              "x": 192,
+              "y": 96,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "32",
+              "x": 1,
+              "y": 74,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "47",
+              "x": 383,
+              "y": 74,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      }
+    ],
+    "title": {
+      "text": "",
+      "x": 385,
+      "y": 105,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}

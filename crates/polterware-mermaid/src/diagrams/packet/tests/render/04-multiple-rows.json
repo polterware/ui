@@ -1,0 +1,145 @@
+{
+  "name": "04-multiple-rows",
+  "source": "packet\n  0-10: \"test\"\n  11-90: \"multiple\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1026,
+      "height": 156
+    },
+    "rawViewBox": "0 0 1026 156",
+    "rows": [
+      {
+        "y": 15,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 15,
+            "width": 347,
+            "height": 32,
+            "label": {
+              "text": "test",
+              "x": 174.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "0",
+              "x": 1,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "10",
+              "x": 348,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 353,
+            "y": 15,
+            "width": 667,
+            "height": 32,
+            "label": {
+              "text": "multiple",
+              "x": 686.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "11",
+              "x": 353,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "31",
+              "x": 1020,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      },
+      {
+        "y": 62,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 62,
+            "width": 1019,
+            "height": 32,
+            "label": {
+              "text": "multiple",
+              "x": 510.5,
+              "y": 78,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "32",
+              "x": 1,
+              "y": 60,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "63",
+              "x": 1020,
+              "y": 60,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      },
+      {
+        "y": 109,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 109,
+            "width": 859,
+            "height": 32,
+            "label": {
+              "text": "multiple",
+              "x": 430.5,
+              "y": 125,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "64",
+              "x": 1,
+              "y": 107,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "90",
+              "x": 860,
+              "y": 107,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      }
+    ],
+    "title": {
+      "text": "",
+      "x": 513,
+      "y": 132.5,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}
