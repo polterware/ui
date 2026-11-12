@@ -1,0 +1,224 @@
+{
+  "name": "07-no-title",
+  "source": "quadrantChart\n    x-axis Low --> High\n    y-axis Low --> High\n    quadrant-1 Upper right\n    quadrant-2 Upper left\n    quadrant-3 Lower left\n    quadrant-4 Lower right\n    Only point: [0.5, 0.5]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "height": 500
+    },
+    "rawViewBox": "0 0 500 500",
+    "title": null,
+    "quadrants": [
+      {
+        "rect": {
+          "x": 263,
+          "y": 5,
+          "width": 232,
+          "height": 232,
+          "fill": "#ECECFF"
+        },
+        "text": {
+          "text": "Upper right",
+          "x": 379,
+          "y": 10,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 105.6,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 31,
+          "y": 5,
+          "width": 232,
+          "height": 232,
+          "fill": "#f1f1ff"
+        },
+        "text": {
+          "text": "Upper left",
+          "x": 147,
+          "y": 10,
+          "rotation": 0,
+          "fill": "#0e0e00",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 96,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 31,
+          "y": 237,
+          "width": 232,
+          "height": 232,
+          "fill": "#f6f6ff"
+        },
+        "text": {
+          "text": "Lower left",
+          "x": 147,
+          "y": 242,
+          "rotation": 0,
+          "fill": "#090900",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 96,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 263,
+          "y": 237,
+          "width": 232,
+          "height": 232,
+          "fill": "#fbfbff"
+        },
+        "text": {
+          "text": "Lower right",
+          "x": 379,
+          "y": 242,
+          "rotation": 0,
+          "fill": "#040400",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 105.6,
+          "height": 18.4
+        }
+      }
+    ],
+    "borderLines": [
+      {
+        "x1": 30,
+        "y1": 5,
+        "x2": 496,
+        "y2": 5,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 495,
+        "y1": 6,
+        "x2": 495,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 30,
+        "y1": 469,
+        "x2": 496,
+        "y2": 469,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 31,
+        "y1": 6,
+        "x2": 31,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 263,
+        "y1": 6,
+        "x2": 263,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1
+      },
+      {
+        "x1": 32,
+        "y1": 237,
+        "x2": 494,
+        "y2": 237,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "Low",
+        "x": 147,
+        "y": 479,
+        "rotation": 0,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 28.799999999999997,
+        "height": 18.4
+      },
+      {
+        "text": "High",
+        "x": 379,
+        "y": 479,
+        "rotation": 0,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 38.4,
+        "height": 18.4
+      },
+      {
+        "text": "Low",
+        "x": 5,
+        "y": 353,
+        "rotation": -90,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 28.799999999999997,
+        "height": 18.4
+      },
+      {
+        "text": "High",
+        "x": 5,
+        "y": 121,
+        "rotation": -90,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 38.4,
+        "height": 18.4
+      }
+    ],
+    "points": [
+      {
+        "circle": {
+          "cx": 263,
+          "cy": 237,
+          "r": 5,
+          "fill": "hsl(240, 100%, NaN%)",
+          "stroke": "hsl(240, 100%, NaN%)",
+          "strokeWidth": 0
+        },
+        "text": {
+          "text": "Only point",
+          "x": 263,
+          "y": 242,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 12,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 72,
+          "height": 13.799999999999999
+        }
+      }
+    ]
+  }
+}

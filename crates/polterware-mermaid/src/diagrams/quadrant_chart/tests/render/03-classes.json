@@ -1,0 +1,301 @@
+{
+  "name": "03-classes",
+  "source": "quadrantChart\n    title Classes and styles\n    x-axis Slow --> Fast\n    y-axis Weak --> Strong\n    quadrant-1 Stars\n    quadrant-2 Question marks\n    quadrant-3 Dogs\n    quadrant-4 Cash cows\n    classDef important radius: 10, color: #ff3300, stroke-color: #0000ff, stroke-width: 3px\n    classDef quiet radius: 2, color: #eeeeee\n    Market leader:::important: [0.8, 0.9]\n    Challenger:::quiet: [0.2, 0.3]\n    Niche: [0.5, 0.5]\n    Steady:::important: [0.65, 0.25]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "height": 500
+    },
+    "rawViewBox": "0 0 500 500",
+    "title": {
+      "text": "Classes and styles",
+      "x": 250,
+      "y": 10,
+      "rotation": 0,
+      "fill": "#131300",
+      "fontSize": 20,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "width": 215.99999999999997,
+      "height": 23
+    },
+    "quadrants": [
+      {
+        "rect": {
+          "x": 263,
+          "y": 45,
+          "width": 232,
+          "height": 212,
+          "fill": "#ECECFF"
+        },
+        "text": {
+          "text": "Stars",
+          "x": 379,
+          "y": 50,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 48,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 31,
+          "y": 45,
+          "width": 232,
+          "height": 212,
+          "fill": "#f1f1ff"
+        },
+        "text": {
+          "text": "Question marks",
+          "x": 147,
+          "y": 50,
+          "rotation": 0,
+          "fill": "#0e0e00",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 134.4,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 31,
+          "y": 257,
+          "width": 232,
+          "height": 212,
+          "fill": "#f6f6ff"
+        },
+        "text": {
+          "text": "Dogs",
+          "x": 147,
+          "y": 262,
+          "rotation": 0,
+          "fill": "#090900",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 38.4,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 263,
+          "y": 257,
+          "width": 232,
+          "height": 212,
+          "fill": "#fbfbff"
+        },
+        "text": {
+          "text": "Cash cows",
+          "x": 379,
+          "y": 262,
+          "rotation": 0,
+          "fill": "#040400",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 86.39999999999999,
+          "height": 18.4
+        }
+      }
+    ],
+    "borderLines": [
+      {
+        "x1": 30,
+        "y1": 45,
+        "x2": 496,
+        "y2": 45,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 495,
+        "y1": 46,
+        "x2": 495,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 30,
+        "y1": 469,
+        "x2": 496,
+        "y2": 469,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 31,
+        "y1": 46,
+        "x2": 31,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 263,
+        "y1": 46,
+        "x2": 263,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1
+      },
+      {
+        "x1": 32,
+        "y1": 257,
+        "x2": 494,
+        "y2": 257,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "Slow",
+        "x": 147,
+        "y": 479,
+        "rotation": 0,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 38.4,
+        "height": 18.4
+      },
+      {
+        "text": "Fast",
+        "x": 379,
+        "y": 479,
+        "rotation": 0,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 38.4,
+        "height": 18.4
+      },
+      {
+        "text": "Weak",
+        "x": 5,
+        "y": 363,
+        "rotation": -90,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 38.4,
+        "height": 18.4
+      },
+      {
+        "text": "Strong",
+        "x": 5,
+        "y": 151,
+        "rotation": -90,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 57.599999999999994,
+        "height": 18.4
+      }
+    ],
+    "points": [
+      {
+        "circle": {
+          "cx": 332.6,
+          "cy": 363,
+          "r": 10,
+          "fill": "#ff3300",
+          "stroke": "#0000ff",
+          "strokeWidth": 3
+        },
+        "text": {
+          "text": "Steady",
+          "x": 332.6,
+          "y": 368,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 12,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 43.199999999999996,
+          "height": 13.799999999999999
+        }
+      },
+      {
+        "circle": {
+          "cx": 263,
+          "cy": 257,
+          "r": 5,
+          "fill": "hsl(240, 100%, NaN%)",
+          "stroke": "hsl(240, 100%, NaN%)",
+          "strokeWidth": 0
+        },
+        "text": {
+          "text": "Niche",
+          "x": 263,
+          "y": 262,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 12,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 36,
+          "height": 13.799999999999999
+        }
+      },
+      {
+        "circle": {
+          "cx": 123.8,
+          "cy": 341.79999999999995,
+          "r": 2,
+          "fill": "#eeeeee",
+          "stroke": "hsl(240, 100%, NaN%)",
+          "strokeWidth": 0
+        },
+        "text": {
+          "text": "Challenger",
+          "x": 123.8,
+          "y": 346.79999999999995,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 12,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 72,
+          "height": 13.799999999999999
+        }
+      },
+      {
+        "circle": {
+          "cx": 402.2,
+          "cy": 87.39999999999999,
+          "r": 10,
+          "fill": "#ff3300",
+          "stroke": "#0000ff",
+          "strokeWidth": 3
+        },
+        "text": {
+          "text": "Market leader",
+          "x": 402.2,
+          "y": 92.39999999999999,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 12,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 93.6,
+          "height": 13.799999999999999
+        }
+      }
+    ]
+  }
+}

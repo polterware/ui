@@ -1,0 +1,257 @@
+{
+  "name": "10-long-labels",
+  "source": "quadrantChart\n    title A considerably longer quadrant chart title for the default geometry\n    x-axis From the very beginning of the process --> To the very end of the process\n    y-axis Little impact on the outcome --> A large impact on the outcome\n    quadrant-1 We should definitely expand into this area\n    quadrant-2 We need to promote this more aggressively\n    quadrant-3 We should re-evaluate and probably remove\n    quadrant-4 This may be improved with focused work\n    A long campaign name: [0.42, 0.58]\n    Another campaign: [0.71, 0.19]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "height": 500
+    },
+    "rawViewBox": "0 0 500 500",
+    "title": {
+      "text": "A considerably longer quadrant chart title for the default geometry",
+      "x": 250,
+      "y": 10,
+      "rotation": 0,
+      "fill": "#131300",
+      "fontSize": 20,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "width": 803.9999999999999,
+      "height": 23
+    },
+    "quadrants": [
+      {
+        "rect": {
+          "x": 263,
+          "y": 45,
+          "width": 232,
+          "height": 212,
+          "fill": "#ECECFF"
+        },
+        "text": {
+          "text": "We should definitely expand into this area",
+          "x": 379,
+          "y": 50,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 403.2,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 31,
+          "y": 45,
+          "width": 232,
+          "height": 212,
+          "fill": "#f1f1ff"
+        },
+        "text": {
+          "text": "We need to promote this more aggressively",
+          "x": 147,
+          "y": 50,
+          "rotation": 0,
+          "fill": "#0e0e00",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 393.59999999999997,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 31,
+          "y": 257,
+          "width": 232,
+          "height": 212,
+          "fill": "#f6f6ff"
+        },
+        "text": {
+          "text": "We should re-evaluate and probably remove",
+          "x": 147,
+          "y": 262,
+          "rotation": 0,
+          "fill": "#090900",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 393.59999999999997,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 263,
+          "y": 257,
+          "width": 232,
+          "height": 212,
+          "fill": "#fbfbff"
+        },
+        "text": {
+          "text": "This may be improved with focused work",
+          "x": 379,
+          "y": 262,
+          "rotation": 0,
+          "fill": "#040400",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 364.8,
+          "height": 18.4
+        }
+      }
+    ],
+    "borderLines": [
+      {
+        "x1": 30,
+        "y1": 45,
+        "x2": 496,
+        "y2": 45,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 495,
+        "y1": 46,
+        "x2": 495,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 30,
+        "y1": 469,
+        "x2": 496,
+        "y2": 469,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 31,
+        "y1": 46,
+        "x2": 31,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 263,
+        "y1": 46,
+        "x2": 263,
+        "y2": 468,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1
+      },
+      {
+        "x1": 32,
+        "y1": 257,
+        "x2": 494,
+        "y2": 257,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "From the very beginning of the process",
+        "x": 147,
+        "y": 479,
+        "rotation": 0,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 364.8,
+        "height": 18.4
+      },
+      {
+        "text": "To the very end of the process",
+        "x": 379,
+        "y": 479,
+        "rotation": 0,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 288,
+        "height": 18.4
+      },
+      {
+        "text": "Little impact on the outcome",
+        "x": 5,
+        "y": 363,
+        "rotation": -90,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 268.8,
+        "height": 18.4
+      },
+      {
+        "text": "A large impact on the outcome",
+        "x": 5,
+        "y": 151,
+        "rotation": -90,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 278.4,
+        "height": 18.4
+      }
+    ],
+    "points": [
+      {
+        "circle": {
+          "cx": 360.44,
+          "cy": 388.44000000000005,
+          "r": 5,
+          "fill": "hsl(240, 100%, NaN%)",
+          "stroke": "hsl(240, 100%, NaN%)",
+          "strokeWidth": 0
+        },
+        "text": {
+          "text": "Another campaign",
+          "x": 360.44,
+          "y": 393.44000000000005,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 12,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 115.19999999999999,
+          "height": 13.799999999999999
+        }
+      },
+      {
+        "circle": {
+          "cx": 225.88,
+          "cy": 223.08,
+          "r": 5,
+          "fill": "hsl(240, 100%, NaN%)",
+          "stroke": "hsl(240, 100%, NaN%)",
+          "strokeWidth": 0
+        },
+        "text": {
+          "text": "A long campaign name",
+          "x": 225.88,
+          "y": 228.08,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 12,
+          "anchor": "middle",
+          "baseline": "hanging",
+          "width": 144,
+          "height": 13.799999999999999
+        }
+      }
+    ]
+  }
+}
