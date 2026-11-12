@@ -2234,8 +2234,10 @@ impl FilterPopover {
         let (clear, clear_pointer, clear_ink) =
             ghost(SharedString::from(format!("{id}-clear")), window, cx);
         let clear_target = entity.clone();
+        let clear_id = format!("{id}-clear");
         let clear = track(
             clear
+                .debug_selector(move || clear_id)
                 .px(px(8.125))
                 .py(px(3.25))
                 .text_size(px(11.0))
@@ -2251,29 +2253,38 @@ impl FilterPopover {
         );
 
         Some(
+            // The row takes the width its page gives it, whatever the parent lays out (a page
+            // row, a toolbar row, or a column): a shrink-to-fit width would stack the pill, the
+            // `+`, and Clear in a box as narrow as the pill. The old 8px margin is padding on
+            // this box, so `w_full` measures the whole row instead of overflowing it.
             div()
-                .relative()
-                .m(px(8.0))
-                .p(px(2.0))
-                .flex()
-                .flex_wrap()
-                .items_center()
-                .gap(px(2.0))
-                .rounded(px(TRACK_RADIUS))
-                .bg(face(theme.field_fill_top, theme.field_fill_bottom))
-                .shadow(material::control_drop(&theme))
-                .child(pills)
+                .debug_selector(move || format!("{id}-bar"))
+                .w_full()
+                .p(px(8.0))
                 .child(
                     div()
-                        .flex_none()
+                        .relative()
+                        .p(px(2.0))
                         .flex()
+                        .flex_wrap()
                         .items_center()
                         .gap(px(2.0))
-                        .mr(px(2.0))
-                        .child(clear),
+                        .rounded(px(TRACK_RADIUS))
+                        .bg(face(theme.field_fill_top, theme.field_fill_bottom))
+                        .shadow(material::control_drop(&theme))
+                        .child(pills)
+                        .child(
+                            div()
+                                .flex_none()
+                                .flex()
+                                .items_center()
+                                .gap(px(2.0))
+                                .mr(px(2.0))
+                                .child(clear),
+                        )
+                        .child(material::edge(Edge::Strong, TRACK_RADIUS, &theme))
+                        .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation()),
                 )
-                .child(material::edge(Edge::Strong, TRACK_RADIUS, &theme))
-                .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                 .into_any_element(),
         )
     }
@@ -2345,6 +2356,65 @@ mod tests {
             assert_eq!(filter.query(super::Surface::Root, cx), "agent");
             assert!(filter.geometry.borrow().root.unwrap().size.height < height_before);
         });
+    }
+
+    #[gpui::test]
+    fn the_bar_fills_the_width_its_page_gives_it(cx: &mut TestAppContext) {
+        let popover = cx.new(|cx| {
+            let mut popover = FilterPopover::new("f", "Filters", false, cx);
+            popover.set_fields(vec![field("status", "Status")]);
+            popover.add_filter("status", &["one".to_string()], cx);
+            popover
+        });
+        let host = popover.clone();
+        // A page toolbar: one row, the bar at its start, as the page draws it.
+        let mut visual = open(cx, size(900.0, 600.0), move |window, cx| {
+            div()
+                .size_full()
+                .flex()
+                .flex_col()
+                .child(
+                    div()
+                        .flex_none()
+                        .h(px(40.0))
+                        .px(px(8.0))
+                        .flex()
+                        .items_center()
+                        .child(FilterPopover::bar(&host, window, cx).expect("the bar draws")),
+                )
+                .into_any_element()
+        });
+        draw(&mut visual);
+        let bar = visual.debug_bounds("f-bar").expect("the bar draws");
+        assert_eq!(
+            bar.size.width,
+            px(884.0),
+            "the bar takes the row's width, not its pill's"
+        );
+        // `+` follows the last pill and Clear ends the row, so both stay on one line.
+        let clear = visual.debug_bounds("f-clear").expect("Clear draws");
+        let (add, pill) = popover.read_with(&visual, |popover, _| {
+            let geometry = popover.geometry.borrow();
+            (
+                geometry.add.expect("the add draws"),
+                geometry
+                    .pills
+                    .values()
+                    .copied()
+                    .next()
+                    .expect("the pill draws"),
+            )
+        });
+        assert!(add.left() >= pill.right(), "the add sits after the pill");
+        assert!(
+            (f32::from(add.top()) - f32::from(pill.top())).abs() < 4.0,
+            "the add shares the pill's line"
+        );
+        assert!(clear.right() > bar.right() - px(24.0), "Clear ends the row");
+        assert!(
+            (f32::from(clear.top()) - f32::from(pill.top())).abs() < 4.0,
+            "Clear shares the pill's line"
+        );
     }
 
     fn field(id: &str, label: &str) -> FilterField {
