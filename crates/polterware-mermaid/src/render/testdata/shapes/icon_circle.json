@@ -1,0 +1,138 @@
+{
+  "shape": "iconCircle",
+  "upstream": "iconCircle.ts",
+  "cases": [
+    {
+      "label": "A",
+      "label_size": {
+        "width": 40,
+        "height": 20
+      },
+      "padding": 10,
+      "look": "classic",
+      "node": {
+        "width": 107.88225099390857,
+        "height": 139.88225099390857
+      },
+      "drawables": [
+        {
+          "kind": "circle",
+          "cx": 0,
+          "cy": 0,
+          "r": 53.941125496954285,
+          "translate": [
+            0,
+            -16
+          ],
+          "chain": "icon-shape default"
+        },
+        {
+          "kind": "rect",
+          "x": -53.941125496954285,
+          "y": -69.94112549695429,
+          "width": 107.88225099390857,
+          "height": 139.88225099390857,
+          "rx": 0,
+          "ry": 0,
+          "translate": [
+            0,
+            0
+          ],
+          "chain": "icon-shape default"
+        }
+      ],
+      "label_transform": [
+        -22,
+        45.941125496954285
+      ],
+      "intersect": [
+        {
+          "point": [
+            215.76450198781714,
+            0
+          ],
+          "at": [
+            53.941125496954285,
+            0
+          ]
+        },
+        {
+          "point": [
+            0,
+            -279.76450198781714
+          ],
+          "at": [
+            0,
+            -69.94112549695429
+          ]
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "label_size": {
+        "width": 120,
+        "height": 44
+      },
+      "padding": 15,
+      "look": "classic",
+      "node": {
+        "width": 124,
+        "height": 163.88225099390857
+      },
+      "drawables": [
+        {
+          "kind": "circle",
+          "cx": 0,
+          "cy": 0,
+          "r": 53.941125496954285,
+          "translate": [
+            0,
+            -28
+          ],
+          "chain": "icon-shape default"
+        },
+        {
+          "kind": "rect",
+          "x": -62,
+          "y": -81.94112549695429,
+          "width": 124,
+          "height": 163.88225099390857,
+          "rx": 0,
+          "ry": 0,
+          "translate": [
+            0,
+            0
+          ],
+          "chain": "icon-shape default"
+        }
+      ],
+      "label_transform": [
+        -62,
+        33.941125496954285
+      ],
+      "intersect": [
+        {
+          "point": [
+            248,
+            0
+          ],
+          "at": [
+            62,
+            0
+          ]
+        },
+        {
+          "point": [
+            0,
+            -327.76450198781714
+          ],
+          "at": [
+            0,
+            -81.94112549695429
+          ]
+        }
+      ]
+    }
+  ]
+}
