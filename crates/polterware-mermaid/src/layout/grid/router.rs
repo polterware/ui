@@ -1,59 +1,86 @@
 //! Port of Mermaid 12.3.0's `rendering-util/layout-algorithms/grid/router.ts`.
 //!
-//! Part A wires the routing entry point so the layout core compiles and commits rendering
-//! capabilities. Part B ports the planning, constraint, and compatibility phases and exposes them
-//! for the routing session; part C ports `routerSparse`, `routerSearch`, and `routerSession`, which
-//! owns the commit loop behind [`route_grid_edges`]. Until then [`route_grid_edges`] commits no
-//! routes and reports success. This stub is deliberately outside public behavior: a part-A/B
-//! layout is a measured grid with edges left unrouted.
+//! The routing phases live in their own modules: planning, constraints, and compatibility (part
+//! B), sparse search and the routing session (part C), and edge-label placement (part D). This
+//! facade keeps the stable options, exports, and entry point; [`route_grid_edges`] runs one
+//! [`crate::layout::grid::router_session::GridEdgeRoutingSession`] and commits only on success.
+
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
 
 use crate::layout::grid::router_errors::GridRoutingError;
 use crate::layout::grid::router_instrumentation::GridRoutingInstrumentation;
 use crate::layout::grid::router_planning::{PreparedEdgeRoutes, prepare_edge_routes};
+use crate::layout::grid::router_search::RouterSearchCaps;
+use crate::layout::grid::router_session::GridEdgeRoutingSession;
 use crate::layout::grid::router_topology::TopologyResourceCaps;
-use crate::layout::grid::types::{GridLayoutResult, LayoutData};
+use crate::layout::grid::types::{Edge, GridLayoutResult, LayoutData};
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct GridRoutingRouteQuality {
+    pub valid: bool,
+    pub length: f64,
+    pub bends: usize,
+}
+
+/// The sparse-versus-legacy measurements reported when dual-route comparison is enabled.
+#[derive(Clone, Debug, PartialEq)]
+pub struct GridRoutingDualRouteComparison {
+    pub edge_id: String,
+    pub sparse: GridRoutingRouteQuality,
+    pub legacy: GridRoutingRouteQuality,
+}
 
 #[derive(Clone, Debug, Default)]
 pub struct GridRoutingOptions {
     // Caps are also test seams, so enabling them deliberately bypasses compatibility fast paths.
     pub topology_caps: Option<TopologyResourceCaps>,
-    /// Part C adds `RouterSearchCaps`; a configured search cap also disables the compatibility fast
-    /// path so tests exercise sparse search. The flag stands in until the cap type exists.
-    pub search_caps_configured: bool,
+    pub search_caps: Option<RouterSearchCaps>,
 }
 
-/// Test options also carry an eventual dual-route comparison callback (part C). Part B only needs
-/// the flag that disables the fast path while that comparison runs.
+/// Test options also carry the dual-route comparison sink that records what sparse search would
+/// choose beside the legacy corridor route.
 #[derive(Clone, Debug, Default)]
 pub struct GridRoutingTestOptions {
     pub options: GridRoutingOptions,
-    pub dual_route_comparison: bool,
+    pub on_dual_route_comparison: Option<Rc<RefCell<Vec<GridRoutingDualRouteComparison>>>>,
 }
 
 impl GridRoutingTestOptions {
     /// The production corridor fast path only runs when no test seam is configured.
     pub fn compatibility_fast_path_enabled(&self) -> bool {
         self.options.topology_caps.is_none()
-            && !self.options.search_caps_configured
-            && !self.dual_route_comparison
+            && self.options.search_caps.is_none()
+            && self.on_dual_route_comparison.is_none()
     }
 }
 
-/// Routing facade. Parts B and C port the routing phases; part D registers the pipeline. Until
-/// then this publishes the configured edge style (the part of routing the layout core commits)
-/// and computes no route points.
+/// Routing facade: a fresh session owns every mutable routing structure for one invocation and
+/// commits routes in deterministic plan order. A failed invocation leaves the caller's edges
+/// untouched; part D registers the pipeline and places labels on the committed routes.
 pub fn route_grid_edges(
     layout: &mut LayoutData,
     result: &GridLayoutResult,
-    _metrics: Option<&mut GridRoutingInstrumentation>,
-    _options: &GridRoutingTestOptions,
+    metrics: Option<&mut GridRoutingInstrumentation>,
+    options: &GridRoutingTestOptions,
 ) -> Result<(), GridRoutingError> {
-    // Part C's `GridEdgeRoutingSession` calls `root_container_meta`, `prepare_edge_routes`,
-    // `prepare_routing_modes`, and `build_routing_context`, then routes bundles in plan order. This
-    // stub keeps the style commit so a part-A/B layout still renders measured edges.
+    let metrics_snapshot = metrics.as_ref().map(|metrics| (*metrics).clone());
+    let mut session =
+        GridEdgeRoutingSession::new(layout.clone(), result, metrics_snapshot, options);
+    session.route()?;
+    let (edges, session_metrics) = session.into_parts();
+    if let (Some(target), Some(local)) = (metrics, session_metrics) {
+        *target = local;
+    }
+    let by_id: HashMap<&str, &Edge> = edges.iter().map(|edge| (edge.id.as_str(), edge)).collect();
     for edge in &mut layout.edges {
-        edge.curve = Some(result.config.curve);
-        edge.corner_radius = Some(result.config.edge_corner_radius);
+        let Some(routed) = by_id.get(edge.id.as_str()) else {
+            continue;
+        };
+        edge.points = routed.points.clone();
+        edge.curve = routed.curve;
+        edge.corner_radius = routed.corner_radius;
     }
     Ok(())
 }

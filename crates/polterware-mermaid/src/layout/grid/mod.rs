@@ -3,9 +3,9 @@
 //!
 //! Part A ports the geometry core (`types`, `groups`, `placement`, `labelGeometry`,
 //! `labelSpacing`, `layoutCore`, `routerTopology`) and wires the routing and label entry points.
-//! Parts B through D fill the routing phases (`routerCompatibility`, `routerPlanning`,
-//! `routerConstraint`, `routerSparse`, `routerSearch`, `routerSession`, `routerInstrumentation`)
-//! and the edge-label transaction (`edgeLabels`).
+//! Part B ports `routerCompatibility`, `routerPlanning`, and `routerConstraint`; part C ports
+//! `routerSparse`, `routerSearch`, `routerSession`, and the instrumentation checkpoints. Part D
+//! owns the edge-label transaction (`edgeLabels`).
 //!
 //! The sources are Mermaid 12.3.0 (MIT, Copyright (c) 2014 - 2022 Knut Sveidqvist), checked out at
 //! `research/mermaid-port/upstream/mermaid`.
@@ -24,6 +24,9 @@ pub mod router_errors;
 pub mod router_instrumentation;
 pub mod router_occupancy;
 pub mod router_planning;
+pub mod router_search;
+pub mod router_session;
+pub mod router_sparse;
 pub mod router_topology;
 pub mod types;
 
@@ -44,7 +47,10 @@ pub use placement::{
     GridPlacementResolution, build_grid_source_order, build_grid_source_order_indices,
     read_grid_config, resolve_grid_placements, validate_grid_placement_map,
 };
-pub use router::{GridRoutingOptions, GridRoutingTestOptions, plan_grid_routes, route_grid_edges};
+pub use router::{
+    GridRoutingDualRouteComparison, GridRoutingOptions, GridRoutingRouteQuality,
+    GridRoutingTestOptions, plan_grid_routes, route_grid_edges,
+};
 pub use router_compatibility::{
     CompatibilitySegmentAttachments, PreparedRoutingModes, SELF_LOOP_PORT_GAP,
     SELF_LOOP_PORT_OFFSET_STEP, SegmentAttachment, SegmentAttachmentAlternative, SelfLoopRoute,
@@ -72,6 +78,16 @@ pub use router_planning::{
     EndpointFinalKind, EndpointRole, EndpointSlotAssignment, LANE_SEPARATION_PX,
     PreparedEdgeRoutes, TERMINAL_APPROACH_PX, assign_compact_portal_coordinates, endpoint_pair_key,
     owner_group_title, owner_side_key, prepare_edge_routes, side_interval, side_order,
+};
+pub use router_search::{
+    AdjacencySearchTopology, RouterQueueOrder, RouterSearchCaps, RouterSearchHeuristic,
+    RouterSearchOptions, RouterSearchResult, RouterSearchTopology, RouterSearchWorkspace,
+    RouterTupleCost, assert_search_budget_available, compare_tuple_cost, find_shortest_route,
+};
+pub use router_session::GridEdgeRoutingSession;
+pub use router_sparse::{
+    PortalSelection, SparseOccupied, SparseSegmentRoute, sparse_container_segment,
+    sparse_same_container_route, sparse_self_loop_route,
 };
 pub use router_topology::{
     BuildTopologyOptions, ContainerTopologyInput, DEFAULT_MAX_ROUTING_ESTIMATED_BYTES,

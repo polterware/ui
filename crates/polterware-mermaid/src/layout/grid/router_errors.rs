@@ -3,6 +3,7 @@
 //! routing helpers throw.
 
 use crate::layout::grid::router_instrumentation::GridRoutingFallbackReason;
+use crate::layout::grid::types::GridError;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SearchStateScope {
@@ -51,9 +52,12 @@ impl std::error::Error for GridRoutingResourceLimitError {}
 /// Routing errors: upstream throws a `GridRoutingResourceLimitError` for caps and a plain `Error`
 /// for invalid geometry. Both map to one Rust error so callers that recover from caps can match
 /// the variant.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum GridRoutingError {
     Geometry(String),
+    /// An upstream `gridError`: the code, message, and structured details travel together so
+    /// retries can inspect the failure reason.
+    Grid(GridError),
     ResourceLimit(GridRoutingResourceLimitError),
 }
 
@@ -75,6 +79,7 @@ impl std::fmt::Display for GridRoutingError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Geometry(message) => f.write_str(message),
+            Self::Grid(error) => error.fmt(f),
             Self::ResourceLimit(error) => f.write_str(&error.message),
         }
     }

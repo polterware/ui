@@ -481,9 +481,13 @@ pub struct SegmentAttachment {
     pub side: GridSide,
 }
 
+/// An alternative endpoint attachment plus the portal selection that becomes committed if the
+/// route using it validates. The session applies the selection after routing, keeping the
+/// transactional rollback in one place.
+#[derive(Clone, Debug, PartialEq)]
 pub struct SegmentAttachmentAlternative {
     pub attachment: SegmentAttachment,
-    pub select: Box<dyn FnMut()>,
+    pub selection: Vec<crate::layout::grid::router_sparse::PortalSelection>,
 }
 
 impl SegmentAttachment {

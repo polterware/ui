@@ -169,6 +169,53 @@ pub fn rect_for_node(node: &Node) -> Rect {
     }
 }
 
+/// Detects a proper interior crossing or a T-intersection where one segment's endpoint lies on the
+/// other segment's interior. A point shared by both segments' endpoints is a departure or arrival,
+/// not a crossing.
+pub fn segments_cross(first: Segment, second: Segment) -> bool {
+    if first.orientation == SegmentOrientation::Z
+        || second.orientation == SegmentOrientation::Z
+        || first.orientation == second.orientation
+    {
+        return false;
+    }
+    let horizontal = if first.orientation == SegmentOrientation::H {
+        first
+    } else {
+        second
+    };
+    let vertical = if first.orientation == SegmentOrientation::V {
+        first
+    } else {
+        second
+    };
+    let horizontal_y = horizontal.a.y;
+    let horizontal_x1 = horizontal.a.x.min(horizontal.b.x);
+    let horizontal_x2 = horizontal.a.x.max(horizontal.b.x);
+    let vertical_x = vertical.a.x;
+    let vertical_y1 = vertical.a.y.min(vertical.b.y);
+    let vertical_y2 = vertical.a.y.max(vertical.b.y);
+    if !(vertical_x >= horizontal_x1
+        && vertical_x <= horizontal_x2
+        && horizontal_y >= vertical_y1
+        && horizontal_y <= vertical_y2)
+    {
+        return false;
+    }
+    let tolerance = 1e-6;
+    let intersection_x = vertical_x;
+    let intersection_y = horizontal_y;
+    let matches_horizontal_endpoint = (intersection_x - horizontal.a.x).abs() < tolerance
+        && (intersection_y - horizontal.a.y).abs() < tolerance
+        || (intersection_x - horizontal.b.x).abs() < tolerance
+            && (intersection_y - horizontal.b.y).abs() < tolerance;
+    let matches_vertical_endpoint = (intersection_x - vertical.a.x).abs() < tolerance
+        && (intersection_y - vertical.a.y).abs() < tolerance
+        || (intersection_x - vertical.b.x).abs() < tolerance
+            && (intersection_y - vertical.b.y).abs() < tolerance;
+    !(matches_horizontal_endpoint && matches_vertical_endpoint)
+}
+
 pub fn manhattan_length(points: &[RouterPoint]) -> f64 {
     let mut total = 0.0;
     for index in 1..points.len() {
