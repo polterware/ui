@@ -1,0 +1,583 @@
+{
+  "name": "09-junctions-fan-out",
+  "source": "architecture-beta\n  service source(internet)[Source]\n  junction hub\n  service one(disk)[One]\n  service two(disk)[Two]\n  service three(disk)[Three]\n\n  source:R -- L:hub\n  hub:T -- B:one\n  hub:R -- L:two\n  hub:B -- T:three\n",
+  "expected": {
+    "viewBox": {
+      "x": -220.412812,
+      "y": -211.412812,
+      "width": 562.325623,
+      "height": 568.225623
+    },
+    "services": [
+      {
+        "id": "source",
+        "x": -180.412812,
+        "y": 29.75,
+        "label": {
+          "text": "Source",
+          "x": -169.212812,
+          "y": 97.25,
+          "width": 57.6,
+          "height": 18.4,
+          "baseline": 115.65,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 17.5,
+              "y": 17.5,
+              "width": 45,
+              "height": 45,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 40,
+              "y": 17.5,
+              "width": 0,
+              "height": 45,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 17.5,
+              "y": 40,
+              "width": 45,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 28.53,
+              "y": 17.51,
+              "width": 11.46,
+              "height": 44.98,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 40.01,
+              "y": 17.51,
+              "width": 11.46,
+              "height": 44.98,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 19.75,
+              "y": 30.1,
+              "width": 40.5,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 19.75,
+              "y": 49.9,
+              "width": 40.5,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      },
+      {
+        "id": "one",
+        "x": 20.75,
+        "y": -171.412812,
+        "label": {
+          "text": "One",
+          "x": 46.35,
+          "y": -103.912812,
+          "width": 28.8,
+          "height": 18.4,
+          "baseline": -85.512812,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "rect",
+              "x": 20,
+              "y": 15,
+              "width": 40,
+              "height": 50,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26,
+              "y": 19.17,
+              "width": 28,
+              "height": 29.16,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 36,
+              "y": 29.58,
+              "width": 8,
+              "height": 8.34,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 26.12869,
+              "y": 40.874197,
+              "width": 11.462732,
+              "height": 15.66941,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      },
+      {
+        "id": "two",
+        "x": 221.912812,
+        "y": 29.75,
+        "label": {
+          "text": "Two",
+          "x": 247.512812,
+          "y": 97.25,
+          "width": 28.8,
+          "height": 18.4,
+          "baseline": 115.65,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "rect",
+              "x": 20,
+              "y": 15,
+              "width": 40,
+              "height": 50,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26,
+              "y": 19.17,
+              "width": 28,
+              "height": 29.16,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 36,
+              "y": 29.58,
+              "width": 8,
+              "height": 8.34,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 26.12869,
+              "y": 40.874197,
+              "width": 11.462732,
+              "height": 15.66941,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      },
+      {
+        "id": "three",
+        "x": 20.75,
+        "y": 230.912812,
+        "label": {
+          "text": "Three",
+          "x": 36.75,
+          "y": 298.412812,
+          "width": 48,
+          "height": 18.4,
+          "baseline": 316.812812,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "rect",
+              "x": 20,
+              "y": 15,
+              "width": 40,
+              "height": 50,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26,
+              "y": 19.17,
+              "width": 28,
+              "height": 29.16,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 36,
+              "y": 29.58,
+              "width": 8,
+              "height": 8.34,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 26.12869,
+              "y": 40.874197,
+              "width": 11.462732,
+              "height": 15.66941,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      }
+    ],
+    "junctions": [
+      {
+        "id": "hub",
+        "x": 20.75,
+        "y": 29.75,
+        "width": 80,
+        "height": 80
+      }
+    ],
+    "groups": [],
+    "edges": [
+      {
+        "id": "architecture-diagram-9-L_source_hub_0",
+        "points": [
+          {
+            "x": -100.412812,
+            "y": 69.75
+          },
+          {
+            "x": -39.831406,
+            "y": 69.75
+          },
+          {
+            "x": 60.75,
+            "y": 69.75
+          }
+        ],
+        "arrows": [],
+        "label": null
+      },
+      {
+        "id": "architecture-diagram-9-L_hub_one_0",
+        "points": [
+          {
+            "x": 60.75,
+            "y": 69.75
+          },
+          {
+            "x": 60.75,
+            "y": -30.831406
+          },
+          {
+            "x": 60.75,
+            "y": -91.412812
+          }
+        ],
+        "arrows": [],
+        "label": null
+      },
+      {
+        "id": "architecture-diagram-9-L_hub_two_0",
+        "points": [
+          {
+            "x": 60.75,
+            "y": 69.75
+          },
+          {
+            "x": 161.331406,
+            "y": 69.75
+          },
+          {
+            "x": 221.912812,
+            "y": 69.75
+          }
+        ],
+        "arrows": [],
+        "label": null
+      },
+      {
+        "id": "architecture-diagram-9-L_hub_three_0",
+        "points": [
+          {
+            "x": 60.75,
+            "y": 69.75
+          },
+          {
+            "x": 60.75,
+            "y": 170.331406
+          },
+          {
+            "x": 60.75,
+            "y": 230.912812
+          }
+        ],
+        "arrows": [],
+        "label": null
+      }
+    ]
+  }
+}

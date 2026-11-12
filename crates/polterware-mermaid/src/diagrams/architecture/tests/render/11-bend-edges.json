@@ -1,0 +1,889 @@
+{
+  "name": "11-bend-edges",
+  "source": "architecture-beta\n  group rack(server)[Rack]\n  service left(server)[A] in rack\n  service right(disk)[B] in rack\n  service top(database)[C]\n  service bottom(disk)[D]\n\n  left:T -- R:top\n  right:B -- L:bottom\n  left:R -- L:right\n",
+  "expected": {
+    "viewBox": {
+      "x": -248.816133,
+      "y": -191.547377,
+      "width": 581.632266,
+      "height": 518.094754
+    },
+    "services": [
+      {
+        "id": "left",
+        "x": -30.176149,
+        "y": 147.047377,
+        "label": {
+          "text": "A",
+          "x": 5.023851,
+          "y": 214.547377,
+          "width": 9.6,
+          "height": 18.4,
+          "baseline": 232.947377,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "rect",
+              "x": 17.5,
+              "y": 17.5,
+              "width": 45,
+              "height": 45,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 17.5,
+              "y": 32.5,
+              "width": 45,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 17.5,
+              "y": 47.5,
+              "width": 45,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 24.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 24.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 39.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 39.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 54.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 54.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      },
+      {
+        "id": "right",
+        "x": 170.316133,
+        "y": 147.047377,
+        "label": {
+          "text": "B",
+          "x": 205.516133,
+          "y": 214.547377,
+          "width": 9.6,
+          "height": 18.4,
+          "baseline": 232.947377,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "rect",
+              "x": 20,
+              "y": 15,
+              "width": 40,
+              "height": 50,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26,
+              "y": 19.17,
+              "width": 28,
+              "height": 29.16,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 36,
+              "y": 29.58,
+              "width": 8,
+              "height": 8.34,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 26.12869,
+              "y": 40.874197,
+              "width": 11.462732,
+              "height": 15.66941,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      },
+      {
+        "id": "top",
+        "x": -49.867163,
+        "y": -71.988413,
+        "label": {
+          "text": "C",
+          "x": -14.667163,
+          "y": -4.488413,
+          "width": 9.6,
+          "height": 18.4,
+          "baseline": 13.911587,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 57.86,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 45.95,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 34.05,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 20,
+              "y": 15,
+              "width": 40,
+              "height": 14.28,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 22.14,
+              "width": 0,
+              "height": 35.72,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 60,
+              "y": 22.14,
+              "width": 0,
+              "height": 35.72,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      },
+      {
+        "id": "bottom",
+        "x": -208.816133,
+        "y": -151.547377,
+        "label": {
+          "text": "D",
+          "x": -173.616133,
+          "y": -84.047377,
+          "width": 9.6,
+          "height": 18.4,
+          "baseline": -65.647377,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "rect",
+              "x": 20,
+              "y": 15,
+              "width": 40,
+              "height": 50,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 18.34,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 23.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 55.2,
+              "y": 60,
+              "width": 1.6,
+              "height": 1.66,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26,
+              "y": 19.17,
+              "width": 28,
+              "height": 29.16,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 36,
+              "y": 29.58,
+              "width": 8,
+              "height": 8.34,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 26.12869,
+              "y": 40.874197,
+              "width": 11.462732,
+              "height": 15.66941,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      }
+    ],
+    "junctions": [],
+    "groups": [
+      {
+        "id": "rack",
+        "x": -72.676149,
+        "y": 104.547377,
+        "width": 365.492282,
+        "height": 182,
+        "label": {
+          "text": "Rack",
+          "x": -38.676149,
+          "y": 99.047377,
+          "width": 38.4,
+          "height": 18.4,
+          "baseline": 117.447377,
+          "anchor": "start",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 30,
+          "height": 30,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "rect",
+              "x": 17.5,
+              "y": 17.5,
+              "width": 45,
+              "height": 45,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 17.5,
+              "y": 32.5,
+              "width": 45,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 17.5,
+              "y": 47.5,
+              "width": 45,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 24.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 24.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 39.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 39.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 54.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 54.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            }
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "architecture-diagram-10-L_left_top_0",
+        "points": [
+          {
+            "x": 9.823851,
+            "y": 147.047377
+          },
+          {
+            "x": 10.842274,
+            "y": -31.467395
+          },
+          {
+            "x": 30.132837,
+            "y": -31.988413
+          }
+        ],
+        "arrows": [],
+        "label": null
+      },
+      {
+        "id": "architecture-diagram-10-L_right_bottom_0",
+        "points": [
+          {
+            "x": 210.316133,
+            "y": 227.047377
+          },
+          {
+            "x": 204.010864,
+            "y": -101.354475
+          },
+          {
+            "x": -208.816133,
+            "y": -111.547377
+          }
+        ],
+        "arrows": [],
+        "label": null
+      },
+      {
+        "id": "architecture-diagram-10-L_left_right_0",
+        "points": [
+          {
+            "x": 49.823851,
+            "y": 187.047377
+          },
+          {
+            "x": 110.069992,
+            "y": 187.047377
+          },
+          {
+            "x": 170.316133,
+            "y": 187.047377
+          }
+        ],
+        "arrows": [],
+        "label": null
+      }
+    ]
+  }
+}
