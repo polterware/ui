@@ -1,0 +1,45 @@
+{
+  "name": "03-risk-and-verification",
+  "source": "requirementDiagram\n  requirement low_req {\n    id: l1\n    text: first level\n    risk: low\n    verifymethod: analysis\n  }\n  requirement medium_req {\n    id: m1\n    text: second level\n    risk: medium\n    verifymethod: demonstration\n  }\n  requirement high_req {\n    id: h1\n    text: third level\n    risk: high\n    verifymethod: inspection\n  }\n  requirement tested_req {\n    id: t1\n    text: fourth level\n    risk: low\n    verifymethod: test\n  }\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "low_req",
+        "x": 123.6,
+        "y": 98.2,
+        "width": 231.2,
+        "height": 180.4
+      },
+      {
+        "id": "medium_req",
+        "x": 428.8,
+        "y": 98.2,
+        "width": 279.2,
+        "height": 180.4
+      },
+      {
+        "id": "high_req",
+        "x": 743.5999999999999,
+        "y": 98.2,
+        "width": 250.39999999999998,
+        "height": 180.4
+      },
+      {
+        "id": "tested_req",
+        "x": 1015.1999999999998,
+        "y": 98.2,
+        "width": 192.79999999999998,
+        "height": 180.4
+      }
+    ],
+    "clusters": [],
+    "edges": [],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1119.6,
+      "height": 196.4
+    },
+    "rawViewBox": "0 0 1119.6 196.4"
+  }
+}

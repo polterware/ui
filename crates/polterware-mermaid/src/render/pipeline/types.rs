@@ -66,10 +66,45 @@ pub struct NodeAttribute {
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct RequirementNodeData {
+    /// `Requirement.type`, the requirement kind's display string.
+    #[serde(rename = "type")]
+    pub type_name: String,
+    #[serde(default)]
+    pub requirement_id: String,
+    #[serde(default)]
+    pub text: String,
+    /// `Requirement.risk`; empty when the requirement has none.
+    #[serde(default)]
+    pub risk: String,
+    /// `Requirement.verifyMethod`; empty when the requirement has none.
+    #[serde(default)]
+    pub verify_method: String,
+}
+
+/// `Element`'s fields, as `requirementBox.ts` reads them from the layout node.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ElementNodeData {
+    /// `Element.type`.
+    #[serde(rename = "type")]
+    pub type_name: String,
+    #[serde(default)]
+    pub doc_ref: String,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Node {
     pub id: String,
     #[serde(default)]
     pub label: Option<String>,
+    /// `Requirement`'s payload when the node is a requirement; `None` for an element.
+    #[serde(default)]
+    pub requirement: Option<RequirementNodeData>,
+    /// `Element`'s payload when the node is an element; `None` for a requirement.
+    #[serde(default)]
+    pub element: Option<ElementNodeData>,
     /// `ClassNode.text`: the label with the generic type escaped, which the class box draws
     /// instead of `label`.
     #[serde(default)]

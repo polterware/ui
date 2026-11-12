@@ -111,3 +111,16 @@ impl From<crate::diagrams::er::render::ErRenderError> for RenderError {
         }
     }
 }
+
+impl From<crate::diagrams::requirement::render::RequirementRenderError> for RenderError {
+    fn from(error: crate::diagrams::requirement::render::RequirementRenderError) -> Self {
+        match error {
+            crate::diagrams::requirement::render::RequirementRenderError::Parse(error) => {
+                Self::Parse(error)
+            }
+            crate::diagrams::requirement::render::RequirementRenderError::Layout(error) => {
+                Self::Layout(error)
+            }
+        }
+    }
+}

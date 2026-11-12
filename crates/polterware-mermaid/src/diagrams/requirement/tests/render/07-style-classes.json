@@ -1,0 +1,53 @@
+{
+  "name": "07-style-classes",
+  "source": "requirementDiagram\n  requirement styled_req {\n    id: s1\n    text: styled requirement\n  }\n  element styled_element {\n    type: simulation\n  }\n  styled_element - satisfies -> styled_req\n  classDef important fill:#f96,stroke:#333,stroke-width:2px\n  class styled_req important\n  class styled_element important\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "styled_req",
+        "x": 133.2,
+        "y": 253.39999999999998,
+        "width": 250.39999999999998,
+        "height": 131.59999999999997
+      },
+      {
+        "id": "styled_element",
+        "x": 133.2,
+        "y": 61.6,
+        "width": 173.6,
+        "height": 107.2
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "styled_element-styled_req-0",
+        "points": [
+          {
+            "x": 133.2,
+            "y": 115.2
+          },
+          {
+            "x": 133.2,
+            "y": 151.39999999999998
+          },
+          {
+            "x": 133.2,
+            "y": 187.6
+          }
+        ],
+        "x": 133.2,
+        "y": 151.39999999999998,
+        "width": 128.8,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 266.4,
+      "height": 327.19999999999993
+    },
+    "rawViewBox": "0 0 266.4 327.19999999999993"
+  }
+}

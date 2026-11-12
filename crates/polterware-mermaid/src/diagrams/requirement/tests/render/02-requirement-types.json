@@ -1,0 +1,59 @@
+{
+  "name": "02-requirement-types",
+  "source": "requirementDiagram\n  requirement req {\n    id: r1\n    text: plain requirement\n  }\n  functionalRequirement freq {\n    id: r2\n    text: functional requirement\n  }\n  interfaceRequirement ireq {\n    id: r3\n    text: interface requirement\n  }\n  performanceRequirement preq {\n    id: r4\n    text: performance requirement\n  }\n  physicalRequirement phreq {\n    id: r5\n    text: physical requirement\n  }\n  designConstraint dreq {\n    id: r6\n    text: design constraint\n  }\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "req",
+        "x": 128.4000000000001,
+        "y": 73.79999999999998,
+        "width": 240.79999999999998,
+        "height": 131.59999999999997
+      },
+      {
+        "id": "freq",
+        "x": 443.20000000000005,
+        "y": 73.79999999999998,
+        "width": 288.8,
+        "height": 131.59999999999997
+      },
+      {
+        "id": "ireq",
+        "x": 777.2,
+        "y": 73.79999999999998,
+        "width": 279.2,
+        "height": 131.59999999999997
+      },
+      {
+        "id": "preq",
+        "x": 1116,
+        "y": 73.79999999999998,
+        "width": 298.4,
+        "height": 131.59999999999997
+      },
+      {
+        "id": "phreq",
+        "x": 1450,
+        "y": 73.79999999999998,
+        "width": 269.6,
+        "height": 131.59999999999997
+      },
+      {
+        "id": "dreq",
+        "x": 1755.2,
+        "y": 73.79999999999998,
+        "width": 240.79999999999998,
+        "height": 131.59999999999997
+      }
+    ],
+    "clusters": [],
+    "edges": [],
+    "viewBox": {
+      "x": 9.947598300641403e-14,
+      "y": 0,
+      "width": 1883.6,
+      "height": 147.59999999999997
+    },
+    "rawViewBox": "9.947598300641403e-14 0 1883.6 147.59999999999997"
+  }
+}

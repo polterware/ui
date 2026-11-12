@@ -1,0 +1,53 @@
+{
+  "name": "08-long-text",
+  "source": "requirementDiagram\n  requirement a_requirement_with_a_long_name {\n    id: LONG_IDENTIFIER_1\n    text: This requirement carries a much longer descriptive text that must be measured before layout.\n    risk: medium\n    verifymethod: demonstration\n  }\n  element an_element_with_a_long_name {\n    type: a long element type name\n    docref: a long document reference\n  }\n  an_element_with_a_long_name - verifies -> a_requirement_with_a_long_name\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "a_requirement_with_a_long_name",
+        "x": 488.4,
+        "y": 302.2,
+        "width": 960.8,
+        "height": 180.4
+      },
+      {
+        "id": "an_element_with_a_long_name",
+        "x": 488.4,
+        "y": 73.79999999999998,
+        "width": 346.4,
+        "height": 131.59999999999997
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "an_element_with_a_long_name-a_requirement_with_a_long_name-0",
+        "points": [
+          {
+            "x": 488.4,
+            "y": 139.59999999999997
+          },
+          {
+            "x": 488.4,
+            "y": 175.79999999999995
+          },
+          {
+            "x": 488.4,
+            "y": 212
+          }
+        ],
+        "x": 488.4,
+        "y": 175.79999999999995,
+        "width": 119.19999999999999,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 976.8,
+      "height": 400.4
+    },
+    "rawViewBox": "0 0 976.8 400.4"
+  }
+}

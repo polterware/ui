@@ -941,7 +941,15 @@ fn parse_inline(text: &str) -> Vec<Inline> {
                 }
             }
             '<' => {
-                if let Some(end) = chars[i + 1..].iter().position(|ch| *ch == '>') {
+                // marked's inline HTML only starts a tag with a name character, `/`, `!`, or
+                // `?`. A `<<Stereotype>>` label is text, not markup, so both angle brackets
+                // stay in the word.
+                let tag_start = chars
+                    .get(i + 1)
+                    .is_some_and(|next| next.is_ascii_alphanumeric() || matches!(next, '/' | '!' | '?'));
+                if tag_start
+                    && let Some(end) = chars[i + 1..].iter().position(|ch| *ch == '>')
+                {
                     let end = i + 1 + end;
                     push_text(&mut out, &mut buffer);
                     out.push(Inline::Html(chars[i..=end].iter().collect()));
@@ -1187,6 +1195,34 @@ pub fn shape_text(
         Size::new(measured_width.max(options.min_width), height),
         line_height,
     ))
+}
+
+/// A literal text block: each newline-separated line is one span with no markdown or HTML
+/// tokenization. Requirement labels are literal `<<Stereotype>>` and `Text: ...` strings;
+/// `shape_text`'s markdown/HTML splitters would treat the angle brackets as markup and lose
+/// one of the closing `>`. Width and line height are `TextMeasure`'s, so the block matches
+/// what `shape_text` reports for the same single-line text.
+pub fn plain_text_block(
+    text: &str,
+    font: &Font,
+    measure: &dyn TextMeasure,
+) -> crate::scene::TextBlock {
+    use crate::scene::{TextBlock, TextLine, TextSpan};
+    let lines: Vec<TextLine> = text
+        .split('\n')
+        .map(|line| TextLine::new(vec![TextSpan::plain(line)]))
+        .collect();
+    let width = lines
+        .iter()
+        .map(|line| measure.width(&line.text(), font))
+        .fold(0.0, f64::max);
+    let last = lines
+        .iter()
+        .rposition(|line| !line.is_empty())
+        .unwrap_or(0);
+    let line_advance = LINE_HEIGHT_EM * font.size;
+    let height = measure.line_height(font) + line_advance * last as f64;
+    TextBlock::new(lines, crate::scene::Size::new(width, height), line_advance)
 }
 
 /// `createText.ts`'s `sanitizeBR`: every `<br>`-family tag becomes the exact `<br/>` the

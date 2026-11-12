@@ -231,4 +231,170 @@ impl Ast {
     pub fn class(&self, name: &str) -> Option<&RequirementClass> {
         self.classes.iter().find(|class| class.id == name)
     }
+
+    /// `getData()`: the requirement and element nodes, then the relationship edges.
+    ///
+    /// Upstream mutates each requirement or element in place with the renderer's node fields.
+    /// The projection here keeps the node's own payload (the requirement's type, id, text,
+    /// risk and verify method, or the element's type and doc ref) so the requirement box can
+    /// draw its body. `look`, `config` and the layout fields are `draw`'s, not the database's,
+    /// and [`super::layout_data::layout_data`] adds them.
+    ///
+    /// Relationship labels stay HTML-escaped (`&lt;&lt;contains&gt;&gt;`) exactly as upstream
+    /// returns them; the layout conversion decodes them because `createText` does.
+    pub fn data(&self) -> Data {
+        let mut nodes: Vec<Node> = Vec::new();
+        for requirement in &self.requirements {
+            nodes.push(Node {
+                id: requirement.name.clone(),
+                label: requirement.name.clone(),
+                requirement: Some(RequirementData {
+                    type_name: requirement.requirement_type.as_str().to_string(),
+                    requirement_id: requirement.requirement_id.clone(),
+                    text: requirement.text.clone(),
+                    risk: requirement.risk,
+                    verify_method: requirement.verify_method,
+                }),
+                element: None,
+                css_styles: requirement.css_styles.clone(),
+                css_classes: requirement.classes.join(" "),
+                color_index: nodes.len(),
+            });
+        }
+        for element in &self.elements {
+            nodes.push(Node {
+                id: element.name.clone(),
+                label: element.name.clone(),
+                requirement: None,
+                element: Some(ElementData {
+                    type_name: element.type_name.clone(),
+                    doc_ref: element.doc_ref.clone(),
+                }),
+                css_styles: element.css_styles.clone(),
+                css_classes: element.classes.join(" "),
+                color_index: nodes.len(),
+            });
+        }
+
+        let mut edges = Vec::new();
+        for (counter, relation) in self.relationships.iter().enumerate() {
+            let is_contains = relation.relationship_type == RelationshipType::Contains;
+            edges.push(LayoutEdge {
+                id: format!("{}-{}-{}", relation.src, relation.dst, counter),
+                start: self
+                    .requirement(&relation.src)
+                    .map(|requirement| requirement.name.clone())
+                    .or_else(|| {
+                        self.element(&relation.src)
+                            .map(|element| element.name.clone())
+                    }),
+                end: self
+                    .requirement(&relation.dst)
+                    .map(|requirement| requirement.name.clone())
+                    .or_else(|| self.element(&relation.dst).map(|element| element.name.clone())),
+                label: format!("&lt;&lt;{}&gt;&gt;", relation.relationship_type.as_str()),
+                classes: "relationshipLine".to_string(),
+                style: vec![
+                    "fill:none".to_string(),
+                    if is_contains {
+                        String::new()
+                    } else {
+                        "stroke-dasharray: 10,7".to_string()
+                    },
+                ],
+                labelpos: "c".to_string(),
+                thickness: "normal".to_string(),
+                type_name: "normal".to_string(),
+                pattern: if is_contains { "normal" } else { "dashed" }.to_string(),
+                arrow_type_start: if is_contains {
+                    "requirement_contains".to_string()
+                } else {
+                    String::new()
+                },
+                arrow_type_end: if is_contains {
+                    String::new()
+                } else {
+                    "requirement_arrow".to_string()
+                },
+            });
+        }
+
+        Data {
+            nodes,
+            edges,
+            direction: self.direction,
+        }
+    }
+}
+
+/// `getData()`'s requirement node payload.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RequirementData {
+    /// The requirement kind's display string (`Requirement`, `Functional Requirement`, ...).
+    pub type_name: String,
+    pub requirement_id: String,
+    pub text: String,
+    pub risk: Option<RiskLevel>,
+    pub verify_method: Option<VerifyType>,
+}
+
+/// `getData()`'s element node payload.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ElementData {
+    pub type_name: String,
+    pub doc_ref: String,
+}
+
+/// One node of the `getData()` projection.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Node {
+    /// The map key, which upstream also copies to the node's `id`.
+    pub id: String,
+    /// `node.name`, the drawn name (`requirementBox` reads it, not `label`).
+    pub label: String,
+    pub requirement: Option<RequirementData>,
+    pub element: Option<ElementData>,
+    /// `cssStyles`, in the order the grammar appended them.
+    pub css_styles: Vec<String>,
+    /// `classes.join(' ')`.
+    pub css_classes: String,
+    /// The index `nodes.length` assigns when the node is pushed.
+    pub color_index: usize,
+}
+
+/// One edge of the `getData()` projection.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct LayoutEdge {
+    /// `<src>-<dst>-<counter>`.
+    pub id: String,
+    /// The resolved source name; `None` when the relationship names no stored node.
+    pub start: Option<String>,
+    /// The resolved target name; `None` when the relationship names no stored node.
+    pub end: Option<String>,
+    /// `<<relationship>>`, HTML-escaped as upstream returns it.
+    pub label: String,
+    /// Always `relationshipLine`.
+    pub classes: String,
+    /// `fill:none`, plus the dash declaration non-`contains` relationships carry.
+    pub style: Vec<String>,
+    /// Always `c`.
+    pub labelpos: String,
+    /// Always `normal`.
+    pub thickness: String,
+    /// Always `normal`.
+    pub type_name: String,
+    /// `normal` for `contains`, `dashed` otherwise.
+    pub pattern: String,
+    /// `requirement_contains` for `contains`, empty otherwise.
+    pub arrow_type_start: String,
+    /// `requirement_arrow` unless the relationship is `contains`.
+    pub arrow_type_end: String,
+}
+
+/// The `getData` result.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Data {
+    pub nodes: Vec<Node>,
+    pub edges: Vec<LayoutEdge>,
+    pub direction: Direction,
 }
