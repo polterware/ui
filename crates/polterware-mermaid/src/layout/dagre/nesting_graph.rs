@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/nesting-graph.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/nesting-graph.js` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
 //!
 //! Adds border nodes to every subgraph and a root node that connects the graph, so
 //! ranking can keep subgraphs compact. Follows Sander, "Layout of Compound Directed

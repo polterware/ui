@@ -1,7 +1,10 @@
-//! Port of `dagre/lib/order/sort.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/order/sort.js` (MIT, Copyright (c) 2012-2014 Chris
+//! Pettitt).
+//!
+//! Sorts barycenter entries, re-inserting the entries without a barycenter at the
+//! index they had in the unsorted layer, and biasing ties left or right.
 
 use super::super::util;
-use super::super::{LayeredGraph, NodeLabel};
 use super::resolve_conflicts::ResolvedEntry;
 
 /// One sortable entry: a node or a resolved super-node.
@@ -39,47 +42,18 @@ impl From<ResolvedEntry> for SortEntry {
     }
 }
 
-/// Sorts `entries` by barycenter, biasing left on ties, as upstream's one-argument
-/// `sort` does.
-pub fn sort(entries: Vec<SortEntry>) -> SortResult {
-    sort_with(entries, &[], None, None, false)
-}
-
-/// Sorts `entries` by barycenter, biasing right on ties.
-pub fn sort_biased(entries: Vec<SortEntry>, bias_right: bool) -> SortResult {
-    sort_with(entries, &[], None, None, bias_right)
-}
-
-/// Sorts `entries`, reinserting reversed pairs and breaking ties with the previous
-/// layout's order and the bias.
-pub fn sort_with(
-    entries: Vec<SortEntry>,
-    reversed_pairs: &[(String, ResolvedEntry)],
-    old_nodes: Option<&[(String, NodeLabel)]>,
-    graph: Option<&LayeredGraph>,
-    bias_right: bool,
-) -> SortResult {
+/// Sorts `entries` by barycenter, breaking ties with `bias_right`.
+pub fn sort(entries: Vec<SortEntry>, bias_right: bool) -> SortResult {
     let (mut sortable, mut unsortable) =
         util::partition(entries, |entry| entry.barycenter.is_some());
     unsortable.sort_by(|a, b| b.i.cmp(&a.i));
     let mut vs: Vec<Vec<String>> = Vec::new();
     let mut sum = 0.0;
     let mut weight = 0.0;
-    let mut vs_index = 0usize;
 
-    sortable.sort_by(|a, b| compare_with_old_order(graph, old_nodes, bias_right, a, b));
+    sortable.sort_by(|a, b| compare_with_bias(bias_right, a, b));
 
-    for (key, value) in reversed_pairs {
-        let key_index = sortable
-            .iter()
-            .position(|entry| entry.vs.first() == Some(key));
-        match key_index {
-            Some(index) => sortable.insert(index + 1, value.clone().into()),
-            None => sortable.insert(0, value.clone().into()),
-        }
-    }
-
-    vs_index = consume_unsortable(&mut vs, &mut unsortable, vs_index);
+    let mut vs_index = consume_unsortable(&mut vs, &mut unsortable, 0);
 
     for entry in sortable {
         vs_index += entry.vs.len();
@@ -116,9 +90,7 @@ fn consume_unsortable(
     index
 }
 
-fn compare_with_old_order(
-    graph: Option<&LayeredGraph>,
-    old_nodes: Option<&[(String, NodeLabel)]>,
+fn compare_with_bias(
     bias_right: bool,
     entry_v: &SortEntry,
     entry_w: &SortEntry,
@@ -129,23 +101,6 @@ fn compare_with_old_order(
         std::cmp::Ordering::Less => return std::cmp::Ordering::Less,
         std::cmp::Ordering::Greater => return std::cmp::Ordering::Greater,
         std::cmp::Ordering::Equal => {}
-    }
-
-    if let Some(graph) = graph {
-        let node_v = graph
-            .node(entry_v.vs.first().map(String::as_str).unwrap_or_default())
-            .cloned()
-            .unwrap_or_default();
-        let node_w = graph
-            .node(entry_w.vs.first().map(String::as_str).unwrap_or_default())
-            .cloned()
-            .unwrap_or_default();
-        let by_old_order = util::compare_by_old_order(old_nodes, &node_v, &node_w);
-        match util::cmp_f64(by_old_order, 0.0) {
-            std::cmp::Ordering::Less => return std::cmp::Ordering::Less,
-            std::cmp::Ordering::Greater => return std::cmp::Ordering::Greater,
-            std::cmp::Ordering::Equal => {}
-        }
     }
 
     if bias_right {
@@ -170,10 +125,13 @@ mod tests {
 
     #[test]
     fn sorts_nodes_by_barycenter() {
-        let result = super::sort(vec![
-            entry(&["a"], 0, Some(2.0), Some(3.0)),
-            entry(&["b"], 1, Some(1.0), Some(2.0)),
-        ]);
+        let result = super::sort(
+            vec![
+                entry(&["a"], 0, Some(2.0), Some(3.0)),
+                entry(&["b"], 1, Some(1.0), Some(2.0)),
+            ],
+            false,
+        );
         assert_eq!(result.vs, vec!["b".to_string(), "a".to_string()]);
         assert_eq!(result.barycenter, Some(8.0 / 5.0));
         assert_eq!(result.weight, Some(5.0));
@@ -181,10 +139,13 @@ mod tests {
 
     #[test]
     fn can_sort_super_nodes() {
-        let result = super::sort(vec![
-            entry(&["a", "c", "d"], 0, Some(2.0), Some(3.0)),
-            entry(&["b"], 1, Some(1.0), Some(2.0)),
-        ]);
+        let result = super::sort(
+            vec![
+                entry(&["a", "c", "d"], 0, Some(2.0), Some(3.0)),
+                entry(&["b"], 1, Some(1.0), Some(2.0)),
+            ],
+            false,
+        );
         assert_eq!(
             result.vs,
             vec![
@@ -198,10 +159,13 @@ mod tests {
 
     #[test]
     fn biases_left_by_default() {
-        let result = super::sort(vec![
-            entry(&["a"], 0, Some(1.0), Some(1.0)),
-            entry(&["b"], 1, Some(1.0), Some(1.0)),
-        ]);
+        let result = super::sort(
+            vec![
+                entry(&["a"], 0, Some(1.0), Some(1.0)),
+                entry(&["b"], 1, Some(1.0), Some(1.0)),
+            ],
+            false,
+        );
         assert_eq!(result.vs, vec!["a".to_string(), "b".to_string()]);
         assert_eq!(result.barycenter, Some(1.0));
         assert_eq!(result.weight, Some(2.0));
@@ -209,7 +173,7 @@ mod tests {
 
     #[test]
     fn biases_right_with_bias_right() {
-        let result = super::sort_biased(
+        let result = super::sort(
             vec![
                 entry(&["a"], 0, Some(1.0), Some(1.0)),
                 entry(&["b"], 1, Some(1.0), Some(1.0)),
@@ -221,12 +185,15 @@ mod tests {
 
     #[test]
     fn can_sort_nodes_without_a_barycenter() {
-        let result = super::sort(vec![
-            entry(&["a"], 0, Some(2.0), Some(1.0)),
-            entry(&["b"], 1, Some(6.0), Some(1.0)),
-            entry(&["c"], 2, None, None),
-            entry(&["d"], 3, Some(3.0), Some(1.0)),
-        ]);
+        let result = super::sort(
+            vec![
+                entry(&["a"], 0, Some(2.0), Some(1.0)),
+                entry(&["b"], 1, Some(6.0), Some(1.0)),
+                entry(&["c"], 2, None, None),
+                entry(&["d"], 3, Some(3.0), Some(1.0)),
+            ],
+            false,
+        );
         assert_eq!(
             result.vs,
             vec![
@@ -242,12 +209,15 @@ mod tests {
 
     #[test]
     fn handles_no_barycenters() {
-        let result = super::sort(vec![
-            entry(&["a"], 0, None, None),
-            entry(&["b"], 3, None, None),
-            entry(&["c"], 2, None, None),
-            entry(&["d"], 1, None, None),
-        ]);
+        let result = super::sort(
+            vec![
+                entry(&["a"], 0, None, None),
+                entry(&["b"], 3, None, None),
+                entry(&["c"], 2, None, None),
+                entry(&["d"], 1, None, None),
+            ],
+            false,
+        );
         assert_eq!(
             result.vs,
             vec![
@@ -263,12 +233,15 @@ mod tests {
 
     #[test]
     fn handles_a_barycenter_of_zero() {
-        let result = super::sort(vec![
-            entry(&["a"], 0, Some(0.0), Some(1.0)),
-            entry(&["b"], 3, None, None),
-            entry(&["c"], 2, None, None),
-            entry(&["d"], 1, None, None),
-        ]);
+        let result = super::sort(
+            vec![
+                entry(&["a"], 0, Some(0.0), Some(1.0)),
+                entry(&["b"], 3, None, None),
+                entry(&["c"], 2, None, None),
+                entry(&["d"], 1, None, None),
+            ],
+            false,
+        );
         assert_eq!(
             result.vs,
             vec![

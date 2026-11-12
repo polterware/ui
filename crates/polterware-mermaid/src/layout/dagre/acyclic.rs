@@ -1,27 +1,25 @@
-//! Port of `dagre/lib/acyclic.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/acyclic.js` (MIT, Copyright (c) 2012-2014 Chris
+//! Pettitt).
 //!
 //! Breaks cycles by reversing a feedback arc set. With `acyclicer: "greedy"` the
-//! set comes from [`super::greedy_fas`]; otherwise from a depth-first search, which
-//! can also prefer to break edges that point backwards in the previous layout.
+//! set comes from [`super::greedy_fas`]; otherwise from a depth-first search over
+//! every node in insertion order.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use super::super::graphlib::Edge;
 use super::greedy_fas::{WeightFn, greedy_fas};
 use super::util::unique_id;
 use super::{EdgeLabel, LayeredGraph};
 
-/// Ranks of the previous layout graph, when one is available.
-pub type OldRanks = HashMap<String, Option<f64>>;
-
 /// Reverses a feedback arc set of `graph` and marks those edges as reversed.
-pub fn run(graph: &mut LayeredGraph, old_ranks: Option<&OldRanks>) {
+pub fn run(graph: &mut LayeredGraph) {
     let weight = |edge: &Edge| graph.edge_object(edge).map_or(0.0, EdgeLabel::weight);
     let weight_fn: &WeightFn<'_> = &weight;
     let fas = if graph.graph().and_then(|graph| graph.acyclicer.as_deref()) == Some("greedy") {
         greedy_fas(graph, Some(weight_fn))
     } else {
-        dfs_fas(graph, old_ranks)
+        dfs_fas(graph)
     };
 
     for edge in fas {
@@ -37,25 +35,13 @@ pub fn run(graph: &mut LayeredGraph, old_ranks: Option<&OldRanks>) {
     }
 }
 
-fn dfs_fas(graph: &LayeredGraph, old_ranks: Option<&OldRanks>) -> Vec<Edge> {
+fn dfs_fas(graph: &LayeredGraph) -> Vec<Edge> {
     let mut fas = Vec::new();
     let mut stack = HashSet::new();
     let mut visited = HashSet::new();
 
-    if let Some(old_ranks) = old_ranks {
-        for v in graph.sources() {
-            dfs_dynamic(graph, &v, old_ranks, &mut fas, &mut stack, &mut visited);
-        }
-        for v in graph.nodes() {
-            dfs_dynamic(graph, &v, old_ranks, &mut fas, &mut stack, &mut visited);
-        }
-    } else {
-        for v in graph.sources() {
-            dfs(graph, &v, &mut fas, &mut stack, &mut visited);
-        }
-        for v in graph.nodes() {
-            dfs(graph, &v, &mut fas, &mut stack, &mut visited);
-        }
+    for v in graph.nodes() {
+        dfs(graph, &v, &mut fas, &mut stack, &mut visited);
     }
 
     fas
@@ -80,66 +66,6 @@ fn dfs(
         }
     }
     stack.remove(v);
-}
-
-fn dfs_dynamic(
-    graph: &LayeredGraph,
-    v: &str,
-    old_ranks: &OldRanks,
-    fas: &mut Vec<Edge>,
-    stack: &mut HashSet<String>,
-    visited: &mut HashSet<String>,
-) {
-    if !visited.insert(v.to_string()) {
-        return;
-    }
-    stack.insert(v.to_string());
-    for edge in graph.out_edges(v, None).unwrap_or_default() {
-        let points_back = match (old_ranks.get(v), old_ranks.get(&edge.w)) {
-            (Some(Some(from)), Some(Some(to))) => from > to,
-            _ => false,
-        };
-        if stack.contains(&edge.w)
-            || (points_back && is_reached_from_start_without_edge(graph, &edge.w, &edge))
-        {
-            fas.push(edge);
-        } else {
-            dfs_dynamic(graph, &edge.w, old_ranks, fas, stack, visited);
-        }
-    }
-    stack.remove(v);
-}
-
-/// Whether `node` can reach a source using only edges other than `ignore_edge`.
-fn is_reached_from_start_without_edge(
-    graph: &LayeredGraph,
-    node: &str,
-    ignore_edge: &Edge,
-) -> bool {
-    let mut visited = HashSet::new();
-    reverse_dfs(graph, node, ignore_edge, &mut visited)
-}
-
-fn reverse_dfs(
-    graph: &LayeredGraph,
-    v: &str,
-    ignore_edge: &Edge,
-    visited: &mut HashSet<String>,
-) -> bool {
-    if graph.sources().iter().any(|source| source == v) {
-        return true;
-    }
-    visited.insert(v.to_string());
-    for edge in graph.in_edges(v, None).unwrap_or_default() {
-        let ignored = edge.v == ignore_edge.v && edge.w == ignore_edge.w;
-        if !ignored
-            && !visited.contains(&edge.v)
-            && reverse_dfs(graph, &edge.v, ignore_edge, visited)
-        {
-            return true;
-        }
-    }
-    false
 }
 
 /// Restores the edges [`run`] reversed.
@@ -191,7 +117,7 @@ mod tests {
             let mut graph = build(acyclicer);
             path(&mut graph, &["a", "b", "d"]);
             path(&mut graph, &["a", "c", "d"]);
-            super::run(&mut graph, None);
+            super::run(&mut graph);
             let mut edges: Vec<(String, String)> = graph
                 .edges()
                 .into_iter()
@@ -215,7 +141,7 @@ mod tests {
         for acyclicer in ["greedy", "dfs", "unknown-should-still-work"] {
             let mut graph = build(acyclicer);
             path(&mut graph, &["a", "b", "c", "d", "a"]);
-            super::run(&mut graph, None);
+            super::run(&mut graph);
             assert!(find_cycles(&graph).is_empty());
         }
     }
@@ -225,7 +151,7 @@ mod tests {
         for acyclicer in ["greedy", "dfs", "unknown-should-still-work"] {
             let mut graph = build(acyclicer);
             path(&mut graph, &["a", "b", "a"]);
-            super::run(&mut graph, None);
+            super::run(&mut graph);
             assert!(find_cycles(&graph).is_empty());
             if graph.has_edge("a", "b") {
                 assert_eq!(graph.out_edges("a", Some("b")).unwrap().len(), 2);
@@ -241,7 +167,7 @@ mod tests {
         for acyclicer in ["greedy", "dfs", "unknown-should-still-work"] {
             let mut graph = build(acyclicer);
             graph.set_edge_with("a", "b", weighted(3.0, 2.0));
-            super::run(&mut graph, None);
+            super::run(&mut graph);
             super::undo(&mut graph);
             let label = graph.edge("a", "b").unwrap();
             assert_eq!(label.weight(), 3.0);
@@ -256,7 +182,7 @@ mod tests {
             let mut graph = build(acyclicer);
             graph.set_edge_with("a", "b", weighted(3.0, 2.0));
             graph.set_edge_with("b", "a", weighted(4.0, 3.0));
-            super::run(&mut graph, None);
+            super::run(&mut graph);
             super::undo(&mut graph);
             let forward = graph.edge("a", "b").unwrap();
             assert_eq!(forward.weight(), 3.0);
@@ -273,7 +199,7 @@ mod tests {
         let mut graph = build("greedy");
         graph.set_path_with(&["a", "b", "c", "d", "a"], weighted(2.0, 1.0));
         graph.set_edge_with("c", "d", weighted(1.0, 1.0));
-        super::run(&mut graph, None);
+        super::run(&mut graph);
         assert!(find_cycles(&graph).is_empty());
         assert!(!graph.has_edge("c", "d"));
     }

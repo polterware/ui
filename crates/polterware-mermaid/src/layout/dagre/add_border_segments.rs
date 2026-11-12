@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/add-border-segments.ts` (MIT, Copyright (c) 2012-2014 Chris
+//! Port of `dagre-d3-es/src/dagre/add-border-segments.js` (MIT, Copyright (c) 2012-2014 Chris
 //! Pettitt).
 //!
 //! Gives every rank of a subgraph a left and a right border dummy, chained rank by

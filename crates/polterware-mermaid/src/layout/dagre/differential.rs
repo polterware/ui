@@ -1,18 +1,26 @@
-//! Differential test against upstream `@dagrejs/dagre`.
+//! Differential test against `dagre-d3-es` 7.0.14, the layout library Mermaid
+//! 12.3.0 depends on.
 //!
 //! Every fixture under `testdata/` holds the input graph and the exact coordinates
-//! the upstream build produced (dagre 3.1.3, `dist/dagre.esm.js`). The inputs cover
-//! chains, cycles with both acyclicers, all four `rankdir`s (including lower case),
-//! compound and nested clusters, clusters with their own `rankdir`, edge labels in
-//! every `labelpos` with offsets, multi-edges, self loops, margins, alignments,
-//! rankers, and spacing. Coordinates are compared within 1e-6.
+//! dagre-d3-es produced for it. The inputs cover chains, cycles with both
+//! acyclicers, all four `rankdir`s (including lower case), compound and nested
+//! clusters, clusters that carry a `rankdir` of their own (which dagre-d3-es
+//! ignores), edge labels in every `labelpos` with offsets, multi-edges, self loops,
+//! margins, alignments, zero-sized nodes, rankers, and spacing. Coordinates are
+//! compared within 1e-6.
+//!
+//! JSON has no NaN, so a non-finite coordinate is written as `null`, as
+//! `JSON.stringify` does; the test requires the port to produce a NaN there too.
 
 use std::fs;
 
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 
 use super::super::graphlib::Edge;
-use super::{EdgeLabel, GraphLabel, LayeredGraph, NodeLabel, layout};
+use super::layout::run_layout;
+use super::{
+    EdgeLabel, GraphLabel, LayeredGraph, NodeLabel, build_layout_graph, update_input_graph,
+};
 
 const TOLERANCE: f64 = 1e-6;
 
@@ -34,7 +42,6 @@ struct Fixture {
 struct GraphSpec {
     rankdir: Option<String>,
     align: Option<String>,
-    rankalign: Option<String>,
     nodesep: Option<f64>,
     edgesep: Option<f64>,
     ranksep: Option<f64>,
@@ -81,8 +88,8 @@ struct Output {
 
 #[derive(Deserialize)]
 struct OutputGraph {
-    width: f64,
-    height: f64,
+    width: Option<f64>,
+    height: Option<f64>,
 }
 
 #[derive(Deserialize)]
@@ -102,14 +109,28 @@ struct OutputEdge {
     w: String,
     name: Option<String>,
     points: Option<Vec<PointJson>>,
-    x: Option<f64>,
-    y: Option<f64>,
+    #[serde(default, deserialize_with = "coordinate")]
+    x: Option<Option<f64>>,
+    #[serde(default, deserialize_with = "coordinate")]
+    y: Option<Option<f64>>,
 }
 
 #[derive(Deserialize)]
 struct PointJson {
-    x: f64,
-    y: f64,
+    /// The coordinate, or `null` for a NaN.
+    #[serde(default, deserialize_with = "coordinate")]
+    x: Option<Option<f64>>,
+    /// The coordinate, or `null` for a NaN.
+    #[serde(default, deserialize_with = "coordinate")]
+    y: Option<Option<f64>>,
+}
+
+/// Reads a coordinate, keeping an explicit `null` (a NaN) apart from a missing key.
+fn coordinate<'de, D>(deserializer: D) -> Result<Option<Option<f64>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(Some(Option::<f64>::deserialize(deserializer)?))
 }
 
 fn fixture_path(name: &str) -> std::path::PathBuf {
@@ -141,7 +162,6 @@ fn build(fixture: &Fixture) -> LayeredGraph {
     graph.set_graph(GraphLabel {
         rankdir: fixture.graph.rankdir.clone(),
         align: fixture.graph.align.clone(),
-        rankalign: fixture.graph.rankalign.clone(),
         nodesep: fixture.graph.nodesep,
         edgesep: fixture.graph.edgesep,
         ranksep: fixture.graph.ranksep,
@@ -196,17 +216,33 @@ fn close(actual: f64, expected: f64, context: &str) {
     );
 }
 
+/// Compares a coordinate: a missing key is not compared, an explicit `null` (a NaN
+/// in JSON, which has no NaN) requires a NaN.
+fn close_optional(actual: Option<f64>, expected: Option<Option<f64>>, context: &str) {
+    match expected {
+        None => {}
+        Some(Some(expected)) => close(actual.unwrap_or(f64::NAN), expected, context),
+        Some(None) => assert!(
+            actual.is_some_and(f64::is_nan),
+            "{context}: expected NaN, got {actual:?}"
+        ),
+    }
+}
+
 #[test]
-fn matches_upstream_dagre_coordinates() {
+fn matches_dagre_d3_es_coordinates() {
     let names = fixtures();
-    assert!(names.len() >= 30, "the fixtures cover at least 30 graphs");
+    assert!(names.len() >= 50, "the fixtures cover at least 50 graphs");
     for name in names {
         let text = fs::read_to_string(fixture_path(&name)).expect("the fixture is readable");
         let fixture: Fixture = serde_json::from_str(&text).expect("the fixture parses");
         let context = fixture.name.clone();
 
         let mut graph = build(&fixture);
-        layout(&mut graph).unwrap_or_else(|error| panic!("{context}: layout failed: {error}"));
+        let mut layout_graph = build_layout_graph(&graph);
+        run_layout(&mut layout_graph)
+            .unwrap_or_else(|error| panic!("{context}: layout failed: {error}"));
+        update_input_graph(&mut graph, &layout_graph);
 
         assert_eq!(
             graph.node_count(),
@@ -237,21 +273,6 @@ fn matches_upstream_dagre_coordinates() {
                     &format!("{context}: node {} y", expected.id),
                 );
             }
-            if let Some(rank) = expected.rank {
-                close(
-                    node.rank.unwrap_or(f64::NAN),
-                    rank,
-                    &format!("{context}: node {} rank", expected.id),
-                );
-            }
-            if let Some(order) = expected.order {
-                assert_eq!(
-                    node.order,
-                    Some(order),
-                    "{context}: node {} order",
-                    expected.id
-                );
-            }
             // Upstream only overwrites a cluster's width and height.
             if !graph.children(&expected.id).is_empty() {
                 if let Some(width) = expected.width {
@@ -268,6 +289,25 @@ fn matches_upstream_dagre_coordinates() {
                         &format!("{context}: node {} height", expected.id),
                     );
                 }
+            }
+            // dagre-d3-es does not copy these back; the layout graph keeps them.
+            let layout_node = layout_graph
+                .node(&expected.id)
+                .unwrap_or_else(|| panic!("{context}: missing layout node {}", expected.id));
+            if let Some(rank) = expected.rank {
+                close(
+                    layout_node.rank.unwrap_or(f64::NAN),
+                    rank,
+                    &format!("{context}: node {} rank", expected.id),
+                );
+            }
+            if let Some(order) = expected.order {
+                assert_eq!(
+                    layout_node.order,
+                    Some(order),
+                    "{context}: node {} order",
+                    expected.id
+                );
             }
         }
 
@@ -292,13 +332,13 @@ fn matches_upstream_dagre_coordinates() {
                         "{context}: edge {edge:?} point count"
                     );
                     for (index, (actual, expected)) in actual.iter().zip(points).enumerate() {
-                        close(
-                            actual.x,
+                        close_optional(
+                            Some(actual.x),
                             expected.x,
                             &format!("{context}: edge {edge:?} point {index} x"),
                         );
-                        close(
-                            actual.y,
+                        close_optional(
+                            Some(actual.y),
                             expected.y,
                             &format!("{context}: edge {edge:?} point {index} y"),
                         );
@@ -309,31 +349,19 @@ fn matches_upstream_dagre_coordinates() {
                     "{context}: edge {edge:?} unexpectedly has points"
                 ),
             }
-            if let Some(x) = expected.x {
-                close(
-                    label.x.unwrap_or(f64::NAN),
-                    x,
-                    &format!("{context}: edge {edge:?} x"),
-                );
-            }
-            if let Some(y) = expected.y {
-                close(
-                    label.y.unwrap_or(f64::NAN),
-                    y,
-                    &format!("{context}: edge {edge:?} y"),
-                );
-            }
+            close_optional(label.x, expected.x, &format!("{context}: edge {edge:?} x"));
+            close_optional(label.y, expected.y, &format!("{context}: edge {edge:?} y"));
         }
 
         let graph_label = graph.graph().expect("the layout graph keeps a label");
-        close(
-            graph_label.width.unwrap_or(f64::NAN),
-            fixture.output.graph.width,
+        close_optional(
+            graph_label.width,
+            fixture.output.graph.width.map(Some),
             &format!("{context}: graph width"),
         );
-        close(
-            graph_label.height.unwrap_or(f64::NAN),
-            fixture.output.graph.height,
+        close_optional(
+            graph_label.height,
+            fixture.output.graph.height.map(Some),
             &format!("{context}: graph height"),
         );
     }

@@ -1,7 +1,8 @@
-//! Port of `dagre/lib/rank/` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/rank/` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
 //!
 //! Assigns a rank to every node. The default `network-simplex` ranker comes from
-//! Gansner, et al., "A Technique for Drawing Directed Graphs."
+//! Gansner, et al., "A Technique for Drawing Directed Graphs." There is no `none`
+//! ranker: dagre-d3-es falls through to `network-simplex` for unknown names.
 
 pub mod feasible_tree;
 pub mod network_simplex;
@@ -23,7 +24,6 @@ pub fn rank(graph: &mut LayeredGraph) -> Result<(), LayoutError> {
             util::longest_path(graph);
             Ok(())
         }
-        Some("none") => Ok(()),
         _ => network_simplex::network_simplex(graph),
     }
 }

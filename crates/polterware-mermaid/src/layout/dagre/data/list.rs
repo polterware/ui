@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/data/list.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/data/list.js` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
 //!
 //! A doubly linked FIFO list. Entries are handles (upstream's linked objects), so
 //! re-enqueueing one, even on another list, first unlinks it from wherever it is.

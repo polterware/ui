@@ -1,14 +1,14 @@
-//! Port of `dagre/lib/order/sort-subgraph.ts` (MIT, Copyright (c) 2012-2014 Chris
-//! Pettitt).
+//! Port of `dagre-d3-es/src/dagre/order/sort-subgraph.js` (MIT, Copyright (c)
+//! 2012-2014 Chris Pettitt).
 //!
 //! Sorts one movable subgraph (or the root of a layer graph) recursively, expanding
 //! nested subgraphs into their sorted members and keeping border nodes at the ends.
 
 use super::super::super::graphlib::Graph;
-use super::super::{LayeredGraph, NodeLabel};
+use super::super::LayeredGraph;
 use super::barycenter::{BarycenterEntry, barycenter};
 use super::resolve_conflicts::{ResolvedEntry, resolve_conflicts};
-use super::sort::{SortResult, sort_with};
+use super::sort::sort;
 
 /// The sorted members of a subgraph.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -19,8 +19,6 @@ pub struct SubgraphResult {
     pub barycenter: Option<f64>,
     /// The sum of the weights, when there are weights to merge.
     pub weight: Option<f64>,
-    /// Whether the sort had to break a tie with the bias, upstream's `usedBias`.
-    pub used_bias: bool,
 }
 
 /// Sorts the children of `v` inside `graph`.
@@ -28,7 +26,6 @@ pub fn sort_subgraph(
     graph: &LayeredGraph,
     v: &str,
     constraint_graph: &Graph<(), (), ()>,
-    old_nodes: Option<&[(String, NodeLabel)]>,
     bias_right: bool,
 ) -> SubgraphResult {
     let mut movable = graph.children(v);
@@ -39,15 +36,14 @@ pub fn sort_subgraph(
         .and_then(|node| node.border_right_node.clone());
     let mut subgraphs: Vec<(String, SubgraphResult)> = Vec::new();
 
-    if let Some(border_left) = &border_left {
-        movable.retain(|w| Some(w) != Some(border_left) && Some(w) != border_right.as_ref());
+    if border_left.is_some() {
+        movable.retain(|w| Some(w) != border_left.as_ref() && Some(w) != border_right.as_ref());
     }
 
     let mut barycenters = barycenter(graph, &movable);
     for entry in &mut barycenters {
         if !graph.children(&entry.v).is_empty() {
-            let subgraph_result =
-                sort_subgraph(graph, &entry.v, constraint_graph, old_nodes, bias_right);
+            let subgraph_result = sort_subgraph(graph, &entry.v, constraint_graph, bias_right);
             if subgraph_result.barycenter.is_some() {
                 merge_barycenters(entry, &subgraph_result);
             }
@@ -58,67 +54,8 @@ pub fn sort_subgraph(
     let mut entries = resolve_conflicts(&barycenters, constraint_graph);
     expand_subgraphs(&mut entries, &subgraphs);
 
-    let mut reversed_pairs: Vec<(String, ResolvedEntry)> = Vec::new();
-    let mut used_bias = false;
-    let mut i = 0usize;
-    while i < entries.len() {
-        let mut restart_outer = false;
-        let mut j = i + 1;
-        while j < entries.len() {
-            let (Some(barycenter_i), Some(barycenter_j)) =
-                (entries[i].barycenter, entries[j].barycenter)
-            else {
-                j += 1;
-                continue;
-            };
-            if barycenter_i == 0.0 || barycenter_j == 0.0 {
-                j += 1;
-                continue;
-            }
-            if barycenter_i == barycenter_j {
-                let name_i = entries[i].vs.first().cloned().unwrap_or_default();
-                let name_j = entries[j].vs.first().cloned().unwrap_or_default();
-                let node_i = graph.node(&name_i).cloned().unwrap_or_default();
-                let node_j = graph.node(&name_j).cloned().unwrap_or_default();
-
-                let same_edge = node_i.dummy.as_deref() == Some("edge")
-                    && node_j.dummy.as_deref() == Some("edge")
-                    && node_i.edge_obj.as_ref().is_some_and(|edge| {
-                        node_j
-                            .edge_obj
-                            .as_ref()
-                            .is_some_and(|other| edge.v == other.v && edge.w == other.w)
-                    });
-                if same_edge {
-                    if node_i
-                        .edge_label
-                        .as_ref()
-                        .is_some_and(|label| label.reversed)
-                    {
-                        reversed_pairs.push((name_j, entries[i].clone()));
-                        entries.remove(i);
-                        restart_outer = true;
-                        break;
-                    } else if !reversed_pairs.iter().any(|(key, _)| key == &name_i) {
-                        reversed_pairs.push((name_i, entries[j].clone()));
-                        entries.remove(j);
-                        j = j.saturating_sub(1);
-                    }
-                } else {
-                    used_bias = true;
-                }
-            }
-            j += 1;
-        }
-        if restart_outer {
-            i = i.saturating_sub(1);
-            continue;
-        }
-        i += 1;
-    }
-
     let entries = entries.into_iter().map(Into::into).collect();
-    let mut result = sort_with(entries, &reversed_pairs, old_nodes, Some(graph), bias_right);
+    let mut result = sort(entries, bias_right);
 
     if let (Some(border_left), Some(border_right)) = (border_left, border_right) {
         let mut vs = vec![border_left.clone()];
@@ -155,7 +92,6 @@ pub fn sort_subgraph(
         vs: result.vs,
         barycenter: result.barycenter,
         weight: result.weight,
-        used_bias,
     }
 }
 
@@ -202,9 +138,6 @@ fn merge_barycenter_values(
     }
 }
 
-/// The sort result type is re-exported for callers that build subgraph expectations.
-pub type SubgraphSortResult = SortResult;
-
 #[cfg(test)]
 mod tests {
     use super::super::super::super::graphlib::Graph;
@@ -235,7 +168,7 @@ mod tests {
         graph.set_parent("x", Some("movable")).unwrap();
         graph.set_parent("y", Some("movable")).unwrap();
         assert_eq!(
-            super::sort_subgraph(&graph, "movable", &constraints, None, false).vs,
+            super::sort_subgraph(&graph, "movable", &constraints, false).vs,
             vec!["y".to_string(), "x".to_string()]
         );
     }
@@ -251,7 +184,7 @@ mod tests {
             graph.set_parent(v, Some("movable")).unwrap();
         }
         assert_eq!(
-            super::sort_subgraph(&graph, "movable", &constraints, None, false).vs,
+            super::sort_subgraph(&graph, "movable", &constraints, false).vs,
             vec!["z".to_string(), "y".to_string(), "x".to_string()]
         );
     }
@@ -264,7 +197,7 @@ mod tests {
         graph.set_parent("x", Some("movable")).unwrap();
         graph.set_parent("y", Some("movable")).unwrap();
         assert_eq!(
-            super::sort_subgraph(&graph, "movable", &constraints, None, false).vs,
+            super::sort_subgraph(&graph, "movable", &constraints, false).vs,
             vec!["x".to_string(), "y".to_string()]
         );
     }
@@ -277,7 +210,7 @@ mod tests {
         graph.set_parent("x", Some("movable")).unwrap();
         graph.set_parent("y", Some("movable")).unwrap();
         assert_eq!(
-            super::sort_subgraph(&graph, "movable", &constraints, None, true).vs,
+            super::sort_subgraph(&graph, "movable", &constraints, true).vs,
             vec!["y".to_string(), "x".to_string()]
         );
     }
@@ -290,7 +223,7 @@ mod tests {
         graph.set_edge("4", "y");
         graph.set_parent("x", Some("movable")).unwrap();
         graph.set_parent("y", Some("movable")).unwrap();
-        let result = super::sort_subgraph(&graph, "movable", &constraints, None, false);
+        let result = super::sort_subgraph(&graph, "movable", &constraints, false);
         assert_eq!(result.barycenter, Some(2.25));
         assert_eq!(result.weight, Some(4.0));
     }
@@ -309,7 +242,7 @@ mod tests {
             graph.set_parent(v, Some("movable")).unwrap();
         }
         assert_eq!(
-            super::sort_subgraph(&graph, "movable", &constraints, None, false).vs,
+            super::sort_subgraph(&graph, "movable", &constraints, false).vs,
             vec![
                 "x".to_string(),
                 "z".to_string(),
@@ -335,7 +268,7 @@ mod tests {
             graph.set_parent(v, Some("movable")).unwrap();
         }
         assert_eq!(
-            super::sort_subgraph(&graph, "movable", &constraints, None, false).vs,
+            super::sort_subgraph(&graph, "movable", &constraints, false).vs,
             vec![
                 "x".to_string(),
                 "a".to_string(),
@@ -361,7 +294,7 @@ mod tests {
             graph.set_parent(v, Some("movable")).unwrap();
         }
         assert_eq!(
-            super::sort_subgraph(&graph, "movable", &constraints, None, false).vs,
+            super::sort_subgraph(&graph, "movable", &constraints, false).vs,
             vec![
                 "x".to_string(),
                 "a".to_string(),
@@ -390,7 +323,7 @@ mod tests {
             graph.set_parent(v, Some("sg1")).unwrap();
         }
         assert_eq!(
-            super::sort_subgraph(&graph, "sg1", &constraints, None, false).vs,
+            super::sort_subgraph(&graph, "sg1", &constraints, false).vs,
             vec![
                 "bl".to_string(),
                 "x".to_string(),
@@ -418,7 +351,7 @@ mod tests {
                 ..NodeLabel::default()
             },
         );
-        let result = super::sort_subgraph(&graph, "sg", &constraints, None, false);
+        let result = super::sort_subgraph(&graph, "sg", &constraints, false);
         assert_eq!(result.barycenter, Some(0.5));
         assert_eq!(result.weight, Some(2.0));
         assert_eq!(result.vs, vec!["bl2".to_string(), "br2".to_string()]);

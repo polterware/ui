@@ -1,28 +1,31 @@
-//! Port of `dagre/lib/util.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/util.js` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
 //!
 //! The helpers keep upstream's iteration order. `applyWithChunking` only exists to
 //! stay under JavaScript's argument limit; here the same folds run directly.
 //! Upstream's `time` is logging instrumentation and is not ported.
 
 use super::{
-    super::graphlib::{Edge, Graph, GraphOptions},
+    super::graphlib::{Graph, GraphOptions},
     DummyKind, EdgeLabel, GraphLabel, LayeredGraph, LayoutError, NodeLabel, Point,
 };
 
 /// A rank by rank matrix of node ids, upstream's `buildLayerMatrix` result.
 pub type LayerMatrix = Vec<Vec<String>>;
 
-/// Adds a dummy node of `kind` and returns its id. Repeats `name` with a unique
-/// suffix until the id is free, like upstream's `addDummyNode`.
+/// Adds a dummy node of `kind` and returns its id. Starts at `name` with a unique
+/// suffix and repeats until the id is free, like upstream's `addDummyNode`.
 pub fn add_dummy_node(
     graph: &mut LayeredGraph,
     kind: &DummyKind,
     mut label: NodeLabel,
     name: &str,
 ) -> String {
-    let mut v = name.to_string();
-    while graph.has_node(&v) {
+    let mut v;
+    loop {
         v = unique_id(name);
+        if !graph.has_node(&v) {
+            break;
+        }
     }
     label.dummy = Some(kind.to_string());
     graph.set_node_with(v.clone(), label);
@@ -137,7 +140,7 @@ pub fn intersect_rect(rect: &NodeLabel, point: Point) -> Result<Point, LayoutErr
     }
 
     let (sx, sy);
-    if dx == 0.0 || dy.abs() * w > dx.abs() * h {
+    if dy.abs() * w > dx.abs() * h {
         if dy < 0.0 {
             h = -h;
         }
@@ -154,16 +157,19 @@ pub fn intersect_rect(rect: &NodeLabel, point: Point) -> Result<Point, LayoutErr
     Ok(Point::new(x + sx, y + sy))
 }
 
-/// The matrix of node ids by rank, ordered by each node's `order`.
+/// The matrix of node ids by rank, indexed by each node's `order`.
+///
+/// Upstream writes `layering[rank][order] = v` into JavaScript arrays, so a later
+/// node with the same order replaces an earlier one; this keeps that overwrite and
+/// drops the empty slots.
 pub fn build_layer_matrix(graph: &LayeredGraph) -> LayerMatrix {
     let ranks = max_rank(graph);
     if !ranks.is_finite() || ranks < 0.0 {
         return Vec::new();
     }
-    let mut layering: Vec<Vec<(usize, usize, String)>> = vec![Vec::new(); ranks as usize + 1];
-    for (position, v) in graph.nodes().into_iter().enumerate() {
-        let node = graph.node(&v);
-        let Some(node) = node else { continue };
+    let mut layering: Vec<Vec<Option<String>>> = vec![Vec::new(); ranks as usize + 1];
+    for v in graph.nodes() {
+        let Some(node) = graph.node(&v) else { continue };
         let (Some(rank), Some(order)) = (node.rank, node.order) else {
             continue;
         };
@@ -174,14 +180,14 @@ pub fn build_layer_matrix(graph: &LayeredGraph) -> LayerMatrix {
         if rank >= layering.len() {
             layering.resize(rank + 1, Vec::new());
         }
-        layering[rank].push((order, position, v));
+        if layering[rank].len() <= order {
+            layering[rank].resize(order + 1, None);
+        }
+        layering[rank][order] = Some(v);
     }
     layering
         .into_iter()
-        .map(|mut layer| {
-            layer.sort_by_key(|(order, position, _)| (*order, *position));
-            layer.into_iter().map(|(_, _, v)| v).collect()
-        })
+        .map(|layer| layer.into_iter().flatten().collect())
         .collect()
 }
 
@@ -268,13 +274,11 @@ pub fn add_border_node(
     add_dummy_node(graph, "border", node, prefix)
 }
 
-/// The highest rank in the graph, or [`f64::MIN_POSITIVE`] when no node has one.
+/// The highest rank in the graph, or JavaScript's `Number.MIN_VALUE` when no node
+/// has one.
 pub fn max_rank(graph: &LayeredGraph) -> f64 {
-    graph.nodes().iter().fold(f64::MIN_POSITIVE, |max, v| {
-        let rank = graph
-            .node(v)
-            .and_then(|n| n.rank)
-            .unwrap_or(f64::MIN_POSITIVE);
+    graph.nodes().iter().fold(5e-324, |max, v| {
+        let rank = graph.node(v).and_then(|n| n.rank).unwrap_or(5e-324);
         max.max(rank)
     })
 }
@@ -330,100 +334,17 @@ pub fn cmp_f64(a: f64, b: f64) -> std::cmp::Ordering {
     a.partial_cmp(&b).unwrap_or(std::cmp::Ordering::Equal)
 }
 
-/// Upstream's `compareByOldOrder`: compare two normalized dummy nodes by the order
-/// they had in the previous layout, or 0 when there is nothing to compare.
-pub fn compare_by_old_order(
-    old_nodes: Option<&[(String, NodeLabel)]>,
-    node_a: &NodeLabel,
-    node_b: &NodeLabel,
-) -> f64 {
-    let Some(old_nodes) = old_nodes else {
-        return 0.0;
-    };
-    let (Some(a_edge), Some(b_edge)) = (&node_a.edge_obj, &node_b.edge_obj) else {
-        return 0.0;
-    };
-    if node_a.dummy.as_deref() != Some("edge") || node_b.dummy.as_deref() != Some("edge") {
-        return 0.0;
-    }
-    let lookup = |v: &str| old_nodes.iter().find(|(id, _)| id == v).map(|(_, n)| n);
-    let (Some(old_a_source), Some(old_b_source), Some(old_a_target), Some(old_b_target)) = (
-        lookup(&a_edge.v),
-        lookup(&b_edge.v),
-        lookup(&a_edge.w),
-        lookup(&b_edge.w),
-    ) else {
-        return 0.0;
-    };
-
-    let is_forward = a_edge.w != b_edge.w;
-    let target_rank = if is_forward {
-        old_a_source.rank.unwrap_or(f64::NAN + 1.0)
-    } else {
-        old_a_target.rank.unwrap_or(f64::NAN - 1.0)
-    };
-    let _ = (old_b_source, old_b_target);
-
-    let find = |edge: &Edge| {
-        old_nodes.iter().find(|(_, node)| {
-            node.edge_obj.as_ref().is_some_and(|old| {
-                old.v == edge.v && old.w == edge.w && node.rank == Some(target_rank)
-            })
-        })
-    };
-    let (Some((_, old_a)), Some((_, old_b))) = (find(a_edge), find(b_edge)) else {
-        return 0.0;
-    };
-    let old_order_a = old_a.order.map_or(f64::NAN, |order| order as f64);
-    let old_order_b = old_b.order.map_or(f64::NAN, |order| order as f64);
-    let difference = old_order_a - old_order_b;
-    if difference.is_nan() { 0.0 } else { difference }
-}
-
-/// The nodes of a layer graph by rank, for `order`.
-pub fn nodes_by_rank(graph: &LayeredGraph, ranks: &[isize]) -> Vec<(isize, Vec<String>)> {
-    let mut by_rank: Vec<(isize, Vec<String>)> = Vec::new();
-    for v in graph.nodes() {
-        let node = graph.node(&v).cloned().unwrap_or_default();
-        if let Some(rank) = node.rank {
-            add_to_rank(&mut by_rank, rank as isize, &v);
-        }
-        if let (Some(min_rank), Some(max_rank)) = (node.min_rank, node.max_rank) {
-            for rank in min_rank as isize..=max_rank as isize {
-                if Some(rank as f64) != node.rank {
-                    add_to_rank(&mut by_rank, rank, &v);
-                }
-            }
-        }
-    }
-    ranks
-        .iter()
-        .map(|rank| {
-            let nodes = by_rank
-                .iter()
-                .find(|(value, _)| value == rank)
-                .map(|(_, nodes)| nodes.clone())
-                .unwrap_or_default();
-            (*rank, nodes)
-        })
-        .collect()
-}
-
-fn add_to_rank(by_rank: &mut Vec<(isize, Vec<String>)>, rank: isize, v: &str) {
-    match by_rank.iter_mut().find(|(value, _)| *value == rank) {
-        Some((_, nodes)) => nodes.push(v.to_string()),
-        None => by_rank.push((rank, vec![v.to_string()])),
-    }
-}
-
 /// The graph label with layout defaults filled in, upstream's `graphDefaults`.
+///
+/// `rankdir` defaults to lower-case `tb` and no `rankalign` is read, as in
+/// dagre-d3-es; `makeSpaceForEdgeLabels` compares the direction case-sensitively, so
+/// an absent direction takes the horizontal branch there.
 pub fn graph_label_with_defaults(label: Option<&GraphLabel>) -> GraphLabel {
     let mut graph = label.cloned().unwrap_or_default();
     graph.ranksep.get_or_insert(50.0);
     graph.edgesep.get_or_insert(20.0);
     graph.nodesep.get_or_insert(50.0);
-    graph.rankdir.get_or_insert_with(|| "TB".to_string());
-    graph.rankalign.get_or_insert_with(|| "center".to_string());
+    graph.rankdir.get_or_insert_with(|| "tb".to_string());
     graph
 }
 
@@ -877,44 +798,7 @@ mod tests {
         assert_eq!(label.ranksep, Some(50.0));
         assert_eq!(label.edgesep, Some(20.0));
         assert_eq!(label.nodesep, Some(50.0));
-        assert_eq!(label.rankdir.as_deref(), Some("TB"));
-        assert_eq!(label.rankalign.as_deref(), Some("center"));
-    }
-
-    #[test]
-    fn nodes_by_rank_groups_simple_and_cluster_nodes() {
-        let mut graph = compound();
-        graph.set_node_with(
-            "a",
-            NodeLabel {
-                rank: Some(0.0),
-                ..NodeLabel::default()
-            },
-        );
-        graph.set_node_with(
-            "sg",
-            NodeLabel {
-                min_rank: Some(0.0),
-                max_rank: Some(0.0),
-                ..NodeLabel::default()
-            },
-        );
-        let by_rank = nodes_by_rank(&graph, &[0]);
-        assert_eq!(by_rank.len(), 1);
-        assert_eq!(by_rank[0].1, vec!["a".to_string(), "sg".to_string()]);
-    }
-
-    #[test]
-    fn compare_by_old_order_is_zero_without_old_nodes() {
-        let node_a = NodeLabel {
-            dummy: Some("edge".to_string()),
-            ..NodeLabel::default()
-        };
-        let node_b = NodeLabel {
-            dummy: Some("edge".to_string()),
-            ..NodeLabel::default()
-        };
-        assert_eq!(compare_by_old_order(None, &node_a, &node_b), 0.0);
+        assert_eq!(label.rankdir.as_deref(), Some("tb"));
     }
 
     #[test]

@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/normalize.ts` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
+//! Port of `dagre-d3-es/src/dagre/normalize.js` (MIT, Copyright (c) 2012-2014 Chris Pettitt).
 //!
 //! Breaks every edge longer than one rank into one-rank segments with dummy nodes,
 //! and restores the original edges after positioning. Preconditions are upstream's:

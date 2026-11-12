@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/rank/network-simplex.ts` (MIT, Copyright (c) 2012-2014 Chris
+//! Port of `dagre-d3-es/src/dagre/rank/network-simplex.js` (MIT, Copyright (c) 2012-2014 Chris
 //! Pettitt).
 //!
 //! Starts from longest-path ranks, builds a feasible tight tree, and exchanges tree

@@ -1,16 +1,16 @@
-//! Port of `dagre/lib/order/init-order.ts` (MIT, Copyright (c) 2012-2014 Chris
-//! Pettitt).
+//! Port of `dagre-d3-es/src/dagre/order/init-order.js` (MIT, Copyright (c) 2012-2014
+//! Chris Pettitt).
 //!
 //! Assigns an initial order by a depth-first walk from the first rank, in rank
-//! order and, among successors, in the previous layout's order when there is one.
+//! order and, among successors, in the graph's insertion order.
 
 use std::collections::HashSet;
 
+use super::super::LayeredGraph;
 use super::super::util::{self, LayerMatrix};
-use super::super::{LayeredGraph, NodeLabel};
 
 /// The initial layering of `graph`.
-pub fn init_order(graph: &LayeredGraph, old_nodes: Option<&[(String, NodeLabel)]>) -> LayerMatrix {
+pub fn init_order(graph: &LayeredGraph) -> LayerMatrix {
     let mut visited: HashSet<String> = HashSet::new();
     let simple_nodes: Vec<String> = graph
         .nodes()
@@ -29,13 +29,7 @@ pub fn init_order(graph: &LayeredGraph, old_nodes: Option<&[(String, NodeLabel)]
     };
     let mut layers: LayerMatrix = vec![Vec::new(); layer_count];
 
-    fn dfs(
-        graph: &LayeredGraph,
-        v: &str,
-        old_nodes: Option<&[(String, NodeLabel)]>,
-        visited: &mut HashSet<String>,
-        layers: &mut LayerMatrix,
-    ) {
+    fn dfs(graph: &LayeredGraph, v: &str, visited: &mut HashSet<String>, layers: &mut LayerMatrix) {
         if !visited.insert(v.to_string()) {
             return;
         }
@@ -46,14 +40,8 @@ pub fn init_order(graph: &LayeredGraph, old_nodes: Option<&[(String, NodeLabel)]
         }
         layers[rank].push(v.to_string());
 
-        let mut successors = graph.successors(v).unwrap_or_default();
-        successors.sort_by(|a, b| {
-            let node_a = graph.node(a).cloned().unwrap_or_default();
-            let node_b = graph.node(b).cloned().unwrap_or_default();
-            util::cmp_f64(util::compare_by_old_order(old_nodes, &node_a, &node_b), 0.0)
-        });
-        for successor in successors {
-            dfs(graph, &successor, old_nodes, visited, layers);
+        for successor in graph.successors(v).unwrap_or_default() {
+            dfs(graph, &successor, visited, layers);
         }
     }
 
@@ -64,7 +52,7 @@ pub fn init_order(graph: &LayeredGraph, old_nodes: Option<&[(String, NodeLabel)]
         util::cmp_f64(rank_a, rank_b)
     });
     for v in ordered {
-        dfs(graph, &v, old_nodes, &mut visited, &mut layers);
+        dfs(graph, &v, &mut visited, &mut layers);
     }
 
     layers
@@ -92,7 +80,7 @@ mod tests {
         graph.set_path(&["a", "b", "c"]);
         graph.set_edge("b", "d");
         graph.set_edge("a", "e");
-        let layering = super::init_order(&graph, None);
+        let layering = super::init_order(&graph);
         assert_eq!(layering[0], vec!["a".to_string()]);
         assert_eq!(sorted(&layering[1]), vec!["b".to_string(), "e".to_string()]);
         assert_eq!(sorted(&layering[2]), vec!["c".to_string(), "d".to_string()]);
@@ -107,7 +95,7 @@ mod tests {
         ordered(&mut graph, "d", 2.0, 0);
         graph.set_path(&["a", "b", "d"]);
         graph.set_path(&["a", "c", "d"]);
-        let layering = super::init_order(&graph, None);
+        let layering = super::init_order(&graph);
         assert_eq!(layering[0], vec!["a".to_string()]);
         assert_eq!(sorted(&layering[1]), vec!["b".to_string(), "c".to_string()]);
         assert_eq!(layering[2], vec!["d".to_string()]);
@@ -119,7 +107,7 @@ mod tests {
         ordered(&mut graph, "a", 0.0, 0);
         graph.set_node_with("sg1", NodeLabel::default());
         graph.set_parent("a", Some("sg1")).unwrap();
-        let layering = super::init_order(&graph, None);
+        let layering = super::init_order(&graph);
         assert_eq!(layering, vec![vec!["a".to_string()]]);
     }
 }

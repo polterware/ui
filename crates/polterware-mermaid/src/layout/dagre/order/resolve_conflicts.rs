@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/order/resolve-conflicts.ts` (MIT, Copyright (c) 2012-2014
+//! Port of `dagre-d3-es/src/dagre/order/resolve-conflicts.js` (MIT, Copyright (c) 2012-2014
 //! Chris Pettitt).
 //!
 //! Coalesces the barycenter entries that violate an ordering constraint into one

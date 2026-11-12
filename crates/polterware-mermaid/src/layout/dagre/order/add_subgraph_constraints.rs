@@ -1,4 +1,4 @@
-//! Port of `dagre/lib/order/add-subgraph-constraints.ts` (MIT, Copyright (c)
+//! Port of `dagre-d3-es/src/dagre/order/add-subgraph-constraints.js` (MIT, Copyright (c)
 //! 2012-2014 Chris Pettitt).
 //!
 //! When two adjacent nodes in a layer belong to different subgraphs, the subgraphs
