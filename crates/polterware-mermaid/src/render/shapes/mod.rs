@@ -2255,12 +2255,14 @@ mod tests {
             "shapes/squareRect.ts"
         );
         assert_eq!(shape_definition("question").unwrap().short_name, "diam");
-        assert!(render_node(
-            Node::new("n", "x", "cyl"),
-            &FallbackMeasure,
-            &crate::theme::ThemeVariables::default(),
-        )
-        .is_ok());
+        assert!(
+            render_node(
+                Node::new("n", "x", "cyl"),
+                &FallbackMeasure,
+                &crate::theme::ThemeVariables::default(),
+            )
+            .is_ok()
+        );
     }
 
     #[test]

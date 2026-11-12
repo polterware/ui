@@ -1,0 +1,228 @@
+{
+  "shape": "usecaseBusiness",
+  "cases": [
+    {
+      "name": "short",
+      "label": "A",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 20,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-business-shape",
+      "width": 80,
+      "height": 52,
+      "elements": [
+        {
+          "tag": "ellipse",
+          "class": "basic label-container usecase-business-ellipse",
+          "fill": null,
+          "cx": 0,
+          "cy": 0,
+          "rx": 40,
+          "ry": 26
+        },
+        {
+          "tag": "label",
+          "class": "label usecase-label",
+          "x": -20,
+          "y": -6,
+          "text": "A"
+        },
+        {
+          "tag": "path",
+          "class": "usecase-business-marker",
+          "fill": "none",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 22,
+              "y": 21.714281015037084
+            },
+            {
+              "op": "lineTo",
+              "x": 38,
+              "y": -8.118497397917919
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            31.70496,
+            15.85248
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -31.70496,
+            -15.85248
+          ]
+        }
+      ]
+    },
+    {
+      "name": "long",
+      "label": "A much longer use case label",
+      "label_size": [
+        240,
+        24
+      ],
+      "padding": 20,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-business-shape",
+      "width": 280,
+      "height": 64,
+      "elements": [
+        {
+          "tag": "ellipse",
+          "class": "basic label-container usecase-business-ellipse",
+          "fill": null,
+          "cx": 0,
+          "cy": 0,
+          "rx": 140,
+          "ry": 32
+        },
+        {
+          "tag": "label",
+          "class": "label usecase-label",
+          "x": -120,
+          "y": -12,
+          "text": "A much longer use case label"
+        },
+        {
+          "tag": "path",
+          "class": "usecase-business-marker",
+          "fill": "none",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 122,
+              "y": 15.696717452241733
+            },
+            {
+              "op": "lineTo",
+              "x": 138,
+              "y": -5.38963479888072
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            58.206366,
+            29.103183
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -58.206366,
+            -29.103183
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stereotype",
+      "label": "Pay",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 20,
+      "stereotype": "business",
+      "business": false,
+      "rows": null,
+      "class": "node usecase-business-shape",
+      "width": 80,
+      "height": 66,
+      "elements": [
+        {
+          "tag": "ellipse",
+          "class": "basic label-container usecase-business-ellipse",
+          "fill": null,
+          "cx": 0,
+          "cy": 0,
+          "rx": 40,
+          "ry": 33
+        },
+        {
+          "tag": "label",
+          "class": "label usecase-label",
+          "x": -20,
+          "y": 1,
+          "text": "Pay"
+        },
+        {
+          "tag": "label",
+          "class": "label usecase-stereotype",
+          "x": -20,
+          "y": -13,
+          "text": "«business»"
+        },
+        {
+          "tag": "path",
+          "class": "usecase-business-marker",
+          "fill": "none",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 22,
+              "y": 27.560433596008608
+            },
+            {
+              "op": "lineTo",
+              "x": 38,
+              "y": -10.304246697357359
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            34.207913,
+            17.103957
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -34.207913,
+            -17.103957
+          ]
+        }
+      ]
+    }
+  ]
+}

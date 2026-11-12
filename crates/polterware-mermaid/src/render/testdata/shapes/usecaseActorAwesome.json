@@ -1,0 +1,333 @@
+{
+  "shape": "usecaseActorAwesome",
+  "cases": [
+    {
+      "name": "short",
+      "label": "A",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-actor-variant usecase-actor-awesome",
+      "width": 76,
+      "height": 112,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "usecase-actor-outline",
+          "x": -38,
+          "y": -56,
+          "width": 76,
+          "height": 112,
+          "rx": null,
+          "opacity": 0
+        },
+        {
+          "tag": "label",
+          "class": "label actor-label usecase-actor-label",
+          "x": -20,
+          "y": 34,
+          "text": "A"
+        },
+        {
+          "tag": "g",
+          "class": "usecase-actor-glyph usecase-actor-awesome",
+          "x": 0,
+          "y": -10,
+          "children": [
+            {
+              "tag": "path",
+              "class": "usecase-actor-awesome-silhouette",
+              "fill": null,
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -34
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 7.18,
+                  "c1y": -34,
+                  "c2x": 13,
+                  "c2y": -28.18,
+                  "x": 13,
+                  "y": -21
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 13,
+                  "c1y": -13.82,
+                  "c2x": 7.18,
+                  "c2y": -8,
+                  "x": 0,
+                  "y": -8
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -7.18,
+                  "c1y": -8,
+                  "c2x": -13,
+                  "c2y": -13.82,
+                  "x": -13,
+                  "y": -21
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -13,
+                  "c1y": -28.18,
+                  "c2x": -7.18,
+                  "c2y": -34,
+                  "x": 0,
+                  "y": -34
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": -24,
+                  "y": 25
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -24,
+                  "c1y": 7,
+                  "c2x": -14,
+                  "c2y": -3,
+                  "x": 0,
+                  "y": -3
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 14,
+                  "c1y": -3,
+                  "c2x": 24,
+                  "c2y": 7,
+                  "x": 24,
+                  "y": 25
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 24,
+                  "c1y": 28,
+                  "c2x": 21,
+                  "c2y": 30,
+                  "x": 18,
+                  "y": 30
+                },
+                {
+                  "op": "lineTo",
+                  "x": -18,
+                  "y": 30
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -21,
+                  "c1y": 30,
+                  "c2x": -24,
+                  "c2y": 28,
+                  "x": -24,
+                  "y": 25
+                },
+                {
+                  "op": "close"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            38,
+            19
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -38,
+            -19
+          ]
+        }
+      ]
+    },
+    {
+      "name": "long",
+      "label": "A much longer use case label",
+      "label_size": [
+        240,
+        24
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-actor-variant usecase-actor-awesome",
+      "width": 260,
+      "height": 124,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "usecase-actor-outline",
+          "x": -130,
+          "y": -62,
+          "width": 260,
+          "height": 124,
+          "rx": null,
+          "opacity": 0
+        },
+        {
+          "tag": "label",
+          "class": "label actor-label usecase-actor-label",
+          "x": -120,
+          "y": 28,
+          "text": "A much longer use case label"
+        },
+        {
+          "tag": "g",
+          "class": "usecase-actor-glyph usecase-actor-awesome",
+          "x": 0,
+          "y": -16,
+          "children": [
+            {
+              "tag": "path",
+              "class": "usecase-actor-awesome-silhouette",
+              "fill": null,
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -34
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 7.18,
+                  "c1y": -34,
+                  "c2x": 13,
+                  "c2y": -28.18,
+                  "x": 13,
+                  "y": -21
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 13,
+                  "c1y": -13.82,
+                  "c2x": 7.18,
+                  "c2y": -8,
+                  "x": 0,
+                  "y": -8
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -7.18,
+                  "c1y": -8,
+                  "c2x": -13,
+                  "c2y": -13.82,
+                  "x": -13,
+                  "y": -21
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -13,
+                  "c1y": -28.18,
+                  "c2x": -7.18,
+                  "c2y": -34,
+                  "x": 0,
+                  "y": -34
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": -24,
+                  "y": 25
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -24,
+                  "c1y": 7,
+                  "c2x": -14,
+                  "c2y": -3,
+                  "x": 0,
+                  "y": -3
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 14,
+                  "c1y": -3,
+                  "c2x": 24,
+                  "c2y": 7,
+                  "x": 24,
+                  "y": 25
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 24,
+                  "c1y": 28,
+                  "c2x": 21,
+                  "c2y": 30,
+                  "x": 18,
+                  "y": 30
+                },
+                {
+                  "op": "lineTo",
+                  "x": -18,
+                  "y": 30
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -21,
+                  "c1y": 30,
+                  "c2x": -24,
+                  "c2y": 28,
+                  "x": -24,
+                  "y": 25
+                },
+                {
+                  "op": "close"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            124,
+            62
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -124,
+            -62
+          ]
+        }
+      ]
+    }
+  ]
+}

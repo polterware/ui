@@ -1,0 +1,279 @@
+{
+  "shape": "usecaseActorHollow",
+  "cases": [
+    {
+      "name": "short",
+      "label": "A",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-actor-variant usecase-actor-hollow",
+      "width": 76,
+      "height": 112,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "usecase-actor-outline",
+          "x": -38,
+          "y": -56,
+          "width": 76,
+          "height": 112,
+          "rx": null,
+          "opacity": 0
+        },
+        {
+          "tag": "label",
+          "class": "label actor-label usecase-actor-label",
+          "x": -20,
+          "y": 34,
+          "text": "A"
+        },
+        {
+          "tag": "g",
+          "class": "usecase-actor-glyph usecase-actor-hollow",
+          "x": 0,
+          "y": -10,
+          "children": [
+            {
+              "tag": "circle",
+              "class": "usecase-actor-hollow-head",
+              "fill": "none",
+              "cx": 0,
+              "cy": -23,
+              "r": 9
+            },
+            {
+              "tag": "path",
+              "class": "usecase-actor-hollow-body",
+              "fill": "none",
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": -22,
+                  "y": -10
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": -10
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 0
+                },
+                {
+                  "op": "lineTo",
+                  "x": 6,
+                  "y": 0
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 17
+                },
+                {
+                  "op": "lineTo",
+                  "x": 13,
+                  "y": 28
+                },
+                {
+                  "op": "lineTo",
+                  "x": 0,
+                  "y": 13
+                },
+                {
+                  "op": "lineTo",
+                  "x": -13,
+                  "y": 28
+                },
+                {
+                  "op": "lineTo",
+                  "x": -22,
+                  "y": 17
+                },
+                {
+                  "op": "lineTo",
+                  "x": -6,
+                  "y": 0
+                },
+                {
+                  "op": "lineTo",
+                  "x": -22,
+                  "y": 0
+                },
+                {
+                  "op": "close"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            38,
+            19
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -38,
+            -19
+          ]
+        }
+      ]
+    },
+    {
+      "name": "long",
+      "label": "A much longer use case label",
+      "label_size": [
+        240,
+        24
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-actor-variant usecase-actor-hollow",
+      "width": 260,
+      "height": 124,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "usecase-actor-outline",
+          "x": -130,
+          "y": -62,
+          "width": 260,
+          "height": 124,
+          "rx": null,
+          "opacity": 0
+        },
+        {
+          "tag": "label",
+          "class": "label actor-label usecase-actor-label",
+          "x": -120,
+          "y": 28,
+          "text": "A much longer use case label"
+        },
+        {
+          "tag": "g",
+          "class": "usecase-actor-glyph usecase-actor-hollow",
+          "x": 0,
+          "y": -16,
+          "children": [
+            {
+              "tag": "circle",
+              "class": "usecase-actor-hollow-head",
+              "fill": "none",
+              "cx": 0,
+              "cy": -23,
+              "r": 9
+            },
+            {
+              "tag": "path",
+              "class": "usecase-actor-hollow-body",
+              "fill": "none",
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": -22,
+                  "y": -10
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": -10
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 0
+                },
+                {
+                  "op": "lineTo",
+                  "x": 6,
+                  "y": 0
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 17
+                },
+                {
+                  "op": "lineTo",
+                  "x": 13,
+                  "y": 28
+                },
+                {
+                  "op": "lineTo",
+                  "x": 0,
+                  "y": 13
+                },
+                {
+                  "op": "lineTo",
+                  "x": -13,
+                  "y": 28
+                },
+                {
+                  "op": "lineTo",
+                  "x": -22,
+                  "y": 17
+                },
+                {
+                  "op": "lineTo",
+                  "x": -6,
+                  "y": 0
+                },
+                {
+                  "op": "lineTo",
+                  "x": -22,
+                  "y": 0
+                },
+                {
+                  "op": "close"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            124,
+            62
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -124,
+            -62
+          ]
+        }
+      ]
+    }
+  ]
+}
