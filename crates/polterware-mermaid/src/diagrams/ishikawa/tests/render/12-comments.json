@@ -1,0 +1,202 @@
+{
+  "name": "12-comments",
+  "source": "ishikawa\n  Traffic drop\n    Broken tracking\n    Lost rankings\n  %% a trailing comment is allowed\n",
+  "expected": {
+    "viewBox": {
+      "x": -138.95865504800327,
+      "y": 158.2865965629215,
+      "width": 236.71865504800328,
+      "height": 183.42680687415702
+    },
+    "rawViewBox": "-138.95865504800327 158.2865965629215 236.71865504800328 183.42680687415702",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -98.95865504800328,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -52.9 L 0 52.9 Q 155.52 0 0 -52.9 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 197.1
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 302.9
+          },
+          {
+            "op": "quadTo",
+            "cx": 155.52,
+            "cy": 250,
+            "x": 0,
+            "y": 197.1
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Traffic",
+          "drop"
+        ],
+        "x": 35.400000000000006,
+        "y": 249.99999999999997,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": 16.8,
+        "fill": "#333",
+        "box": {
+          "x": 6.0000000000000036,
+          "y": 233.54999999999998,
+          "width": 58.800000000000004,
+          "height": 32.9
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -118.95865504800328,
+        "y": 178.2865965629215,
+        "width": 184,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Broken tracking"
+        ],
+        "x": -26.958655048003283,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -98.95865504800328,
+          "y": 180.2865965629215,
+          "width": 144,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 299.5134034370785,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -109.35865504800329,
+        "y": 299.31340343707853,
+        "width": 164.8,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Lost rankings"
+        ],
+        "x": -26.958655048003283,
+        "y": 310.5134034370785,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -89.35865504800329,
+          "y": 301.31340343707853,
+          "width": 124.8,
+          "height": 18.4
+        }
+      }
+    ]
+  }
+}

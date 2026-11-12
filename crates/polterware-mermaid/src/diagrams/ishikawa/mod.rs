@@ -24,19 +24,22 @@
 //!   calls their setters, so they are always empty.
 //! * A parse error carries a [`Span`](crate::error::Span) (line and column); upstream's
 //!   jison reports a line and a token name in its message instead.
-//! * Nothing here lays out or draws the fishbone: `ishikawaRenderer.ts`, `ishikawaStyles.ts`,
-//!   and the renderer and styles `ishikawaDiagram.ts` registers are out of scope.
+//!
+//! The fishbone is drawn by [`render`], ported from `ishikawaRenderer.ts` `draw` and
+//! `ishikawaStyles.ts` (plain SVG, no unified pipeline), as upstream does.
 //!
 //! The upstream spec ported as tests is `ishikawa.spec.ts`; what its port skips is listed in
-//! `tests.rs`.
+//! `tests.rs`. The renderer's fixtures live in `tests/render/`.
 //!
-//! No app consumes this yet: it replaces the placeholder `Ast`/`parse`, and
-//! `Diagram::Ishikawa(Ast)` keeps its shape, so no app breaks.
+//! No app consumes this yet: `Diagram::Ishikawa(Ast)` keeps its shape, and the renderer module
+//! is additive, so no app breaks.
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+
+pub mod render;
 
 pub use ast::{Ast, IshikawaNode};
 

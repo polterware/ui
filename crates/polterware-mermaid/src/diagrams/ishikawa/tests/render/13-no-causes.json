@@ -1,0 +1,118 @@
+{
+  "name": "13-no-causes",
+  "source": "ishikawa\n  Nothing underneath\n",
+  "expected": {
+    "viewBox": {
+      "x": -20,
+      "y": 177.1,
+      "width": 148,
+      "height": 145.79999999999998
+    },
+    "rawViewBox": "-20 177.1 148 145.79999999999998",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": 0,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -52.9 L 0 52.9 Q 216 0 0 -52.9 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 197.1
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 302.9
+          },
+          {
+            "op": "quadTo",
+            "cx": 216,
+            "cy": 250,
+            "x": 0,
+            "y": 197.1
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Nothing",
+          "underneath"
+        ],
+        "x": 48,
+        "y": 249.99999999999997,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": 16.8,
+        "fill": "#333",
+        "box": {
+          "x": 6,
+          "y": 233.54999999999998,
+          "width": 84,
+          "height": 32.9
+        }
+      }
+    ]
+  }
+}

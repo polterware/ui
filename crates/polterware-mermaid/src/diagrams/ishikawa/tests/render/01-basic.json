@@ -1,0 +1,202 @@
+{
+  "name": "01-basic",
+  "source": "ishikawa\n  Customer satisfaction\n    Long delivery time\n    Wrong order\n",
+  "expected": {
+    "viewBox": {
+      "x": -153.35865504800327,
+      "y": 158.2865965629215,
+      "width": 301.5186550480032,
+      "height": 183.42680687415702
+    },
+    "rawViewBox": "-153.35865504800327 158.2865965629215 301.5186550480032 183.42680687415702",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -113.35865504800327,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -52.9 L 0 52.9 Q 256.31999999999994 0 0 -52.9 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 197.1
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 302.9
+          },
+          {
+            "op": "quadTo",
+            "cx": 256.31999999999994,
+            "cy": 250,
+            "x": 0,
+            "y": 197.1
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Customer",
+          "satisfaction"
+        ],
+        "x": 56.39999999999999,
+        "y": 249.99999999999997,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": 16.8,
+        "fill": "#333",
+        "box": {
+          "x": 6,
+          "y": 233.54999999999998,
+          "width": 100.79999999999998,
+          "height": 32.9
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -133.35865504800327,
+        "y": 178.2865965629215,
+        "width": 212.79999999999998,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Long delivery time"
+        ],
+        "x": -26.958655048003283,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -113.35865504800327,
+          "y": 180.2865965629215,
+          "width": 172.79999999999998,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 299.5134034370785,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -99.75865504800328,
+        "y": 299.31340343707853,
+        "width": 145.6,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Wrong order"
+        ],
+        "x": -26.958655048003283,
+        "y": 310.5134034370785,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -79.75865504800328,
+          "y": 301.31340343707853,
+          "width": 105.6,
+          "height": 18.4
+        }
+      }
+    ]
+  }
+}

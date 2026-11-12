@@ -1,0 +1,159 @@
+{
+  "name": "11-single-cause",
+  "source": "ishikawa\n  One problem\n    One cause\n",
+  "expected": {
+    "viewBox": {
+      "x": -110.15865504800328,
+      "y": 158.2865965629215,
+      "width": 248.23865504800327,
+      "height": 147.81340343707853
+    },
+    "rawViewBox": "-110.15865504800328 158.2865965629215 248.23865504800327 147.81340343707853",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -70.15865504800328,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -36.099999999999994 L 0 36.099999999999994 Q 236.15999999999997 0 0 -36.099999999999994 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 213.9
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 286.1
+          },
+          {
+            "op": "quadTo",
+            "cx": 236.15999999999997,
+            "cy": 250,
+            "x": 0,
+            "y": 213.9
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "One problem"
+        ],
+        "x": 52.199999999999996,
+        "y": 250,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": 6,
+          "y": 241.95,
+          "width": 92.39999999999999,
+          "height": 16.099999999999998
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -90.15865504800328,
+        "y": 178.2865965629215,
+        "width": 126.39999999999999,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "One cause"
+        ],
+        "x": -26.958655048003283,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -70.15865504800328,
+          "y": 180.2865965629215,
+          "width": 86.39999999999999,
+          "height": 18.4
+        }
+      }
+    ]
+  }
+}
