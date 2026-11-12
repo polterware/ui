@@ -733,3 +733,6 @@ fn junction_in(id: &str, container: &str) -> Junction {
         edges: Vec::new(),
     }
 }
+
+#[cfg(test)]
+mod render_tests;

@@ -1,0 +1,418 @@
+{
+  "name": "07-long-labels",
+  "source": "architecture-beta\n  group platform(cloud)[The platform group with a considerably long title]\n\n  service gateway(server)[The edge gateway that fronts every incoming request] in platform\n  service store(database)[Primary data store for customer records] in platform\n\n  gateway:R -- L:store\n",
+  "expected": {
+    "viewBox": {
+      "x": -417.593283,
+      "y": -71,
+      "width": 800.186566,
+      "height": 267.5
+    },
+    "services": [
+      {
+        "id": "gateway",
+        "x": -129.093283,
+        "y": 17,
+        "label": {
+          "text": "The edgegateway thatfronts everyincomingrequest",
+          "x": -146.693283,
+          "y": 14.1,
+          "width": 115.2,
+          "height": 88.8,
+          "baseline": 102.9,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "rect",
+              "x": 17.5,
+              "y": 17.5,
+              "width": 45,
+              "height": 45,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 17.5,
+              "y": 32.5,
+              "width": 45,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 17.5,
+              "y": 47.5,
+              "width": 45,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 24.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 24.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 39.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 39.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 54.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": "#fff",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 43.75,
+              "y": 54.5,
+              "width": 12.5,
+              "height": 1,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 24.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 39.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 31.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 26.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 21.75,
+              "y": 54.25,
+              "width": 1.5,
+              "height": 1.5,
+              "fill": "#fff",
+              "stroke": "#fff",
+              "strokeWidth": 1,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      },
+      {
+        "id": "store",
+        "x": 71.593283,
+        "y": 17,
+        "label": {
+          "text": "Primary datastore forcustomerrecords",
+          "x": 53.993283,
+          "y": 31.7,
+          "width": 115.2,
+          "height": 71.2,
+          "baseline": 102.9,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 80,
+          "height": 80,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 57.86,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 45.95,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 34.05,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 20,
+              "y": 15,
+              "width": 40,
+              "height": 14.28,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 22.14,
+              "width": 0,
+              "height": 35.72,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 60,
+              "y": 22.14,
+              "width": 0,
+              "height": 35.72,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      }
+    ],
+    "junctions": [],
+    "groups": [
+      {
+        "id": "platform",
+        "x": -377.593283,
+        "y": -25.5,
+        "width": 720.186566,
+        "height": 182,
+        "label": {
+          "text": "The platform group with a considerably long title",
+          "x": -343.593283,
+          "y": -31,
+          "width": 470.4,
+          "height": 18.4,
+          "baseline": -12.6,
+          "anchor": "start",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 30,
+          "height": 30,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 15,
+              "y": 27.5,
+              "width": 50,
+              "height": 25,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            }
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "architecture-diagram-7-L_gateway_store_0",
+        "points": [
+          {
+            "x": -49.093283,
+            "y": 57
+          },
+          {
+            "x": 11.25,
+            "y": 57
+          },
+          {
+            "x": 71.593283,
+            "y": 57
+          }
+        ],
+        "arrows": [],
+        "label": null
+      }
+    ]
+  }
+}

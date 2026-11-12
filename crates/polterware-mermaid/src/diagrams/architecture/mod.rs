@@ -22,9 +22,11 @@
 //!   ported; the complex nested diagram they parse is still checked for its services, groups,
 //!   and edges.
 //! * `setDiagramId`, `getDiagramId`, `setElementForId`, and `getElementById` belong to the
-//!   renderer and are absent; nothing here lays out or draws.
-//! * `architectureSeed.ts` (a seeded `Math.random` for the renderer) and its spec are
-//!   rendering, so they are not ported.
+//!   renderer. [`render`] draws the diagram without a DOM, so it keeps no element map; the
+//!   page's diagram-id prefix is not part of a [`Scene`](crate::scene::Scene).
+//! * `architectureSeed.ts` is the seeded `Math.random` `layoutArchitecture` wraps around each
+//!   fcose run. [`render`] seeds the same way through
+//!   [`run_fcose_layout`](crate::layout::fcose::run_fcose_layout).
 //! * `sanitizeText` is approximated the same way the pie database does: `script`/`style`
 //!   elements are dropped and a stray `<` is escaped, but there is no DOMPurify (a DOM
 //!   library). This affects only the title and the accessibility strings; service, junction,
@@ -41,8 +43,10 @@
 
 mod ast;
 mod db;
+mod icons;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{
     Alignment, AlignmentDirection, Ast, DataStructures, Direction, DirectionPair, Edge, Group,

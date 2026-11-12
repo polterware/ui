@@ -1,0 +1,297 @@
+{
+  "name": "10-config-seed",
+  "source": "%%{init: {\"architecture\": {\"padding\": 24, \"iconSize\": 60, \"fontSize\": 14, \"nodeSeparation\": 90, \"seed\": 7}}}%%\narchitecture-beta\n  group api(cloud)[API]\n  service web(internet)[Web] in api\n  service db(database)[Database] in api\n  web:R -- L:db\n",
+  "expected": {
+    "viewBox": {
+      "x": -123.101117,
+      "y": -42,
+      "width": 317.202234,
+      "height": 182.5
+    },
+    "services": [
+      {
+        "id": "web",
+        "x": -72.601117,
+        "y": 15,
+        "label": {
+          "text": "Web",
+          "x": -57.001117,
+          "y": 62.5,
+          "width": 28.8,
+          "height": 18.4,
+          "baseline": 80.9,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 60,
+          "height": 60,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 17.5,
+              "y": 17.5,
+              "width": 45,
+              "height": 45,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 40,
+              "y": 17.5,
+              "width": 0,
+              "height": 45,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 17.5,
+              "y": 40,
+              "width": 45,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 28.53,
+              "y": 17.51,
+              "width": 11.46,
+              "height": 44.98,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 40.01,
+              "y": 17.51,
+              "width": 11.46,
+              "height": 44.98,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 19.75,
+              "y": 30.1,
+              "width": 40.5,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 19.75,
+              "y": 49.9,
+              "width": 40.5,
+              "height": 0,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      },
+      {
+        "id": "db",
+        "x": 78.601117,
+        "y": 15,
+        "label": {
+          "text": "Database",
+          "x": 70.201117,
+          "y": 62.5,
+          "width": 76.8,
+          "height": 18.4,
+          "baseline": 80.9,
+          "anchor": "middle",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 60,
+          "height": 60,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 57.86,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 45.95,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 34.05,
+              "width": 40,
+              "height": 7.14,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "ellipse",
+              "x": 20,
+              "y": 15,
+              "width": 40,
+              "height": 14.28,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 20,
+              "y": 22.14,
+              "width": 0,
+              "height": 35.72,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 60,
+              "y": 22.14,
+              "width": 0,
+              "height": 35.72,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            }
+          ]
+        },
+        "iconText": null,
+        "fallback": null
+      }
+    ],
+    "junctions": [],
+    "groups": [
+      {
+        "id": "api",
+        "x": -99.101117,
+        "y": -11.5,
+        "width": 269.202234,
+        "height": 128,
+        "label": {
+          "text": "API",
+          "x": -77.101117,
+          "y": -18,
+          "width": 28.8,
+          "height": 18.4,
+          "baseline": 0.4,
+          "anchor": "start",
+          "rotation": 0
+        },
+        "icon": {
+          "width": 18,
+          "height": 18,
+          "viewBox": "0 0 80 80",
+          "primitives": [
+            {
+              "tag": "rect",
+              "x": 0,
+              "y": 0,
+              "width": 80,
+              "height": 80,
+              "fill": "#087ebf",
+              "stroke": null,
+              "strokeWidth": 0,
+              "text": null
+            },
+            {
+              "tag": "path",
+              "x": 15,
+              "y": 27.5,
+              "width": 50,
+              "height": 25,
+              "fill": null,
+              "stroke": "#fff",
+              "strokeWidth": 2,
+              "text": null
+            }
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "architecture-diagram-11-L_web_db_0",
+        "points": [
+          {
+            "x": -12.601117,
+            "y": 45
+          },
+          {
+            "x": 33,
+            "y": 45
+          },
+          {
+            "x": 78.601117,
+            "y": 45
+          }
+        ],
+        "arrows": [],
+        "label": null
+      }
+    ]
+  }
+}
