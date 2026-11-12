@@ -1,0 +1,145 @@
+{
+  "name": "14-duplicate-labels",
+  "source": "pie title Duplicate labels\n  \"Cats\" : 40\n  \"Dogs\" : 30\n  \"Cats\" : 20\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 552.8,
+      "height": 450
+    },
+    "rawViewBox": "0 0 552.8 450",
+    "rootTransform": {
+      "x": 225,
+      "y": 225
+    },
+    "pieTransform": {
+      "x": 0,
+      "y": 0
+    },
+    "outerCircle": {
+      "cx": 0,
+      "cy": 0,
+      "r": 186
+    },
+    "slices": [
+      {
+        "d": "M0,-185A185,185,0,1,1,-80.268,166.679L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": -185
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -80.268,
+            "y": 166.679
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "class": "pieCircle"
+      },
+      {
+        "d": "M-80.268,166.679A185,185,0,0,1,0,-185L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -80.268,
+            "y": 166.679
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 0,
+            "y": -185
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ffffde",
+        "class": "pieCircle"
+      }
+    ],
+    "sliceLabels": [
+      {
+        "text": "57%",
+        "transform": {
+          "x": 135.27124781522804,
+          "y": 30.87477958643862
+        }
+      },
+      {
+        "text": "43%",
+        "transform": {
+          "x": -135.27124781522804,
+          "y": -30.874779586438606
+        }
+      }
+    ],
+    "title": {
+      "text": "Duplicate labels",
+      "x": 0,
+      "y": -200
+    },
+    "legend": [
+      {
+        "transform": {
+          "x": 216,
+          "y": -22
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "#ECECFF",
+          "stroke": "#ECECFF"
+        },
+        "text": {
+          "text": "Cats",
+          "x": 22,
+          "y": 14
+        }
+      },
+      {
+        "transform": {
+          "x": 216,
+          "y": 0
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "#ffffde",
+          "stroke": "#ffffde"
+        },
+        "text": {
+          "text": "Dogs",
+          "x": 22,
+          "y": 14
+        }
+      }
+    ]
+  }
+}

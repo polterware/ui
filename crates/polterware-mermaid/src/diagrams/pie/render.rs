@@ -36,8 +36,8 @@ use crate::error::ParseError;
 use crate::measure::{Font, TextMeasure, TextOptions, shape_text};
 use crate::render::shapes::label_image_utils::parse_font_size;
 use crate::scene::{
-    Color, EllipseShape, Group, Item, Path, PathShape, PathStyle, Point, Rect,
-    RectShape, Scene, TextAnchor, TextRun, Transform,
+    Color, EllipseShape, Group, Path, PathShape, PathStyle, Point, Rect, RectShape, Scene,
+    TextAnchor, TextRun, Transform,
 };
 
 use super::Ast;
@@ -185,10 +185,12 @@ fn draw_ast_with_theme(
 
     // The circle is one half outer stroke wider than the radius, so the stroke's outer edge
     // stays on the ring the margin leaves.
-    let mut outer_style = PathStyle::default();
-    outer_style.fill = None;
-    outer_style.stroke = theme_color(theme, "pieOuterStrokeColor").map(Color::new);
-    outer_style.stroke_width = outer_stroke_width;
+    let outer_style = PathStyle {
+        fill: None,
+        stroke: theme_color(theme, "pieOuterStrokeColor").map(Color::new),
+        stroke_width: outer_stroke_width,
+        ..PathStyle::default()
+    };
     pie_group.push(EllipseShape::new(
         Point::ZERO,
         radius + outer_stroke_width / 2.0,
@@ -268,9 +270,11 @@ fn draw_ast_with_theme(
 
         let mut legend = Group::translated(horizontal, vertical).with_class("legend");
         let color = color_of(&section.label);
-        let mut rect_style = PathStyle::default();
-        rect_style.fill = color.clone();
-        rect_style.stroke = color;
+        let rect_style = PathStyle {
+            fill: color.clone(),
+            stroke: color,
+            ..PathStyle::default()
+        };
         legend.push(RectShape::new(
             Rect::new(0.0, 0.0, LEGEND_RECT_SIZE, LEGEND_RECT_SIZE),
             0.0,
@@ -334,10 +338,7 @@ enum LegendPlacement {
 }
 
 /// A theme variable that is a string, as `getConfig().themeVariables` stores colors and sizes.
-fn theme_color<'a>(
-    theme: &'a serde_json::Map<String, Value>,
-    key: &str,
-) -> Option<&'a str> {
+fn theme_color<'a>(theme: &'a serde_json::Map<String, Value>, key: &str) -> Option<&'a str> {
     theme.get(key).and_then(Value::as_str)
 }
 
@@ -379,6 +380,12 @@ fn legend_text(section: &Section, show_data: bool) -> String {
     }
 }
 
+/// d3-path's `!(value > threshold)` guard: false only for a value above the threshold, so a
+/// NaN takes the empty branch as it does upstream.
+fn not_above(value: f64, threshold: f64) -> bool {
+    value.is_nan() || value <= threshold
+}
+
 /// `d3.arc()`'s path for one pie slice, with no padding and no rounded corners, which is what
 /// `pieRenderer.ts` asks for: an outer ring arc, a line to the inner ring (or the centre), an
 /// inner arc back, and `Z`.
@@ -394,7 +401,7 @@ fn arc_path(start_angle: f64, end_angle: f64, inner_radius: f64, outer_radius: f
         (inner_radius, outer_radius)
     };
 
-    if !(r1 > EPSILON) {
+    if not_above(r1, EPSILON) {
         context.move_to(0.0, 0.0);
     } else if da > TAU - EPSILON {
         context.move_to(r1 * a0.cos(), r1 * a0.sin());
@@ -409,14 +416,14 @@ fn arc_path(start_angle: f64, end_angle: f64, inner_radius: f64, outer_radius: f
         let x10 = r0 * a1.cos();
         let y10 = r0 * a1.sin();
 
-        if !(da > EPSILON) {
+        if not_above(da, EPSILON) {
             context.move_to(x01, y01);
         } else {
             context.move_to(x01, y01);
             context.arc(0.0, 0.0, r1, a0, a1, !clockwise);
         }
 
-        if !(r0 > EPSILON) || !(da > EPSILON) {
+        if not_above(r0, EPSILON) || not_above(da, EPSILON) {
             context.line_to(x10, y10);
         } else {
             context.arc(0.0, 0.0, r0, a1, a0, clockwise);
@@ -505,6 +512,7 @@ impl ArcContext {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::scene::Item;
 
     const TOLERANCE: f64 = 0.01;
 
@@ -767,18 +775,17 @@ mod tests {
             }
 
             let title = root.items.iter().find(|item| matches!(item, Item::Text(_)));
+            // `draw` appends the title text element even when there is no title; an empty run
+            // paints nothing, so the scene leaves it out.
+            let expected_title_text = expected["title"]["text"].as_str().unwrap_or_default();
             match &expected["title"] {
-                Value::Object(_) => {
+                Value::Object(_) if !expected_title_text.is_empty() => {
                     let title = text(
                         title.unwrap_or_else(|| panic!("{file}: missing title text")),
                         &file,
                         "title",
                     );
-                    assert_eq!(
-                        text_of(title),
-                        expected["title"]["text"].as_str().expect("title text"),
-                        "{file}: title text"
-                    );
+                    assert_eq!(text_of(title), expected_title_text, "{file}: title text");
                     close(
                         title.position.x,
                         expected["title"]["x"].as_f64().expect("title x"),
@@ -894,8 +901,125 @@ mod tests {
     }
 
     #[test]
+    fn styles_every_shape_and_text_from_the_theme() {
+        let config = Config::default();
+        let scene = render(
+            "pie title Shares\n  \"Alpha\" : 60\n  \"Beta\" : 40\n",
+            &config,
+        )
+        .expect("render pie");
+        let theme = &config.theme_variables;
+        let theme_value = |key: &str| theme[key].as_str().expect("theme string").to_string();
+
+        let root = group(&scene.items[0], "scene", "root");
+        let pie_group = group(&root.items[0], "scene", "pie group");
+
+        let circle = match &pie_group.items[0] {
+            Item::Ellipse(circle) => circle,
+            _ => panic!("outer circle is not an ellipse"),
+        };
+        assert_eq!(circle.style.fill, None);
+        assert_eq!(
+            circle.style.stroke.as_ref().map(|color| color.0.clone()),
+            Some(theme_value("pieOuterStrokeColor"))
+        );
+        assert_eq!(
+            circle.style.stroke_width,
+            parse_font_size(&theme_value("pieOuterStrokeWidth")).expect("outer stroke width")
+        );
+
+        let slices: Vec<&PathShape> = pie_group
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Path(path) => Some(path),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(slices.len(), 2);
+        for (index, slice) in slices.iter().enumerate() {
+            assert_eq!(
+                slice.style.fill.as_ref().map(|color| color.0.clone()),
+                Some(theme_value(&format!("pie{}", index + 1)))
+            );
+            assert_eq!(
+                slice.style.stroke.as_ref().map(|color| color.0.clone()),
+                Some(theme_value("pieStrokeColor"))
+            );
+            assert_eq!(
+                slice.style.stroke_width,
+                parse_font_size(&theme_value("pieStrokeWidth")).expect("stroke width")
+            );
+            assert_eq!(
+                slice.style.opacity,
+                theme_value("pieOpacity").parse::<f64>().expect("opacity")
+            );
+        }
+
+        let labels: Vec<&TextRun> = pie_group
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Text(text) => Some(text),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(labels.len(), 2);
+        for label in &labels {
+            assert_eq!(
+                label.fill.as_ref().map(|color| color.0.clone()),
+                Some(theme_value("pieSectionTextColor"))
+            );
+            assert_eq!(
+                label.font.size,
+                parse_font_size(&theme_value("pieSectionTextSize")).expect("section text size")
+            );
+        }
+
+        let title = text(
+            root.items
+                .iter()
+                .find(|item| matches!(item, Item::Text(_)))
+                .expect("title"),
+            "scene",
+            "title",
+        );
+        assert_eq!(
+            title.fill.as_ref().map(|color| color.0.clone()),
+            Some(theme_value("pieTitleTextColor"))
+        );
+        assert_eq!(
+            title.font.size,
+            parse_font_size(&theme_value("pieTitleTextSize")).expect("title text size")
+        );
+
+        let legend = root
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Group(group) if group.class.as_deref() == Some("legend") => Some(group),
+                _ => None,
+            })
+            .next()
+            .expect("legend row");
+        let label = text(&legend.items[1], "scene", "legend text");
+        assert_eq!(
+            label.fill.as_ref().map(|color| color.0.clone()),
+            Some(theme_value("pieLegendTextColor"))
+        );
+        assert_eq!(
+            label.font.size,
+            parse_font_size(&theme_value("pieLegendTextSize")).expect("legend text size")
+        );
+    }
+
+    #[test]
     fn rejects_a_body_without_a_pie_header() {
-        let error = render("not a pie", &Config::default()).unwrap_err();
-        assert!(error.message.contains("\"pie\""));
+        let error = render("\"A\" : 1\n", &Config::default()).unwrap_err();
+        assert!(
+            error.message.contains("expected pie"),
+            "unexpected message: {}",
+            error.message
+        );
     }
 }
