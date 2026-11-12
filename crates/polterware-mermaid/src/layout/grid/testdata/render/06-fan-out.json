@@ -1,0 +1,174 @@
+{
+  "name": "06-fan-out",
+  "source": "---\nconfig:\n  layout: grid\n---\nflowchart LR\n  Root --> A\n  Root --> B\n  Root --> C\n  A --> Sink\n  B --> Sink\n  C --> Sink\n",
+  "body": "flowchart LR\n  Root --> A\n  Root --> B\n  Root --> C\n  A --> Sink\n  B --> Sink\n  C --> Sink\n",
+  "nodes": [
+    {
+      "id": "Root",
+      "x": 90,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "A",
+      "x": 320,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "B",
+      "x": 550,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "C",
+      "x": 90,
+      "y": 122.60000000000001,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Sink",
+      "x": 320,
+      "y": 122.60000000000001,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "clusters": [],
+  "labels": [],
+  "edges": [
+    {
+      "id": "L_Root_A_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 22.866666666666667
+        },
+        {
+          "x": 200,
+          "y": 22.866666666666667
+        },
+        {
+          "x": 200,
+          "y": 24.2
+        },
+        {
+          "x": 230,
+          "y": 24.2
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_Root_B_0",
+      "points": [
+        {
+          "x": 174,
+          "y": 48.4
+        },
+        {
+          "x": 174,
+          "y": 68.4
+        },
+        {
+          "x": 466,
+          "y": 68.4
+        },
+        {
+          "x": 466,
+          "y": 48.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_Root_C_0",
+      "points": [
+        {
+          "x": 90,
+          "y": 48.4
+        },
+        {
+          "x": 90,
+          "y": 98.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_A_Sink_0",
+      "points": [
+        {
+          "x": 320,
+          "y": 48.4
+        },
+        {
+          "x": 320,
+          "y": 98.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_B_Sink_0",
+      "points": [
+        {
+          "x": 470,
+          "y": 48.4
+        },
+        {
+          "x": 470,
+          "y": 108.4
+        },
+        {
+          "x": 410,
+          "y": 108.4
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "L_C_Sink_0",
+      "points": [
+        {
+          "x": 180,
+          "y": 122.60000000000001
+        },
+        {
+          "x": 230,
+          "y": 122.60000000000001
+        }
+      ],
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ],
+  "viewBox": {
+    "x": -8,
+    "y": -8,
+    "width": 656,
+    "height": 162.8
+  }
+}

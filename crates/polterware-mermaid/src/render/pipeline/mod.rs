@@ -14,6 +14,7 @@
 //! - [`fcose`]: the `fcose` layout of cytoscape-fcose, run by the architecture renderer
 //! - [`swimlanes`][]: `layout-algorithms/swimlanes/index.ts`, the flowchart-family layout
 //!   the swimlane-beta diagram swaps in
+//! - [`grid`]: the grid layout registered from `layout-algorithms/grid`
 
 pub mod clone_layout_data_for_measure;
 pub mod cose_bilkent;
@@ -22,6 +23,7 @@ pub mod dagre;
 pub mod edge_corner_radius;
 pub mod edge_step;
 pub mod fcose;
+pub mod grid;
 pub mod label_transform;
 pub mod setup_view_port_for_svg;
 pub mod swimlanes;
@@ -41,6 +43,7 @@ pub use dagre::*;
 pub use edge_corner_radius::*;
 pub use edge_step::*;
 pub use fcose::*;
+pub use grid::*;
 pub use label_transform::*;
 pub use setup_view_port_for_svg::*;
 pub use swimlanes::*;
@@ -94,6 +97,13 @@ fn get_registry() -> HashMap<String, LayoutLoaderDefinition> {
         },
     );
     map.insert(
+        "grid".to_string(),
+        LayoutLoaderDefinition {
+            name: "grid".to_string(),
+            algorithm: None,
+        },
+    );
+    map.insert(
         "swimlane".to_string(),
         LayoutLoaderDefinition {
             name: "swimlane".to_string(),
@@ -137,6 +147,13 @@ pub fn register_layout_loaders(loaders: Vec<LayoutLoaderDefinition>) {
             },
         );
         m.insert(
+            "grid".to_string(),
+            LayoutLoaderDefinition {
+                name: "grid".to_string(),
+                algorithm: None,
+            },
+        );
+        m.insert(
             "swimlane".to_string(),
             LayoutLoaderDefinition {
                 name: "swimlane".to_string(),
@@ -176,6 +193,10 @@ pub fn register_default_layout_loaders() {
         },
         LayoutLoaderDefinition {
             name: "fcose".to_string(),
+            algorithm: None,
+        },
+        LayoutLoaderDefinition {
+            name: "grid".to_string(),
             algorithm: None,
         },
         LayoutLoaderDefinition {
@@ -230,6 +251,7 @@ pub fn render(
         "cose-bilkent" => cose_bilkent_render(data4_layout, measure),
         "fcose" => fcose_render(data4_layout, measure),
         "swimlane" | SWIMLANES_LAYOUT => swimlanes_render(data4_layout, measure),
+        "grid" => grid_render(data4_layout, measure),
         _ => dagre_render(data4_layout, measure),
     }
 }
