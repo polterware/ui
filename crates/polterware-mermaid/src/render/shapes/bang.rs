@@ -119,13 +119,12 @@ fn path_bounds(path: &Path) -> Option<Rect> {
                 y,
             } => {
                 let to = Point::new(x, y);
-                for point in sample_arc(
+                for point in arc_extrema(
                     current,
                     Point::new(rx, ry),
                     rotation,
                     (large_arc, sweep),
                     to,
-                    512,
                 ) {
                     include(point);
                 }
@@ -171,75 +170,99 @@ fn path_bounds(path: &Path) -> Option<Rect> {
     }
 }
 
-// TODO(dedupe): mirror of the fixture generator's SVG arc sampler.
-fn sample_arc(
+// The endpoints and the real extrema of one SVG arc, the box a browser reports for it.
+// The arithmetic mirrors the harness's `arcExtrema` (and `parsePathBBox`) operation for
+// operation, so a path's box matches a browser's to the last bit.
+fn arc_extrema(
     from: Point,
     radius: Point,
     rotation_degrees: f64,
     (large_arc, sweep): (bool, bool),
     to: Point,
-    steps: usize,
 ) -> Vec<Point> {
     let (rx, ry) = (radius.x, radius.y);
-    let phi = rotation_degrees.to_radians();
-    let (sin_phi, cos_phi) = phi.sin_cos();
-    let dx2 = (from.x - to.x) / 2.0;
-    let dy2 = (from.y - to.y) / 2.0;
-    let x1p = cos_phi * dx2 + sin_phi * dy2;
-    let y1p = -sin_phi * dx2 + cos_phi * dy2;
-    let mut rx = rx.abs();
-    let mut ry = ry.abs();
-    let mut rx2 = rx * rx;
-    let mut ry2 = ry * ry;
-    let lambda = x1p * x1p / rx2 + y1p * y1p / ry2;
-    if lambda > 1.0 {
-        let scale = lambda.sqrt();
-        rx *= scale;
-        ry *= scale;
-        rx2 = rx * rx;
-        ry2 = ry * ry;
+    if rx == 0.0 || ry == 0.0 {
+        return vec![to];
     }
-    let sign = if large_arc != sweep { 1.0 } else { -1.0 };
-    let numerator = rx2 * ry2 - rx2 * y1p * y1p - ry2 * x1p * x1p;
-    let denominator = rx2 * y1p * y1p + ry2 * x1p * x1p;
-    if denominator == 0.0 {
-        return vec![from, to];
-    }
-    let coefficient = sign * (numerator / denominator).max(0.0).sqrt();
-    let cxp = coefficient * rx * y1p / ry;
-    let cyp = -coefficient * ry * x1p / rx;
+    let rx = rx.abs();
+    let ry = ry.abs();
+    let phi = rotation_degrees * std::f64::consts::PI / 180.0;
+    let cos_phi = phi.cos();
+    let sin_phi = phi.sin();
+
+    let dx = (from.x - to.x) / 2.0;
+    let dy = (from.y - to.y) / 2.0;
+    let x1p = cos_phi * dx + sin_phi * dy;
+    let y1p = -sin_phi * dx + cos_phi * dy;
+
+    let lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry);
+    let (rx, ry) = if lambda > 1.0 {
+        let sqrt_lambda = lambda.sqrt();
+        (rx * sqrt_lambda, ry * sqrt_lambda)
+    } else {
+        (rx, ry)
+    };
+
+    let sign = if large_arc == sweep { -1.0 } else { 1.0 };
+    let numerator = rx * rx * ry * ry - rx * rx * y1p * y1p - ry * ry * x1p * x1p;
+    let sq = (numerator / (rx * rx * y1p * y1p + ry * ry * x1p * x1p)).max(0.0);
+    let coefficient = sign * sq.sqrt();
+    let cxp = coefficient * ((rx * y1p) / ry);
+    let cyp = coefficient * (-(ry * x1p) / rx);
+
     let cx = cos_phi * cxp - sin_phi * cyp + (from.x + to.x) / 2.0;
     let cy = sin_phi * cxp + cos_phi * cyp + (from.y + to.y) / 2.0;
 
     let angle = |ux: f64, uy: f64, vx: f64, vy: f64| {
-        let mut cosine =
-            (ux * vx + uy * vy) / ((ux * ux + uy * uy).sqrt() * (vx * vx + vy * vy).sqrt());
-        cosine = cosine.clamp(-1.0, 1.0);
-        let mut result = cosine.acos();
-        if ux * vy - uy * vx < 0.0 {
-            result = -result;
-        }
-        result
+        let cross_sign = if ux * vy - uy * vx < 0.0 { -1.0 } else { 1.0 };
+        let dot = ux * vx + uy * vy;
+        let len = (ux * ux + uy * uy).sqrt() * (vx * vx + vy * vy).sqrt();
+        cross_sign * (dot / len).clamp(-1.0, 1.0).acos()
     };
-    let ux = (x1p - cxp) / rx;
-    let uy = (y1p - cyp) / ry;
-    let vx = (-x1p - cxp) / rx;
-    let vy = (-y1p - cyp) / ry;
-    let theta1 = angle(1.0, 0.0, ux, uy);
-    let mut delta = angle(ux, uy, vx, vy);
+
+    let v1x = (x1p - cxp) / rx;
+    let v1y = (y1p - cyp) / ry;
+    let v2x = (-x1p - cxp) / rx;
+    let v2y = (-y1p - cyp) / ry;
+
+    let theta1 = angle(1.0, 0.0, v1x, v1y);
+    let mut delta = angle(v1x, v1y, v2x, v2y);
     if !sweep && delta > 0.0 {
-        delta -= std::f64::consts::TAU;
-    } else if sweep && delta < 0.0 {
-        delta += std::f64::consts::TAU;
+        delta -= 2.0 * std::f64::consts::PI;
     }
-    let mut points = Vec::with_capacity(steps + 1);
-    for index in 0..=steps {
-        let theta = theta1 + delta * index as f64 / steps as f64;
-        let (sin_theta, cos_theta) = theta.sin_cos();
-        points.push(Point::new(
-            cx + rx * cos_theta * cos_phi - ry * sin_theta * sin_phi,
-            cy + rx * cos_theta * sin_phi + ry * sin_theta * cos_phi,
-        ));
+    if sweep && delta < 0.0 {
+        delta += 2.0 * std::f64::consts::PI;
+    }
+
+    let at = |theta: f64| {
+        Point::new(
+            cos_phi * rx * theta.cos() - sin_phi * ry * theta.sin() + cx,
+            sin_phi * rx * theta.cos() + cos_phi * ry * theta.sin() + cy,
+        )
+    };
+    let mut points = vec![from, to];
+    let push_if_in_sweep = |theta: f64, points: &mut Vec<Point>| {
+        let mut d = theta - theta1;
+        d = ((d % (2.0 * std::f64::consts::PI)) + 2.0 * std::f64::consts::PI)
+            % (2.0 * std::f64::consts::PI);
+        let inside = if delta >= 0.0 {
+            d <= delta
+        } else {
+            d - 2.0 * std::f64::consts::PI >= delta
+        };
+        if inside {
+            points.push(at(theta));
+        }
+    };
+    let theta_x = (-ry * sin_phi).atan2(rx * cos_phi);
+    let theta_y = (ry * cos_phi).atan2(rx * sin_phi);
+    for theta in [
+        theta_x,
+        theta_x + std::f64::consts::PI,
+        theta_y,
+        theta_y + std::f64::consts::PI,
+    ] {
+        push_if_in_sweep(theta, &mut points);
     }
     points
 }

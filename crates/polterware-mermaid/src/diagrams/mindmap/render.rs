@@ -394,10 +394,12 @@ mod tests {
 
         for (file, fixture) in fixtures {
             let source = fixture["source"].as_str().expect("fixture source");
-            let body = crate::preprocess::preprocess(source).body;
-            let ast =
-                super::super::parse(&body).unwrap_or_else(|error| panic!("{file}: parse: {error}"));
-            let (layout, scene) = draw_layout_ast(&ast, &Config::default(), &FallbackMeasure)
+            let preprocessed = crate::preprocess::preprocess(source);
+            let config = Config::from_source_config(&preprocessed.config)
+                .unwrap_or_else(|error| panic!("{file}: config: {error}"));
+            let ast = super::super::parse(&preprocessed.body)
+                .unwrap_or_else(|error| panic!("{file}: parse: {error}"));
+            let (layout, scene) = draw_layout_ast(&ast, &config, &FallbackMeasure)
                 .unwrap_or_else(|error| panic!("{file}: render: {error}"));
             let expected = &fixture["expected"];
 
@@ -508,8 +510,11 @@ mod tests {
 
     #[test]
     fn paints_the_section_palette() {
-        let scene = render("mindmap\n  root((root))\n    branch\n      leaf\n", &Config::default())
-            .expect("render mindmap");
+        let scene = render(
+            "mindmap\n  root((root))\n    branch\n      leaf\n",
+            &Config::default(),
+        )
+        .expect("render mindmap");
         let theme = &Config::default().theme_variables;
         let color = |key: &str| theme.get(key).and_then(|value| value.as_str());
 
@@ -599,14 +604,16 @@ mod tests {
             }
             None
         }
-        first_text(&group.items)
-            .and_then(|text| text.fill.as_ref().map(|fill| fill.0.clone()))
+        first_text(&group.items).and_then(|text| text.fill.as_ref().map(|fill| fill.0.clone()))
     }
 
     #[test]
     fn draws_a_rendered_scene_with_view_box() {
-        let scene = render("mindmap\n  root((root))\n    one\n      two\n", &Config::default())
-            .expect("render mindmap");
+        let scene = render(
+            "mindmap\n  root((root))\n    one\n      two\n",
+            &Config::default(),
+        )
+        .expect("render mindmap");
         assert!(scene.view_box.width > 0.0);
         assert!(scene.view_box.height > 0.0);
         assert!(!scene.items.is_empty());

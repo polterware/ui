@@ -4,7 +4,7 @@
 //!
 //! `getData` hands over one node per mindmap entry (in tree preorder) and one edge per
 //! parent-child pair, already carrying the section each node takes from `assignSections`.
-//! [`layout_data`] adds what `draw` reads from the configuration after `diag.db.getData()`:
+//! [`layout_data_from`] adds what `draw` reads from the configuration after `diag.db.getData()`:
 //! the diagram type, the resolved layout algorithm (cose-bilkent by default), the diagram
 //! id, the viewport padding and `useMaxWidth`, and the shape-specific sizes and paddings
 //! `draw` writes before the pipeline measures the nodes:
@@ -24,7 +24,7 @@ use crate::render::pipeline::{
     Edge as PipelineEdge, LayoutData, Node as PipelineNode, get_registered_layout_algorithm,
 };
 
-use super::ast::{Ast, ColorBy, Data, LayoutEdge, LayoutNode, NodeType};
+use super::ast::{ColorBy, Data, LayoutEdge, LayoutNode, NodeType};
 
 /// The diagram id `render()` prefixes DOM ids with when the caller names none.
 pub const DEFAULT_DIAGRAM_ID: &str = "mermaid";
@@ -49,11 +49,6 @@ pub fn color_by(config: &Config) -> ColorBy {
     }
 }
 
-/// Builds the layout data for a parsed mindmap.
-pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
-    layout_data_from(&ast.data_with(color_by(config)), config, diagram_id)
-}
-
 /// Builds the layout data from an already projected [`Data`], so the renderer can keep the
 /// sections the colors are painted from.
 pub fn layout_data_from(data: &Data, config: &Config, diagram_id: &str) -> LayoutData {
@@ -62,7 +57,11 @@ pub fn layout_data_from(data: &Data, config: &Config, diagram_id: &str) -> Layou
         .iter()
         .map(|node| layout_node(node, config))
         .collect();
-    let edges = data.edges.iter().map(|edge| layout_edge(edge, config)).collect();
+    let edges = data
+        .edges
+        .iter()
+        .map(|edge| layout_edge(edge, config))
+        .collect();
 
     // `getData` carries `rootNode: mindmapRoot`; the cose-bilkent layout validates that it is
     // present (it only checks for it), and the tree itself stays with the caller.
@@ -171,6 +170,7 @@ fn draw_shape(node_type: NodeType, config: &Config) -> (Option<f64>, Option<f64>
 
 #[cfg(test)]
 mod tests {
+    use super::super::ast::Ast;
     use super::*;
     use crate::diagrams::mindmap::parse;
 
@@ -178,10 +178,14 @@ mod tests {
         parse(source).expect("parse mindmap")
     }
 
+    fn layout_data(source: &str, config: &Config, diagram_id: &str) -> LayoutData {
+        layout_data_from(&ast(source).data_with(color_by(config)), config, diagram_id)
+    }
+
     #[test]
     fn maps_draw_settings_from_the_configuration() {
         let config = Config::default();
-        let data = layout_data(&ast("mindmap\n  root\n"), &config, "d");
+        let data = layout_data("mindmap\n  root\n", &config, "d");
 
         assert_eq!(data.r#type.as_deref(), Some(DIAGRAM_TYPE));
         assert_eq!(data.layout_algorithm.as_deref(), Some(FALLBACK_LAYOUT));
@@ -198,9 +202,7 @@ mod tests {
     fn applies_the_draw_shape_sizes_and_paddings() {
         let config = Config::default();
         let data = layout_data(
-            &ast(
-                "mindmap\n  root((root))\n    plain\n    square[S]\n    rounded(R)\n    cloud)C(\n    bang))B((\n    hexagon{{H}}\n",
-            ),
+            "mindmap\n  root((root))\n    plain\n    square[S]\n    rounded(R)\n    cloud)C(\n    bang))B((\n    hexagon{{H}}\n",
             &config,
             "d",
         );
@@ -243,16 +245,25 @@ mod tests {
     #[test]
     fn copies_the_section_classes_and_edge_ids() {
         let config = Config::default();
-        let data = layout_data(&ast("mindmap\n  root\n    a\n    b\n"), &config, "d");
+        let data = layout_data("mindmap\n  root\n    a\n    b\n", &config, "d");
 
         assert_eq!(
             data.nodes[0].css_classes.as_deref(),
             Some("mindmap-node section-root section--1")
         );
-        assert_eq!(data.nodes[1].css_classes.as_deref(), Some("mindmap-node section-0"));
-        assert_eq!(data.nodes[2].css_classes.as_deref(), Some("mindmap-node section-1"));
+        assert_eq!(
+            data.nodes[1].css_classes.as_deref(),
+            Some("mindmap-node section-0")
+        );
+        assert_eq!(
+            data.nodes[2].css_classes.as_deref(),
+            Some("mindmap-node section-1")
+        );
         assert_eq!(data.edges[0].id, "edge_0_1");
-        assert_eq!(data.edges[0].classes.as_deref(), Some("edge section-edge-0 edge-depth-1"));
+        assert_eq!(
+            data.edges[0].classes.as_deref(),
+            Some("edge section-edge-0 edge-depth-1")
+        );
         assert_eq!(data.edges[0].curve.as_deref(), Some("basis"));
         assert_eq!(data.edges[0].thickness.as_deref(), Some("normal"));
         assert_eq!(data.edges[0].depth, Some(0.0));
@@ -282,7 +293,7 @@ mod tests {
     fn uses_the_rounded_default_shape_for_redux_themes() {
         let mut config = Config::default();
         config.theme = "redux-color".to_string();
-        let data = layout_data(&ast("mindmap\n  root\n    plain\n"), &config, "d");
+        let data = layout_data("mindmap\n  root\n    plain\n", &config, "d");
         assert_eq!(data.nodes[0].shape.as_deref(), Some("rounded"));
     }
 }

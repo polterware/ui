@@ -134,10 +134,7 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     node.bounds = Rect::centered(Point::ZERO, Size::new(max_x - min_x, max_y - min_y));
     node.intersect = IntersectKind::Rect;
     let mut label = label;
-    label.transform = crate::scene::Transform::translate(
-        -text.width / 2.0,
-        -text.height / 2.0,
-    );
+    label.transform = crate::scene::Transform::translate(-text.width / 2.0, -text.height / 2.0);
     group.items.push(Item::Group(label));
     Ok(RenderedNode { node, group })
 }
