@@ -15,6 +15,7 @@ mod edge_label_nodes;
 mod helpers;
 mod lane_ordering;
 mod lanes;
+mod orthogonal_router;
 mod phase0;
 mod phase1;
 mod phase2;
