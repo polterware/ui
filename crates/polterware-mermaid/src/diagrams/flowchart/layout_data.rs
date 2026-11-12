@@ -91,6 +91,8 @@ pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
         padding: Some(flowchart.diagram_padding),
         node_spacing: Some(flowchart.node_spacing),
         rank_spacing: Some(flowchart.rank_spacing),
+        // Flowcharts have no root: only mindmap-like diagrams laid out by cose-bilkent set one.
+        root_node: None,
     }
 }
 
