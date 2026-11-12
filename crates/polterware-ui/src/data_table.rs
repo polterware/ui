@@ -633,6 +633,9 @@ struct TableState {
     scroll: UniformListScrollHandle,
     x_scroll: ScrollHandle,
     hovered: Option<usize>,
+    /// Where the pointer was when it last entered a row: entering another with the pointer
+    /// still there means a scroll moved the rows under it.
+    pointer: Option<gpui::Point<Pixels>>,
     /// The row pitch of the last frame, which places the travelling hover.
     pitch: f32,
     y: Tween,
@@ -666,6 +669,7 @@ impl TableState {
             scroll: UniformListScrollHandle::new(),
             x_scroll: ScrollHandle::new(),
             hovered: None,
+            pointer: None,
             pitch: ROW_HEIGHT + SPACING,
             y: Tween::new(0.0),
             h: Tween::new(ROW_HEIGHT),
@@ -714,7 +718,17 @@ impl TableState {
 
     /// Row `index`, `y` below the first row's place and `height` tall, gains or loses the
     /// pointer.
-    fn hover(&mut self, index: usize, hovered: bool, y: f32, height: f32, theme: &Theme) {
+    /// `scrolled` says the rows moved under a still pointer: the hover then lands on the row
+    /// at once, since a spring chasing a scroll lags behind it and bounces at the ends.
+    fn hover(
+        &mut self,
+        index: usize,
+        hovered: bool,
+        y: f32,
+        height: f32,
+        scrolled: bool,
+        theme: &Theme,
+    ) {
         let fast = SpringTier::Fast;
         let ink = self.ink.entry(index).or_insert_with(|| Tween::new(0.0));
         ink.animate_to(
@@ -723,7 +737,7 @@ impl TableState {
             Curve::Ease(theme.ease_standard),
         );
         if hovered {
-            if self.opacity.value() < 0.01 {
+            if self.opacity.value() < 0.01 || scrolled {
                 self.y.snap(y);
                 self.h.snap(height);
             } else {
@@ -1227,10 +1241,14 @@ impl RenderOnce for DataTable {
         };
         let y_handle = scroll.0.borrow().base_handle.clone();
         let scroll_y = f32::from(y_handle.offset().y);
+        // A wheel past an end leaves the offset beyond the content until the list's layout
+        // clamps it; the hover rides outside the list, so it takes the clamped offset now,
+        // or it jumps past the rows for a frame and comes back.
+        let rows_y = scroll_y.clamp(-(full_height - view_height).max(0.0), 0.0);
         let highlight = div()
             .absolute()
             .left(px(0.0))
-            .top(px(lead + header_pitch + highlight_y + scroll_y))
+            .top(px(lead + header_pitch + highlight_y + rows_y))
             .w(px(table_width))
             .h(px(highlight_h))
             .rounded(px(theme.radius_item))
@@ -1256,7 +1274,7 @@ impl RenderOnce for DataTable {
             div()
                 .absolute()
                 .left(px(0.0))
-                .top(px(lead + header_pitch + tween.value() + scroll_y))
+                .top(px(lead + header_pitch + tween.value() + rows_y))
                 .w(px(table_width))
                 .h(px(marker_h))
                 .rounded(px(theme.radius_item))
@@ -2105,9 +2123,16 @@ fn body_row(
         .text_size(px(12.5))
         .text_color(ink)
         .whitespace_nowrap()
-        .on_hover(move |hovered, _, cx| {
+        .on_hover(move |hovered, window, cx| {
+            let pointer = window.mouse_position();
             hover_state.update(cx, |state, cx| {
-                state.hover(index, *hovered, y, height, &hover_theme);
+                // Leaving one row and entering the next share a pointer position, so only an
+                // entry records it: an entry where the last one happened is a scroll.
+                let scrolled = *hovered && state.pointer == Some(pointer);
+                if *hovered {
+                    state.pointer = Some(pointer);
+                }
+                state.hover(index, *hovered, y, height, scrolled, &hover_theme);
                 cx.notify();
             });
         });
