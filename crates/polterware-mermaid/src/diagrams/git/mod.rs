@@ -12,7 +12,9 @@
 //! [`crate::preprocess`]. [`parse`] keeps upstream's signature: it returns the populated
 //! [`Ast`] or the first error, with the line and column of the token it was raised at.
 //!
-//! No layout or rendering: `gitGraphRenderer.ts` is out of scope.
+//! [`render`] ports `gitGraphRenderer.ts`: the branch lanes, the commit positions, the
+//! bullets, the rotated commit labels, the tags, the arrows and the title, as a
+//! [`Scene`](crate::scene::Scene).
 
 use crate::error::ParseError;
 
@@ -20,6 +22,7 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Branch, Commit, CommitType, Direction};
 
