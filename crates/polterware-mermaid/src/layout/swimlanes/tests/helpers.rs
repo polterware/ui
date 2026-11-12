@@ -25,7 +25,7 @@ fn marks_group_nodes_with_swimlane_cluster_shape() {
         edges: Vec::new(),
         ..Default::default()
     };
-    prepare_layout_for_swimlanes(&mut layout, &[]);
+    prepare_layout_for_swimlanes(&mut layout);
     assert_eq!(layout.nodes[0].shape.as_deref(), Some("swimlane"));
     assert_eq!(layout.nodes[1].shape, None);
 }
@@ -46,7 +46,7 @@ fn assigns_ungrouped_content_nodes_to_a_synthetic_default_lane() {
         edges: Vec::new(),
         ..Default::default()
     };
-    prepare_layout_for_swimlanes(&mut layout, &[]);
+    prepare_layout_for_swimlanes(&mut layout);
     let default_lane = layout
         .nodes
         .iter()
@@ -101,7 +101,7 @@ fn gives_the_synthetic_default_lane_the_diagram_look_and_a_free_color_slot() {
         ..Default::default()
     };
     layout.config.look = "handDrawn".to_string();
-    prepare_layout_for_swimlanes(&mut layout, &[]);
+    prepare_layout_for_swimlanes(&mut layout);
     let default_lane = layout
         .nodes
         .iter()
@@ -119,7 +119,7 @@ fn starts_the_default_lane_at_slot_zero_when_no_container_has_a_color() {
         ..Default::default()
     };
     layout.config.look = String::new();
-    prepare_layout_for_swimlanes(&mut layout, &[]);
+    prepare_layout_for_swimlanes(&mut layout);
     let default_lane = layout
         .nodes
         .iter()
@@ -147,7 +147,7 @@ fn only_treats_top_level_groups_as_swimlane_lanes() {
         edges: Vec::new(),
         ..Default::default()
     };
-    prepare_layout_for_swimlanes(&mut layout, &[]);
+    prepare_layout_for_swimlanes(&mut layout);
     assert_eq!(
         layout
             .nodes
@@ -178,21 +178,35 @@ fn shared_member() -> SharedMember {
     }
 }
 
+fn with_shared_member(mut layout: LayoutData, member: SharedMember) -> LayoutData {
+    layout.other = Some(serde_json::json!({
+        "droppedSubGraphMembers": [{
+            "node": member.node,
+            "keptBy": member.kept_by,
+            "droppedFrom": member.dropped_from,
+        }],
+    }));
+    layout
+}
+
 #[test]
 fn removes_the_lane_a_shared_node_emptied() {
-    let mut layout = LayoutData {
-        nodes: vec![
-            node("lane1", true),
-            node("phase1", true),
-            Node {
-                parent_id: Some("lane1".to_string()),
-                ..node("a", false)
-            },
-        ],
-        edges: Vec::new(),
-        ..Default::default()
-    };
-    prepare_layout_for_swimlanes(&mut layout, &[shared_member()]);
+    let mut layout = with_shared_member(
+        LayoutData {
+            nodes: vec![
+                node("lane1", true),
+                node("phase1", true),
+                Node {
+                    parent_id: Some("lane1".to_string()),
+                    ..node("a", false)
+                },
+            ],
+            edges: Vec::new(),
+            ..Default::default()
+        },
+        shared_member(),
+    );
+    prepare_layout_for_swimlanes(&mut layout);
     assert_eq!(names(&layout), vec!["lane1", "a"]);
 }
 
@@ -208,81 +222,87 @@ fn keeps_a_lane_the_author_left_empty() {
         ..Default::default()
     };
     layout.nodes[2].parent_id = Some("lane1".to_string());
-    prepare_layout_for_swimlanes(&mut layout, &[]);
+    prepare_layout_for_swimlanes(&mut layout);
     assert_eq!(names(&layout), vec!["lane1", "placeholder", "a"]);
 }
 
 #[test]
 fn keeps_a_lane_that_still_has_members_after_losing_one() {
-    let mut layout = LayoutData {
-        nodes: vec![
-            node("lane1", true),
-            node("phase1", true),
-            Node {
-                parent_id: Some("lane1".to_string()),
-                ..node("a", false)
-            },
-            Node {
-                parent_id: Some("phase1".to_string()),
-                ..node("b", false)
-            },
-        ],
-        edges: Vec::new(),
-        ..Default::default()
-    };
-    prepare_layout_for_swimlanes(&mut layout, &[shared_member()]);
+    let mut layout = with_shared_member(
+        LayoutData {
+            nodes: vec![
+                node("lane1", true),
+                node("phase1", true),
+                Node {
+                    parent_id: Some("lane1".to_string()),
+                    ..node("a", false)
+                },
+                Node {
+                    parent_id: Some("phase1".to_string()),
+                    ..node("b", false)
+                },
+            ],
+            edges: Vec::new(),
+            ..Default::default()
+        },
+        shared_member(),
+    );
+    prepare_layout_for_swimlanes(&mut layout);
     assert_eq!(names(&layout), vec!["lane1", "phase1", "a", "b"]);
 }
 
 #[test]
 fn keeps_an_emptied_lane_that_an_edge_points_at() {
-    let mut layout = LayoutData {
-        nodes: vec![
-            node("lane1", true),
-            node("phase1", true),
-            Node {
-                parent_id: Some("lane1".to_string()),
-                ..node("a", false)
-            },
-        ],
-        edges: vec![Edge {
-            id: "e1".to_string(),
-            start: Some("a".to_string()),
-            end: Some("phase1".to_string()),
+    let mut layout = with_shared_member(
+        LayoutData {
+            nodes: vec![
+                node("lane1", true),
+                node("phase1", true),
+                Node {
+                    parent_id: Some("lane1".to_string()),
+                    ..node("a", false)
+                },
+            ],
+            edges: vec![Edge {
+                id: "e1".to_string(),
+                start: Some("a".to_string()),
+                end: Some("phase1".to_string()),
+                ..Default::default()
+            }],
             ..Default::default()
-        }],
-        ..Default::default()
-    };
-    prepare_layout_for_swimlanes(&mut layout, &[shared_member()]);
+        },
+        shared_member(),
+    );
+    prepare_layout_for_swimlanes(&mut layout);
     assert!(names(&layout).contains(&"phase1".to_string()));
 }
 
 #[test]
 fn resolves_a_node_kept_by_a_nested_subgraph_to_the_lane_around_it() {
-    let mut layout = LayoutData {
-        nodes: vec![
-            node("lane1", true),
-            Node {
-                parent_id: Some("lane1".to_string()),
-                ..node("inner", true)
-            },
-            Node {
-                parent_id: Some("inner".to_string()),
-                ..node("a", false)
-            },
-            node("lane2", true),
-        ],
-        edges: Vec::new(),
-        ..Default::default()
-    };
-    prepare_layout_for_swimlanes(
-        &mut layout,
-        &[SharedMember {
+    let mut layout = with_shared_member(
+        LayoutData {
+            nodes: vec![
+                node("lane1", true),
+                Node {
+                    parent_id: Some("lane1".to_string()),
+                    ..node("inner", true)
+                },
+                Node {
+                    parent_id: Some("inner".to_string()),
+                    ..node("a", false)
+                },
+                node("lane2", true),
+            ],
+            edges: Vec::new(),
+            ..Default::default()
+        },
+        SharedMember {
             node: "a".to_string(),
             kept_by: "inner".to_string(),
             dropped_from: "lane2".to_string(),
-        }],
+        },
     );
+    prepare_layout_for_swimlanes(&mut layout);
     assert_eq!(names(&layout), vec!["lane1", "inner", "a"]);
 }
 

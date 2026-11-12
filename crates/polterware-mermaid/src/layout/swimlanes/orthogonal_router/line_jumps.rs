@@ -63,9 +63,13 @@ pub fn line_jump_paths(layout: &LayoutData, style: &str) -> Vec<(String, Path)> 
         .collect()
 }
 
-/// `applyLineJumpsToSvg` for a layout that has no SVG yet: computes the hop paths for every
-/// crossing edge. Callers that paint can use [`line_jump_paths`] directly.
-pub fn apply_line_jumps_to_svg(layout: &LayoutData, style: &str) -> Result<(), SwimlaneError> {
-    let _paths = line_jump_paths(layout, style);
-    Ok(())
+/// `applyLineJumpsToSvg`, for a scene this crate paints itself: returns the rewritten path of
+/// every edge that carries a hop, keyed by edge id. The paint step uses a returned path in
+/// place of the plain route; an edge without a crossing is absent and keeps its own path,
+/// exactly as upstream only rewrites the paths that carry a hop.
+pub fn apply_line_jumps_to_svg(
+    layout: &LayoutData,
+    style: &str,
+) -> Result<Vec<(String, Path)>, SwimlaneError> {
+    Ok(line_jump_paths(layout, style))
 }

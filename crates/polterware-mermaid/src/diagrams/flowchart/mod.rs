@@ -26,7 +26,7 @@
 
 mod ast;
 mod db;
-mod layout_data;
+pub mod layout_data;
 mod lexer;
 mod metadata;
 mod parser;

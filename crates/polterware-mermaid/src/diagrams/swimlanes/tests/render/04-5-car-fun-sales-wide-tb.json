@@ -1,0 +1,393 @@
+{
+  "name": "5-car-fun-sales-wide-tb",
+  "source": "---\nconfig:\n  layout: swimlane\n  swimlane:\n    ignoreCrossLaneEdges: true\n    optimizeRanksByCrossings: true\n---\nswimlane-beta TD\n        A --> B --> C --> D --> E --> F --> G\n        D --> H --> I --Yes but with a long label that will wrap to the next line --> J --> E\n        I -- No --> K --> L --> M & N\n        subgraph Car\n          A\n        end\n        subgraph Fun\n          F\n          G\n        end\n        subgraph Sales\n          B\n          M\n        end\n\n        subgraph Constr\n          C\n          D\n          E\n          H\n          L\n          N\n        end\n        subgraph Legal\n          I\n          J[\"J: I am a very very long label that will wrap to the next line<br>and this is a second line<br>and this is a second line<br>and this is a second line<br>and this is a second line\"]\n          K\n        end\n",
+  "nodes": [
+    {
+      "id": "A",
+      "x": -512.2,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "B",
+      "x": 47.8,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "C",
+      "x": 327.8,
+      "y": 24.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "D",
+      "x": 327.8,
+      "y": 122.6,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "E",
+      "x": 327.8,
+      "y": 589.8,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "F",
+      "x": -232.2,
+      "y": 589.8,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "G",
+      "x": -232.2,
+      "y": 837.8,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "H",
+      "x": 327.8,
+      "y": 221,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "I",
+      "x": 610,
+      "y": 221,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "J",
+      "x": 610,
+      "y": 589.8,
+      "width": 180,
+      "height": 347.6
+    },
+    {
+      "id": "K",
+      "x": 610,
+      "y": 837.8,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "L",
+      "x": 327.8,
+      "y": 837.8,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "M",
+      "x": 47.8,
+      "y": 837.8,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "N",
+      "x": 327.8,
+      "y": 936.2,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "lanes": [
+    {
+      "id": "Legal",
+      "x": 610,
+      "y": 480.2,
+      "width": 284.4,
+      "height": 1032.4
+    },
+    {
+      "id": "Constr",
+      "x": 327.8,
+      "y": 480.2,
+      "width": 280,
+      "height": 1032.4
+    },
+    {
+      "id": "Sales",
+      "x": 47.8,
+      "y": 480.2,
+      "width": 280,
+      "height": 1032.4
+    },
+    {
+      "id": "Fun",
+      "x": -232.2,
+      "y": 480.2,
+      "width": 280,
+      "height": 1032.4
+    },
+    {
+      "id": "Car",
+      "x": -512.2,
+      "y": 480.2,
+      "width": 280,
+      "height": 1032.4
+    }
+  ],
+  "labels": [
+    {
+      "id": "edge-label-I-J-L_I_J_0",
+      "text": "Yes but with a long label that will wrap to the next line",
+      "x": 610,
+      "y": 330.6,
+      "width": 115.2,
+      "height": 88.8
+    },
+    {
+      "id": "edge-label-I-K-L_I_K_0",
+      "text": "No",
+      "x": 720,
+      "y": 507.3,
+      "width": 19.2,
+      "height": 18.4
+    }
+  ],
+  "edges": [
+    {
+      "id": "L_A_B_0",
+      "points": [
+        {
+          "x": -422.2,
+          "y": 24.2
+        },
+        {
+          "x": -42.2,
+          "y": 24.2
+        }
+      ]
+    },
+    {
+      "id": "L_B_C_0",
+      "points": [
+        {
+          "x": 137.8,
+          "y": 24.2
+        },
+        {
+          "x": 237.8,
+          "y": 24.2
+        }
+      ]
+    },
+    {
+      "id": "L_C_D_0",
+      "points": [
+        {
+          "x": 327.8,
+          "y": 48.4
+        },
+        {
+          "x": 327.8,
+          "y": 98.4
+        }
+      ]
+    },
+    {
+      "id": "L_D_E_0",
+      "points": [
+        {
+          "x": 327.8,
+          "y": 146.8
+        },
+        {
+          "x": 327.8,
+          "y": 146.8
+        },
+        {
+          "x": 327.8,
+          "y": 166.8
+        },
+        {
+          "x": 214.8,
+          "y": 166.8
+        },
+        {
+          "x": 214.8,
+          "y": 268.2
+        },
+        {
+          "x": 327.8,
+          "y": 268.2
+        },
+        {
+          "x": 327.8,
+          "y": 565.6
+        },
+        {
+          "x": 327.8,
+          "y": 565.6
+        }
+      ]
+    },
+    {
+      "id": "L_E_F_0",
+      "points": [
+        {
+          "x": 237.8,
+          "y": 589.8
+        },
+        {
+          "x": -142.2,
+          "y": 589.8
+        }
+      ]
+    },
+    {
+      "id": "L_F_G_0",
+      "points": [
+        {
+          "x": -232.2,
+          "y": 614
+        },
+        {
+          "x": -232.2,
+          "y": 813.6
+        }
+      ]
+    },
+    {
+      "id": "L_D_H_0",
+      "points": [
+        {
+          "x": 331.8,
+          "y": 146.8
+        },
+        {
+          "x": 331.8,
+          "y": 196.8
+        }
+      ]
+    },
+    {
+      "id": "L_H_I_0",
+      "points": [
+        {
+          "x": 417.8,
+          "y": 221
+        },
+        {
+          "x": 520,
+          "y": 221
+        }
+      ]
+    },
+    {
+      "id": "L_I_J_0",
+      "points": [
+        {
+          "x": 610,
+          "y": 245.2
+        },
+        {
+          "x": 610,
+          "y": 416
+        }
+      ]
+    },
+    {
+      "id": "L_J_E_0",
+      "points": [
+        {
+          "x": 520,
+          "y": 589.8
+        },
+        {
+          "x": 417.8,
+          "y": 589.8
+        }
+      ]
+    },
+    {
+      "id": "L_I_K_0",
+      "points": [
+        {
+          "x": 700,
+          "y": 221
+        },
+        {
+          "x": 700,
+          "y": 221
+        },
+        {
+          "x": 720,
+          "y": 221
+        },
+        {
+          "x": 720,
+          "y": 793.6
+        },
+        {
+          "x": 610,
+          "y": 793.6
+        },
+        {
+          "x": 610,
+          "y": 813.6
+        },
+        {
+          "x": 610,
+          "y": 813.6
+        }
+      ]
+    },
+    {
+      "id": "L_K_L_0",
+      "points": [
+        {
+          "x": 520,
+          "y": 837.8
+        },
+        {
+          "x": 417.8,
+          "y": 837.8
+        }
+      ]
+    },
+    {
+      "id": "L_L_M_0",
+      "points": [
+        {
+          "x": 237.8,
+          "y": 837.8
+        },
+        {
+          "x": 137.8,
+          "y": 837.8
+        }
+      ]
+    },
+    {
+      "id": "L_L_N_0",
+      "points": [
+        {
+          "x": 327.8,
+          "y": 862
+        },
+        {
+          "x": 327.8,
+          "y": 912
+        }
+      ]
+    }
+  ],
+  "viewBox": {
+    "x": -660.2,
+    "y": -44,
+    "width": 1420.4,
+    "height": 1048.4
+  }
+}

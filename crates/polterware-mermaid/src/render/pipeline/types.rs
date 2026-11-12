@@ -490,6 +490,11 @@ pub struct LayoutData {
     pub rank_spacing: Option<f64>,
     #[serde(default)]
     pub root_node: Option<serde_json::Value>,
+    /// Upstream's open-ended `[key: string]: any` bag. `flowDb.ts` `getData` puts
+    /// `droppedSubGraphMembers` here, which the swimlanes layout reads back to drop a lane a
+    /// shared node emptied.
+    #[serde(default)]
+    pub other: Option<serde_json::Value>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]

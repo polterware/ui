@@ -299,13 +299,35 @@ fn assign_top_lane_title_rect(lane: &mut Node) {
     });
 }
 
-/// Mirrors `DroppedSubGraphMember` in the flowchart types. The crate's [`LayoutData`] has no
-/// `other` bag, so the caller hands the dropped members in.
+/// Mirrors `DroppedSubGraphMember` in the flowchart types, which a rendering-util module must
+/// not import. [`shared_members`] reads them back from the layout's open-ended `other` bag.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct SharedMember {
     pub node: String,
     pub kept_by: String,
     pub dropped_from: String,
+}
+
+/// `sharedMembers`: `layout.other?.droppedSubGraphMembers`, or nothing when absent.
+pub fn shared_members(layout: &LayoutData) -> Vec<SharedMember> {
+    layout
+        .other
+        .as_ref()
+        .and_then(|other| other.get("droppedSubGraphMembers"))
+        .and_then(serde_json::Value::as_array)
+        .map(|members| {
+            members
+                .iter()
+                .filter_map(|member| {
+                    Some(SharedMember {
+                        node: member.get("node")?.as_str()?.to_string(),
+                        kept_by: member.get("keptBy")?.as_str()?.to_string(),
+                        dropped_from: member.get("droppedFrom")?.as_str()?.to_string(),
+                    })
+                })
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 fn is_empty_lane(layout: &LayoutData, nodes: &[Node], lane_id: &str) -> bool {
@@ -370,10 +392,11 @@ fn drop_lanes_emptied_by_shared_nodes(
 /// no logger, so the walk exists only to keep the module shape.
 fn warn_about_nested_groups(_nodes: &[Node], _model: &LaneModel) {}
 
-pub fn prepare_layout_for_swimlanes(layout: &mut LayoutData, dropped_members: &[SharedMember]) {
+pub fn prepare_layout_for_swimlanes(layout: &mut LayoutData) {
     let direction = layout.direction.clone();
     let mut nodes = std::mem::take(&mut layout.nodes);
-    drop_lanes_emptied_by_shared_nodes(layout, &mut nodes, dropped_members);
+    let dropped_members = shared_members(layout);
+    drop_lanes_emptied_by_shared_nodes(layout, &mut nodes, &dropped_members);
     let lane_model = build_lane_model(&nodes);
     warn_about_nested_groups(&nodes, &lane_model);
     for node in &mut nodes {

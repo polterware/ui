@@ -144,6 +144,7 @@ pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
                 .unwrap_or(50.0),
         ),
         root_node: None,
+        other: None,
     }
 }
 

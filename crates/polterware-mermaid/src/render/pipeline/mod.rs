@@ -12,6 +12,8 @@
 //! - [`dagre`][]: `layout-algorithms/dagre/index.js`
 //! - [`cose_bilkent`][]: `layout-algorithms/cose-bilkent/index.js`
 //! - [`fcose`]: the `fcose` layout of cytoscape-fcose, run by the architecture renderer
+//! - [`swimlanes`][]: `layout-algorithms/swimlanes/index.ts`, the flowchart-family layout
+//!   the swimlane-beta diagram swaps in
 
 pub mod clone_layout_data_for_measure;
 pub mod cose_bilkent;
@@ -22,6 +24,7 @@ pub mod edge_step;
 pub mod fcose;
 pub mod label_transform;
 pub mod setup_view_port_for_svg;
+pub mod swimlanes;
 pub mod types;
 
 use std::collections::HashMap;
@@ -40,9 +43,14 @@ pub use edge_step::*;
 pub use fcose::*;
 pub use label_transform::*;
 pub use setup_view_port_for_svg::*;
+pub use swimlanes::*;
 pub use types::*;
 
 pub const LAST_RESORT_LAYOUT: &str = "dagre";
+
+/// The swimlanes layout's registry name. `swimlane` is the name the configuration schema and
+/// upstream's diagram use; both reach the same renderer.
+pub const SWIMLANES_LAYOUT: &str = "swimlanes";
 
 #[derive(Clone, Debug)]
 pub struct LayoutLoaderDefinition {
@@ -92,6 +100,13 @@ fn get_registry() -> HashMap<String, LayoutLoaderDefinition> {
             algorithm: None,
         },
     );
+    map.insert(
+        SWIMLANES_LAYOUT.to_string(),
+        LayoutLoaderDefinition {
+            name: SWIMLANES_LAYOUT.to_string(),
+            algorithm: None,
+        },
+    );
     *write = Some(map.clone());
     map
 }
@@ -128,6 +143,13 @@ pub fn register_layout_loaders(loaders: Vec<LayoutLoaderDefinition>) {
                 algorithm: None,
             },
         );
+        m.insert(
+            SWIMLANES_LAYOUT.to_string(),
+            LayoutLoaderDefinition {
+                name: SWIMLANES_LAYOUT.to_string(),
+                algorithm: None,
+            },
+        );
         m
     });
     for loader in loaders {
@@ -158,6 +180,10 @@ pub fn register_default_layout_loaders() {
         },
         LayoutLoaderDefinition {
             name: "swimlane".to_string(),
+            algorithm: None,
+        },
+        LayoutLoaderDefinition {
+            name: SWIMLANES_LAYOUT.to_string(),
             algorithm: None,
         },
     ]);
@@ -203,6 +229,7 @@ pub fn render(
     match resolved_algo.as_str() {
         "cose-bilkent" => cose_bilkent_render(data4_layout, measure),
         "fcose" => fcose_render(data4_layout, measure),
+        "swimlane" | SWIMLANES_LAYOUT => swimlanes_render(data4_layout, measure),
         _ => dagre_render(data4_layout, measure),
     }
 }

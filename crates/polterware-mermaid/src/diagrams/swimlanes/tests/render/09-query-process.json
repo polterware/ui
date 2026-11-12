@@ -1,0 +1,279 @@
+{
+  "name": "query-process",
+  "source": "---\nconfig:\n  layout: swimlane\n  swimlane:\n    ignoreCrossLaneEdges: true\n    optimizeRanksByCrossings: true\n---\nswimlane-beta LR\n\n\n\n  subgraph \"Head of Engineering\"\n      E{Can answer?}\n      E --Yes--> F(Answer)\n      E --No --> G(Investigate) --> F2(Answer)\n  end\n\n    subgraph StatusSeeker\n    A(Incoming query)\n    A2{Knows<br/>which team?}\n  end\n\n  subgraph \"Tech Lead\"\n      B{Can answer?}\n      B --Yes--> C(Answer)\n\n  end\n  A --> A2\n  A2 --Yes --> B\n  A2 --No --> E\n  B --No --> E\n",
+  "nodes": [
+    {
+      "id": "E",
+      "x": 322.314928,
+      "y": 37,
+      "width": 168.4,
+      "height": 168.4
+    },
+    {
+      "id": "F",
+      "x": 656.415542,
+      "y": 37,
+      "width": 150,
+      "height": 48.4
+    },
+    {
+      "id": "G",
+      "x": 900.433947,
+      "y": 37,
+      "width": 150,
+      "height": 48.4
+    },
+    {
+      "id": "F2",
+      "x": 1144.452352,
+      "y": 37,
+      "width": 150,
+      "height": 48.4
+    },
+    {
+      "id": "A",
+      "x": 36,
+      "y": 452.6,
+      "width": 150,
+      "height": 66
+    },
+    {
+      "id": "A2",
+      "x": 322.314928,
+      "y": 452.6,
+      "width": 186,
+      "height": 186
+    },
+    {
+      "id": "B",
+      "x": 322.314928,
+      "y": 808.6,
+      "width": 168.4,
+      "height": 168.4
+    },
+    {
+      "id": "C",
+      "x": 656.415542,
+      "y": 808.6,
+      "width": 150,
+      "height": 48.4
+    }
+  ],
+  "lanes": [
+    {
+      "id": "subGraph2",
+      "x": 565.226176,
+      "y": 763.5,
+      "width": 1328.452352,
+      "height": 330.6
+    },
+    {
+      "id": "StatusSeeker",
+      "x": 565.226176,
+      "y": 453.8,
+      "width": 1328.452352,
+      "height": 288.8
+    },
+    {
+      "id": "subGraph0",
+      "x": 565.226176,
+      "y": 113.1,
+      "width": 1328.452352,
+      "height": 392.6
+    }
+  ],
+  "labels": [
+    {
+      "id": "edge-label-E-F-L_E_F_0",
+      "text": "Yes",
+      "x": 493.965235,
+      "y": 37,
+      "width": 28.8,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-E-G-L_E_G_0",
+      "text": "No",
+      "x": 611.374438,
+      "y": -67.2,
+      "width": 19.2,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-B-C-L_B_C_0",
+      "text": "Yes",
+      "x": 493.965235,
+      "y": 808.6,
+      "width": 28.8,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-A2-B-L_A2_B_0",
+      "text": "Yes",
+      "x": 322.314928,
+      "y": 635,
+      "width": 28.8,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-A2-E-L_A2_E_0",
+      "text": "No",
+      "x": 322.314928,
+      "y": 240.4,
+      "width": 19.2,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-B-E-L_B_E_0",
+      "text": "No",
+      "x": 89.557464,
+      "y": 808.6,
+      "width": 19.2,
+      "height": 18.4
+    }
+  ],
+  "edges": [
+    {
+      "id": "L_E_F_0",
+      "points": [
+        {
+          "x": 406.514928,
+          "y": 37
+        },
+        {
+          "x": 581.415542,
+          "y": 37
+        }
+      ]
+    },
+    {
+      "id": "L_E_G_0",
+      "points": [
+        {
+          "x": 322.314928,
+          "y": -47.2
+        },
+        {
+          "x": 322.314928,
+          "y": -47.2
+        },
+        {
+          "x": 322.314928,
+          "y": -67.2
+        },
+        {
+          "x": 900.433947,
+          "y": -67.2
+        },
+        {
+          "x": 900.433947,
+          "y": 12.8
+        },
+        {
+          "x": 900.433947,
+          "y": 12.8
+        }
+      ]
+    },
+    {
+      "id": "L_G_F2_0",
+      "points": [
+        {
+          "x": 975.433947,
+          "y": 37
+        },
+        {
+          "x": 1069.452352,
+          "y": 37
+        }
+      ]
+    },
+    {
+      "id": "L_B_C_0",
+      "points": [
+        {
+          "x": 406.514928,
+          "y": 808.6
+        },
+        {
+          "x": 581.415542,
+          "y": 808.6
+        }
+      ]
+    },
+    {
+      "id": "L_A_A2_0",
+      "points": [
+        {
+          "x": 111,
+          "y": 452.6
+        },
+        {
+          "x": 229.314928,
+          "y": 452.6
+        }
+      ]
+    },
+    {
+      "id": "L_A2_B_0",
+      "points": [
+        {
+          "x": 322.314928,
+          "y": 545.6
+        },
+        {
+          "x": 322.314928,
+          "y": 724.4
+        }
+      ]
+    },
+    {
+      "id": "L_A2_E_0",
+      "points": [
+        {
+          "x": 322.314928,
+          "y": 359.6
+        },
+        {
+          "x": 322.314928,
+          "y": 121.2
+        }
+      ]
+    },
+    {
+      "id": "L_B_E_0",
+      "points": [
+        {
+          "x": 238.114928,
+          "y": 808.6
+        },
+        {
+          "x": 238.114928,
+          "y": 808.6
+        },
+        {
+          "x": -59,
+          "y": 808.6
+        },
+        {
+          "x": -59,
+          "y": 37
+        },
+        {
+          "x": 238.114928,
+          "y": 37
+        },
+        {
+          "x": 238.114928,
+          "y": 37
+        }
+      ]
+    }
+  ],
+  "viewBox": {
+    "x": -107,
+    "y": -91.2,
+    "width": 1344.452352,
+    "height": 1028
+  }
+}

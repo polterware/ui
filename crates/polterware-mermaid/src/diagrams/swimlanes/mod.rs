@@ -18,18 +18,25 @@
 //!
 //! Nothing here lays out or draws: marking a lane with `shape: "swimlane"`, dropping nodes
 //! from a later lane, ordering lanes, and warning about nested groups belong to
-//! `rendering-util/layout-algorithms/swimlanes/helpers.ts`, which is a layout concern.
+//! `rendering-util/layout-algorithms/swimlanes/helpers.ts`, which is a layout concern and is
+//! ported in [`crate::layout::swimlanes`]. [`render`] is the diagram's renderer:
+//! `swimlanesDiagram.ts`'s `createFlowDiagram({ styles: swimlanesStyles })`.
 //!
 //! # Where the port stops short of upstream
 //!
-//! * Configuration is not owned by this crate, so the `swimlane` schema default
-//!   (`layout: swimlane`) and its overrides are absent. That is why the layout assertions of
-//!   `swimlanesDiagram.spec.ts` are not ported.
-//! * `styles.ts` (the lane palette CSS) is rendering and is not ported.
+//! * `styles.ts` is a CSS rule for the lane cluster; the scene paints lanes as the
+//!   `swimlane` cluster shape instead, so there is no stylesheet to emit.
+//! * The configuration resolution upstream performs before rendering (frontmatter, then
+//!   `initialize()`, then the diagram's schema default) happens before this crate sees a
+//!   [`Config`](crate::config::Config). [`render::layout_algorithm`] reads the merged result
+//!   the same way, keeping an explicit top-level `layout` over `swimlane.layout`; a top-level
+//!   `layout` equal to the global default cannot be told apart from an unset one.
 
 pub use crate::diagrams::flowchart::Ast;
 
 use crate::error::ParseError;
+
+pub mod render;
 
 /// Parses the diagram body (see [`crate::preprocess`]). The body starts with the header
 /// line; frontmatter and `%%{init}%%` directives are already removed.

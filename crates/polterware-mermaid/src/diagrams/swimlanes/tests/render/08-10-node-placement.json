@@ -1,0 +1,250 @@
+{
+  "name": "10-node-placement",
+  "source": "\nswimlane-beta LR\n\n  subgraph S[\"Sales\"]\n    T5[\"Confirm with customer\"]\n  end\n\n  subgraph T[\"Technical support\"]\n    T4[\"Get more details from customer\"]\n    T6[\"Resolve solution\"]\n  end\n\n  subgraph Tester[\"Tester\"]\n    Te2{\"Reproduced the issue\"}\n    D4{\"Resolved?\"}\n  end\n\n  subgraph D[\"Development\"]\n    D1[\"Error report\"]\n    D2[\"Technical analysis\"]\n    D3[\"Fix the issue\"]\n\n  end\n\n  %% Edges\n\n\n\n  Te2 -- Yes --> D1 --> D2 --> D3 --> D4\n  Te2 -- No --> T4\n\n  D4 -- No --> D2\n  D4 -- Yes --> T6 --> T5\n",
+  "nodes": [
+    {
+      "id": "T5",
+      "x": 781.079531,
+      "y": 0,
+      "width": 180,
+      "height": 66
+    },
+    {
+      "id": "T4",
+      "x": 36,
+      "y": 358.8,
+      "width": 180,
+      "height": 83.6
+    },
+    {
+      "id": "T6",
+      "x": 781.079531,
+      "y": 358.8,
+      "width": 180,
+      "height": 66
+    },
+    {
+      "id": "Te2",
+      "x": 36,
+      "y": 720.6,
+      "width": 186,
+      "height": 186
+    },
+    {
+      "id": "D4",
+      "x": 781.079531,
+      "y": 720.6,
+      "width": 168.4,
+      "height": 168.4
+    },
+    {
+      "id": "D1",
+      "x": 36,
+      "y": 1082.4,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "D2",
+      "x": 385.807036,
+      "y": 1082.4,
+      "width": 180,
+      "height": 66
+    },
+    {
+      "id": "D3",
+      "x": 781.079531,
+      "y": 1082.4,
+      "width": 180,
+      "height": 66
+    }
+  ],
+  "lanes": [
+    {
+      "id": "D",
+      "x": 389.039765,
+      "y": 1008.8,
+      "width": 984.079531,
+      "height": 285.2
+    },
+    {
+      "id": "Tester",
+      "x": 389.039765,
+      "y": 720.6,
+      "width": 984.079531,
+      "height": 291.2
+    },
+    {
+      "id": "T",
+      "x": 389.039765,
+      "y": 375,
+      "width": 984.079531,
+      "height": 400
+    },
+    {
+      "id": "S",
+      "x": 389.039765,
+      "y": 53,
+      "width": 984.079531,
+      "height": 244
+    }
+  ],
+  "labels": [
+    {
+      "id": "edge-label-Te2-D1-L_Te2_D1_0",
+      "text": "Yes",
+      "x": 36,
+      "y": 935.9,
+      "width": 28.8,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-Te2-T4-L_Te2_T4_0",
+      "text": "No",
+      "x": 36,
+      "y": 514.1,
+      "width": 19.2,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-D4-D2-L_D4_D2_0",
+      "text": "No",
+      "x": 541.343284,
+      "y": 720.6,
+      "width": 19.2,
+      "height": 18.4
+    },
+    {
+      "id": "edge-label-D4-T6-L_D4_T6_0",
+      "text": "Yes",
+      "x": 781.079531,
+      "y": 514.1,
+      "width": 28.8,
+      "height": 18.4
+    }
+  ],
+  "edges": [
+    {
+      "id": "L_Te2_D1_0",
+      "points": [
+        {
+          "x": 36,
+          "y": 813.6
+        },
+        {
+          "x": 36,
+          "y": 1058.2
+        }
+      ]
+    },
+    {
+      "id": "L_D1_D2_0",
+      "points": [
+        {
+          "x": 126,
+          "y": 1082.4
+        },
+        {
+          "x": 295.807036,
+          "y": 1082.4
+        }
+      ]
+    },
+    {
+      "id": "L_D2_D3_0",
+      "points": [
+        {
+          "x": 475.807036,
+          "y": 1082.4
+        },
+        {
+          "x": 691.079531,
+          "y": 1082.4
+        }
+      ]
+    },
+    {
+      "id": "L_D3_D4_0",
+      "points": [
+        {
+          "x": 781.079531,
+          "y": 1049.4
+        },
+        {
+          "x": 781.079531,
+          "y": 804.8
+        }
+      ]
+    },
+    {
+      "id": "L_Te2_T4_0",
+      "points": [
+        {
+          "x": 36,
+          "y": 627.6
+        },
+        {
+          "x": 36,
+          "y": 400.6
+        }
+      ]
+    },
+    {
+      "id": "L_D4_D2_0",
+      "points": [
+        {
+          "x": 696.879531,
+          "y": 720.6
+        },
+        {
+          "x": 696.879531,
+          "y": 720.6
+        },
+        {
+          "x": 385.807036,
+          "y": 720.6
+        },
+        {
+          "x": 385.807036,
+          "y": 1049.4
+        },
+        {
+          "x": 385.807036,
+          "y": 1049.4
+        }
+      ]
+    },
+    {
+      "id": "L_D4_T6_0",
+      "points": [
+        {
+          "x": 781.079531,
+          "y": 636.4
+        },
+        {
+          "x": 781.079531,
+          "y": 391.8
+        }
+      ]
+    },
+    {
+      "id": "L_T6_T5_0",
+      "points": [
+        {
+          "x": 781.079531,
+          "y": 325.8
+        },
+        {
+          "x": 781.079531,
+          "y": 33
+        }
+      ]
+    }
+  ],
+  "viewBox": {
+    "x": -111,
+    "y": -77,
+    "width": 1000.079531,
+    "height": 1236.4
+  }
+}

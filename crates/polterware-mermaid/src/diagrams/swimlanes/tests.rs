@@ -24,6 +24,9 @@ use super::Ast;
 use super::parse;
 use crate::error::ParseError;
 
+mod ddlt;
+mod render_fixtures;
+
 fn ast(body: &str) -> Ast {
     parse(body).unwrap_or_else(|error| panic!("expected {body:?} to parse, got {error}"))
 }

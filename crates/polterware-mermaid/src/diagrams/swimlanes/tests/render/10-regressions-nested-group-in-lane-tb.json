@@ -1,0 +1,125 @@
+{
+  "name": "regressions-nested-group-in-lane-tb",
+  "source": "%% A subgraph nested in a lane: the group has to be framed around its nodes\n%% and sit inside the lane that holds it.\nswimlane-beta TB\n  subgraph L1[Sales]\n    subgraph G1[Intake]\n      A[Receive order] --> B[Check stock]\n    end\n    C[Confirm]\n  end\n  subgraph L2[Warehouse]\n    D[Pick] --> E[Ship]\n  end\n  B --> C --> D\n",
+  "nodes": [
+    {
+      "id": "A",
+      "x": -140,
+      "y": 33,
+      "width": 180,
+      "height": 66
+    },
+    {
+      "id": "B",
+      "x": -140,
+      "y": 140.2,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "C",
+      "x": -140,
+      "y": 238.6,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "D",
+      "x": 140,
+      "y": 238.6,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "E",
+      "x": 140,
+      "y": 337,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "lanes": [
+    {
+      "id": "L2",
+      "x": 140,
+      "y": 178.6,
+      "width": 276,
+      "height": 437.2
+    },
+    {
+      "id": "L1",
+      "x": -140,
+      "y": 178.6,
+      "width": 284,
+      "height": 437.2
+    },
+    {
+      "id": "G1",
+      "x": -140,
+      "y": 82.2,
+      "width": 188,
+      "height": 172.4
+    }
+  ],
+  "labels": [],
+  "edges": [
+    {
+      "id": "L_A_B_0",
+      "points": [
+        {
+          "x": -140,
+          "y": 66
+        },
+        {
+          "x": -140,
+          "y": 116
+        }
+      ]
+    },
+    {
+      "id": "L_D_E_0",
+      "points": [
+        {
+          "x": 140,
+          "y": 262.8
+        },
+        {
+          "x": 140,
+          "y": 312.8
+        }
+      ]
+    },
+    {
+      "id": "L_B_C_0",
+      "points": [
+        {
+          "x": -140,
+          "y": 164.4
+        },
+        {
+          "x": -140,
+          "y": 214.4
+        }
+      ]
+    },
+    {
+      "id": "L_C_D_0",
+      "points": [
+        {
+          "x": -50,
+          "y": 238.6
+        },
+        {
+          "x": 50,
+          "y": 238.6
+        }
+      ]
+    }
+  ],
+  "viewBox": {
+    "x": -290,
+    "y": -48,
+    "width": 576,
+    "height": 453.2
+  }
+}

@@ -1,0 +1,290 @@
+{
+  "name": "2-decisions-lr",
+  "source": "swimlane-beta LR\n        subgraph Dep1\n          Start\n        end\n        subgraph Dep2\n          Process1\n          Decision1\n          Process2\n          Process5\n        end\n        subgraph Dep3\n          Process3\n          Decision2\n        end\n        subgraph Dep4\n          Process4\n          Process6\n          Finish\n        end\n        Start --> Process1 --> Decision1 --> Process2 --> Decision2\n        Decision1 --> Process3\n        Process3 --> Process4 --> Decision2 --> Process6 & Process5--> Finish\n",
+  "nodes": [
+    {
+      "id": "Start",
+      "x": 36,
+      "y": 0,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Process1",
+      "x": 36,
+      "y": 280,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Decision1",
+      "x": 705.421488,
+      "y": 280,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Process2",
+      "x": 1374.842975,
+      "y": 280,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Process5",
+      "x": 2044.264463,
+      "y": 280,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Process3",
+      "x": 705.421488,
+      "y": 560,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Decision2",
+      "x": 1374.842975,
+      "y": 560,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Process4",
+      "x": 705.421488,
+      "y": 840,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Process6",
+      "x": 1374.842975,
+      "y": 840,
+      "width": 180,
+      "height": 48.4
+    },
+    {
+      "id": "Finish",
+      "x": 2044.264463,
+      "y": 840,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "lanes": [
+    {
+      "id": "Dep4",
+      "x": 1022.132231,
+      "y": 800.1,
+      "width": 2244.264463,
+      "height": 200.2
+    },
+    {
+      "id": "Dep3",
+      "x": 1022.132231,
+      "y": 560,
+      "width": 2244.264463,
+      "height": 280
+    },
+    {
+      "id": "Dep2",
+      "x": 1022.132231,
+      "y": 280,
+      "width": 2244.264463,
+      "height": 280
+    },
+    {
+      "id": "Dep1",
+      "x": 1022.132231,
+      "y": 39.9,
+      "width": 2244.264463,
+      "height": 200.2
+    }
+  ],
+  "labels": [],
+  "edges": [
+    {
+      "id": "L_Start_Process1_0",
+      "points": [
+        {
+          "x": 36,
+          "y": 24.2
+        },
+        {
+          "x": 36,
+          "y": 255.8
+        }
+      ]
+    },
+    {
+      "id": "L_Process1_Decision1_0",
+      "points": [
+        {
+          "x": 126,
+          "y": 280
+        },
+        {
+          "x": 615.421488,
+          "y": 280
+        }
+      ]
+    },
+    {
+      "id": "L_Decision1_Process2_0",
+      "points": [
+        {
+          "x": 795.421488,
+          "y": 280
+        },
+        {
+          "x": 1284.842975,
+          "y": 280
+        }
+      ]
+    },
+    {
+      "id": "L_Process2_Decision2_0",
+      "points": [
+        {
+          "x": 1374.842975,
+          "y": 304.2
+        },
+        {
+          "x": 1374.842975,
+          "y": 535.8
+        }
+      ]
+    },
+    {
+      "id": "L_Decision1_Process3_0",
+      "points": [
+        {
+          "x": 705.421488,
+          "y": 304.2
+        },
+        {
+          "x": 705.421488,
+          "y": 535.8
+        }
+      ]
+    },
+    {
+      "id": "L_Process3_Process4_0",
+      "points": [
+        {
+          "x": 705.421488,
+          "y": 584.2
+        },
+        {
+          "x": 705.421488,
+          "y": 815.8
+        }
+      ]
+    },
+    {
+      "id": "L_Process4_Decision2_0",
+      "points": [
+        {
+          "x": 795.421488,
+          "y": 840
+        },
+        {
+          "x": 795.421488,
+          "y": 840
+        },
+        {
+          "x": 869.801653,
+          "y": 840
+        },
+        {
+          "x": 869.801653,
+          "y": 560
+        },
+        {
+          "x": 1284.842975,
+          "y": 560
+        },
+        {
+          "x": 1284.842975,
+          "y": 560
+        }
+      ]
+    },
+    {
+      "id": "L_Decision2_Process6_0",
+      "points": [
+        {
+          "x": 1374.842975,
+          "y": 584.2
+        },
+        {
+          "x": 1374.842975,
+          "y": 815.8
+        }
+      ]
+    },
+    {
+      "id": "L_Decision2_Process5_0",
+      "points": [
+        {
+          "x": 1464.842975,
+          "y": 560
+        },
+        {
+          "x": 1464.842975,
+          "y": 560
+        },
+        {
+          "x": 1539.22314,
+          "y": 560
+        },
+        {
+          "x": 1539.22314,
+          "y": 280
+        },
+        {
+          "x": 1954.264463,
+          "y": 280
+        },
+        {
+          "x": 1954.264463,
+          "y": 280
+        }
+      ]
+    },
+    {
+      "id": "L_Process6_Finish_0",
+      "points": [
+        {
+          "x": 1464.842975,
+          "y": 840
+        },
+        {
+          "x": 1954.264463,
+          "y": 840
+        }
+      ]
+    },
+    {
+      "id": "L_Process5_Finish_0",
+      "points": [
+        {
+          "x": 2044.264463,
+          "y": 304.2
+        },
+        {
+          "x": 2044.264463,
+          "y": 815.8
+        }
+      ]
+    }
+  ],
+  "viewBox": {
+    "x": -108,
+    "y": -68.2,
+    "width": 2260.264463,
+    "height": 976.4
+  }
+}

@@ -71,6 +71,7 @@ pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
         // A state diagram has no root: only mindmap-like diagrams laid out by cose-bilkent
         // set one.
         root_node: None,
+        other: None,
     }
 }
 

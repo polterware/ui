@@ -1,0 +1,30 @@
+{
+  "name": "regressions-shared-node-lane",
+  "source": "swimlane-beta LR\n  subgraph lane1[Performer A]\n    a[\"step one\"]\n  end\n  subgraph phase1[Phase 1]\n    a\n  end\n",
+  "nodes": [
+    {
+      "id": "a",
+      "x": 36,
+      "y": 0,
+      "width": 180,
+      "height": 48.4
+    }
+  ],
+  "lanes": [
+    {
+      "id": "lane1",
+      "x": 18,
+      "y": 0,
+      "width": 236,
+      "height": 120.4
+    }
+  ],
+  "labels": [],
+  "edges": [],
+  "viewBox": {
+    "x": -108,
+    "y": -68.2,
+    "width": 252,
+    "height": 136.4
+  }
+}

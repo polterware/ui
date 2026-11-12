@@ -92,6 +92,7 @@ pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
         node_spacing: Some(config.state.node_spacing.unwrap_or(DEFAULT_NODE_SPACING)),
         rank_spacing: Some(config.state.rank_spacing.unwrap_or(DEFAULT_RANK_SPACING)),
         root_node: None,
+        other: None,
     }
 }
 
