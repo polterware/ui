@@ -107,11 +107,25 @@ pub mod wave_edged_rectangle;
 pub mod wave_rectangle;
 pub mod window_pane;
 
+/// One ER entity attribute (`EntityNode.attributes` in upstream).
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Attribute {
+    /// The declared type, including a generic `type~T~` part when present.
+    pub type_name: String,
+    pub name: String,
+    /// The declared keys, as written (`PK`, `FK`, `UK`).
+    pub keys: Vec<String>,
+    /// The comment without its surrounding quotes.
+    pub comment: String,
+}
+
 /// Mutable geometry/state corresponding to upstream rendering `Node`.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Node {
     pub id: String,
     pub label: String,
+    /// The ER entity alias, drawn instead of the name when present.
+    pub alias: Option<String>,
     pub shape: String,
     pub width: Option<f64>,
     pub height: Option<f64>,
@@ -139,7 +153,7 @@ pub struct Node {
     pub members: Vec<String>,
     pub methods: Vec<String>,
     pub annotations: Vec<String>,
-    pub attributes: Vec<String>,
+    pub attributes: Vec<Attribute>,
     pub requirement_id: Option<String>,
     pub requirement_type: Option<String>,
     pub risk: Option<String>,
@@ -155,6 +169,7 @@ impl Node {
         Self {
             id: id.into(),
             label: label.into(),
+            alias: None,
             shape: shape.into(),
             width: None,
             height: None,

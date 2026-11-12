@@ -42,6 +42,19 @@ pub struct TerminalLabelSize {
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct NodeAttribute {
+    /// The declared type (`Attribute.type`).
+    #[serde(rename = "type")]
+    pub type_name: String,
+    pub name: String,
+    #[serde(default)]
+    pub keys: Vec<String>,
+    #[serde(default)]
+    pub comment: String,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Node {
     pub id: String,
     #[serde(default)]
@@ -160,6 +173,12 @@ pub struct Node {
     pub stroke: Option<String>,
     #[serde(default)]
     pub color_index: Option<usize>,
+    /// ER entity attributes (`EntityNode.attributes`); empty for every other diagram.
+    #[serde(default)]
+    pub attributes: Vec<NodeAttribute>,
+    /// The ER entity alias from `name[alias]`, if the diagram declared one.
+    #[serde(default)]
+    pub alias: Option<String>,
     #[serde(default)]
     pub shape: Option<String>,
     #[serde(default)]

@@ -1,0 +1,53 @@
+{
+  "name": "06-aliases",
+  "source": "erDiagram\n  CUSTOMER[\"Customer Account\"]\n  ORDER[\"Sales Order\"]\n  CUSTOMER ||--o{ ORDER : places\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-CUSTOMER-0",
+        "x": 80.8,
+        "y": 56,
+        "width": 116.8,
+        "height": 96
+      },
+      {
+        "id": "entity-ORDER-1",
+        "x": 80.8,
+        "y": 245.60000000000002,
+        "width": 145.6,
+        "height": 78.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_entity-CUSTOMER-0_entity-ORDER-1_0",
+        "points": [
+          {
+            "x": 80.8,
+            "y": 104
+          },
+          {
+            "x": 80.8,
+            "y": 155.2
+          },
+          {
+            "x": 80.8,
+            "y": 206.40000000000003
+          }
+        ],
+        "x": 80.8,
+        "y": 155.2,
+        "width": 61.599999999999994,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 161.6,
+      "height": 292.80000000000007
+    },
+    "rawViewBox": "0 0 161.6 292.80000000000007"
+  }
+}

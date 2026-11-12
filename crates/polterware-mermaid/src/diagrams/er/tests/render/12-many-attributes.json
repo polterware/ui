@@ -1,0 +1,53 @@
+{
+  "name": "12-many-attributes",
+  "source": "erDiagram\n  PRODUCT {\n    string sku PK \"stock keeping unit\"\n    string title\n    string description \"long text\"\n    decimal price\n    int stock FK,UK\n  }\n  CATEGORY ||--o{ PRODUCT : groups\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-PRODUCT-0",
+        "x": 254.8,
+        "y": 300.25,
+        "width": 493.6,
+        "height": 222.9
+      },
+      {
+        "id": "entity-CATEGORY-1",
+        "x": 254.8,
+        "y": 47.2,
+        "width": 116.8,
+        "height": 78.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_entity-CATEGORY-1_entity-PRODUCT-0_0",
+        "points": [
+          {
+            "x": 254.8,
+            "y": 86.4
+          },
+          {
+            "x": 254.8,
+            "y": 137.6
+          },
+          {
+            "x": 254.8,
+            "y": 188.8
+          }
+        ],
+        "x": 254.8,
+        "y": 137.6,
+        "width": 61.599999999999994,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 509.6,
+      "height": 419.70000000000005
+    },
+    "rawViewBox": "0 0 509.6 419.70000000000005"
+  }
+}

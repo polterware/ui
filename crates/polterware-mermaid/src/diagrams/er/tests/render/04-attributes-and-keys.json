@@ -1,0 +1,53 @@
+{
+  "name": "04-attributes-and-keys",
+  "source": "erDiagram\n  CUSTOMER {\n    string id PK\n    string name\n    string email UK\n  }\n  ORDER {\n    int id PK\n    int customer_id FK\n    date placed_at\n  }\n  CUSTOMER ||--o{ ORDER : places\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-CUSTOMER-0",
+        "x": 127.1,
+        "y": 82.3,
+        "width": 199.8,
+        "height": 148.6
+      },
+      {
+        "id": "entity-ORDER-1",
+        "x": 127.1,
+        "y": 333.3,
+        "width": 238.2,
+        "height": 148.6
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_entity-CUSTOMER-0_entity-ORDER-1_0",
+        "points": [
+          {
+            "x": 127.1,
+            "y": 156.6
+          },
+          {
+            "x": 127.1,
+            "y": 207.79999999999998
+          },
+          {
+            "x": 127.1,
+            "y": 259
+          }
+        ],
+        "x": 127.1,
+        "y": 207.79999999999998,
+        "width": 61.599999999999994,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 254.2,
+      "height": 415.6
+    },
+    "rawViewBox": "0 0 254.2 415.6"
+  }
+}
