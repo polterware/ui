@@ -1,0 +1,487 @@
+{
+  "name": "05-external",
+  "source": "C4Context\n  title External systems\n  Person(customer, \"Customer\")\n  System(shop, \"Shop\")\n  System_Ext(payments, \"Payments\", \"Charges cards\")\n  SystemDb_Ext(warehouse, \"Warehouse\", \"Stores stock\")\n  Person_Ext(partner, \"Partner\", \"Supplies stock\")\n  Rel(customer, shop, \"Buys\")\n  Rel(shop, payments, \"Charges\")\n  Rel(shop, warehouse, \"Queries\")\n  Rel(partner, shop, \"Supplies\")\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -70,
+      "width": 1464,
+      "height": 767.4448
+    },
+    "rawViewBox": "0 -70 1464 767.4448",
+    "shapes": [
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 252.9464,
+        "width": 216,
+        "height": 71.175,
+        "rx": 32.02875,
+        "ry": 32.02875,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "circle",
+        "cx": 258,
+        "cy": 216.68,
+        "r": 49.68,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 466,
+        "y": 167,
+        "width": 216,
+        "height": 71.175,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#1168BD",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 782,
+        "y": 167,
+        "width": 216,
+        "height": 87.377,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#999999",
+        "stroke": "#8A8A8A",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 1098,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 1314,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 1098,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "lineTo",
+            "x": 1098,
+            "y": 266.04855425219944
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 1314,
+            "y": 266.04855425219944
+          },
+          {
+            "op": "lineTo",
+            "x": 1314,
+            "y": 182.8357771260997
+          }
+        ],
+        "fill": "#999999",
+        "stroke": "#8A8A8A",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 510.0678,
+        "width": 216,
+        "height": 87.377,
+        "rx": 38.232,
+        "ry": 38.232,
+        "fill": "#686868",
+        "stroke": "#8A8A8A",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "circle",
+        "cx": 258,
+        "cy": 473.8014,
+        "r": 49.68,
+        "fill": "#686868",
+        "stroke": "#8A8A8A",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 301.62763700023334,
+            "y": 239.62772794196698
+          },
+          {
+            "op": "lineTo",
+            "x": 466,
+            "y": 217.2745430379747
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 682,
+            "y": 205.35619620253166
+          },
+          {
+            "op": "quadTo",
+            "cx": 707,
+            "cy": 206.638,
+            "x": 782,
+            "y": 207.91980379746835
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 682,
+            "y": 206.32215806080404
+          },
+          {
+            "op": "quadTo",
+            "cx": 786,
+            "cy": 213.51483284457478,
+            "x": 1098,
+            "y": 220.70750762834552
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 306.5653001563906,
+            "y": 463.41723980734514
+          },
+          {
+            "op": "quadTo",
+            "cx": 364.30180562493166,
+            "cy": 350.79611990367255,
+            "x": 537.5113220305547,
+            "y": 238.175
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      }
+    ],
+    "texts": [
+      {
+        "text": "Customer",
+        "lines": [
+          "Customer"
+        ],
+        "x": 258,
+        "y": 262.84639999999996,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Person]",
+        "lines": [
+          "[Person]"
+        ],
+        "x": 258,
+        "y": 281.9464,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Shop",
+        "lines": [
+          "Shop"
+        ],
+        "x": 574,
+        "y": 176.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Software System]",
+        "lines": [
+          "[Software System]"
+        ],
+        "x": 574,
+        "y": 196,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Payments",
+        "lines": [
+          "Payments"
+        ],
+        "x": 890,
+        "y": 176.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Software System]",
+        "lines": [
+          "[Software System]"
+        ],
+        "x": 890,
+        "y": 196,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Charges cards",
+        "lines": [
+          "Charges cards"
+        ],
+        "x": 890,
+        "y": 211.07500000000002,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Warehouse",
+        "lines": [
+          "Warehouse"
+        ],
+        "x": 1206,
+        "y": 203.9869990224829,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Software System]",
+        "lines": [
+          "[Software System]"
+        ],
+        "x": 1206,
+        "y": 223.0869990224829,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Stores stock",
+        "lines": [
+          "Stores stock"
+        ],
+        "x": 1206,
+        "y": 238.1619990224829,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Partner",
+        "lines": [
+          "Partner"
+        ],
+        "x": 258,
+        "y": 519.9678,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Person]",
+        "lines": [
+          "[Person]"
+        ],
+        "x": 258,
+        "y": 539.0678,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Supplies stock",
+        "lines": [
+          "Supplies stock"
+        ],
+        "x": 258,
+        "y": 554.1428,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Buys",
+        "lines": [
+          "Buys"
+        ],
+        "x": 398.31381850011667,
+        "y": 228.45113548997085,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Charges",
+        "lines": [
+          "Charges"
+        ],
+        "x": 757,
+        "y": 206.638,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Queries",
+        "lines": [
+          "Queries"
+        ],
+        "x": 915,
+        "y": 213.51483284457478,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Supplies",
+        "lines": [
+          "Supplies"
+        ],
+        "x": 451.03831109347266,
+        "y": 350.79611990367255,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "External systems",
+        "lines": [
+          "External systems"
+        ],
+        "x": 482,
+        "y": 20,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fill": null,
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "name": "12-shape-overrides",
+  "source": "C4Container\n  title Shape overrides\n  Person(person, \"Person\")\n  System(system, \"System\")\n  ContainerDb(db, \"Database\", \"SQL\")\n  Rel(person, system, \"Uses\")\n  Rel(system, db, \"Reads\")\n  UpdateElementStyle(system, $shape=\"component\")\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -70,
+      "width": 1148,
+      "height": 494.1214
+    },
+    "rawViewBox": "0 -70 1148 494.1214",
+    "shapes": [
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 252.9464,
+        "width": 216,
+        "height": 71.175,
+        "rx": 32.02875,
+        "ry": 32.02875,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "circle",
+        "cx": 258,
+        "cy": 216.68,
+        "r": 49.68,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 474,
+            "y": 218.175
+          },
+          {
+            "op": "lineTo",
+            "x": 674,
+            "y": 218.175
+          },
+          {
+            "op": "lineTo",
+            "x": 674,
+            "y": 167
+          },
+          {
+            "op": "lineTo",
+            "x": 474,
+            "y": 167
+          },
+          {
+            "op": "lineTo",
+            "x": 474,
+            "y": 218.175
+          },
+          {
+            "op": "lineTo",
+            "x": 466,
+            "y": 218.175
+          },
+          {
+            "op": "lineTo",
+            "x": 682,
+            "y": 218.175
+          },
+          {
+            "op": "lineTo",
+            "x": 682,
+            "y": 167
+          },
+          {
+            "op": "lineTo",
+            "x": 466,
+            "y": 167
+          },
+          {
+            "op": "lineTo",
+            "x": 466,
+            "y": 218.175
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#1168BD",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 782,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 998,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 782,
+            "y": 182.8357771260997
+          },
+          {
+            "op": "lineTo",
+            "x": 782,
+            "y": 249.8465542521994
+          },
+          {
+            "op": "arcTo",
+            "rx": 108,
+            "ry": 15.835777126099707,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 998,
+            "y": 249.8465542521994
+          },
+          {
+            "op": "lineTo",
+            "x": 998,
+            "y": 182.8357771260997
+          }
+        ],
+        "fill": "#438DD5",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 302.4725377762185,
+            "y": 238.1054701325089
+          },
+          {
+            "op": "lineTo",
+            "x": 465.99999999999994,
+            "y": 210.69226455696202
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 682,
+            "y": 200.7058414380638
+          },
+          {
+            "op": "quadTo",
+            "cx": 707,
+            "cy": 204.4643328445748,
+            "x": 782,
+            "y": 208.2228242510858
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      }
+    ],
+    "texts": [
+      {
+        "text": "Person",
+        "lines": [
+          "Person"
+        ],
+        "x": 258,
+        "y": 262.84639999999996,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Person]",
+        "lines": [
+          "[Person]"
+        ],
+        "x": 258,
+        "y": 281.9464,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "System",
+        "lines": [
+          "System"
+        ],
+        "x": 574,
+        "y": 166.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Software System]",
+        "lines": [
+          "[Software System]"
+        ],
+        "x": 574,
+        "y": 186,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Database",
+        "lines": [
+          "Database"
+        ],
+        "x": 890,
+        "y": 203.9869990224829,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Container: SQL]",
+        "lines": [
+          "[Container: SQL]"
+        ],
+        "x": 890,
+        "y": 223.0869990224829,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Uses",
+        "lines": [
+          "Uses"
+        ],
+        "x": 398.7362688881092,
+        "y": 224.39886734473546,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Reads",
+        "lines": [
+          "Reads"
+        ],
+        "x": 750,
+        "y": 204.4643328445748,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Shape overrides",
+        "lines": [
+          "Shape overrides"
+        ],
+        "x": 324,
+        "y": 20,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fill": null,
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      }
+    ]
+  }
+}

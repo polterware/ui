@@ -1,0 +1,299 @@
+{
+  "name": "08-deployment",
+  "source": "C4Deployment\n  title Deployment view\n  Deployment_Node(cloud, \"Cloud\", \"AWS\") {\n    Deployment_Node(node, \"Node\", \"EC2\") {\n      Container(api, \"API\", \"Rust\", \"Serves requests\")\n    }\n  }\n  Deployment_Node(browser, \"Browser\", \"Chrome\") {\n    Container(spa, \"SPA\", \"TypeScript\", \"Runs in the browser\")\n  }\n  Rel(spa, api, \"Calls\")\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -70,
+      "width": 1082,
+      "height": 638.377
+    },
+    "rawViewBox": "0 -70 1082 638.377",
+    "shapes": [
+      {
+        "kind": "rect",
+        "x": 250,
+        "y": 281,
+        "width": 216,
+        "height": 87.377,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#438DD5",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 200,
+        "y": 181,
+        "width": 316,
+        "height": 237.377,
+        "rx": 2.5,
+        "ry": 2.5,
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 124,
+        "width": 416,
+        "height": 344.377,
+        "rx": 2.5,
+        "ry": 2.5,
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 666,
+        "y": 223.99999999999997,
+        "width": 216,
+        "height": 87.377,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#438DD5",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 616,
+        "y": 124,
+        "width": 316,
+        "height": 237.377,
+        "rx": 2.5,
+        "ry": 2.5,
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": []
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 666,
+            "y": 282.4865769230769
+          },
+          {
+            "op": "lineTo",
+            "x": 466,
+            "y": 309.89042307692307
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      }
+    ],
+    "texts": [
+      {
+        "text": "API",
+        "lines": [
+          "API"
+        ],
+        "x": 358,
+        "y": 290.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Container: Rust]",
+        "lines": [
+          "[Container: Rust]"
+        ],
+        "x": 358,
+        "y": 310,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Serves requests",
+        "lines": [
+          "Serves requests"
+        ],
+        "x": 358,
+        "y": 325.075,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Node",
+        "lines": [
+          "Node"
+        ],
+        "x": 358,
+        "y": 189,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[EC2]",
+        "lines": [
+          "[EC2]"
+        ],
+        "x": 358,
+        "y": 212,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Cloud",
+        "lines": [
+          "Cloud"
+        ],
+        "x": 358,
+        "y": 132,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[AWS]",
+        "lines": [
+          "[AWS]"
+        ],
+        "x": 358,
+        "y": 155,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "SPA",
+        "lines": [
+          "SPA"
+        ],
+        "x": 774,
+        "y": 233.89999999999998,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Container: TypeScript]",
+        "lines": [
+          "[Container: TypeScript]"
+        ],
+        "x": 774,
+        "y": 252.99999999999997,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Runs in the browser",
+        "lines": [
+          "Runs in the browser"
+        ],
+        "x": 773.9999999999999,
+        "y": 268.07499999999993,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 11.479999999999999,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Browser",
+        "lines": [
+          "Browser"
+        ],
+        "x": 774,
+        "y": 132,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Chrome]",
+        "lines": [
+          "[Chrome]"
+        ],
+        "x": 774,
+        "y": 155,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Calls",
+        "lines": [
+          "Calls"
+        ],
+        "x": 584,
+        "y": 296.1885,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Deployment view",
+        "lines": [
+          "Deployment view"
+        ],
+        "x": 291,
+        "y": 20,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fill": null,
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      }
+    ]
+  }
+}

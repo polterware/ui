@@ -1,0 +1,273 @@
+{
+  "name": "09-rel-types",
+  "source": "C4Context\n  title Relationship types\n  Person(a, \"A\")\n  System(b, \"B\")\n  System(c, \"C\")\n  Rel_Back(a, b, \"Back\")\n  BiRel(b, c, \"Bi\")\n  Rel_Up(c, a, \"Up\")\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -70,
+      "width": 1148,
+      "height": 494.1214
+    },
+    "rawViewBox": "0 -70 1148 494.1214",
+    "shapes": [
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 252.9464,
+        "width": 216,
+        "height": 71.175,
+        "rx": 32.02875,
+        "ry": 32.02875,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "circle",
+        "cx": 258,
+        "cy": 216.68,
+        "r": 49.68,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 466,
+        "y": 167,
+        "width": 216,
+        "height": 71.175,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#1168BD",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 782,
+        "y": 167,
+        "width": 216,
+        "height": 71.175,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#1168BD",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 301.62763700023334,
+            "y": 239.62772794196698
+          },
+          {
+            "op": "lineTo",
+            "x": 466,
+            "y": 217.2745430379747
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": "url(#arrowend)",
+        "markerEnd": null
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 682,
+            "y": 202.5875
+          },
+          {
+            "op": "quadTo",
+            "cx": 707,
+            "cy": 202.5875,
+            "x": 782,
+            "y": 202.5875
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": "url(#arrowend)",
+        "markerEnd": "url(#arrowhead)"
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 782,
+            "y": 209.93102151898734
+          },
+          {
+            "op": "quadTo",
+            "cx": 661.4791422944782,
+            "cy": 226.32079026060418,
+            "x": 299.9165691779129,
+            "y": 242.71055900222103
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      }
+    ],
+    "texts": [
+      {
+        "text": "A",
+        "lines": [
+          "A"
+        ],
+        "x": 258,
+        "y": 262.84639999999996,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Person]",
+        "lines": [
+          "[Person]"
+        ],
+        "x": 258,
+        "y": 281.9464,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "B",
+        "lines": [
+          "B"
+        ],
+        "x": 574,
+        "y": 176.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Software System]",
+        "lines": [
+          "[Software System]"
+        ],
+        "x": 574,
+        "y": 196,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "C",
+        "lines": [
+          "C"
+        ],
+        "x": 890,
+        "y": 176.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Software System]",
+        "lines": [
+          "[Software System]"
+        ],
+        "x": 890,
+        "y": 196,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Back",
+        "lines": [
+          "Back"
+        ],
+        "x": 398.31381850011667,
+        "y": 228.45113548997085,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Bi",
+        "lines": [
+          "Bi"
+        ],
+        "x": 739,
+        "y": 202.5875,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Up",
+        "lines": [
+          "Up"
+        ],
+        "x": 547.9582845889564,
+        "y": 226.32079026060418,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Relationship types",
+        "lines": [
+          "Relationship types"
+        ],
+        "x": 324,
+        "y": 20,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fill": null,
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      }
+    ]
+  }
+}

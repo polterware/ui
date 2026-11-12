@@ -1,0 +1,175 @@
+{
+  "name": "11-long-labels",
+  "source": "C4Context\n  title Wrapped labels\n  Person(admin, \"An administrator with a long label\")\n  System(app, \"A system with an even longer label than the person has\")\n  Rel(admin, app, \"Uses the system every day\", \"HTTPS\")\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -70,
+      "width": 832,
+      "height": 509.52139999999997
+    },
+    "rawViewBox": "0 -70 832 509.52139999999997",
+    "shapes": [
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 252.94639999999998,
+        "width": 216,
+        "height": 86.575,
+        "rx": 38.232,
+        "ry": 38.232,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "circle",
+        "cx": 258,
+        "cy": 216.67999999999998,
+        "r": 49.68,
+        "fill": "#08427B",
+        "stroke": "#073B6F",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "rect",
+        "x": 466,
+        "y": 167,
+        "width": 216,
+        "height": 101.975,
+        "rx": 12,
+        "ry": 12,
+        "fill": "#1168BD",
+        "stroke": "#3C7FC0",
+        "strokeWidth": 2,
+        "dash": []
+      },
+      {
+        "kind": "path",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 295.034113077658,
+            "y": 249.12680228667452
+          },
+          {
+            "op": "lineTo",
+            "x": 466,
+            "y": 230.04289746835443
+          }
+        ],
+        "fill": "none",
+        "stroke": "#444444",
+        "strokeWidth": 1,
+        "dash": [],
+        "markerStart": null,
+        "markerEnd": "url(#arrowhead)"
+      }
+    ],
+    "texts": [
+      {
+        "text": "An administrator\nwith a long label",
+        "lines": [
+          "An administrator",
+          "with a long label"
+        ],
+        "x": 258,
+        "y": 262.84639999999996,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Person]",
+        "lines": [
+          "[Person]"
+        ],
+        "x": 258,
+        "y": 297.34639999999996,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "A system with an\neven longer label\nthan the person has",
+        "lines": [
+          "A system with an",
+          "even longer label",
+          "than the person has"
+        ],
+        "x": 574,
+        "y": 176.9,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "bold": true,
+        "italic": false
+      },
+      {
+        "text": "[Software System]",
+        "lines": [
+          "[Software System]"
+        ],
+        "x": 574,
+        "y": 226.8,
+        "anchor": "middle",
+        "baseline": "alphabetic",
+        "fill": "#FFFFFF",
+        "fontSize": 10.5,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "Uses the system every day",
+        "lines": [
+          "Uses the system every day"
+        ],
+        "x": 470.517056538829,
+        "y": 239.58484987751447,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      },
+      {
+        "text": "[HTTPS]",
+        "lines": [
+          "[HTTPS]"
+        ],
+        "x": 470.517056538829,
+        "y": 256.58484987751444,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fill": "#444444",
+        "fontSize": 16,
+        "bold": false,
+        "italic": true
+      },
+      {
+        "text": "Wrapped labels",
+        "lines": [
+          "Wrapped labels"
+        ],
+        "x": 166,
+        "y": 20,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fill": null,
+        "fontSize": 16,
+        "bold": false,
+        "italic": false
+      }
+    ]
+  }
+}
