@@ -26,9 +26,6 @@ pub const ACTOR_GLYPH_HEIGHT: f64 = 65.0;
 /// Diameter of the circle that bounds the boundary, control and entity glyphs.
 const ACTOR_GLYPH_DIAMETER: f64 = 44.0;
 
-/// Default line-height advance in fallback text measurement (in em).
-const LINE_INK_EM: f64 = 1.15;
-
 /// What can stop a sequence diagram render.
 #[derive(Clone, Debug, PartialEq)]
 pub enum SequenceRenderError {
@@ -197,8 +194,6 @@ struct Activation {
 struct LoopItem {
     id: String,
     title: Option<String>,
-    wrap: bool,
-    width: Option<f64>,
     height: f64,
     fill: Option<String>,
     startx: Option<f64>,
@@ -213,7 +208,6 @@ struct LoopItem {
 #[derive(Clone, Copy, Debug)]
 struct LoopSection {
     y: f64,
-    height: f64,
 }
 
 /// Internal bounds state ported from `bounds` in `sequenceRenderer.ts`.
@@ -325,19 +319,10 @@ impl BoundsState {
         (left, right)
     }
 
-    fn new_loop(
-        &mut self,
-        id: String,
-        title: Option<String>,
-        wrap: bool,
-        fill: Option<String>,
-        kind: String,
-    ) {
+    fn new_loop(&mut self, id: String, title: Option<String>, fill: Option<String>, kind: String) {
         self.sequence_items.push(LoopItem {
             id,
             title,
-            wrap,
-            width: None,
             height: 0.0,
             fill,
             startx: None,
@@ -358,7 +343,6 @@ impl BoundsState {
         if let Some(loop_item) = self.sequence_items.last_mut() {
             loop_item.sections.push(LoopSection {
                 y: self.vertical_pos,
-                height: 0.0,
             });
             loop_item.section_titles.push(message.to_string());
         }
@@ -490,13 +474,11 @@ pub fn wrap_label(label: &str, max_width: f64, font: &Font, measure: &dyn TextMe
                 completed_lines.push(next_line);
             }
             next_line = word.to_string();
+        } else if next_line.is_empty() {
+            next_line = word.to_string();
         } else {
-            if next_line.is_empty() {
-                next_line = word.to_string();
-            } else {
-                next_line.push(' ');
-                next_line.push_str(word);
-            }
+            next_line.push(' ');
+            next_line.push_str(word);
         }
 
         if index + 1 == words.len() && !next_line.is_empty() {
@@ -704,16 +686,16 @@ fn calculate_actor_margins(
             None => continue,
         };
 
-        if let Some(next_key) = next_actor_key {
-            if let Some(next_actor) = actors.get(&next_key) {
-                let required = message_width + conf.sequence.actor_margin
-                    - actor_width / 2.0
-                    - next_actor.width / 2.0;
-                if let Some(a) = actors.get_mut(actor_key) {
-                    a.margin = required.max(conf.sequence.actor_margin);
-                }
-                continue;
+        if let Some(next_key) = next_actor_key
+            && let Some(next_actor) = actors.get(&next_key)
+        {
+            let required = message_width + conf.sequence.actor_margin
+                - actor_width / 2.0
+                - next_actor.width / 2.0;
+            if let Some(a) = actors.get_mut(actor_key) {
+                a.margin = required.max(conf.sequence.actor_margin);
             }
+            continue;
         }
 
         let required = message_width + conf.sequence.actor_margin - actor_width / 2.0;
@@ -800,21 +782,21 @@ fn calculate_loop_bounds(
                 });
             }
             LineType::AltElse | LineType::ParAnd | LineType::CriticalOption => {
-                if !msg.message.as_str().is_empty() {
-                    if let Some(current) = stack.last() {
-                        loops.insert(
-                            current.id.clone(),
-                            LoopWidth {
-                                width: current.width,
-                            },
-                        );
-                        loops.insert(
-                            msg.id.clone(),
-                            LoopWidth {
-                                width: current.width,
-                            },
-                        );
-                    }
+                if !msg.message.as_str().is_empty()
+                    && let Some(current) = stack.last()
+                {
+                    loops.insert(
+                        current.id.clone(),
+                        LoopWidth {
+                            width: current.width,
+                        },
+                    );
+                    loops.insert(
+                        msg.id.clone(),
+                        LoopWidth {
+                            width: current.width,
+                        },
+                    );
                 }
             }
             LineType::LoopEnd
@@ -1009,7 +991,6 @@ struct InternalMessageModel {
     stopy: f64,
     message: String,
     line_type: LineType,
-    wrap: bool,
     from_bounds: f64,
     to_bounds: f64,
     sequence_index: f64,
@@ -1121,7 +1102,6 @@ fn build_message_model(
         stopy: 0.0,
         message: message_str,
         line_type: msg.line_type,
-        wrap: msg.wrap,
         from_bounds: min_bound,
         to_bounds: max_bound,
         sequence_index: 1.0,
@@ -1195,6 +1175,7 @@ fn bound_message(
 }
 
 /// Port of `adjustCreatedDestroyedData` from `sequenceRenderer.ts`.
+#[allow(clippy::too_many_arguments)] // Mirrors upstream's argument list one for one.
 fn adjust_created_destroyed_data(
     msg: &Message,
     msg_model: &mut InternalMessageModel,
@@ -1283,41 +1264,40 @@ fn adjust_created_destroyed_data(
             actor.stopy = Some(line_start_y - actor.height / 2.0);
             bounds.bump_vertical_pos(actor.height / 2.0);
         }
-    } else if is_destroyed_receiver {
-        if let Some(actor) = actors.get_mut(to_key) {
-            if conf.sequence.mirror_actors {
-                let adj = if actor_types.contains(&actor.actor_type.as_str()) {
-                    ACTOR_TYPE_WIDTH / 2.0 + 3.0
-                } else {
-                    actor.width / 2.0 + 3.0
-                };
-                if actor.x < from_x {
-                    bounds.insert(
-                        msg_model.stopx.unwrap() - adj,
-                        msg_model.starty,
-                        msg_model.startx.unwrap(),
-                        msg_model.stopy + actor.height / 2.0 + conf.sequence.note_margin,
-                        conf.sequence.box_margin,
-                    );
-                    msg_model.stopx = Some(msg_model.stopx.unwrap() + adj);
-                } else {
-                    bounds.insert(
-                        msg_model.startx.unwrap(),
-                        msg_model.starty,
-                        msg_model.stopx.unwrap() + adj,
-                        msg_model.stopy + actor.height / 2.0 + conf.sequence.note_margin,
-                        conf.sequence.box_margin,
-                    );
-                    msg_model.stopx = Some(msg_model.stopx.unwrap() - adj);
-                }
+    } else if is_destroyed_receiver && let Some(actor) = actors.get_mut(to_key) {
+        if conf.sequence.mirror_actors {
+            let adj = if actor_types.contains(&actor.actor_type.as_str()) {
+                ACTOR_TYPE_WIDTH / 2.0 + 3.0
+            } else {
+                actor.width / 2.0 + 3.0
+            };
+            if actor.x < from_x {
+                bounds.insert(
+                    msg_model.stopx.unwrap() - adj,
+                    msg_model.starty,
+                    msg_model.startx.unwrap(),
+                    msg_model.stopy + actor.height / 2.0 + conf.sequence.note_margin,
+                    conf.sequence.box_margin,
+                );
+                msg_model.stopx = Some(msg_model.stopx.unwrap() + adj);
+            } else {
+                bounds.insert(
+                    msg_model.startx.unwrap(),
+                    msg_model.starty,
+                    msg_model.stopx.unwrap() + adj,
+                    msg_model.stopy + actor.height / 2.0 + conf.sequence.note_margin,
+                    conf.sequence.box_margin,
+                );
+                msg_model.stopx = Some(msg_model.stopx.unwrap() - adj);
             }
-            actor.stopy = Some(line_start_y - actor.height / 2.0);
-            bounds.bump_vertical_pos(actor.height / 2.0);
         }
+        actor.stopy = Some(line_start_y - actor.height / 2.0);
+        bounds.bump_vertical_pos(actor.height / 2.0);
     }
 }
 
 /// Port of `addActorRenderingData` from `sequenceRenderer.ts`.
+#[allow(clippy::too_many_arguments)] // Mirrors upstream's argument list one for one.
 fn add_actor_rendering_data(
     actors: &mut HashMap<String, ActorModel>,
     actor_keys: &[String],
@@ -1325,6 +1305,7 @@ fn add_actor_rendering_data(
     created_actors: &[(String, usize)],
     bounds: &mut BoundsState,
     conf: &Config,
+    vertical_pos: f64,
     is_footer: bool,
 ) {
     let mut prev_width: f64 = 0.0;
@@ -1335,20 +1316,20 @@ fn add_actor_rendering_data(
     for actor_key in actor_keys {
         let box_idx = actors.get(actor_key).and_then(|a| a.box_index);
 
-        if let Some(p_box) = prev_box {
-            if prev_box != box_idx {
-                prev_margin += conf.sequence.box_margin + boxes[p_box].margin;
-            }
+        if let Some(p_box) = prev_box
+            && prev_box != box_idx
+        {
+            prev_margin += conf.sequence.box_margin + boxes[p_box].margin;
         }
 
-        if let Some(b_idx) = box_idx {
-            if prev_box != Some(b_idx) {
-                if !is_footer {
-                    boxes[b_idx].x = prev_width + prev_margin;
-                    boxes[b_idx].y = bounds.vertical_pos;
-                }
-                prev_margin += boxes[b_idx].margin;
+        if let Some(b_idx) = box_idx
+            && prev_box != Some(b_idx)
+        {
+            if !is_footer {
+                boxes[b_idx].x = prev_width + prev_margin;
+                boxes[b_idx].y = vertical_pos;
             }
+            prev_margin += boxes[b_idx].margin;
         }
 
         if let Some(actor) = actors.get_mut(actor_key) {
@@ -1371,7 +1352,7 @@ fn add_actor_rendering_data(
 
             bounds.insert(
                 actor.x,
-                bounds.vertical_pos,
+                vertical_pos,
                 actor.x + actor.width,
                 actor.height,
                 conf.sequence.box_margin,
@@ -1524,6 +1505,7 @@ pub fn draw_layout_ast(
         &ast.created_actors,
         &mut bounds,
         &conf,
+        0.0,
         false,
     );
 
@@ -1586,20 +1568,20 @@ pub fn draw_layout_ast(
                 }
             }
             LineType::ActiveEnd => {
-                if let Some(from) = &msg.from {
-                    if let Some(mut act_data) = bounds.end_activation(from) {
-                        if act_data.starty + 18.0 > bounds.vertical_pos {
-                            act_data.starty = bounds.vertical_pos - 6.0;
-                            bounds.vertical_pos += 12.0;
-                        }
-                        bounds.insert(
-                            act_data.startx,
-                            bounds.vertical_pos - 10.0,
-                            act_data.stopx,
-                            bounds.vertical_pos,
-                            conf.sequence.box_margin,
-                        );
+                if let Some(from) = &msg.from
+                    && let Some(mut act_data) = bounds.end_activation(from)
+                {
+                    if act_data.starty + 18.0 > bounds.vertical_pos {
+                        act_data.starty = bounds.vertical_pos - 6.0;
+                        bounds.vertical_pos += 12.0;
                     }
+                    bounds.insert(
+                        act_data.startx,
+                        bounds.vertical_pos - 10.0,
+                        act_data.stopx,
+                        bounds.vertical_pos,
+                        conf.sequence.box_margin,
+                    );
                 }
             }
             LineType::LoopStart
@@ -1631,7 +1613,7 @@ pub fn draw_layout_ast(
                     LineType::BreakStart => "break",
                     _ => "loop",
                 };
-                bounds.new_loop(msg.id.clone(), loop_title, msg.wrap, None, kind.to_string());
+                bounds.new_loop(msg.id.clone(), loop_title, None, kind.to_string());
                 bounds.bump_vertical_pos(height_adjust);
             }
             LineType::ParStart | LineType::ParOverStart => {
@@ -1651,13 +1633,7 @@ pub fn draw_layout_ast(
                         conf.sequence.box_margin + conf.sequence.box_text_margin + total_offset;
                     loop_title = Some(wrapped);
                 }
-                bounds.new_loop(
-                    msg.id.clone(),
-                    loop_title,
-                    msg.wrap,
-                    None,
-                    "par".to_string(),
-                );
+                bounds.new_loop(msg.id.clone(), loop_title, None, "par".to_string());
                 bounds.saved_vertical_pos = bounds.vertical_pos;
                 bounds.bump_vertical_pos(height_adjust);
             }
@@ -1699,14 +1675,15 @@ pub fn draw_layout_ast(
                 } else {
                     "rgba(128, 128, 128, 0.5)".to_string()
                 };
-                bounds.new_loop(msg.id.clone(), None, false, Some(fill), "rect".to_string());
+                bounds.new_loop(msg.id.clone(), None, Some(fill), "rect".to_string());
                 bounds.bump_vertical_pos(conf.sequence.box_margin);
             }
             LineType::RectEnd => {
-                if let Some(mut loop_model) = bounds.end_loop() {
+                if let Some(loop_model) = bounds.end_loop() {
                     let stopy = loop_model.stopy.unwrap_or(bounds.vertical_pos);
                     bounds.bump_vertical_pos(stopy - bounds.vertical_pos);
-                    loop_model.height = (stopy - loop_model.starty).round();
+                    // Upstream never draws a rect through `drawLoop`, so its model keeps the
+                    // `height: 0` `createLoop` gave it.
                     background_rects.push(loop_model.clone());
                     completed_loops.push(loop_model);
                 }
@@ -2463,12 +2440,10 @@ pub fn draw_layout_ast(
                 } else {
                     msg_model.from_bounds + 1.0
                 }
+            } else if is_ltr {
+                msg_model.from_bounds + 1.0
             } else {
-                if is_ltr {
-                    msg_model.from_bounds + 1.0
-                } else {
-                    msg_model.to_bounds - 1.0
-                }
+                msg_model.to_bounds - 1.0
             };
 
             let auto_circle = EllipseShape::new(

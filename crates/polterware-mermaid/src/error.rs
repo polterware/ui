@@ -98,7 +98,6 @@ impl From<crate::diagrams::sequence::SequenceRenderError> for RenderError {
     fn from(error: crate::diagrams::sequence::SequenceRenderError) -> Self {
         match error {
             crate::diagrams::sequence::SequenceRenderError::Parse(error) => Self::Parse(error),
-            crate::diagrams::sequence::SequenceRenderError::Layout(error) => Self::Layout(error),
         }
     }
 }
