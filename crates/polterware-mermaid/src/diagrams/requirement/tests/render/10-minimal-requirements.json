@@ -1,0 +1,81 @@
+{
+  "name": "10-minimal-requirements",
+  "source": "requirementDiagram\n  requirement empty_fields {\n  }\n  requirement id_only {\n    id: only\n  }\n  requirement text_only {\n    text: only text\n  }\n  empty_fields - contains -> id_only\n  id_only - traces -> text_only\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "empty_fields",
+        "x": 90,
+        "y": 39.4,
+        "width": 164,
+        "height": 62.8
+      },
+      {
+        "id": "id_only",
+        "x": 90,
+        "y": 196.79999999999998,
+        "width": 164,
+        "height": 107.2
+      },
+      {
+        "id": "text_only",
+        "x": 90,
+        "y": 376.4,
+        "width": 164,
+        "height": 107.2
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "empty_fields-id_only-0",
+        "points": [
+          {
+            "x": 90,
+            "y": 70.8
+          },
+          {
+            "x": 90,
+            "y": 107
+          },
+          {
+            "x": 90,
+            "y": 143.2
+          }
+        ],
+        "x": 90,
+        "y": 107,
+        "width": 119.19999999999999,
+        "height": 22.4
+      },
+      {
+        "id": "id_only-text_only-1",
+        "points": [
+          {
+            "x": 90,
+            "y": 250.39999999999998
+          },
+          {
+            "x": 90,
+            "y": 286.59999999999997
+          },
+          {
+            "x": 90,
+            "y": 322.79999999999995
+          }
+        ],
+        "x": 90,
+        "y": 286.59999999999997,
+        "width": 100,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 180,
+      "height": 437.99999999999994
+    },
+    "rawViewBox": "0 0 180 437.99999999999994"
+  }
+}

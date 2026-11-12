@@ -15,10 +15,9 @@
 //!
 //! # Where the port stops short of upstream
 //!
-//! * `getData` is the renderer's projection, and this crate neither lays out nor draws, so
-//!   its nodes, edges, `look`, and `config` are not modelled. That is why the
-//!   `requirementDb.spec.ts` case that reads `getData().edges` is not ported; the raw
-//!   relationships are in [`Ast::relationships`].
+//! * `getData` is the renderer's projection: [`Ast::data`] returns its nodes and edges, but
+//!   the `look`, `config` and layout fields it also reads are the renderer's and live in
+//!   [`layout_data`].
 //! * The common database's diagram title is not here: the lexer has a `title` rule but no
 //!   production consumes its token, so it is a parse error upstream as well.
 //! * `sanitizeText` (DOMPurify) is not applied to the accessibility strings; sanitizing
@@ -34,17 +33,22 @@
 //!   Upstream deletes the frontmatter block and comment lines before parsing, while
 //!   [`crate::preprocess`] blanks their lines so spans and editor lines agree; the skip makes
 //!   the two agree.
+//!
+//! The renderer is [`render`], ported from `requirementRenderer.ts` over the shared layout
+//! pipeline; [`layout_data`] is the `getData` projection the renderer consumes.
 
 mod ast;
 mod db;
+mod layout_data;
 mod lexer;
 mod parser;
+pub mod render;
 #[cfg(test)]
 mod tests;
 
 pub use ast::{
-    Ast, Direction, Element, Relation, RelationshipType, Requirement, RequirementClass,
-    RequirementType, RiskLevel, VerifyType,
+    Ast, Data, Direction, Element, ElementData, LayoutEdge, Node, Relation, RelationshipType,
+    Requirement, RequirementClass, RequirementData, RequirementType, RiskLevel, VerifyType,
 };
 
 use crate::error::ParseError;

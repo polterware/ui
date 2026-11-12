@@ -1,0 +1,81 @@
+{
+  "name": "06-direction-lr",
+  "source": "requirementDiagram\n  direction LR\n  requirement parent {\n    id: p1\n    text: parent requirement\n  }\n  requirement child_one {\n    id: c1\n    text: first child\n  }\n  requirement child_two {\n    id: c2\n    text: second child\n  }\n  parent - contains -> child_one\n  parent - contains -> child_two\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "parent",
+        "x": 133.2,
+        "y": 164.59999999999997,
+        "width": 250.39999999999998,
+        "height": 131.59999999999997
+      },
+      {
+        "id": "child_one",
+        "x": 524,
+        "y": 73.79999999999998,
+        "width": 183.2,
+        "height": 131.59999999999997
+      },
+      {
+        "id": "child_two",
+        "x": 524,
+        "y": 255.39999999999995,
+        "width": 192.79999999999998,
+        "height": 131.59999999999997
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "parent-child_one-0",
+        "points": [
+          {
+            "x": 258.4,
+            "y": 110.4142993326978
+          },
+          {
+            "x": 343,
+            "y": 73.79999999999998
+          },
+          {
+            "x": 432.4,
+            "y": 73.79999999999998
+          }
+        ],
+        "x": 343,
+        "y": 73.79999999999998,
+        "width": 119.19999999999999,
+        "height": 22.4
+      },
+      {
+        "id": "parent-child_two-1",
+        "points": [
+          {
+            "x": 258.4,
+            "y": 218.78570066730214
+          },
+          {
+            "x": 343,
+            "y": 255.39999999999995
+          },
+          {
+            "x": 427.6,
+            "y": 255.39999999999995
+          }
+        ],
+        "x": 343,
+        "y": 255.39999999999995,
+        "width": 119.19999999999999,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 628.4,
+      "height": 329.19999999999993
+    },
+    "rawViewBox": "0 0 628.4 329.19999999999993"
+  }
+}

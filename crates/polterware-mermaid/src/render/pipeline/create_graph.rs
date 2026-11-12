@@ -86,6 +86,9 @@ pub fn to_shape_node(node: &Node) -> shapes::Node {
         })
         .collect();
     s.padding = node.padding.unwrap_or(0.0);
+    s.requirement = node.requirement.clone();
+    s.element = node.element.clone();
+    s.css_styles = node.css_styles.clone().unwrap_or_default();
     s.rx = node.rx.unwrap_or(0.0);
     s.ry = node.ry.unwrap_or(0.0);
     s.min_width = node.min_width;
@@ -241,7 +244,7 @@ pub fn create_graph_with_elements(
                     lbl,
                     &TextOptions {
                         width: f64::INFINITY,
-                        markdown: false,
+                        markdown: edge.label_type.as_deref() == Some("markdown"),
                         min_width: 0.0,
                     },
                     &font,

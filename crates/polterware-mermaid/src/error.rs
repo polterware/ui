@@ -142,3 +142,24 @@ impl From<crate::diagrams::sankey::render::SankeyRenderError> for RenderError {
         }
     }
 }
+
+impl From<crate::diagrams::info::render::InfoRenderError> for RenderError {
+    fn from(error: crate::diagrams::info::render::InfoRenderError) -> Self {
+        match error {
+            crate::diagrams::info::render::InfoRenderError::Parse(error) => Self::Parse(error),
+        }
+    }
+}
+
+impl From<crate::diagrams::requirement::render::RequirementRenderError> for RenderError {
+    fn from(error: crate::diagrams::requirement::render::RequirementRenderError) -> Self {
+        match error {
+            crate::diagrams::requirement::render::RequirementRenderError::Parse(error) => {
+                Self::Parse(error)
+            }
+            crate::diagrams::requirement::render::RequirementRenderError::Layout(error) => {
+                Self::Layout(error)
+            }
+        }
+    }
+}

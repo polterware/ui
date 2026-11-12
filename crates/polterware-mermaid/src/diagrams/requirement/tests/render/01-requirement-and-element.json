@@ -1,0 +1,53 @@
+{
+  "name": "01-requirement-and-element",
+  "source": "requirementDiagram\n  requirement test_req {\n    id: 1\n    text: the test text.\n    risk: high\n    verifymethod: test\n  }\n  element test_entity {\n    type: simulation\n  }\n  test_entity - satisfies -> test_req\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "test_req",
+        "x": 114,
+        "y": 277.8,
+        "width": 212,
+        "height": 180.4
+      },
+      {
+        "id": "test_entity",
+        "x": 114,
+        "y": 61.6,
+        "width": 173.6,
+        "height": 107.2
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "test_entity-test_req-0",
+        "points": [
+          {
+            "x": 114,
+            "y": 115.2
+          },
+          {
+            "x": 114,
+            "y": 151.39999999999998
+          },
+          {
+            "x": 114,
+            "y": 187.60000000000002
+          }
+        ],
+        "x": 114,
+        "y": 151.39999999999998,
+        "width": 128.8,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 228,
+      "height": 376
+    },
+    "rawViewBox": "0 0 228 376"
+  }
+}

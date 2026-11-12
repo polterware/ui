@@ -80,6 +80,14 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::sankey::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Requirement => {
+            let scene = diagrams::requirement::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
+        DiagramKind::Info => {
+            let scene = diagrams::info::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }
