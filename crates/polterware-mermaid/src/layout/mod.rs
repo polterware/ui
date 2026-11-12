@@ -6,3 +6,4 @@ pub mod graphlib;
 pub mod hierarchy;
 pub mod layout_base;
 pub mod sankey;
+pub mod venn;

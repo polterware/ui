@@ -1,0 +1,438 @@
+{
+  "name": "02-three-set-union",
+  "source": "%%{init: {\"venn\": {\"theme\": \"default\", \"height\": 451}}}%%\nvenn-beta\n  title Team skills\n  set Frontend\n  set Backend\n  set Design\n  union Frontend, Backend, Design[\"Everyone\"]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 451
+    },
+    "rawViewBox": "0 0 800 451",
+    "title": {
+      "text": "Team skills",
+      "x": 400,
+      "y": 16,
+      "fontSize": 16,
+      "fill": "#333",
+      "anchor": "middle",
+      "baseline": "middle"
+    },
+    "rootTransform": {
+      "x": 0,
+      "y": 24
+    },
+    "areas": [
+      {
+        "sets": [
+          "Frontend"
+        ],
+        "className": "venn-area venn-circle venn-set-0",
+        "path": {
+          "d": "M 318.95659631431806 283.684878053281 \nm -128.31512194671893 0 \na 128.31512194671893 128.31512194671893 0 1 0 256.63024389343786 0 \na 128.31512194671893 128.31512194671893 0 1 0 -256.63024389343786 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 318.95659631431806,
+              "y": 283.684878053281
+            },
+            {
+              "op": "moveTo",
+              "x": 190.64147436759913,
+              "y": 283.684878053281
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 447.271718261037,
+              "y": 283.684878053281
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 190.64147436759913,
+              "y": 283.684878053281
+            }
+          ],
+          "fill": "hsl(240, 100%, 66.2745098039%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(240, 100%, 66.2745098039%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "Frontend",
+          "x": 275,
+          "y": 308,
+          "fontSize": 24,
+          "fill": "hsl(240, 100%, 36.2745098039%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Frontend",
+              "baseline": 316.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Backend"
+        ],
+        "className": "venn-area venn-circle venn-set-1",
+        "path": {
+          "d": "M 481.04340368568194 283.684878053281 \nm -128.31512194671893 0 \na 128.31512194671893 128.31512194671893 0 1 0 256.63024389343786 0 \na 128.31512194671893 128.31512194671893 0 1 0 -256.63024389343786 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 481.04340368568194,
+              "y": 283.684878053281
+            },
+            {
+              "op": "moveTo",
+              "x": 352.728281738963,
+              "y": 283.684878053281
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 609.3585256324009,
+              "y": 283.684878053281
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 352.728281738963,
+              "y": 283.684878053281
+            }
+          ],
+          "fill": "hsl(60, 100%, 63.5294117647%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(60, 100%, 63.5294117647%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "Backend",
+          "x": 524,
+          "y": 308,
+          "fontSize": 24,
+          "fill": "hsl(60, 100%, 33.5294117647%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Backend",
+              "baseline": 316.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Design"
+        ],
+        "className": "venn-area venn-circle venn-set-2",
+        "path": {
+          "d": "M 399.9989621863896 143.31512194671893 \nm -128.31512194671893 0 \na 128.31512194671893 128.31512194671893 0 1 0 256.63024389343786 0 \na 128.31512194671893 128.31512194671893 0 1 0 -256.63024389343786 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 399.9989621863896,
+              "y": 143.31512194671893
+            },
+            {
+              "op": "moveTo",
+              "x": 271.68384023967064,
+              "y": 143.31512194671893
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 528.3140841331085,
+              "y": 143.31512194671893
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 271.68384023967064,
+              "y": 143.31512194671893
+            }
+          ],
+          "fill": "hsl(80, 100%, 56.2745098039%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(80, 100%, 56.2745098039%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "Design",
+          "x": 400,
+          "y": 93,
+          "fontSize": 24,
+          "fill": "hsl(80, 100%, 26.2745098039%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Design",
+              "baseline": 101.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Backend",
+          "Design",
+          "Frontend"
+        ],
+        "className": "venn-area venn-intersection",
+        "path": {
+          "d": "M 354.3671689655828 263.2422246702271 \nA 128.31512194671893 128.31512194671893 0 0 1 400 184.20253168348057 \nA 128.31512194671893 128.31512194671893 0 0 1 445.63271095214986 263.24148057477373 \nA 128.31512194671893 128.31512194671893 0 0 1 354.3671689655828 263.2422246702271",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 354.3671689655828,
+              "y": 263.2422246702271
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 400,
+              "y": 184.20253168348057
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 445.63271095214986,
+              "y": 263.24148057477373
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 354.3671689655828,
+              "y": 263.2422246702271
+            }
+          ],
+          "fill": "transparent",
+          "fillOpacity": 0,
+          "stroke": null,
+          "strokeWidth": null
+        },
+        "text": {
+          "content": "Everyone",
+          "x": 399,
+          "y": 236,
+          "fontSize": 24,
+          "fill": "#333",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Everyone",
+              "baseline": 244.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Backend",
+          "Design"
+        ],
+        "className": "venn-area venn-intersection",
+        "path": {
+          "d": "M 354.3671689655828 263.2422246702271 \nA 128.31512194671893 128.31512194671893 0 0 1 526.6751969064887 163.75777532977287 \nA 128.31512194671893 128.31512194671893 0 0 1 354.3671689655828 263.2422246702271",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 354.3671689655828,
+              "y": 263.2422246702271
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 526.6751969064887,
+              "y": 163.75777532977287
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 354.3671689655828,
+              "y": 263.2422246702271
+            }
+          ],
+          "fill": "transparent",
+          "fillOpacity": 0,
+          "stroke": null,
+          "strokeWidth": null
+        },
+        "text": {
+          "content": "",
+          "x": 466,
+          "y": 198,
+          "fontSize": 24,
+          "fill": "#333",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "",
+              "baseline": 206.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Backend",
+          "Frontend"
+        ],
+        "className": "venn-area venn-intersection",
+        "path": {
+          "d": "M 400 383.16722442308145 \nA 128.31512194671893 128.31512194671893 0 0 1 400 184.20253168348057 \nA 128.31512194671893 128.31512194671893 0 0 1 400 383.16722442308145",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 400,
+              "y": 383.16722442308145
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 400,
+              "y": 184.20253168348057
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 400,
+              "y": 383.16722442308145
+            }
+          ],
+          "fill": "transparent",
+          "fillOpacity": 0,
+          "stroke": null,
+          "strokeWidth": null
+        },
+        "text": {
+          "content": "",
+          "x": 399,
+          "y": 313,
+          "fontSize": 24,
+          "fill": "#333",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "",
+              "baseline": 321.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Design",
+          "Frontend"
+        ],
+        "className": "venn-area venn-intersection",
+        "path": {
+          "d": "M 273.3228475485578 163.7585194252262 \nA 128.31512194671893 128.31512194671893 0 0 1 445.63271095214986 263.24148057477373 \nA 128.31512194671893 128.31512194671893 0 0 1 273.3228475485578 163.7585194252262",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 273.3228475485578,
+              "y": 163.7585194252262
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 445.63271095214986,
+              "y": 263.24148057477373
+            },
+            {
+              "op": "arcTo",
+              "rx": 128.31512194671893,
+              "ry": 128.31512194671893,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 273.3228475485578,
+              "y": 163.7585194252262
+            }
+          ],
+          "fill": "transparent",
+          "fillOpacity": 0,
+          "stroke": null,
+          "strokeWidth": null
+        },
+        "text": {
+          "content": "",
+          "x": 333,
+          "y": 198,
+          "fontSize": 24,
+          "fill": "#333",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "",
+              "baseline": 206.4
+            }
+          ]
+        }
+      }
+    ],
+    "textNodes": [],
+    "debug": null
+  }
+}

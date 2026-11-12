@@ -1,0 +1,89 @@
+{
+  "name": "08-zero-size-set",
+  "source": "%%{init: {\"venn\": {\"theme\": \"default\", \"height\": 451}}}%%\nvenn-beta\n  title Empty set\n  set Empty: 0\n  set Full: 20\n  union Empty, Full[\"Overlap\"]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 451
+    },
+    "rawViewBox": "0 0 800 451",
+    "title": {
+      "text": "Empty set",
+      "x": 400,
+      "y": 16,
+      "fontSize": 16,
+      "fill": "#333",
+      "anchor": "middle",
+      "baseline": "middle"
+    },
+    "rootTransform": {
+      "x": 0,
+      "y": 24
+    },
+    "areas": [
+      {
+        "sets": [
+          "Full"
+        ],
+        "className": "venn-area venn-circle venn-set-0",
+        "path": {
+          "d": "M 400 213.5 \nm -198.50000000000003 0 \na 198.50000000000003 198.50000000000003 0 1 0 397.00000000000006 0 \na 198.50000000000003 198.50000000000003 0 1 0 -397.00000000000006 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 400,
+              "y": 213.5
+            },
+            {
+              "op": "moveTo",
+              "x": 201.49999999999997,
+              "y": 213.5
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.50000000000003,
+              "ry": 198.50000000000003,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 598.5,
+              "y": 213.5
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.50000000000003,
+              "ry": 198.50000000000003,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 201.49999999999994,
+              "y": 213.5
+            }
+          ],
+          "fill": "hsl(240, 100%, 66.2745098039%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(240, 100%, 66.2745098039%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "Full",
+          "x": 400,
+          "y": 213,
+          "fontSize": 24,
+          "fill": "hsl(240, 100%, 36.2745098039%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Full",
+              "baseline": 221.4
+            }
+          ]
+        }
+      }
+    ],
+    "textNodes": [],
+    "debug": null
+  }
+}

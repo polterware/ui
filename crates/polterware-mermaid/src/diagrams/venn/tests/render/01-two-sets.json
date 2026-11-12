@@ -1,0 +1,203 @@
+{
+  "name": "01-two-sets",
+  "source": "%%{init: {\"venn\": {\"theme\": \"default\", \"height\": 451}}}%%\nvenn-beta\n  title Pet preferences\n  set Dogs\n  set Cats\n  union Dogs, Cats[\"Both\"]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 451
+    },
+    "rawViewBox": "0 0 800 451",
+    "title": {
+      "text": "Pet preferences",
+      "x": 400,
+      "y": 16,
+      "fontSize": 16,
+      "fill": "#333",
+      "anchor": "middle",
+      "baseline": "middle"
+    },
+    "rootTransform": {
+      "x": 0,
+      "y": 24
+    },
+    "areas": [
+      {
+        "sets": [
+          "Dogs"
+        ],
+        "className": "venn-area venn-circle venn-set-0",
+        "path": {
+          "d": "M 274.0111380962659 213.49999999999997 \nm -198.49999999999997 0 \na 198.49999999999997 198.49999999999997 0 1 0 396.99999999999994 0 \na 198.49999999999997 198.49999999999997 0 1 0 -396.99999999999994 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 274.0111380962659,
+              "y": 213.49999999999997
+            },
+            {
+              "op": "moveTo",
+              "x": 75.51113809626591,
+              "y": 213.49999999999997
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.49999999999997,
+              "ry": 198.49999999999997,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 472.5111380962659,
+              "y": 213.49999999999997
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.49999999999997,
+              "ry": 198.49999999999997,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 75.51113809626594,
+              "y": 213.49999999999997
+            }
+          ],
+          "fill": "hsl(240, 100%, 66.2745098039%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(240, 100%, 66.2745098039%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "Dogs",
+          "x": 201,
+          "y": 213,
+          "fontSize": 24,
+          "fill": "hsl(240, 100%, 36.2745098039%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Dogs",
+              "baseline": 221.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Cats"
+        ],
+        "className": "venn-area venn-circle venn-set-1",
+        "path": {
+          "d": "M 525.988861903734 213.50000000000003 \nm -198.49999999999997 0 \na 198.49999999999997 198.49999999999997 0 1 0 396.99999999999994 0 \na 198.49999999999997 198.49999999999997 0 1 0 -396.99999999999994 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 525.988861903734,
+              "y": 213.50000000000003
+            },
+            {
+              "op": "moveTo",
+              "x": 327.488861903734,
+              "y": 213.50000000000003
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.49999999999997,
+              "ry": 198.49999999999997,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 724.488861903734,
+              "y": 213.50000000000003
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.49999999999997,
+              "ry": 198.49999999999997,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 327.48886190373406,
+              "y": 213.50000000000003
+            }
+          ],
+          "fill": "hsl(60, 100%, 63.5294117647%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(60, 100%, 63.5294117647%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "Cats",
+          "x": 598,
+          "y": 213,
+          "fontSize": 24,
+          "fill": "hsl(60, 100%, 33.5294117647%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Cats",
+              "baseline": 221.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Cats",
+          "Dogs"
+        ],
+        "className": "venn-area venn-intersection",
+        "path": {
+          "d": "M 399.9999999999999 366.8918403181923 \nA 198.49999999999997 198.49999999999997 0 0 1 400 60.10815968180768 \nA 198.49999999999997 198.49999999999997 0 0 1 399.9999999999999 366.8918403181923",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 399.9999999999999,
+              "y": 366.8918403181923
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.49999999999997,
+              "ry": 198.49999999999997,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 400,
+              "y": 60.10815968180768
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.49999999999997,
+              "ry": 198.49999999999997,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 399.9999999999999,
+              "y": 366.8918403181923
+            }
+          ],
+          "fill": "transparent",
+          "fillOpacity": 0,
+          "stroke": null,
+          "strokeWidth": null
+        },
+        "text": {
+          "content": "Both",
+          "x": 399,
+          "y": 213,
+          "fontSize": 24,
+          "fill": "#333",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Both",
+              "baseline": 221.4
+            }
+          ]
+        }
+      }
+    ],
+    "textNodes": [],
+    "debug": null
+  }
+}

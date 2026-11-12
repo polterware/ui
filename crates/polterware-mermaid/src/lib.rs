@@ -124,6 +124,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::packet::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Venn => {
+            let scene = diagrams::venn::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }
