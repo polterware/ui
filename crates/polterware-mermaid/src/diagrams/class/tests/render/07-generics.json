@@ -1,0 +1,53 @@
+{
+  "name": "07-generics",
+  "source": "classDiagram\n  class Box~T~ {\n    +T value\n    +get() T\n  }\n  class List~T~\n  Box~T~ <|-- List~T~\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Box",
+        "x": 82.4,
+        "y": 71.6,
+        "width": 148.8,
+        "height": 127.2
+      },
+      {
+        "id": "List",
+        "x": 82.4,
+        "y": 224.39999999999998,
+        "width": 91.2,
+        "height": 78.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_Box_List_1",
+        "points": [
+          {
+            "x": 82.4,
+            "y": 135.2
+          },
+          {
+            "x": 82.4,
+            "y": 160.2
+          },
+          {
+            "x": 82.4,
+            "y": 185.2
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": -7.105427357601002e-15,
+      "width": 164.8,
+      "height": 271.6
+    },
+    "rawViewBox": "0 -7.105427357601002e-15 164.8 271.6"
+  }
+}

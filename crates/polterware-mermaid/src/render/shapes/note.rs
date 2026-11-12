@@ -5,12 +5,55 @@
 //! the label group is centered on both axes; the rect carries the `basic label-container
 //! outer-path` classes and the label `label noteLabel`, which the scene keeps on the groups
 //! it can (rects have no class of their own).
-use super::{IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, prepare};
-use crate::scene::{Color, Item, PathStyle, Point, Rect, RectShape, Size, SourceRef, Transform};
+use super::{IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, get_node_classes};
+use crate::measure::Font;
+use crate::render::labels::{LabelOptions, create_label};
+use crate::scene::{
+    Color, Group, Item, NORMAL_WEIGHT, PathStyle, Point, Rect, RectShape, Size, SourceRef,
+    Transform,
+};
 
 pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeError> {
     let mut node = node.clone();
-    let (mut group, mut label, text_size) = prepare(&node, ctx)?;
+    let source = SourceRef::node(node.id.clone());
+    let mut group = Group::new()
+        .with_class(get_node_classes(&node, None))
+        .with_source(source.clone());
+    let font_size = ctx
+        .theme
+        .color("fontSize")
+        .and_then(|s| s.trim_end_matches("px").parse::<f64>().ok())
+        .or_else(|| ctx.theme.number("fontSize"))
+        .unwrap_or(12.0);
+    let font_family = ctx.theme.color("fontFamily").unwrap_or("Arial").to_string();
+    let font = Font {
+        family: font_family,
+        size: font_size,
+        weight: NORMAL_WEIGHT,
+        italic: false,
+    };
+    // `labelHelper`: markdown notes wrap at the explicit width, the node's wrapping width,
+    // or the diagram's `wrappingWidth` (which the layout data copies onto the note).
+    let width = node.width.or(node.wrapping_width).unwrap_or(f64::INFINITY);
+    let mut label = create_label(
+        &LabelOptions {
+            text: node.label.clone(),
+            font,
+            markdown: node.label_type.as_deref() == Some("markdown"),
+            width,
+            centered: false,
+            class: "label".into(),
+            source: Some(source.clone()),
+        },
+        ctx.measure,
+    )
+    .map_err(|error| ShapeError {
+        message: error.to_string(),
+    })?;
+    let text_size = match label.items.first() {
+        Some(Item::Text(text)) => text.size,
+        _ => Size::ZERO,
+    };
     label.class = Some("label noteLabel".to_string());
     label.transform = Transform::translate(-text_size.width / 2.0, -text_size.height / 2.0);
 

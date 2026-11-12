@@ -1,0 +1,53 @@
+{
+  "name": "02-two-classes-members",
+  "source": "classDiagram\n  class Animal {\n    +String name\n    +int age\n    +eat()\n  }\n  class Duck {\n    +swim()\n  }\n  Animal <|-- Duck\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Animal",
+        "x": 92,
+        "y": 82.29999999999998,
+        "width": 168,
+        "height": 148.59999999999997
+      },
+      {
+        "id": "Duck",
+        "x": 92,
+        "y": 264,
+        "width": 110.4,
+        "height": 114.8
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_Animal_Duck_1",
+        "points": [
+          {
+            "x": 92,
+            "y": 156.59999999999997
+          },
+          {
+            "x": 92,
+            "y": 181.59999999999997
+          },
+          {
+            "x": 92,
+            "y": 206.6
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 184,
+      "height": 329.4
+    },
+    "rawViewBox": "0 0 184 329.4"
+  }
+}
