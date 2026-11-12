@@ -1,0 +1,26 @@
+{
+  "name": "08-no-content",
+  "source": "timeline\n",
+  "expected": {
+    "viewBox": {
+      "x": 100,
+      "y": 50,
+      "width": 400,
+      "height": 100
+    },
+    "rawViewBox": "100 50 400 100",
+    "nodes": [],
+    "lines": [
+      {
+        "x1": 150,
+        "y1": 100,
+        "x2": 450,
+        "y2": 100,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": []
+      }
+    ],
+    "title": null
+  }
+}

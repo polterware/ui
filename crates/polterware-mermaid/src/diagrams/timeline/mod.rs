@@ -26,16 +26,19 @@
 //! * Leading blank lines are skipped before the header. Upstream's preprocessing deletes the
 //!   frontmatter and directive lines, while [`crate::preprocess`] keeps them as empty lines so
 //!   spans keep their line numbers; skipping them is what makes a frontmatter diagram parse.
-//! * Nothing here lays out or draws the timeline; `timelineRenderer.ts`,
-//!   `timelineRendererVertical.ts`, `svgDraw.js`, and `styles.js` are out of scope.
 //!
-//! No app consumes this yet: it replaces the placeholder `Ast`/`parse`, and
-//! `Diagram::Timeline(Ast)` keeps its variant, so no app breaks.
+//! The renderer is [`render`], ported from `timelineRenderer.ts` and
+//! `timelineRendererVertical.ts` (with `svgDraw.js` and `styles.js`) and drawing directly with
+//! d3 (no unified pipeline), as upstream does; it picks the `LR` or `TD` layout from
+//! `getDirection()`.
+//!
+//! No app consumes this yet: `Diagram::Timeline(Ast)` keeps its variant, so no app breaks.
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 #[cfg(test)]
 mod tests;
 

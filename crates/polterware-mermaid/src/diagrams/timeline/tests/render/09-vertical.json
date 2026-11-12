@@ -1,0 +1,787 @@
+{
+  "name": "09-vertical",
+  "source": "timeline TD\n    title Vertical history\n    2002 : LinkedIn\n    2004 : Facebook : Google\n    2005 : YouTube\n    2006 : Twitter\n",
+  "expected": {
+    "viewBox": {
+      "x": 95,
+      "y": -32,
+      "width": 745,
+      "height": 505.40000000000003
+    },
+    "rawViewBox": "95 -32 745 505.40000000000003",
+    "nodes": [
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 50,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "2002"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 50,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 116.6,
+            "y": 2.5,
+            "width": 76.8,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "LinkedIn"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 154.4,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "2004"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 154.4,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 116.6,
+            "y": 2.5,
+            "width": 76.8,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "Facebook"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 196.60000000000002,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 126.2,
+            "y": 2.5,
+            "width": 57.599999999999994,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "Google"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 258.8,
+        "node": {
+          "section": 1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(80, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(260, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "2005"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 258.8,
+        "node": {
+          "section": 1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(80, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(260, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 121.4,
+            "y": 2.5,
+            "width": 67.2,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "YouTube"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 363.20000000000005,
+        "node": {
+          "section": 2,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(270, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(90, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "2006"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 363.20000000000005,
+        "node": {
+          "section": 2,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(270, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(90, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 121.4,
+            "y": 2.5,
+            "width": 67.2,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "Twitter"
+            ]
+          }
+        }
+      }
+    ],
+    "lines": [
+      {
+        "x1": 430,
+        "y1": 18,
+        "x2": 430,
+        "y2": 423.40000000000003,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": []
+      },
+      {
+        "x1": 430,
+        "y1": 66.1,
+        "x2": 480,
+        "y2": 66.1,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 170.5,
+        "x2": 480,
+        "y2": 170.5,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 212.70000000000002,
+        "x2": 480,
+        "y2": 212.70000000000002,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 274.90000000000003,
+        "x2": 480,
+        "y2": 274.90000000000003,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 379.30000000000007,
+        "x2": 480,
+        "y2": 379.30000000000007,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      }
+    ],
+    "title": {
+      "text": "Vertical history",
+      "x": 145,
+      "y": 20,
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "fill": "#333"
+    }
+  }
+}

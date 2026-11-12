@@ -1,0 +1,864 @@
+{
+  "name": "10-vertical-sections",
+  "source": "timeline TD\n    title Vertical sections\n    section Founded\n      2010 : Incorporated\n      2011 : First office\n    section Growth\n      2015 : Series A : Second market : Third market\n",
+  "expected": {
+    "viewBox": {
+      "x": 95,
+      "y": -32,
+      "width": 745,
+      "height": 614.2
+    },
+    "rawViewBox": "95 -32 745 614.2",
+    "nodes": [
+      {
+        "kind": "section",
+        "x": 200,
+        "y": 50,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 585,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 590,
+                "cy": 0,
+                "x": 590,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 590,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 590,
+            "y2": 32.2,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 261.4,
+            "y": 2.5,
+            "width": 67.2,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "Founded"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 102.2,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "2010"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 102.2,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 97.4,
+            "y": 2.5,
+            "width": 115.19999999999999,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "Incorporated"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 248.8,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "2011"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 248.8,
+        "node": {
+          "section": -1,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(60, 100%, 86.2745098039%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 87.8,
+            "y": 2.5,
+            "width": 134.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "#ffffff",
+            "lines": [
+              "First   office"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "section",
+        "x": 200,
+        "y": 335.40000000000003,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 585,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 590,
+                "cy": 0,
+                "x": 590,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 590,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 590,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 266.2,
+            "y": 2.5,
+            "width": 57.599999999999994,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "Growth"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "task",
+        "x": 200,
+        "y": 387.6,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 205,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 210,
+                "cy": 0,
+                "x": 210,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 210,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 210,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 85.8,
+            "y": 2.5,
+            "width": 38.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "2015"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 387.6,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 107,
+            "y": 2.5,
+            "width": 96,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "Series   A"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 429.8,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 83,
+            "y": 2.5,
+            "width": 144,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "Second   market"
+            ]
+          }
+        }
+      },
+      {
+        "kind": "event",
+        "x": 480,
+        "y": 472,
+        "node": {
+          "section": 0,
+          "path": {
+            "commands": [
+              {
+                "op": "moveTo",
+                "x": 0,
+                "y": 27.200000000000003
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 5
+              },
+              {
+                "op": "quadTo",
+                "cx": 0,
+                "cy": 0,
+                "x": 5,
+                "y": 0
+              },
+              {
+                "op": "lineTo",
+                "x": 305,
+                "y": 0
+              },
+              {
+                "op": "quadTo",
+                "cx": 310,
+                "cy": 0,
+                "x": 310,
+                "y": 5
+              },
+              {
+                "op": "lineTo",
+                "x": 310,
+                "y": 32.2
+              },
+              {
+                "op": "lineTo",
+                "x": 0,
+                "y": 32.2
+              },
+              {
+                "op": "close"
+              }
+            ],
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "stroke": null,
+            "strokeWidth": null
+          },
+          "line": {
+            "x1": 0,
+            "y1": 32.2,
+            "x2": 310,
+            "y2": 32.2,
+            "stroke": "hsl(240, 100%, 83.5294117647%)",
+            "strokeWidth": 3
+          },
+          "text": {
+            "x": 87.8,
+            "y": 2.5,
+            "width": 134.4,
+            "height": 18.4,
+            "fontSize": 16,
+            "anchor": "middle",
+            "fill": "black",
+            "lines": [
+              "Third   market"
+            ]
+          }
+        }
+      }
+    ],
+    "lines": [
+      {
+        "x1": 430,
+        "y1": 18,
+        "x2": 430,
+        "y2": 532.2,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": []
+      },
+      {
+        "x1": 430,
+        "y1": 118.30000000000001,
+        "x2": 480,
+        "y2": 118.30000000000001,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 264.90000000000003,
+        "x2": 480,
+        "y2": 264.90000000000003,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 403.70000000000005,
+        "x2": 480,
+        "y2": 403.70000000000005,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 445.90000000000003,
+        "x2": 480,
+        "y2": 445.90000000000003,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      },
+      {
+        "x1": 430,
+        "y1": 488.1,
+        "x2": 480,
+        "y2": 488.1,
+        "stroke": "black",
+        "strokeWidth": 2,
+        "dash": [
+          5,
+          5
+        ]
+      }
+    ],
+    "title": {
+      "text": "Vertical sections",
+      "x": 145,
+      "y": 20,
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "fill": "#333"
+    }
+  }
+}
