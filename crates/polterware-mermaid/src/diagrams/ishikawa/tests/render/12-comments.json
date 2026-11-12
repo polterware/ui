@@ -1,6 +1,6 @@
 {
   "name": "12-comments",
-  "source": "ishikawa\n  Traffic drop\n    Broken tracking\n    Lost rankings\n  %% a trailing comment is allowed\n",
+  "source": "ishikawa\n  %% a leading comment is allowed\n  Traffic drop\n    Broken tracking\n    Lost rankings\n  %% a trailing comment is allowed\n",
   "expected": {
     "viewBox": {
       "x": -138.95865504800327,

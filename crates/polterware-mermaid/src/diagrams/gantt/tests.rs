@@ -1087,9 +1087,8 @@ fn reports_task_data_errors_with_a_span() {
 }
 
 #[test]
-fn skips_the_blank_lines_preprocess_leaves_behind() {
-    // `preprocess` blanks removed frontmatter and directive lines instead of deleting them,
-    // so the header can arrive after empty lines.
+fn skips_leading_blank_lines() {
+    // `preprocess` trims them, but a body handed to the parser directly may carry them.
     let ast = ast("\n\n\ngantt\ndateFormat YYYY-MM-DD\ntask :t1, 2020-01-01, 2d");
     assert_eq!(ast.date_format, "YYYY-MM-DD");
     assert_eq!(ast.tasks.len(), 1);

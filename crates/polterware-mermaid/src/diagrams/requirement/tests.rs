@@ -696,9 +696,8 @@ mod port_specific {
     }
 
     #[test]
-    fn skips_the_blank_lines_preprocess_leaves_behind() {
-        // `preprocess` blanks removed frontmatter and directive lines instead of deleting
-        // them, so the header can arrive after empty lines.
+    fn skips_leading_blank_lines() {
+        // `preprocess` trims them, but a body handed to the parser directly may carry them.
         let ast = ast("\n\n\nrequirementDiagram\nrequirement r {\n}\n");
         assert!(ast.requirement("r").is_some());
     }

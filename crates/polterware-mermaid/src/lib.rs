@@ -33,7 +33,13 @@ pub fn parse(text: &str) -> Result<Diagram, ParseError> {
     let source = preprocess::preprocess(text);
     let kind = diagrams::detect(&source.body)
         .ok_or_else(|| ParseError::new("No diagram type detected", None))?;
-    diagrams::parse_kind(kind, &source.body)
+    // These databases set `preserveCommentsWhenParsing` upstream, so `Diagram.fromText` hands
+    // their parser the comment-preserving text, and their reported lines stay in source space.
+    let body = match kind {
+        DiagramKind::Eventmodeling | DiagramKind::Agentflow => &source.with_comments,
+        _ => &source.body,
+    };
+    diagrams::parse_kind(kind, body)
 }
 
 /// Renders `source` to a [`Scene`]: detects the diagram type, parses it, lays it out, and

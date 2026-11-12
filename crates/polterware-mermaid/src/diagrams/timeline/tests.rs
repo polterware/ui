@@ -270,9 +270,8 @@ fn an_empty_accessibility_value_at_the_end_of_the_input_is_an_error() {
 }
 
 #[test]
-fn skips_the_blank_lines_preprocess_leaves_behind() {
-    // `preprocess` blanks removed frontmatter and directive lines instead of deleting them,
-    // so the header can arrive after empty lines.
+fn skips_leading_blank_lines() {
+    // `preprocess` trims them, but a body handed to the parser directly may carry them.
     let ast = ast("\n\n\ntimeline\n  section s\n  t");
     assert_eq!(ast.sections, ["s"]);
     assert_eq!(ast.tasks.len(), 1);

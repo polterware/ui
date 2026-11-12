@@ -27,11 +27,11 @@
 //!   `TREEMAP_KEYWORD` terminal, and Langium turns terminal keywords into regex terminals,
 //!   not keyword tokens, so the generated keyword list is empty.
 //! * Mermaid removes whole comment lines (`diagram-api/comments.ts`'s `cleanupComments`)
-//!   before Langium sees the text; [`crate::preprocess`] blanks them to empty lines instead.
-//!   A body handed to the parser directly still carries them, so the lexer removes those
-//!   lines itself, leading indentation included, and the parser skips the whitespace
-//!   `cleanupComments` trims before the header. A comment that follows other text on its line
-//!   is still a hidden `ML_COMMENT`, as in the grammar.
+//!   before Langium sees the text, and [`crate::preprocess`] does the same. A body handed to
+//!   the parser directly still carries them, so the lexer removes those lines itself, leading
+//!   indentation included, and the parser skips the whitespace `cleanupComments` trims before
+//!   the header. A comment that follows other text on its line is still a hidden
+//!   `ML_COMMENT`, as in the grammar.
 //! * `NUMBER2` goes through the `MyNumber` data type rule, so the custom converter's
 //!   `parseFloat(input.replace(/,/g, ''))` result is stringified and parsed again by the
 //!   `number` return type; the value is the same, and this port computes it directly.

@@ -4,10 +4,11 @@
 //! (`title`, `config`, `displayMode`), `%%{init: ...}%%` directives, comment lines, and
 //! configuration merging.
 //!
-//! The body keeps the input's line numbers: every removed line becomes an empty line, so a
-//! parser's spans and an editor's lines agree. Upstream hands parsers the comment-stripped
-//! text (`cleaned`), which shifts the lines a comment occupied; this crate leaves an empty
-//! line in their place, so a comment cannot shift a line either.
+//! The body is upstream's `cleaned`: frontmatter is cut, directives are removed (their line
+//! breaks kept), and `cleanupComments` deletes every `%%` comment line and the newline that
+//! ends it, so a parser never reads a blank line where a comment was. A body handed to a
+//! parser directly may still carry comments; the lexers skip them where upstream's grammar
+//! does.
 //!
 //! The YAML reader is [`crate::common::yaml`], the subset of `js-yaml`'s `JSON_SCHEMA` that
 //! frontmatter and `@{ ... }` metadata share.
@@ -29,9 +30,15 @@ pub(crate) use crate::common::is_js_whitespace;
 /// The source split into what the parsers read and the configuration around it.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Source {
-    /// The diagram text a parser reads, same line count as the input. Frontmatter,
-    /// directives, and `%%` comment lines are blanked to empty lines.
+    /// The diagram text a parser reads, cleaned like upstream's `cleaned`: frontmatter and
+    /// directives are removed (directives keep their line breaks), `%%` comment lines are
+    /// deleted with their newline, and the leading whitespace is trimmed.
     pub body: String,
+    /// Upstream's `withComments`: frontmatter and directives removed, `%%` comment lines
+    /// kept. The diagrams that set `preserveCommentsWhenParsing`
+    /// ([`crate::DiagramKind::Eventmodeling`] and [`crate::DiagramKind::Agentflow`]) parse
+    /// this so their reported lines match the source.
+    pub with_comments: String,
     pub title: Option<String>,
     /// Frontmatter `config` and every directive merged in order, as JSON.
     pub config: Map<String, Value>,
@@ -45,16 +52,21 @@ pub fn preprocess(text: &str) -> Source {
     let normalized = cleanup_text(text);
     match extract_front_matter(&normalized) {
         FrontMatter::Invalid(error) => Source {
-            body: normalized,
+            body: normalized.clone(),
+            with_comments: normalized,
             error: Some(error),
             ..Source::default()
         },
-        FrontMatter::Missing => Source {
-            body: cleanup_comments(&remove_directives(&normalized)),
-            config: directive_config(&normalized),
-            title: None,
-            error: None,
-        },
+        FrontMatter::Missing => {
+            let with_comments = remove_directives(&normalized);
+            Source {
+                body: cleanup_comments(&with_comments),
+                with_comments,
+                config: directive_config(&normalized),
+                title: None,
+                error: None,
+            }
+        }
         FrontMatter::Found {
             length,
             title,
@@ -70,11 +82,11 @@ pub fn preprocess(text: &str) -> Source {
                 }
             }
             let rest = &normalized[length..];
+            let with_comments = remove_directives(rest);
             let config = clean_and_merge(config, Value::Object(directive_config(rest)));
-            let mut body = "\n".repeat(normalized[..length].matches('\n').count());
-            body.push_str(&cleanup_comments(&remove_directives(rest)));
             Source {
-                body,
+                body: cleanup_comments(&with_comments),
+                with_comments,
                 title,
                 config,
                 error: None,
@@ -366,23 +378,45 @@ pub(crate) fn remove_directives(text: &str) -> String {
     out
 }
 
-/// `diagram-api/comments.ts`'s `cleanupComments`: a line whose first non-whitespace
-/// characters are `%%`, and whose next character is not `{` (a directive), is a comment.
+/// `diagram-api/comments.ts`'s `cleanupComments`:
+/// `text.replace(/^\s*%%(?!{)[^\n]+\n?/gm, '').trimStart()`.
 ///
-/// Upstream deletes those lines and trims the blank lines before the diagram. [`Source::body`]
-/// keeps the input's line numbers, so a comment line becomes an empty line here, and the
-/// parsers read a body they already skip.
+/// A comment line is deleted whole, its newline included, so the parser never sees the empty
+/// line a blanking replacement would leave. The `\s*` before `%%` spans line breaks, so the
+/// blank lines that lead into a comment go with it; `trimStart` then removes the whitespace
+/// the diagram starts with. A line whose first non-whitespace characters are `%%{` is a
+/// directive, not a comment.
 pub(crate) fn cleanup_comments(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
-    for (index, line) in text.split('\n').enumerate() {
-        if index > 0 {
-            out.push('\n');
+    // Where the text not yet copied to `out` starts, and where the current run of whitespace
+    // only lines starts (when there is one): `\s*` deletes that run along with a comment.
+    let mut cursor = 0;
+    let mut run_start = None;
+    let mut line_start = 0;
+    while line_start < text.len() {
+        let line_end = text[line_start..]
+            .find('\n')
+            .map_or(text.len(), |offset| line_start + offset + 1);
+        let content_end = if text[line_start..line_end].ends_with('\n') {
+            line_end - 1
+        } else {
+            line_end
+        };
+        let line = &text[line_start..content_end];
+        if line.trim_matches(is_js_whitespace).is_empty() {
+            run_start.get_or_insert(line_start);
+        } else if is_comment_line(line) {
+            let start = run_start.unwrap_or(line_start);
+            out.push_str(&text[cursor..start]);
+            cursor = line_end;
+            run_start = None;
+        } else {
+            run_start = None;
         }
-        if !is_comment_line(line) {
-            out.push_str(line);
-        }
+        line_start = line_end;
     }
-    out
+    out.push_str(&text[cursor..]);
+    out.trim_start_matches(is_js_whitespace).to_string()
 }
 
 /// `^\s*%%(?!{)[^\n]+`, matched within one line.
@@ -790,8 +824,8 @@ mod tests {
 
     use super::*;
 
-    /// Upstream's frontmatter spec compares the text that follows the block. The body here
-    /// keeps the block's lines as empty lines, so drop those leading breaks to compare.
+    /// Upstream's frontmatter spec compares the text that follows the block. Comparison
+    /// drops any leading break so a body that starts with a blank line still matches.
     fn after_frontmatter(source: &Source) -> &str {
         source.body.trim_start_matches('\n')
     }
@@ -826,7 +860,7 @@ mod tests {
         let source = preprocess("---\n\n---\ndiagram");
         assert_eq!(after_frontmatter(&source), "diagram");
         assert_eq!(source.title, None);
-        assert_eq!(line_count(&source.body), 4);
+        assert_eq!(line_count(&source.body), 1);
     }
 
     #[test]
@@ -899,14 +933,14 @@ mod tests {
     fn handles_leading_horizontal_whitespace_before_delimiters() {
         let source = preprocess("   ---\n   title: foo\n   ---\n   diagram");
         assert_eq!(source.title.as_deref(), Some("foo"));
-        assert_eq!(after_frontmatter(&source), "   diagram");
+        assert_eq!(after_frontmatter(&source), "diagram");
     }
 
     #[test]
     fn handles_tab_indentation_before_delimiters() {
         let source = preprocess("\t---\n\ttitle: foo\n\t---\n\tdiagram");
         assert_eq!(source.title.as_deref(), Some("foo"));
-        assert_eq!(after_frontmatter(&source), "\tdiagram");
+        assert_eq!(after_frontmatter(&source), "diagram");
     }
 
     #[test]
@@ -915,7 +949,7 @@ mod tests {
             "   ---\n   config:\n     sankey:\n       showValues: true\n   ---\n   sankey\n   a,b,8",
         );
         assert_eq!(config(&source), json!({ "sankey": { "showValues": true } }));
-        assert_eq!(after_frontmatter(&source), "   sankey\n   a,b,8");
+        assert_eq!(after_frontmatter(&source), "sankey\n   a,b,8");
     }
 
     #[test]
@@ -964,18 +998,14 @@ mod tests {
     }
 
     #[test]
-    fn body_keeps_the_input_line_count() {
-        for text in [
-            "---\ntitle: foo\n---\ngraph LR\n  A --> B",
-            "graph LR\n  A --> B",
-            "%%{init: {\"theme\": \"dark\"}}%%\ngraph LR\n  A --> B",
-        ] {
-            assert_eq!(
-                line_count(&preprocess(text).body),
-                line_count(text),
-                "text: {text:?}"
-            );
-        }
+    fn body_has_no_comment_or_frontmatter_lines() {
+        let text = "---\ntitle: foo\n---\n%% a comment\ngraph LR\n  %% another\n  A --> B";
+        let source = preprocess(text);
+        assert_eq!(source.body, "graph LR\n  A --> B");
+        assert_eq!(
+            source.with_comments,
+            "%% a comment\ngraph LR\n  %% another\n  A --> B"
+        );
     }
 
     #[test]
@@ -995,7 +1025,7 @@ mod tests {
         let text = "\n%%{initialize: { 'logLevel': 0, 'theme': 'dark' }}%%\nsequenceDiagram\nAlice->Bob: hi";
         let source = preprocess(text);
         assert_eq!(config(&source), json!({ "logLevel": 0, "theme": "dark" }));
-        assert_eq!(source.body, "\n\nsequenceDiagram\nAlice->Bob: hi");
+        assert_eq!(source.body, "sequenceDiagram\nAlice->Bob: hi");
     }
 
     #[test]
@@ -1041,7 +1071,13 @@ mod tests {
         let text = "\n%%{\n  init: {\n    'logLevel': 0,\n    'theme': 'dark'\n  }\n}%%\nsequenceDiagram\nAlice->Bob: hi";
         let source = preprocess(text);
         assert_eq!(config(&source), json!({ "logLevel": 0, "theme": "dark" }));
-        assert_eq!(line_count(&source.body), line_count(text));
+        // `removeDirectives` leaves the directive's line breaks, which `cleanupComments`
+        // trims along with the rest of the leading whitespace.
+        assert_eq!(source.body, "sequenceDiagram\nAlice->Bob: hi");
+        assert_eq!(
+            source.with_comments,
+            "\n\n\n\n\n\n\nsequenceDiagram\nAlice->Bob: hi"
+        );
     }
 
     #[test]
@@ -1075,7 +1111,7 @@ mod tests {
     fn handles_the_wrap_directive() {
         let source = preprocess("%%{wrap}%%\ngraph LR\nA --> B");
         assert_eq!(config(&source), json!({ "wrap": true }));
-        assert_eq!(source.body, "\ngraph LR\nA --> B");
+        assert_eq!(source.body, "graph LR\nA --> B");
     }
 
     #[test]
@@ -1115,7 +1151,7 @@ mod tests {
     fn invalid_directive_json_is_ignored() {
         let source = preprocess("%%{init: {}}%%\ngraph LR\nA --> B");
         assert!(source.config.is_empty());
-        assert_eq!(source.body, "\ngraph LR\nA --> B");
+        assert_eq!(source.body, "graph LR\nA --> B");
     }
 
     #[test]
@@ -1253,11 +1289,57 @@ mod tests {
         assert!(match_front_matter("---\ntitle: foo\n---\n").is_some());
     }
 
+    // packages/mermaid/src/diagram-api/comments.spec.ts
+
     #[test]
-    fn cleanup_comments_blanks_a_comment_line_and_keeps_its_line() {
-        let source = preprocess("%% a comment\ngraph LR\n  %% another\nA --> B");
-        assert_eq!(source.body, "\ngraph LR\n\nA --> B");
-        assert_eq!(line_count(&source.body), 4);
+    fn cleanup_comments_removes_comments() {
+        let text = "\n\n%% This is a comment\n%% This is another comment\ngraph TD\n    A-->B\n%% This is a comment\n";
+        assert_eq!(cleanup_comments(text), "graph TD\n    A-->B\n");
+    }
+
+    #[test]
+    fn cleanup_comments_keeps_init_statements_when_removing_comments() {
+        let text = "\n%% This is a comment\n\n%% This is another comment\n%%{init: {'theme': 'forest'}}%%\n%%{ init: {'theme': 'space before init'}}%%\n%%{init: {'theme': 'space after ending'}}%%\ngraph TD\n    A-->B\n\n    B-->C\n%% This is a comment\n";
+        assert_eq!(
+            cleanup_comments(text),
+            "%%{init: {'theme': 'forest'}}%%\n%%{ init: {'theme': 'space before init'}}%%\n%%{init: {'theme': 'space after ending'}}%%\ngraph TD\n    A-->B\n\n    B-->C\n"
+        );
+    }
+
+    #[test]
+    fn cleanup_comments_removes_indented_comments() {
+        let text =
+            "\n%% This is a comment\ngraph TD\n    A-->B\n    %% This is a comment\n    C-->D\n";
+        assert_eq!(cleanup_comments(text), "graph TD\n    A-->B\n    C-->D\n");
+    }
+
+    #[test]
+    fn cleanup_comments_removes_empty_newlines_from_start() {
+        let text = "\n\n\n\n\n%% This is a comment\ngraph TD\n    A-->B\n";
+        assert_eq!(cleanup_comments(text), "graph TD\n    A-->B\n");
+    }
+
+    #[test]
+    fn cleanup_comments_removes_comments_at_end_of_text_with_no_newline() {
+        let text = "\ngraph TD\n    A-->B\n%% This is a comment";
+        assert_eq!(cleanup_comments(text), "graph TD\n    A-->B\n");
+    }
+
+    #[test]
+    fn cleanup_comments_takes_the_blank_lines_before_a_comment_with_it() {
+        // `\s*` spans line breaks, so a run of blank lines that leads into a comment goes too.
+        assert_eq!(
+            cleanup_comments("graph TD\n\n   \n%% a comment\nA-->B"),
+            "graph TD\nA-->B"
+        );
+    }
+
+    #[test]
+    fn cleanup_comments_leaves_blank_lines_that_do_not_lead_into_a_comment() {
+        assert_eq!(
+            cleanup_comments("graph TD\n\n   \nA-->B"),
+            "graph TD\n\n   \nA-->B"
+        );
     }
 
     #[test]
@@ -1269,7 +1351,7 @@ mod tests {
     #[test]
     fn cleanup_comments_leaves_a_directive_like_line_to_the_directive_rule() {
         let source = preprocess("%%{init: {'theme': 'dark'}}%%\ngraph LR");
-        assert_eq!(source.body, "\ngraph LR");
+        assert_eq!(source.body, "graph LR");
         assert_eq!(config(&source), json!({ "theme": "dark" }));
     }
 

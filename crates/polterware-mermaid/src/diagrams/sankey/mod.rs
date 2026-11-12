@@ -26,8 +26,9 @@
 //!   run of blank lines therefore keeps the several newlines as one (upstream also collapses
 //!   them) but their byte offsets, and every span, still address the body the caller passed.
 //! * Comment lines are removed by the mermaid pipeline, not by the grammar.
-//!   [`crate::preprocess`] blanks them in [`crate::preprocess::Source::body`], and this module
-//!   skips one it is handed directly, keeping its bytes so spans still address the body.
+//!   [`crate::preprocess`] removes them from [`crate::preprocess::Source::body`], and this
+//!   module skips one it is handed directly, keeping its bytes so spans still address the
+//!   body.
 //! * Parse errors carry a [`Span`](crate::error::Span); jison reports a line and an excerpt.
 //!
 //! No app breaks: `Diagram::Sankey(Ast)` keeps its variant and the placeholder `Ast` had no

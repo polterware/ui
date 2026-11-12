@@ -389,6 +389,19 @@ fn render_diagram_dispatches_ishikawa() {
 }
 
 #[test]
+fn render_diagram_removes_a_comment_between_statements() {
+    // An empty line between statements makes the grammar fail, so the comment line must go
+    // whole rather than leave one behind.
+    let with_comment = "ishikawa\n  Effect\n  %% the cause follows\n    Cause\n";
+    let without_comment = "ishikawa\n  Effect\n    Cause\n";
+    let drawn = crate::render_diagram(with_comment, &Config::default())
+        .expect("dispatch ishikawa with a comment");
+    let expected = crate::render_diagram(without_comment, &Config::default())
+        .expect("dispatch ishikawa without a comment");
+    assert_eq!(drawn, expected);
+}
+
+#[test]
 fn rejects_text_that_is_not_an_ishikawa_diagram() {
     let error = render("requirementDiagram\n", &Config::default()).unwrap_err();
     assert!(matches!(error, IshikawaRenderError::Parse(_)));

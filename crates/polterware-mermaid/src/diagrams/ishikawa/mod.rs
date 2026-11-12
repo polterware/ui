@@ -9,7 +9,7 @@
 //! after parsing: `getRoot` and `getDiagramTitle`.
 //!
 //! The body starts with the header line (`ishikawa` or `ishikawa-beta`, case-insensitively);
-//! frontmatter, `%%{init}%%` directives, and `%%` comment lines are already blanked by
+//! frontmatter, `%%{init}%%` directives, and `%%` comment lines are already removed by
 //! [`crate::preprocess`], and the lexer skips a comment it is handed directly, as upstream's
 //! grammar does.
 //!

@@ -30,9 +30,9 @@
 //!   the parser.
 //! * A `style` statement that names a block the database does not know yet throws a
 //!   `TypeError` upstream; it is a [`ParseError`] here, with the statement's span.
-//! * Comments are removed by preprocessing upstream and kept in [`crate::preprocess`]'s body
-//!   here, so this module blanks `%%` lines before lexing (the block grammar has no comment
-//!   rule of its own).
+//! * Comments are removed by preprocessing upstream and by [`crate::preprocess`] here; a body
+//!   handed to this module directly may still carry them, so it blanks `%%` lines before
+//!   lexing (the block grammar has no comment rule of its own).
 //! * JavaScript's `undefined` in the corner the grammar's array spreading leaves behind
 //!   (`A --> B --> C`) is stored as an empty id/label and [`BlockType::Na`]; see `ast.rs`.
 //! * Parse errors carry a [`Span`], where jison reports a line and an excerpt.

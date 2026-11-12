@@ -17,9 +17,10 @@
 //!   `A[ "x"]` is a lexical error upstream, and here.
 //!
 //! Comments are removed before the parser runs upstream (`cleanupComments` in
-//! `diagram-api/comments.ts`, applied by `preprocessDiagram`); this crate keeps comments in
-//! the body, so the lexer blanks the text of every comment line and keeps its newline, which
-//! leaves both the tokens and the line numbers of the source intact.
+//! `diagram-api/comments.ts`, applied by `preprocessDiagram`), as [`crate::preprocess`] does
+//! too; a body handed to this lexer directly may still carry them, so it blanks the text of
+//! every comment line and keeps its newline, which leaves both the tokens and the line
+//! numbers of the text it reads intact.
 //!
 //! mermaid parses `cleaned + '\n'` (`Diagram.fromText`), so the lexer reads the body plus one
 //! trailing newline. That matters: at the end of a `classDef`/`style` line the last rule
