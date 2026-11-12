@@ -93,3 +93,12 @@ impl From<crate::diagrams::flowchart::FlowchartRenderError> for RenderError {
         }
     }
 }
+
+impl From<crate::diagrams::state::StateRenderError> for RenderError {
+    fn from(error: crate::diagrams::state::StateRenderError) -> Self {
+        match error {
+            crate::diagrams::state::StateRenderError::Parse(error) => Self::Parse(error),
+            crate::diagrams::state::StateRenderError::Layout(error) => Self::Layout(error),
+        }
+    }
+}

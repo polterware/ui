@@ -164,6 +164,9 @@ pub fn prepare_layout_for_dagre(data4_layout: &LayoutData) -> DagrePreparedLayou
         let mut nl = NodeLabel::default();
         nl.width = node.width.unwrap_or(0.0);
         nl.height = node.height.unwrap_or(0.0);
+        // A composite carries the direction of its own document; the recursive layout reads
+        // it when the cluster is extracted into a sub-graph.
+        nl.rankdir = node.dir.clone();
         graph.set_node_with(&node.id, nl);
         if let Some(parent_id) = &node.parent_id {
             let _ = graph.set_parent(&node.id, Some(parent_id.as_str()));
@@ -194,7 +197,12 @@ pub fn prepare_layout_for_dagre(data4_layout: &LayoutData) -> DagrePreparedLayou
         }
     }
 
-    let cluster_index = adjust_clusters_and_edges(&mut graph);
+    let mut cluster_index = adjust_clusters_and_edges(&mut graph);
+    for node in &data4_layout.nodes {
+        if let Some(shape) = &node.shape {
+            cluster_index.shapes.insert(node.id.clone(), shape.clone());
+        }
+    }
 
     DagrePreparedLayout {
         graph,
@@ -235,16 +243,51 @@ pub fn measure_dagre_graph(
         }
     }
 
-    // Sync edge label sizes back into the prepared dagre graph
+    // Sync edge label sizes back into the prepared dagre graph. An extracted cluster graph
+    // holds the same edges under its own graph, and the recursive layout reads their label
+    // sizes there, so the label dummies are reserved inside a composite as well.
     for edge in &data4_layout.edges {
-        if let (Some(start), Some(end)) = (&edge.start, &edge.end)
-            && let Some(e) = prepared
-                .graph
-                .edge_object_mut(&GraphEdge::named(start, end, &edge.id))
-        {
-            e.width = edge.width;
-            e.height = edge.height;
-            e.labelpos = edge.labelpos.clone();
+        if let (Some(start), Some(end)) = (&edge.start, &edge.end) {
+            let key = GraphEdge::named(start, end, &edge.id);
+            if let Some(e) = prepared.graph.edge_object_mut(&key) {
+                e.width = edge.width;
+                e.height = edge.height;
+                e.labelpos = edge.labelpos.clone();
+            }
+            for sub in prepared.cluster_index.extracted.values_mut() {
+                if let Some(e) = sub.edge_object_mut(&key) {
+                    e.width = edge.width;
+                    e.height = edge.height;
+                    e.labelpos = edge.labelpos.clone();
+                }
+            }
+        }
+    }
+
+    // A merged self-loop keeps its label on the middle segment, as `measureDagreGraph` does;
+    // the label sizes were measured above, after `prepareLayoutForDagre` built the segments.
+    for segment in &mut prepared.self_loops {
+        if segment.order != 1 {
+            continue;
+        }
+        let Some(edge) = data4_layout
+            .edges
+            .iter()
+            .find(|edge| edge.id == segment.logical_id)
+        else {
+            continue;
+        };
+        let label = EdgeLabel {
+            width: edge.width,
+            height: edge.height,
+            labelpos: edge.labelpos.clone(),
+            ..Default::default()
+        };
+        segment.edge.label = label.clone();
+        if let Some(graph_edge) = prepared.graph.edge_object_mut(&segment.edge.edge) {
+            graph_edge.width = label.width;
+            graph_edge.height = label.height;
+            graph_edge.labelpos = label.labelpos;
         }
     }
 
@@ -535,10 +578,20 @@ pub fn dagre_render(
 
     for node in &data4_layout.nodes {
         if let (Some(x), Some(y), Some(w), Some(h)) = (node.x, node.y, node.width, node.height) {
+            // A composite's title is painted two pixels above its frame (`y + 1 - 3` in
+            // `roundedWithTitle`), and the whole painted box follows it up.
+            let title_shift = if node.is_group == Some(true)
+                && node.shape.as_deref() == Some("roundedWithTitle")
+                && node.label.as_deref().is_some_and(|label| !label.is_empty())
+            {
+                2.0
+            } else {
+                0.0
+            };
             min_x = min_x.min(x - w / 2.0);
             max_x = max_x.max(x + w / 2.0);
-            min_y = min_y.min(y - h / 2.0);
-            max_y = max_y.max(y + h / 2.0);
+            min_y = min_y.min(y - h / 2.0 - title_shift);
+            max_y = max_y.max(y + h / 2.0 - title_shift);
         }
         if node.is_group == Some(true)
             && let Some(bbox) = &node.label_b_box

@@ -112,6 +112,8 @@ pub mod window_pane;
 pub struct Node {
     pub id: String,
     pub label: String,
+    /// The extra state/diagram descriptions, rendered by `rectWithTitle` below its title.
+    pub description: Option<Vec<String>>,
     pub shape: String,
     pub width: Option<f64>,
     pub height: Option<f64>,
@@ -155,6 +157,7 @@ impl Node {
         Self {
             id: id.into(),
             label: label.into(),
+            description: None,
             shape: shape.into(),
             width: None,
             height: None,
@@ -1940,9 +1943,8 @@ pub fn render_node(
     measure: &dyn TextMeasure,
     theme: &crate::theme::ThemeVariables,
 ) -> Result<RenderedNode, ShapeError> {
-    let shape = shape_definition(&node.shape).ok_or_else(|| ShapeError {
-        message: format!("No such shape: {}. Please check your syntax.", node.shape),
-    })?;
+    // `insertNode` rewrites the shape before it looks the handler up: a `rect` with both
+    // corner radii is drawn by `roundedRect`, a bare one by `squareRect`.
     if node.shape == "rect" {
         node.shape = if node.rx != 0.0 && node.ry != 0.0 {
             "roundedRect"
@@ -1951,6 +1953,9 @@ pub fn render_node(
         }
         .into();
     }
+    let shape = shape_definition(&node.shape).ok_or_else(|| ShapeError {
+        message: format!("No such shape: {}. Please check your syntax.", node.shape),
+    })?;
     let ctx = ShapeContext { measure, theme };
     match shape.upstream_file {
         "shapes/anchor.js" | "shapes/anchor.ts" => anchor::draw(&node, &ctx),

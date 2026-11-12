@@ -34,8 +34,10 @@
 
 mod ast;
 mod db;
+mod layout_data;
 mod lexer;
 mod parser;
+pub mod render;
 #[cfg(test)]
 mod tests;
 
@@ -43,6 +45,8 @@ pub use ast::{
     Ast, Direction, Edge, EdgePattern, Link, Node, Note, NotePosition, Relation, RelationStatement,
     State, StateKind, StateStatement, Statement, StyleClass,
 };
+pub use layout_data::{DIAGRAM_TYPE, layout_data};
+pub use render::{StateRenderError, draw, draw_ast, draw_layout_ast};
 
 use crate::error::ParseError;
 

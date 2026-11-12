@@ -1,0 +1,109 @@
+{
+  "name": "11-class-def",
+  "source": "stateDiagram-v2\n  classDef hot fill:#f96,stroke:#333,stroke-width:2px\n  [*] --> A\n  A:::hot --> B\n  class B hot\n  B --> [*]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "root_start",
+        "x": 76,
+        "y": 15,
+        "width": 14,
+        "height": 14
+      },
+      {
+        "id": "A",
+        "x": 76,
+        "y": 89.2,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "B",
+        "x": 76,
+        "y": 173.6,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "root_end",
+        "x": 76,
+        "y": 247.8,
+        "width": 14.01329321611432,
+        "height": 14
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge0",
+        "points": [
+          {
+            "x": 76,
+            "y": 22
+          },
+          {
+            "x": 76,
+            "y": 47
+          },
+          {
+            "x": 76,
+            "y": 72
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge1",
+        "points": [
+          {
+            "x": 76,
+            "y": 106.4
+          },
+          {
+            "x": 76,
+            "y": 131.4
+          },
+          {
+            "x": 76,
+            "y": 156.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge2",
+        "points": [
+          {
+            "x": 76,
+            "y": 190.79999999999998
+          },
+          {
+            "x": 76,
+            "y": 215.8
+          },
+          {
+            "x": 76,
+            "y": 240.8
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 152,
+      "height": 262.8
+    },
+    "rawViewBox": "0 0 152 262.8"
+  }
+}

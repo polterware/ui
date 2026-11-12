@@ -73,6 +73,7 @@ pub fn to_shape_node(node: &Node) -> shapes::Node {
     );
     s.width = node.width;
     s.height = node.height;
+    s.description = node.description.clone();
     s.padding = node.padding.unwrap_or(0.0);
     s.rx = node.rx.unwrap_or(0.0);
     s.ry = node.ry.unwrap_or(0.0);
@@ -97,8 +98,22 @@ pub fn insert_measured_node(
 ) -> Result<RenderedNode, ShapeError> {
     let shape_node = to_shape_node(node);
     let rendered = shapes::render_node(shape_node, measure, theme)?;
-    node.width = Some(rendered.node.bounds.width);
-    node.height = Some(rendered.node.bounds.height);
+    // `insertMeasuredNode` sizes the node from the DOM element, not from the intersection
+    // box. Most shapes keep both in `bounds`; fork/join and the state end circle report the
+    // painted box through `width`/`height` (their `bounds` is the enlarged box an edge stops
+    // at). An explicit width or height from the layout data is not a measurement.
+    let width = if node.width.is_none() {
+        rendered.node.width
+    } else {
+        None
+    };
+    let height = if node.height.is_none() {
+        rendered.node.height
+    } else {
+        None
+    };
+    node.width = Some(width.unwrap_or(rendered.node.bounds.width));
+    node.height = Some(height.unwrap_or(rendered.node.bounds.height));
     node.rx = Some(rendered.node.rx);
     node.ry = Some(rendered.node.ry);
     node.bounds = rendered.node.bounds;

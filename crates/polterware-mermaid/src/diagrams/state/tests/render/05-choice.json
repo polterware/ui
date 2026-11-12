@@ -1,0 +1,158 @@
+{
+  "name": "05-choice",
+  "source": "stateDiagram-v2\n  state choice_state <<choice>>\n  [*] --> choice_state\n  choice_state --> Yes: accepted\n  choice_state --> No: rejected\n  Yes --> [*]\n  No --> [*]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "choice_state",
+        "x": 169,
+        "y": 86,
+        "width": 28,
+        "height": 28
+      },
+      {
+        "id": "root_start",
+        "x": 169,
+        "y": 15,
+        "width": 14,
+        "height": 14
+      },
+      {
+        "id": "Yes",
+        "x": 76,
+        "y": 189.6,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "No",
+        "x": 262,
+        "y": 189.6,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "root_end",
+        "x": 169,
+        "y": 263.8,
+        "width": 14.01329321611432,
+        "height": 14
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge0",
+        "points": [
+          {
+            "x": 169,
+            "y": 22
+          },
+          {
+            "x": 169,
+            "y": 47
+          },
+          {
+            "x": 169,
+            "y": 72
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge1",
+        "points": [
+          {
+            "x": 155,
+            "y": 93.55698924731183
+          },
+          {
+            "x": 76,
+            "y": 136.2
+          },
+          {
+            "x": 76,
+            "y": 172.4
+          }
+        ],
+        "x": 76,
+        "y": 136.2,
+        "width": 80.8,
+        "height": 22.4
+      },
+      {
+        "id": "edge2",
+        "points": [
+          {
+            "x": 183,
+            "y": 93.55698924731183
+          },
+          {
+            "x": 262,
+            "y": 136.2
+          },
+          {
+            "x": 262,
+            "y": 172.4
+          }
+        ],
+        "x": 262,
+        "y": 136.2,
+        "width": 80.8,
+        "height": 22.4
+      },
+      {
+        "id": "edge3",
+        "points": [
+          {
+            "x": 76,
+            "y": 206.79999999999998
+          },
+          {
+            "x": 76,
+            "y": 231.8
+          },
+          {
+            "x": 161.99335339194283,
+            "y": 261.38911084453946
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge4",
+        "points": [
+          {
+            "x": 262,
+            "y": 206.79999999999998
+          },
+          {
+            "x": 262,
+            "y": 231.8
+          },
+          {
+            "x": 176.00664660805717,
+            "y": 261.38911084453946
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 338,
+      "height": 278.8
+    },
+    "rawViewBox": "0 0 338 278.8"
+  }
+}

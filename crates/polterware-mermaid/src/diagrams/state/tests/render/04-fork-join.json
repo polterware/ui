@@ -1,0 +1,186 @@
+{
+  "name": "04-fork-join",
+  "source": "stateDiagram-v2\n  state fork_state <<fork>>\n  [*] --> fork_state\n  fork_state --> Left\n  fork_state --> Right\n  state join_state <<join>>\n  Left --> join_state\n  Right --> join_state\n  join_state --> [*]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "fork_state",
+        "x": 169,
+        "y": 77,
+        "width": 70,
+        "height": 10
+      },
+      {
+        "id": "root_start",
+        "x": 169,
+        "y": 15,
+        "width": 14,
+        "height": 14
+      },
+      {
+        "id": "Left",
+        "x": 76,
+        "y": 149.2,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "Right",
+        "x": 262,
+        "y": 149.2,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "join_state",
+        "x": 169,
+        "y": 221.4,
+        "width": 70,
+        "height": 10
+      },
+      {
+        "id": "root_end",
+        "x": 169,
+        "y": 283.4,
+        "width": 14.01329321611432,
+        "height": 14
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge0",
+        "points": [
+          {
+            "x": 169,
+            "y": 22
+          },
+          {
+            "x": 169,
+            "y": 47
+          },
+          {
+            "x": 169,
+            "y": 72
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge1",
+        "points": [
+          {
+            "x": 153.5,
+            "y": 82
+          },
+          {
+            "x": 76,
+            "y": 107
+          },
+          {
+            "x": 76,
+            "y": 132
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge2",
+        "points": [
+          {
+            "x": 184.5,
+            "y": 82
+          },
+          {
+            "x": 262,
+            "y": 107
+          },
+          {
+            "x": 262,
+            "y": 132
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge3",
+        "points": [
+          {
+            "x": 76,
+            "y": 166.39999999999998
+          },
+          {
+            "x": 76,
+            "y": 191.4
+          },
+          {
+            "x": 153.5,
+            "y": 216.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge4",
+        "points": [
+          {
+            "x": 262,
+            "y": 166.39999999999998
+          },
+          {
+            "x": 262,
+            "y": 191.4
+          },
+          {
+            "x": 184.5,
+            "y": 216.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge5",
+        "points": [
+          {
+            "x": 169,
+            "y": 226.4
+          },
+          {
+            "x": 169,
+            "y": 251.4
+          },
+          {
+            "x": 169,
+            "y": 276.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 338,
+      "height": 298.4
+    },
+    "rawViewBox": "0 0 338 298.4"
+  }
+}

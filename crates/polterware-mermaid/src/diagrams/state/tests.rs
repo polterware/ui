@@ -12,6 +12,8 @@
 //! - Assertions about configured values that `StateDB.getData` only passes through
 //!   (`look`, `wrappingWidth`, `minNodeWidth`) are absent because this crate owns no config.
 
+mod render_tests;
+
 use super::ast::{
     Ast, Direction, EdgePattern, Node, NotePosition, Relation, State, StateKind, Statement,
 };

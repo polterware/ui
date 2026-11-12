@@ -1,0 +1,66 @@
+{
+  "name": "03-nested-composite",
+  "source": "stateDiagram-v2\n  state Outer {\n    state Inner {\n      A --> B\n    }\n    B --> C\n  }\n  Outer --> D\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "A"
+      },
+      {
+        "id": "B"
+      },
+      {
+        "id": "C"
+      },
+      {
+        "id": "D",
+        "x": 131,
+        "y": 480.40000000000003,
+        "width": 136,
+        "height": 34.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "Outer",
+        "x": 131,
+        "y": 210.60000000000002,
+        "width": 246,
+        "height": 405.20000000000005
+      },
+      {
+        "id": "Inner"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge2",
+        "points": [
+          {
+            "x": 131,
+            "y": 413.20000000000005
+          },
+          {
+            "x": 131,
+            "y": 438.20000000000005
+          },
+          {
+            "x": 131,
+            "y": 463.20000000000005
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": -2,
+      "width": 262,
+      "height": 507.6
+    },
+    "rawViewBox": "0 -2 262 507.6"
+  }
+}

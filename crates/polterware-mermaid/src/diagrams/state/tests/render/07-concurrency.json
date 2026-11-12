@@ -1,0 +1,100 @@
+{
+  "name": "07-concurrency",
+  "source": "stateDiagram-v2\n  [*] --> Active\n  state Active {\n    [*] --> First\n    --\n    [*] --> Second\n  }\n  Active --> [*]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "root_start",
+        "x": 274,
+        "y": 15,
+        "width": 14,
+        "height": 14
+      },
+      {
+        "id": "divider-id-1_start"
+      },
+      {
+        "id": "First"
+      },
+      {
+        "id": "id-1_start"
+      },
+      {
+        "id": "Second"
+      },
+      {
+        "id": "root_end",
+        "x": 274,
+        "y": 454.4,
+        "width": 14.01329321611432,
+        "height": 14
+      }
+    ],
+    "clusters": [
+      {
+        "id": "Active",
+        "x": 274,
+        "y": 234.7,
+        "width": 532,
+        "height": 325.4
+      },
+      {
+        "id": "divider-id-1"
+      },
+      {
+        "id": "id-1"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge0",
+        "points": [
+          {
+            "x": 274,
+            "y": 22
+          },
+          {
+            "x": 274,
+            "y": 47
+          },
+          {
+            "x": 274,
+            "y": 72
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge3",
+        "points": [
+          {
+            "x": 274,
+            "y": 397.4
+          },
+          {
+            "x": 274,
+            "y": 422.4
+          },
+          {
+            "x": 274,
+            "y": 447.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 548,
+      "height": 469.4
+    },
+    "rawViewBox": "0 0 548 469.4"
+  }
+}
