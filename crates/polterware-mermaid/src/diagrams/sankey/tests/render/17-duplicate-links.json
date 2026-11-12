@@ -1,0 +1,192 @@
+{
+  "name": "17-duplicate-links",
+  "source": "sankey-beta\n\nsankey,target,10\n\"sankey\",target,10\ntarget,Sink,20\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400.0000000000001
+    },
+    "nodes": [
+      {
+        "id": "sankey",
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 400.00000000000006,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "target",
+        "x": 295,
+        "y": 0,
+        "width": 10,
+        "height": 400.0000000000001,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Sink",
+        "x": 590,
+        "y": 0,
+        "width": 10,
+        "height": 400,
+        "fill": "#e15759",
+        "layer": 2
+      }
+    ],
+    "labels": [
+      {
+        "node": "sankey",
+        "class": null,
+        "x": 16,
+        "y": 200.00000000000003,
+        "dy": 0,
+        "anchor": "start",
+        "text": "sankey\n20"
+      },
+      {
+        "node": "target",
+        "class": null,
+        "x": 311,
+        "y": 200.00000000000006,
+        "dy": 0,
+        "anchor": "start",
+        "text": "target\n20"
+      },
+      {
+        "node": "Sink",
+        "class": null,
+        "x": 584,
+        "y": 200,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Sink\n20"
+      }
+    ],
+    "links": [
+      {
+        "source": "sankey",
+        "target": "target",
+        "value": 10,
+        "width": 200,
+        "stroke": "url(#linearGradient-122)",
+        "strokeWidth": 200,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 100
+          },
+          "control1": {
+            "x": 152.5,
+            "y": 100
+          },
+          "control2": {
+            "x": 152.5,
+            "y": 100
+          },
+          "end": {
+            "x": 295,
+            "y": 100
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 295,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "sankey",
+        "target": "target",
+        "value": 10,
+        "width": 200,
+        "stroke": "url(#linearGradient-123)",
+        "strokeWidth": 200,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 300
+          },
+          "control1": {
+            "x": 152.5,
+            "y": 300
+          },
+          "control2": {
+            "x": 152.5,
+            "y": 300
+          },
+          "end": {
+            "x": 295,
+            "y": 300
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 295,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "target",
+        "target": "Sink",
+        "value": 20,
+        "width": 400,
+        "stroke": "url(#linearGradient-124)",
+        "strokeWidth": 400,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 200
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 200
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 200
+          },
+          "end": {
+            "x": 590,
+            "y": 200
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#e15759"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

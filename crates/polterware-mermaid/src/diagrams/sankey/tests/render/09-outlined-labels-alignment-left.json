@@ -1,0 +1,246 @@
+{
+  "name": "09-outlined-labels-alignment-left",
+  "source": "---\nconfig:\n  sankey:\n    labelStyle: outlined\n    nodeAlignment: left\n---\nsankey-beta\n\nCoal,Industry,10\nIndustry,Homes,6\nIndustry,Commerce,4\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 690,
+      "height": 400.0000000000001
+    },
+    "nodes": [
+      {
+        "id": "Coal",
+        "x": 0,
+        "y": 9.436726901057318,
+        "width": 10,
+        "height": 373.00000000000006,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Industry",
+        "x": 295,
+        "y": 9.440406894983646,
+        "width": 10,
+        "height": 373,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Homes",
+        "x": 590,
+        "y": 0,
+        "width": 10,
+        "height": 223.79999999999998,
+        "fill": "#e15759",
+        "layer": 2
+      },
+      {
+        "id": "Commerce",
+        "x": 590,
+        "y": 250.79999999999998,
+        "width": 10,
+        "height": 149.20000000000013,
+        "fill": "#76b7b2",
+        "layer": 2
+      }
+    ],
+    "labels": [
+      {
+        "node": "Coal",
+        "class": "sankey-label-bg",
+        "x": 16,
+        "y": 195.93672690105737,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Coal\n10"
+      },
+      {
+        "node": "Industry",
+        "class": "sankey-label-bg",
+        "x": 311,
+        "y": 195.94040689498365,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Industry\n10"
+      },
+      {
+        "node": "Homes",
+        "class": "sankey-label-bg",
+        "x": 606,
+        "y": 111.89999999999999,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Homes\n6"
+      },
+      {
+        "node": "Commerce",
+        "class": "sankey-label-bg",
+        "x": 606,
+        "y": 325.40000000000003,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Commerce\n4"
+      },
+      {
+        "node": "Coal",
+        "class": "sankey-label-fg",
+        "x": 16,
+        "y": 195.93672690105737,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Coal\n10"
+      },
+      {
+        "node": "Industry",
+        "class": "sankey-label-fg",
+        "x": 311,
+        "y": 195.94040689498365,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Industry\n10"
+      },
+      {
+        "node": "Homes",
+        "class": "sankey-label-fg",
+        "x": 606,
+        "y": 111.89999999999999,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Homes\n6"
+      },
+      {
+        "node": "Commerce",
+        "class": "sankey-label-fg",
+        "x": 606,
+        "y": 325.40000000000003,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Commerce\n4"
+      }
+    ],
+    "links": [
+      {
+        "source": "Coal",
+        "target": "Industry",
+        "value": 10,
+        "width": 373,
+        "stroke": "url(#linearGradient-73)",
+        "strokeWidth": 373,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 195.9367269010573
+          },
+          "control1": {
+            "x": 152.5,
+            "y": 195.9367269010573
+          },
+          "control2": {
+            "x": 152.5,
+            "y": 195.94040689498365
+          },
+          "end": {
+            "x": 295,
+            "y": 195.94040689498365
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 295,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Industry",
+        "target": "Homes",
+        "value": 6,
+        "width": 223.79999999999998,
+        "stroke": "url(#linearGradient-74)",
+        "strokeWidth": 223.79999999999998,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 121.34040689498363
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 121.34040689498363
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 111.89999999999999
+          },
+          "end": {
+            "x": 590,
+            "y": 111.89999999999999
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#e15759"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Industry",
+        "target": "Commerce",
+        "value": 4,
+        "width": 149.2,
+        "stroke": "url(#linearGradient-75)",
+        "strokeWidth": 149.2,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 307.84040689498363
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 307.84040689498363
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 325.4
+          },
+          "end": {
+            "x": 590,
+            "y": 325.4
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,326 @@
+{
+  "name": "02-fan-out-in",
+  "source": "sankey-beta\n\nAgricultural 'waste',Bio-conversion,124.729\nBio-conversion,Liquid,0.597\nBio-conversion,Losses,26.862\nBio-conversion,Solid,280\nBio-conversion,Gas,81.144\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -15.854964578245603,
+      "width": 600,
+      "height": 415.8549645782456
+    },
+    "nodes": [
+      {
+        "id": "Agricultural 'waste'",
+        "x": 0,
+        "y": 76.71409106727688,
+        "width": 10,
+        "height": 102.38868716916747,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Bio-conversion",
+        "x": 295,
+        "y": 76.7010917661562,
+        "width": 10,
+        "height": 319,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Liquid",
+        "x": 590,
+        "y": 5.684341886080802e-14,
+        "width": 10,
+        "height": 0.4900708435086756,
+        "fill": "#e15759",
+        "layer": 2
+      },
+      {
+        "id": "Losses",
+        "x": 590,
+        "y": 27.490070843508732,
+        "width": 10,
+        "height": 22.050725290334867,
+        "fill": "#76b7b2",
+        "layer": 2
+      },
+      {
+        "id": "Solid",
+        "x": 590,
+        "y": 76.5407961338436,
+        "width": 10,
+        "height": 229.84897182986234,
+        "fill": "#59a14f",
+        "layer": 2
+      },
+      {
+        "id": "Gas",
+        "x": 590,
+        "y": 333.38976796370594,
+        "width": 10,
+        "height": 66.61023203629406,
+        "fill": "#edc949",
+        "layer": 2
+      }
+    ],
+    "labels": [
+      {
+        "node": "Agricultural 'waste'",
+        "class": null,
+        "x": 16,
+        "y": 127.90843465186062,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Agricultural 'waste'\n124.73"
+      },
+      {
+        "node": "Bio-conversion",
+        "class": null,
+        "x": 311,
+        "y": 236.2010917661562,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Bio-conversion\n388.6"
+      },
+      {
+        "node": "Liquid",
+        "class": null,
+        "x": 584,
+        "y": 0.24503542175439463,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Liquid\n0.6"
+      },
+      {
+        "node": "Losses",
+        "class": null,
+        "x": 584,
+        "y": 38.515433488676166,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Losses\n26.86"
+      },
+      {
+        "node": "Solid",
+        "class": null,
+        "x": 584,
+        "y": 191.46528204877478,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Solid\n280"
+      },
+      {
+        "node": "Gas",
+        "class": null,
+        "x": 584,
+        "y": 366.69488398185297,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Gas\n81.14"
+      }
+    ],
+    "links": [
+      {
+        "source": "Agricultural 'waste'",
+        "target": "Bio-conversion",
+        "value": 124.729,
+        "width": 102.3886871691675,
+        "stroke": "url(#linearGradient-14)",
+        "strokeWidth": 102.3886871691675,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 127.90843465186063
+          },
+          "control1": {
+            "x": 152.5,
+            "y": 127.90843465186063
+          },
+          "control2": {
+            "x": 152.5,
+            "y": 127.89543535073994
+          },
+          "end": {
+            "x": 295,
+            "y": 127.89543535073994
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 295,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Bio-conversion",
+        "target": "Liquid",
+        "value": 0.597,
+        "width": 0.49007084350867075,
+        "stroke": "url(#linearGradient-15)",
+        "strokeWidth": 1,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 76.94612718791053
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 76.94612718791053
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 0.24503542175439222
+          },
+          "end": {
+            "x": 590,
+            "y": 0.24503542175439222
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#e15759"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Bio-conversion",
+        "target": "Losses",
+        "value": 26.862,
+        "width": 22.050725290334864,
+        "stroke": "url(#linearGradient-16)",
+        "strokeWidth": 22.050725290334864,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 88.2165252548323
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 88.2165252548323
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 38.515433488676166
+          },
+          "end": {
+            "x": 590,
+            "y": 38.515433488676166
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Bio-conversion",
+        "target": "Solid",
+        "value": 280,
+        "width": 229.84897182986234,
+        "stroke": "url(#linearGradient-17)",
+        "strokeWidth": 229.84897182986234,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 214.16637381493092
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 214.16637381493092
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 191.46528204877478
+          },
+          "end": {
+            "x": 590,
+            "y": 191.46528204877478
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#59a14f"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Bio-conversion",
+        "target": "Gas",
+        "value": 81.144,
+        "width": 66.61023203629411,
+        "stroke": "url(#linearGradient-18)",
+        "strokeWidth": 66.61023203629411,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 362.3959757480091
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 362.3959757480091
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 366.69488398185297
+          },
+          "end": {
+            "x": 590,
+            "y": 366.69488398185297
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#edc949"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

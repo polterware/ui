@@ -708,7 +708,7 @@ pub fn dagre_render(
 /// The box `getBBox()` reports for an edge's `d` attribute: the real curve extrema, not just
 /// the endpoints, because a browser measures the painted cubic and quadratic segments. This
 /// is the box the fitted viewBox is built from.
-fn svg_path_bounds(path: &crate::scene::Path) -> Option<Rect> {
+pub(crate) fn svg_path_bounds(path: &crate::scene::Path) -> Option<Rect> {
     use crate::scene::PathCommand;
 
     #[derive(Clone, Copy)]

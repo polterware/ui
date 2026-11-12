@@ -1,0 +1,171 @@
+{
+  "name": "11-link-color-target",
+  "source": "---\nconfig:\n  sankey:\n    linkColor: target\n---\nsankey-beta\n\nGas,Thermal generation,151.891\nGas,Industry,48.58\nThermal generation,Electricity grid,525.531\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -0.3187834756692123,
+      "width": 600,
+      "height": 400.3187834756692
+    },
+    "nodes": [
+      {
+        "id": "Gas",
+        "x": 0,
+        "y": 16.589714840277935,
+        "width": 10,
+        "height": 130.2460377871178,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Thermal generation",
+        "x": 295,
+        "y": 58.562433048661454,
+        "width": 10,
+        "height": 341.43756695133857,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Industry",
+        "x": 590,
+        "y": 1.1590728377086634e-13,
+        "width": 10,
+        "height": 31.562433048661337,
+        "fill": "#e15759",
+        "layer": 2
+      },
+      {
+        "id": "Electricity grid",
+        "x": 590,
+        "y": 58.562433048661454,
+        "width": 10,
+        "height": 341.43756695133857,
+        "fill": "#76b7b2",
+        "layer": 2
+      }
+    ],
+    "labels": [
+      {
+        "node": "Gas",
+        "class": null,
+        "x": 16,
+        "y": 81.71273373383684,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Gas\n200.47"
+      },
+      {
+        "node": "Thermal generation",
+        "class": null,
+        "x": 311,
+        "y": 229.28121652433072,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Thermal generation\n525.53"
+      },
+      {
+        "node": "Industry",
+        "class": null,
+        "x": 584,
+        "y": 15.781216524330786,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Industry\n48.58"
+      },
+      {
+        "node": "Electricity grid",
+        "class": null,
+        "x": 584,
+        "y": 229.28121652433072,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Electricity grid\n525.53"
+      }
+    ],
+    "links": [
+      {
+        "source": "Gas",
+        "target": "Thermal generation",
+        "value": 151.891,
+        "width": 98.6836047384565,
+        "stroke": "#f28e2c",
+        "strokeWidth": 98.6836047384565,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 97.4939502581675
+          },
+          "control1": {
+            "x": 152.5,
+            "y": 97.4939502581675
+          },
+          "control2": {
+            "x": 152.5,
+            "y": 107.90423541788971
+          },
+          "end": {
+            "x": 295,
+            "y": 107.90423541788971
+          }
+        },
+        "gradient": null
+      },
+      {
+        "source": "Gas",
+        "target": "Industry",
+        "value": 48.58,
+        "width": 31.56243304866132,
+        "stroke": "#e15759",
+        "strokeWidth": 31.56243304866132,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 32.370931364608595
+          },
+          "control1": {
+            "x": 300,
+            "y": 32.370931364608595
+          },
+          "control2": {
+            "x": 300,
+            "y": 15.781216524330775
+          },
+          "end": {
+            "x": 590,
+            "y": 15.781216524330775
+          }
+        },
+        "gradient": null
+      },
+      {
+        "source": "Thermal generation",
+        "target": "Electricity grid",
+        "value": 525.531,
+        "width": 341.4375669513386,
+        "stroke": "#76b7b2",
+        "strokeWidth": 341.4375669513386,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 229.28121652433077
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 229.28121652433077
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 229.28121652433077
+          },
+          "end": {
+            "x": 590,
+            "y": 229.28121652433077
+          }
+        },
+        "gradient": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "name": "14-node-width-and-padding",
+  "source": "---\nconfig:\n  sankey:\n    nodeWidth: 24\n    nodePadding: 40\n---\nsankey-beta\n\nA,B,10\nB,C,4\nB,D,6\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 7.638334409421077e-14,
+      "width": 600,
+      "height": 399.99999999999994
+    },
+    "nodes": [
+      {
+        "id": "A",
+        "x": 0,
+        "y": 37.07803831188269,
+        "width": 24,
+        "height": 345,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "B",
+        "x": 288,
+        "y": 37.069433387674394,
+        "width": 24,
+        "height": 345.0000000000001,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "C",
+        "x": 576,
+        "y": 7.638334409421077e-14,
+        "width": 24,
+        "height": 137.99999999999997,
+        "fill": "#e15759",
+        "layer": 2
+      },
+      {
+        "id": "D",
+        "x": 576,
+        "y": 193.00000000000006,
+        "width": 24,
+        "height": 206.99999999999994,
+        "fill": "#76b7b2",
+        "layer": 2
+      }
+    ],
+    "labels": [
+      {
+        "node": "A",
+        "class": null,
+        "x": 30,
+        "y": 209.57803831188272,
+        "dy": 0,
+        "anchor": "start",
+        "text": "A\n10"
+      },
+      {
+        "node": "B",
+        "class": null,
+        "x": 318,
+        "y": 209.56943338767445,
+        "dy": 0,
+        "anchor": "start",
+        "text": "B\n10"
+      },
+      {
+        "node": "C",
+        "class": null,
+        "x": 570,
+        "y": 69.00000000000007,
+        "dy": 0,
+        "anchor": "end",
+        "text": "C\n4"
+      },
+      {
+        "node": "D",
+        "class": null,
+        "x": 570,
+        "y": 296.5,
+        "dy": 0,
+        "anchor": "end",
+        "text": "D\n6"
+      }
+    ],
+    "links": [
+      {
+        "source": "A",
+        "target": "B",
+        "value": 10,
+        "width": 345,
+        "stroke": "url(#linearGradient-100)",
+        "strokeWidth": 345,
+        "path": {
+          "start": {
+            "x": 24,
+            "y": 209.5780383118827
+          },
+          "control1": {
+            "x": 156,
+            "y": 209.5780383118827
+          },
+          "control2": {
+            "x": 156,
+            "y": 209.5694333876744
+          },
+          "end": {
+            "x": 288,
+            "y": 209.5694333876744
+          }
+        },
+        "gradient": {
+          "x1": 24,
+          "x2": 288,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "B",
+        "target": "C",
+        "value": 4,
+        "width": 138,
+        "stroke": "url(#linearGradient-101)",
+        "strokeWidth": 138,
+        "path": {
+          "start": {
+            "x": 312,
+            "y": 106.0694333876744
+          },
+          "control1": {
+            "x": 444,
+            "y": 106.0694333876744
+          },
+          "control2": {
+            "x": 444,
+            "y": 69.00000000000007
+          },
+          "end": {
+            "x": 576,
+            "y": 69.00000000000007
+          }
+        },
+        "gradient": {
+          "x1": 312,
+          "x2": 576,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#e15759"
+            }
+          ]
+        }
+      },
+      {
+        "source": "B",
+        "target": "D",
+        "value": 6,
+        "width": 207,
+        "stroke": "url(#linearGradient-102)",
+        "strokeWidth": 207,
+        "path": {
+          "start": {
+            "x": 312,
+            "y": 278.5694333876744
+          },
+          "control1": {
+            "x": 444,
+            "y": 278.5694333876744
+          },
+          "control2": {
+            "x": 444,
+            "y": 296.50000000000006
+          },
+          "end": {
+            "x": 576,
+            "y": 296.50000000000006
+          }
+        },
+        "gradient": {
+          "x1": 312,
+          "x2": 576,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

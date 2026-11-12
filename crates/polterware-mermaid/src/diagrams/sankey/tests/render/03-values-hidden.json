@@ -1,0 +1,210 @@
+{
+  "name": "03-values-hidden",
+  "source": "---\nconfig:\n  sankey:\n    showValues: false\n---\nsankey-beta\n\nCoal,Industry,10\nIndustry,Homes,6\nIndustry,Commerce,4\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 399.9999999999999
+    },
+    "nodes": [
+      {
+        "id": "Coal",
+        "x": 0,
+        "y": 4.194100844914366,
+        "width": 10,
+        "height": 388.00000000000006,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Industry",
+        "x": 295,
+        "y": 4.195736397770511,
+        "width": 10,
+        "height": 388.0000000000001,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Homes",
+        "x": 590,
+        "y": 0,
+        "width": 10,
+        "height": 232.79999999999995,
+        "fill": "#e15759",
+        "layer": 2
+      },
+      {
+        "id": "Commerce",
+        "x": 590,
+        "y": 244.79999999999995,
+        "width": 10,
+        "height": 155.19999999999993,
+        "fill": "#76b7b2",
+        "layer": 2
+      }
+    ],
+    "labels": [
+      {
+        "node": "Coal",
+        "class": null,
+        "x": 16,
+        "y": 198.1941008449144,
+        "dy": 4.8999999999999995,
+        "anchor": "start",
+        "text": "Coal"
+      },
+      {
+        "node": "Industry",
+        "class": null,
+        "x": 311,
+        "y": 198.1957363977706,
+        "dy": 4.8999999999999995,
+        "anchor": "start",
+        "text": "Industry"
+      },
+      {
+        "node": "Homes",
+        "class": null,
+        "x": 584,
+        "y": 116.39999999999998,
+        "dy": 4.8999999999999995,
+        "anchor": "end",
+        "text": "Homes"
+      },
+      {
+        "node": "Commerce",
+        "class": null,
+        "x": 584,
+        "y": 322.3999999999999,
+        "dy": 4.8999999999999995,
+        "anchor": "end",
+        "text": "Commerce"
+      }
+    ],
+    "links": [
+      {
+        "source": "Coal",
+        "target": "Industry",
+        "value": 10,
+        "width": 388,
+        "stroke": "url(#linearGradient-23)",
+        "strokeWidth": 388,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 198.19410084491437
+          },
+          "control1": {
+            "x": 152.5,
+            "y": 198.19410084491437
+          },
+          "control2": {
+            "x": 152.5,
+            "y": 198.1957363977705
+          },
+          "end": {
+            "x": 295,
+            "y": 198.1957363977705
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 295,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Industry",
+        "target": "Homes",
+        "value": 6,
+        "width": 232.79999999999998,
+        "stroke": "url(#linearGradient-24)",
+        "strokeWidth": 232.79999999999998,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 120.59573639777051
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 120.59573639777051
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 116.39999999999999
+          },
+          "end": {
+            "x": 590,
+            "y": 116.39999999999999
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#e15759"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Industry",
+        "target": "Commerce",
+        "value": 4,
+        "width": 155.2,
+        "stroke": "url(#linearGradient-25)",
+        "strokeWidth": 155.2,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 314.59573639777045
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 314.59573639777045
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 322.4
+          },
+          "end": {
+            "x": 590,
+            "y": 322.4
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

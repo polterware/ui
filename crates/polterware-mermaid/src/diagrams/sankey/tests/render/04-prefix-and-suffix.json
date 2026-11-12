@@ -1,0 +1,152 @@
+{
+  "name": "04-prefix-and-suffix",
+  "source": "---\nconfig:\n  sankey:\n    prefix: \"~\"\n    suffix: \" TWh\"\n---\nsankey-beta\n\nOil,Transport,504.287\nOil,Industry,107.703\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400
+    },
+    "nodes": [
+      {
+        "id": "Oil",
+        "x": 0,
+        "y": 2.0745979679658726,
+        "width": 10,
+        "height": 372.99999999999994,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Transport",
+        "x": 590,
+        "y": 0,
+        "width": 10,
+        "height": 307.3564126864818,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Industry",
+        "x": 590,
+        "y": 334.3564126864818,
+        "width": 10,
+        "height": 65.6435873135182,
+        "fill": "#e15759",
+        "layer": 1
+      }
+    ],
+    "labels": [
+      {
+        "node": "Oil",
+        "class": null,
+        "x": 16,
+        "y": 188.57459796796584,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Oil\n~611.99 TWh"
+      },
+      {
+        "node": "Transport",
+        "class": null,
+        "x": 584,
+        "y": 153.6782063432409,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Transport\n~504.29 TWh"
+      },
+      {
+        "node": "Industry",
+        "class": null,
+        "x": 584,
+        "y": 367.1782063432409,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Industry\n~107.7 TWh"
+      }
+    ],
+    "links": [
+      {
+        "source": "Oil",
+        "target": "Transport",
+        "value": 504.287,
+        "width": 307.35641268648175,
+        "stroke": "url(#linearGradient-29)",
+        "strokeWidth": 307.35641268648175,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 155.75280431120675
+          },
+          "control1": {
+            "x": 300,
+            "y": 155.75280431120675
+          },
+          "control2": {
+            "x": 300,
+            "y": 153.67820634324087
+          },
+          "end": {
+            "x": 590,
+            "y": 153.67820634324087
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Oil",
+        "target": "Industry",
+        "value": 107.703,
+        "width": 65.6435873135182,
+        "stroke": "url(#linearGradient-30)",
+        "strokeWidth": 65.6435873135182,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 342.2528043112067
+          },
+          "control1": {
+            "x": 300,
+            "y": 342.2528043112067
+          },
+          "control2": {
+            "x": 300,
+            "y": 367.1782063432409
+          },
+          "end": {
+            "x": 590,
+            "y": 367.1782063432409
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#e15759"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
