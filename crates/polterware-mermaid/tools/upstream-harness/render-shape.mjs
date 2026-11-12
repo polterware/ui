@@ -1,8 +1,10 @@
 // node render-shape.mjs <shape> <label> [look]: renders one Mermaid shape under jsdom and prints
-// its SVG and the node box as JSON. Text is measured with a fixed monospace rule (each character
-// 0.6 em wide, lines 1.15 em tall), the same rule as polterware-mermaid's FallbackMeasure for a
-// family containing "mono", so fixtures and Rust tests measure labels identically.
+// its SVG and the node box as JSON. Text is measured with the shared monospace rule in
+// text-box.mjs (each character 0.6 em wide, a wrapped block 1.15 em plus 1.1 em per line),
+// the same rule as polterware-mermaid's FallbackMeasure for a family containing "mono", so
+// fixtures and Rust tests measure labels identically.
 import { createRequire } from 'node:module';
+import { textBox as measuredTextBox } from './text-box.mjs';
 const require = createRequire('/Users/erickpatrickbarcelos/codes/polterware-workspace/research/mermaid-port/upstream/mermaid/packages/mermaid/package.json');
 const { JSDOM } = require('jsdom');
 const dom = new JSDOM('<!doctype html><html><body><svg id="svg" xmlns="http://www.w3.org/2000/svg"><g id="root"></g></svg></body></html>', { pretendToBeVisual: true });
@@ -15,16 +17,7 @@ if (!dom.window.HTMLImageElement.prototype.decode) {
 
 const fontSize = (el) => parseFloat(dom.window.getComputedStyle(el).fontSize) || 16;
 const textBox = function (el) {
-  const rows = el.querySelectorAll ? el.querySelectorAll('.row') : [];
-  const lines = rows.length > 0
-    ? Array.from(rows).map((r) => r.textContent || '')
-    : (el.textContent || '').split('\n');
-  const size = fontSize(el);
-  const width = Math.max(0, ...lines.map((l) => [...l].length)) * 0.6 * size;
-  const height = (el.textContent || '')
-    ? (lines.length <= 1 ? lines.length * 1.15 * size : (1.15 + (lines.length - 1) * 1.1) * size)
-    : 0;
-  return { x: 0, y: 0, width, height, top: 0, left: 0, right: width, bottom: height };
+  return measuredTextBox(el, fontSize(el));
 };
 
 function arcExtrema(x0, y0, rx, ry, phiDeg, fa, fs, x1, y1) {
@@ -477,4 +470,5 @@ if (process.argv[1] && process.argv[1].endsWith('render-shape.mjs')) {
   const [shape, label = 'label', look = 'classic'] = process.argv.slice(2);
   const result = await renderShape(shape, label, look);
   console.log(JSON.stringify(result, null, 1));
+  process.exit(0);
 }

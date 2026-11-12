@@ -14,7 +14,7 @@ use crate::render::layout_dagre::{
 };
 use crate::render::markers::marker_definitions;
 use crate::render::shapes::{ShapeError, position_node};
-use crate::scene::{PathShape, Rect, Scene};
+use crate::scene::{Group, PathShape, PathStyle, Rect, RectShape, Scene, Transform};
 use crate::theme::{Theme, ThemeVariables};
 
 use super::create_graph::{CreatedGraph, create_graph_with_elements};
@@ -187,6 +187,7 @@ pub fn prepare_layout_for_dagre(data4_layout: &LayoutData) -> DagrePreparedLayou
             let label = EdgeLabel {
                 width: edge.width,
                 height: edge.height,
+                labelpos: edge.labelpos.clone(),
                 ..Default::default()
             };
             let _ = graph.set_edge_full(start, end, Some(label), Some(&edge.id));
@@ -243,6 +244,20 @@ pub fn measure_dagre_graph(
         {
             e.width = edge.width;
             e.height = edge.height;
+            e.labelpos = edge.labelpos.clone();
+        }
+    }
+
+    // Upstream's measurement pass visits every node in the prepared graph. The self-loop
+    // dummies are `labelRect` nodes with an empty label, and `labelRect`'s `updateNodeBounds`
+    // sizes them from its 0.1 × 0.1 rect; the 10 × 10 `prepareLayoutForDagre` sets is only a
+    // placeholder. They carry no shape here, so apply that measurement directly.
+    for node_id in prepared.graph.nodes() {
+        if let Some(node) = prepared.graph.node_mut(&node_id)
+            && node.dummy.as_deref() == Some("selfedge")
+        {
+            node.width = 0.1;
+            node.height = 0.1;
         }
     }
 
@@ -459,7 +474,28 @@ pub fn dagre_render(
         }
     }
 
+    // Upstream paints every node the layout graph holds, self-loop dummies included. A dummy
+    // is a `labelRect` node: a 0.1 × 0.1 rect at the node's origin, invisible but part of the
+    // SVG, and its box is why a self-loop widens the fitted viewBox below the last real node.
+    for node_id in measured.graph.nodes() {
+        let Some(dummy) = measured.graph.node(&node_id) else {
+            continue;
+        };
+        if dummy.dummy.as_deref() != Some("selfedge") {
+            continue;
+        }
+        let mut group = Group::new().with_class("label edgeLabel");
+        group.push(RectShape::new(
+            Rect::new(0.0, 0.0, dummy.width, dummy.height),
+            0.0,
+            PathStyle::default(),
+        ));
+        group.transform = Transform::translate(dummy.x.unwrap_or(0.0), dummy.y.unwrap_or(0.0));
+        scene.push(group);
+    }
+
     // Paint edges
+    let mut path_bounds: Option<Rect> = None;
     for edge in &data4_layout.edges {
         if edge.is_layout_only == Some(true) {
             continue;
@@ -481,6 +517,9 @@ pub fn dagre_render(
             ..Default::default()
         };
         if let Ok(inserted) = insert_edge_with_type(&edge_data, &diagram_id, &diagram_type) {
+            if let Some(bounds) = svg_path_bounds(&inserted.path) {
+                path_bounds = Some(path_bounds.map_or(bounds, |acc| acc.union(bounds)));
+            }
             scene.push(PathShape {
                 path: inserted.path,
                 ..Default::default()
@@ -514,15 +553,20 @@ pub fn dagre_render(
         }
     }
 
-    for edge in &data4_layout.edges {
-        if let Some(pts) = &edge.points {
-            for p in pts {
-                min_x = min_x.min(p.x);
-                max_x = max_x.max(p.x);
-                min_y = min_y.min(p.y);
-                max_y = max_y.max(p.y);
-            }
+    // The self-loop dummy rects are painted from their node origin, not around it.
+    for node_id in measured.graph.nodes() {
+        if let Some(dummy) = measured.graph.node(&node_id)
+            && dummy.dummy.as_deref() == Some("selfedge")
+            && let (Some(x), Some(y)) = (dummy.x, dummy.y)
+        {
+            min_x = min_x.min(x);
+            max_x = max_x.max(x + dummy.width);
+            min_y = min_y.min(y);
+            max_y = max_y.max(y + dummy.height);
         }
+    }
+
+    for edge in &data4_layout.edges {
         if let (Some(lx), Some(ly), Some(lw), Some(lh)) = (edge.x, edge.y, edge.width, edge.height)
             && lw > 0.0
             && lh > 0.0
@@ -532,6 +576,13 @@ pub fn dagre_render(
             min_y = min_y.min(ly - lh / 2.0);
             max_y = max_y.max(ly + lh / 2.0);
         }
+    }
+
+    if let Some(bounds) = path_bounds {
+        min_x = min_x.min(bounds.x);
+        max_x = max_x.max(bounds.x + bounds.width);
+        min_y = min_y.min(bounds.y);
+        max_y = max_y.max(bounds.y + bounds.height);
     }
 
     let bounds = if min_x <= max_x && min_y <= max_y {
@@ -546,4 +597,159 @@ pub fn dagre_render(
     setup_view_port_for_svg(&mut scene, padding, "flowchart", use_max_width);
 
     Ok(scene)
+}
+
+/// The box `getBBox()` reports for an edge's `d` attribute: the real curve extrema, not just
+/// the endpoints, because a browser measures the painted cubic and quadratic segments. This
+/// is the box the fitted viewBox is built from.
+fn svg_path_bounds(path: &crate::scene::Path) -> Option<Rect> {
+    use crate::scene::PathCommand;
+
+    #[derive(Clone, Copy)]
+    struct Bounds {
+        min_x: f64,
+        max_x: f64,
+        min_y: f64,
+        max_y: f64,
+    }
+
+    impl Bounds {
+        fn new() -> Self {
+            Self {
+                min_x: f64::INFINITY,
+                max_x: f64::NEG_INFINITY,
+                min_y: f64::INFINITY,
+                max_y: f64::NEG_INFINITY,
+            }
+        }
+
+        fn include(&mut self, x: f64, y: f64) {
+            self.include_x(x);
+            self.include_y(y);
+        }
+
+        fn include_x(&mut self, value: f64) {
+            self.min_x = self.min_x.min(value);
+            self.max_x = self.max_x.max(value);
+        }
+
+        fn include_y(&mut self, value: f64) {
+            self.min_y = self.min_y.min(value);
+            self.max_y = self.max_y.max(value);
+        }
+
+        fn rect(self) -> Option<Rect> {
+            (self.min_x <= self.max_x && self.min_y <= self.max_y).then(|| {
+                Rect::new(
+                    self.min_x,
+                    self.min_y,
+                    self.max_x - self.min_x,
+                    self.max_y - self.min_y,
+                )
+            })
+        }
+    }
+
+    let mut bounds = Bounds::new();
+    let mut current = (0.0, 0.0);
+    let mut start = (0.0, 0.0);
+    for command in &path.commands {
+        match *command {
+            PathCommand::MoveTo { x, y } => {
+                bounds.include(x, y);
+                current = (x, y);
+                start = (x, y);
+            }
+            PathCommand::LineTo { x, y } => {
+                bounds.include(x, y);
+                current = (x, y);
+            }
+            PathCommand::CubicTo {
+                c1x,
+                c1y,
+                c2x,
+                c2y,
+                x,
+                y,
+            } => {
+                for value in cubic_extrema(current.0, c1x, c2x, x) {
+                    bounds.include_x(value);
+                }
+                for value in cubic_extrema(current.1, c1y, c2y, y) {
+                    bounds.include_y(value);
+                }
+                bounds.include(x, y);
+                current = (x, y);
+            }
+            PathCommand::QuadTo { cx, cy, x, y } => {
+                for value in quad_extrema(current.0, cx, x) {
+                    bounds.include_x(value);
+                }
+                for value in quad_extrema(current.1, cy, y) {
+                    bounds.include_y(value);
+                }
+                bounds.include(x, y);
+                current = (x, y);
+            }
+            PathCommand::ArcTo { rx, ry, x, y, .. } => {
+                bounds.include(current.0, current.1);
+                bounds.include(x, y);
+                bounds.include(x - rx, y - ry);
+                bounds.include(x + rx, y + ry);
+                current = (x, y);
+            }
+            PathCommand::Close => {
+                bounds.include(start.0, start.1);
+                current = start;
+            }
+        }
+    }
+    bounds.rect()
+}
+
+/// The values a cubic Bézier reaches on one axis, endpoints included: the roots of its
+/// derivative inside the segment plus its two ends.
+fn cubic_extrema(p0: f64, p1: f64, p2: f64, p3: f64) -> Vec<f64> {
+    let mut values = vec![p0, p3];
+    let at = |t: f64| {
+        (1.0 - t).powi(3) * p0
+            + 3.0 * (1.0 - t).powi(2) * t * p1
+            + 3.0 * (1.0 - t) * t * t * p2
+            + t.powi(3) * p3
+    };
+    let a = 3.0 * (p3 - 3.0 * p2 + 3.0 * p1 - p0);
+    let b = 6.0 * (p2 - 2.0 * p1 + p0);
+    let c = 3.0 * (p1 - p0);
+    if a.abs() < 1e-12 {
+        if b.abs() > 1e-12 {
+            let t = -c / b;
+            if t > 0.0 && t < 1.0 {
+                values.push(at(t));
+            }
+        }
+    } else {
+        let discriminant = b * b - 4.0 * a * c;
+        if discriminant >= 0.0 {
+            let root = discriminant.sqrt();
+            for t in [(-b - root) / (2.0 * a), (-b + root) / (2.0 * a)] {
+                if t > 0.0 && t < 1.0 {
+                    values.push(at(t));
+                }
+            }
+        }
+    }
+    values
+}
+
+/// The values a quadratic Bézier reaches on one axis, endpoints included.
+fn quad_extrema(p0: f64, p1: f64, p2: f64) -> Vec<f64> {
+    let mut values = vec![p0, p2];
+    let denominator = p2 - 2.0 * p1 + p0;
+    if denominator.abs() > 1e-12 {
+        let t = (p0 - p1) / denominator;
+        if t > 0.0 && t < 1.0 {
+            values.push((1.0 - t).powi(2) * p0 + 2.0 * (1.0 - t) * t * p1 + t * t * p2);
+        }
+    }
+    values
 }

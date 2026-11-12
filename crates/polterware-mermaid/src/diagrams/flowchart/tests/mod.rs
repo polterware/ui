@@ -17,6 +17,7 @@ mod lines_tests;
 mod md_string_tests;
 mod node_data_tests;
 mod parser_tests;
+mod render_tests;
 mod singlenode_tests;
 mod style_tests;
 mod subgraph_tests;

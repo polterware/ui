@@ -6,12 +6,15 @@
 //! inserts, and intersections test the outer ring. Upstream's `outer-circle`/`inner-circle`
 //! leaf classes have no scene equivalent (ellipses carry no class); the nesting keeps the
 //! group role.
-use super::{IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, prepare, shape_style};
+use super::{
+    IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, prepare_ignoring_min_width,
+    shape_style,
+};
 use crate::scene::{EllipseShape, Item, Point, Rect, Size, SourceRef};
 
 pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeError> {
     let mut node = node.clone();
-    let (mut group, label, text_size) = prepare(&node, ctx)?;
+    let (mut group, label, text_size) = prepare_ignoring_min_width(&node, ctx)?;
 
     // handDrawn: rough.js (later)
     let gap = if node.look == "neo" { 12.0 } else { 5.0 };

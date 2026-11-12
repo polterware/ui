@@ -1,0 +1,53 @@
+{
+  "name": "11-long-label-wrap",
+  "source": "flowchart TD\n  A[This is a fairly long node label that has to wrap at the configured wrapping width]\n  A --> B[Short]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "A",
+        "x": 98,
+        "y": 93.80000000000001,
+        "width": 180,
+        "height": 171.60000000000002
+      },
+      {
+        "id": "B",
+        "x": 98,
+        "y": 253.8,
+        "width": 180,
+        "height": 48.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "L_A_B_0",
+        "points": [
+          {
+            "x": 98,
+            "y": 179.60000000000002
+          },
+          {
+            "x": 98,
+            "y": 204.60000000000002
+          },
+          {
+            "x": 98,
+            "y": 229.60000000000002
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 196,
+      "height": 286
+    },
+    "rawViewBox": "0 0 196 286"
+  }
+}

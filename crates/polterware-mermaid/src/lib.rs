@@ -20,7 +20,7 @@ pub mod scene;
 pub mod theme;
 
 pub use diagrams::{Diagram, DiagramKind};
-pub use error::{ParseError, Span};
+pub use error::{ParseError, RenderError, Span};
 pub use measure::{
     FallbackMeasure, Font, MarkdownLine, MarkdownWord, MarkdownWordKind, TextDimensions, TextError,
     TextMeasure, TextOptions, markdown_to_lines, non_markdown_to_lines, shape_text,
@@ -34,4 +34,28 @@ pub fn parse(text: &str) -> Result<Diagram, ParseError> {
     let kind = diagrams::detect(&source.body)
         .ok_or_else(|| ParseError::new("No diagram type detected", None))?;
     diagrams::parse_kind(kind, &source.body)
+}
+
+/// Renders `source` to a [`Scene`]: detects the diagram type, parses it, lays it out, and
+/// describes what a painter draws.
+///
+/// The source's frontmatter and `%%{init}%%` directives are applied over `config` before the
+/// diagram is drawn. Flowcharts are the diagram type this entry draws for now; another type
+/// reports [`RenderError::Unsupported`].
+pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, RenderError> {
+    let preprocessed = preprocess::preprocess(source);
+    if let Some(message) = preprocessed.error {
+        return Err(RenderError::Parse(ParseError::new(message, None)));
+    }
+    let kind = diagrams::detect(&preprocessed.body)
+        .ok_or_else(|| ParseError::new("No diagram type detected", None))?;
+    let mut config = config.clone();
+    config.apply(&preprocessed.config)?;
+    match kind {
+        DiagramKind::Flowchart => {
+            let scene = diagrams::flowchart::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
+        other => Err(RenderError::Unsupported(format!("{other:?}"))),
+    }
 }

@@ -26,14 +26,18 @@
 
 mod ast;
 mod db;
+mod layout_data;
 mod lexer;
 mod metadata;
 mod parser;
+pub mod render;
 
 pub use ast::{
     ArrowEnd, ArrowType, Ast, DroppedSubGraphMember, Edge, FlowClass, LabelType, LayoutEdge, Node,
     Stroke, SubGraph, Tooltip, Vertex,
 };
+pub use layout_data::{DIAGRAM_TYPE, MARKERS, layout_data};
+pub use render::{FlowchartRenderError, draw, draw_ast, draw_layout_ast};
 
 use crate::error::ParseError;
 
