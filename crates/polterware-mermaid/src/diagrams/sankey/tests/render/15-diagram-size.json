@@ -1,0 +1,268 @@
+{
+  "name": "15-diagram-size",
+  "source": "---\nconfig:\n  sankey:\n    width: 400\n    height: 300\n---\nsankey-beta\n\nPublisher,Search,120\nPublisher,Direct,80\nSearch,Article,70\nSearch,Landing,50\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "height": 299.9999999999998
+    },
+    "nodes": [
+      {
+        "id": "Publisher",
+        "x": 0,
+        "y": 11.186274683188337,
+        "width": 10,
+        "height": 246,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Search",
+        "x": 195,
+        "y": 123.38907450560158,
+        "width": 10,
+        "height": 147.60000000000008,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Direct",
+        "x": 390,
+        "y": 0,
+        "width": 10,
+        "height": 98.39999999999996,
+        "fill": "#e15759",
+        "layer": 2
+      },
+      {
+        "id": "Article",
+        "x": 390,
+        "y": 125.39999999999996,
+        "width": 10,
+        "height": 86.09999999999987,
+        "fill": "#76b7b2",
+        "layer": 2
+      },
+      {
+        "id": "Landing",
+        "x": 390,
+        "y": 238.49999999999983,
+        "width": 10,
+        "height": 61.49999999999994,
+        "fill": "#59a14f",
+        "layer": 2
+      }
+    ],
+    "labels": [
+      {
+        "node": "Publisher",
+        "class": null,
+        "x": 16,
+        "y": 134.18627468318834,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Publisher\n200"
+      },
+      {
+        "node": "Search",
+        "class": null,
+        "x": 211,
+        "y": 197.1890745056016,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Search\n120"
+      },
+      {
+        "node": "Direct",
+        "class": null,
+        "x": 384,
+        "y": 49.19999999999998,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Direct\n80"
+      },
+      {
+        "node": "Article",
+        "class": null,
+        "x": 384,
+        "y": 168.4499999999999,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Article\n70"
+      },
+      {
+        "node": "Landing",
+        "class": null,
+        "x": 384,
+        "y": 269.2499999999998,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Landing\n50"
+      }
+    ],
+    "links": [
+      {
+        "source": "Publisher",
+        "target": "Search",
+        "value": 120,
+        "width": 147.6,
+        "stroke": "url(#linearGradient-108)",
+        "strokeWidth": 147.6,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 183.38627468318833
+          },
+          "control1": {
+            "x": 102.5,
+            "y": 183.38627468318833
+          },
+          "control2": {
+            "x": 102.5,
+            "y": 197.18907450560158
+          },
+          "end": {
+            "x": 195,
+            "y": 197.18907450560158
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 195,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Publisher",
+        "target": "Direct",
+        "value": 80,
+        "width": 98.4,
+        "stroke": "url(#linearGradient-109)",
+        "strokeWidth": 98.4,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 60.38627468318834
+          },
+          "control1": {
+            "x": 200,
+            "y": 60.38627468318834
+          },
+          "control2": {
+            "x": 200,
+            "y": 49.2
+          },
+          "end": {
+            "x": 390,
+            "y": 49.2
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 390,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#e15759"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Search",
+        "target": "Article",
+        "value": 70,
+        "width": 86.1,
+        "stroke": "url(#linearGradient-110)",
+        "strokeWidth": 86.1,
+        "path": {
+          "start": {
+            "x": 205,
+            "y": 166.43907450560158
+          },
+          "control1": {
+            "x": 297.5,
+            "y": 166.43907450560158
+          },
+          "control2": {
+            "x": 297.5,
+            "y": 168.44999999999996
+          },
+          "end": {
+            "x": 390,
+            "y": 168.44999999999996
+          }
+        },
+        "gradient": {
+          "x1": 205,
+          "x2": 390,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Search",
+        "target": "Landing",
+        "value": 50,
+        "width": 61.5,
+        "stroke": "url(#linearGradient-111)",
+        "strokeWidth": 61.5,
+        "path": {
+          "start": {
+            "x": 205,
+            "y": 240.2390745056016
+          },
+          "control1": {
+            "x": 297.5,
+            "y": 240.2390745056016
+          },
+          "control2": {
+            "x": 297.5,
+            "y": 269.24999999999983
+          },
+          "end": {
+            "x": 390,
+            "y": 269.24999999999983
+          }
+        },
+        "gradient": {
+          "x1": 205,
+          "x2": 390,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#59a14f"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

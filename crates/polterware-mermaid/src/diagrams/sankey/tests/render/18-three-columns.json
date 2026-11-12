@@ -1,0 +1,500 @@
+{
+  "name": "18-three-columns",
+  "source": "---\nconfig:\n  sankey:\n    nodeWidth: 12\n    nodePadding: 10\n---\nsankey-beta\n\nNuclear,Thermal generation,839.978\nGas,Thermal generation,151.891\nThermal generation,Electricity grid,525.531\nThermal generation,Losses,787.129\nThermal generation,District heating,79.329\nElectricity grid,Industry,342.165\nElectricity grid,Road transport,37.797\nDistrict heating,Homes,19.263\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400
+    },
+    "nodes": [
+      {
+        "id": "Nuclear",
+        "x": 0,
+        "y": 0,
+        "width": 12,
+        "height": 230.11078480790712,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Thermal generation",
+        "x": 196,
+        "y": 3.6407738741043523,
+        "width": 12,
+        "height": 381.33341734423266,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Gas",
+        "x": 0,
+        "y": 255.11078480790712,
+        "width": 12,
+        "height": 41.61032457428388,
+        "fill": "#e15759",
+        "layer": 0
+      },
+      {
+        "id": "Electricity grid",
+        "x": 392,
+        "y": 209.29945867759537,
+        "width": 12,
+        "height": 143.96847399680027,
+        "fill": "#76b7b2",
+        "layer": 2
+      },
+      {
+        "id": "Losses",
+        "x": 588,
+        "y": 0,
+        "width": 12,
+        "height": 215.63287602182822,
+        "fill": "#59a14f",
+        "layer": 3
+      },
+      {
+        "id": "District heating",
+        "x": 392,
+        "y": 378.26793267439564,
+        "width": 12,
+        "height": 21.732067325604362,
+        "fill": "#edc949",
+        "layer": 2
+      },
+      {
+        "id": "Industry",
+        "x": 588,
+        "y": 240.63287602182822,
+        "width": 12,
+        "height": 93.73561769927016,
+        "fill": "#af7aa1",
+        "layer": 3
+      },
+      {
+        "id": "Road transport",
+        "x": 588,
+        "y": 359.3684937210984,
+        "width": 12,
+        "height": 10.354434679699295,
+        "fill": "#ff9da7",
+        "layer": 3
+      },
+      {
+        "id": "Homes",
+        "x": 588,
+        "y": 394.7229284007977,
+        "width": 12,
+        "height": 5.277071599202259,
+        "fill": "#9c755f",
+        "layer": 3
+      }
+    ],
+    "labels": [
+      {
+        "node": "Nuclear",
+        "class": null,
+        "x": 18,
+        "y": 115.05539240395356,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Nuclear\n839.98"
+      },
+      {
+        "node": "Thermal generation",
+        "class": null,
+        "x": 214,
+        "y": 194.30748254622068,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Thermal generation\n1391.99"
+      },
+      {
+        "node": "Gas",
+        "class": null,
+        "x": 18,
+        "y": 275.9159470950491,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Gas\n151.89"
+      },
+      {
+        "node": "Electricity grid",
+        "class": null,
+        "x": 386,
+        "y": 281.2836956759955,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Electricity grid\n525.53"
+      },
+      {
+        "node": "Losses",
+        "class": null,
+        "x": 582,
+        "y": 107.81643801091411,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Losses\n787.13"
+      },
+      {
+        "node": "District heating",
+        "class": null,
+        "x": 386,
+        "y": 389.1339663371978,
+        "dy": 0,
+        "anchor": "end",
+        "text": "District heating\n79.33"
+      },
+      {
+        "node": "Industry",
+        "class": null,
+        "x": 582,
+        "y": 287.5006848714633,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Industry\n342.17"
+      },
+      {
+        "node": "Road transport",
+        "class": null,
+        "x": 582,
+        "y": 364.54571106094807,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Road transport\n37.8"
+      },
+      {
+        "node": "Homes",
+        "class": null,
+        "x": 582,
+        "y": 397.3614642003988,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Homes\n19.26"
+      }
+    ],
+    "links": [
+      {
+        "source": "Nuclear",
+        "target": "Thermal generation",
+        "value": 839.978,
+        "width": 230.1107848079072,
+        "stroke": "url(#linearGradient-134)",
+        "strokeWidth": 230.1107848079072,
+        "path": {
+          "start": {
+            "x": 12,
+            "y": 115.0553924039536
+          },
+          "control1": {
+            "x": 104,
+            "y": 115.0553924039536
+          },
+          "control2": {
+            "x": 104,
+            "y": 118.69616627805796
+          },
+          "end": {
+            "x": 196,
+            "y": 118.69616627805796
+          }
+        },
+        "gradient": {
+          "x1": 12,
+          "x2": 196,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Gas",
+        "target": "Thermal generation",
+        "value": 151.891,
+        "width": 41.610324574283894,
+        "stroke": "url(#linearGradient-135)",
+        "strokeWidth": 41.610324574283894,
+        "path": {
+          "start": {
+            "x": 12,
+            "y": 275.9159470950491
+          },
+          "control1": {
+            "x": 104,
+            "y": 275.9159470950491
+          },
+          "control2": {
+            "x": 104,
+            "y": 254.5567209691535
+          },
+          "end": {
+            "x": 196,
+            "y": 254.5567209691535
+          }
+        },
+        "gradient": {
+          "x1": 12,
+          "x2": 196,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#e15759"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Thermal generation",
+        "target": "Electricity grid",
+        "value": 525.531,
+        "width": 143.96847399680024,
+        "stroke": "url(#linearGradient-136)",
+        "strokeWidth": 143.96847399680024,
+        "path": {
+          "start": {
+            "x": 208,
+            "y": 291.25788689433267
+          },
+          "control1": {
+            "x": 300,
+            "y": 291.25788689433267
+          },
+          "control2": {
+            "x": 300,
+            "y": 281.2836956759955
+          },
+          "end": {
+            "x": 392,
+            "y": 281.2836956759955
+          }
+        },
+        "gradient": {
+          "x1": 208,
+          "x2": 392,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Thermal generation",
+        "target": "Losses",
+        "value": 787.129,
+        "width": 215.6328760218282,
+        "stroke": "url(#linearGradient-137)",
+        "strokeWidth": 215.6328760218282,
+        "path": {
+          "start": {
+            "x": 208,
+            "y": 111.45721188501845
+          },
+          "control1": {
+            "x": 398,
+            "y": 111.45721188501845
+          },
+          "control2": {
+            "x": 398,
+            "y": 107.8164380109141
+          },
+          "end": {
+            "x": 588,
+            "y": 107.8164380109141
+          }
+        },
+        "gradient": {
+          "x1": 208,
+          "x2": 588,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#59a14f"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Thermal generation",
+        "target": "District heating",
+        "value": 79.329,
+        "width": 21.732067325604326,
+        "stroke": "url(#linearGradient-138)",
+        "strokeWidth": 21.732067325604326,
+        "path": {
+          "start": {
+            "x": 208,
+            "y": 374.108157555535
+          },
+          "control1": {
+            "x": 300,
+            "y": 374.108157555535
+          },
+          "control2": {
+            "x": 300,
+            "y": 389.1339663371978
+          },
+          "end": {
+            "x": 392,
+            "y": 389.1339663371978
+          }
+        },
+        "gradient": {
+          "x1": 208,
+          "x2": 392,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#edc949"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Electricity grid",
+        "target": "Industry",
+        "value": 342.165,
+        "width": 93.7356176992702,
+        "stroke": "url(#linearGradient-139)",
+        "strokeWidth": 93.7356176992702,
+        "path": {
+          "start": {
+            "x": 404,
+            "y": 256.1672675272305
+          },
+          "control1": {
+            "x": 496,
+            "y": 256.1672675272305
+          },
+          "control2": {
+            "x": 496,
+            "y": 287.5006848714633
+          },
+          "end": {
+            "x": 588,
+            "y": 287.5006848714633
+          }
+        },
+        "gradient": {
+          "x1": 404,
+          "x2": 588,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#76b7b2"
+            },
+            {
+              "offset": "100%",
+              "color": "#af7aa1"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Electricity grid",
+        "target": "Road transport",
+        "value": 37.797,
+        "width": 10.354434679699311,
+        "stroke": "url(#linearGradient-140)",
+        "strokeWidth": 10.354434679699311,
+        "path": {
+          "start": {
+            "x": 404,
+            "y": 308.21229371671524
+          },
+          "control1": {
+            "x": 496,
+            "y": 308.21229371671524
+          },
+          "control2": {
+            "x": 496,
+            "y": 364.54571106094807
+          },
+          "end": {
+            "x": 588,
+            "y": 364.54571106094807
+          }
+        },
+        "gradient": {
+          "x1": 404,
+          "x2": 588,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#76b7b2"
+            },
+            {
+              "offset": "100%",
+              "color": "#ff9da7"
+            }
+          ]
+        }
+      },
+      {
+        "source": "District heating",
+        "target": "Homes",
+        "value": 19.263,
+        "width": 5.277071599202261,
+        "stroke": "url(#linearGradient-141)",
+        "strokeWidth": 5.277071599202261,
+        "path": {
+          "start": {
+            "x": 404,
+            "y": 380.90646847399677
+          },
+          "control1": {
+            "x": 496,
+            "y": 380.90646847399677
+          },
+          "control2": {
+            "x": 496,
+            "y": 397.3614642003988
+          },
+          "end": {
+            "x": 588,
+            "y": 397.3614642003988
+          }
+        },
+        "gradient": {
+          "x1": 404,
+          "x2": 588,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#edc949"
+            },
+            {
+              "offset": "100%",
+              "color": "#9c755f"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

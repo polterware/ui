@@ -1,0 +1,326 @@
+{
+  "name": "07-alignment-center",
+  "source": "---\nconfig:\n  sankey:\n    nodeAlignment: center\n---\nsankey-beta\n\nCoal imports,Coal,11.606\nCoal reserves,Coal,63.965\nCoal,Solid,75.571\nSolid,Industry,46.477\nSolid,Heating,29.094\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -7.105427357601002e-14,
+      "width": 600,
+      "height": 400.00000000000006
+    },
+    "nodes": [
+      {
+        "id": "Coal imports",
+        "x": 0,
+        "y": -3.8413716652030416e-14,
+        "width": 10,
+        "height": 57.28438157494276,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Coal",
+        "x": 196.66666666666666,
+        "y": 22.433444759870454,
+        "width": 10,
+        "height": 373,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Coal reserves",
+        "x": 0,
+        "y": 84.28438157494273,
+        "width": 10,
+        "height": 315.7156184250573,
+        "fill": "#e15759",
+        "layer": 0
+      },
+      {
+        "id": "Solid",
+        "x": 393.3333333333333,
+        "y": 22.010238647186327,
+        "width": 10,
+        "height": 373,
+        "fill": "#76b7b2",
+        "layer": 2
+      },
+      {
+        "id": "Industry",
+        "x": 590,
+        "y": -7.105427357601002e-14,
+        "width": 10,
+        "height": 229.3991213560758,
+        "fill": "#59a14f",
+        "layer": 3
+      },
+      {
+        "id": "Heating",
+        "x": 590,
+        "y": 256.39912135607574,
+        "width": 10,
+        "height": 143.60087864392426,
+        "fill": "#edc949",
+        "layer": 3
+      }
+    ],
+    "labels": [
+      {
+        "node": "Coal imports",
+        "class": null,
+        "x": 16,
+        "y": 28.642190787471346,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Coal imports\n11.61"
+      },
+      {
+        "node": "Coal",
+        "class": null,
+        "x": 212.66666666666666,
+        "y": 208.93344475987044,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Coal\n75.57"
+      },
+      {
+        "node": "Coal reserves",
+        "class": null,
+        "x": 16,
+        "y": 242.14219078747135,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Coal reserves\n63.97"
+      },
+      {
+        "node": "Solid",
+        "class": null,
+        "x": 387.3333333333333,
+        "y": 208.51023864718633,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Solid\n75.57"
+      },
+      {
+        "node": "Industry",
+        "class": null,
+        "x": 584,
+        "y": 114.69956067803784,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Industry\n46.48"
+      },
+      {
+        "node": "Heating",
+        "class": null,
+        "x": 584,
+        "y": 328.19956067803787,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Heating\n29.09"
+      }
+    ],
+    "links": [
+      {
+        "source": "Coal imports",
+        "target": "Coal",
+        "value": 11.606,
+        "width": 57.28438157494277,
+        "stroke": "url(#linearGradient-55)",
+        "strokeWidth": 57.28438157494277,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 28.642190787471346
+          },
+          "control1": {
+            "x": 103.33333333333333,
+            "y": 28.642190787471346
+          },
+          "control2": {
+            "x": 103.33333333333333,
+            "y": 51.07563554734184
+          },
+          "end": {
+            "x": 196.66666666666666,
+            "y": 51.07563554734184
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 196.66666666666666,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Coal reserves",
+        "target": "Coal",
+        "value": 63.965,
+        "width": 315.71561842505724,
+        "stroke": "url(#linearGradient-56)",
+        "strokeWidth": 315.71561842505724,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 242.14219078747135
+          },
+          "control1": {
+            "x": 103.33333333333333,
+            "y": 242.14219078747135
+          },
+          "control2": {
+            "x": 103.33333333333333,
+            "y": 237.57563554734185
+          },
+          "end": {
+            "x": 196.66666666666666,
+            "y": 237.57563554734185
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 196.66666666666666,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#e15759"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Coal",
+        "target": "Solid",
+        "value": 75.571,
+        "width": 373,
+        "stroke": "url(#linearGradient-57)",
+        "strokeWidth": 373,
+        "path": {
+          "start": {
+            "x": 206.66666666666666,
+            "y": 208.93344475987044
+          },
+          "control1": {
+            "x": 300,
+            "y": 208.93344475987044
+          },
+          "control2": {
+            "x": 300,
+            "y": 208.51023864718633
+          },
+          "end": {
+            "x": 393.3333333333333,
+            "y": 208.51023864718633
+          }
+        },
+        "gradient": {
+          "x1": 206.66666666666666,
+          "x2": 393.3333333333333,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Solid",
+        "target": "Industry",
+        "value": 46.477,
+        "width": 229.39912135607574,
+        "stroke": "url(#linearGradient-58)",
+        "strokeWidth": 229.39912135607574,
+        "path": {
+          "start": {
+            "x": 403.3333333333333,
+            "y": 136.7097993252242
+          },
+          "control1": {
+            "x": 496.66666666666663,
+            "y": 136.7097993252242
+          },
+          "control2": {
+            "x": 496.66666666666663,
+            "y": 114.6995606780378
+          },
+          "end": {
+            "x": 590,
+            "y": 114.6995606780378
+          }
+        },
+        "gradient": {
+          "x1": 403.3333333333333,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#76b7b2"
+            },
+            {
+              "offset": "100%",
+              "color": "#59a14f"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Solid",
+        "target": "Heating",
+        "value": 29.094,
+        "width": 143.60087864392426,
+        "stroke": "url(#linearGradient-59)",
+        "strokeWidth": 143.60087864392426,
+        "path": {
+          "start": {
+            "x": 403.3333333333333,
+            "y": 323.2097993252242
+          },
+          "control1": {
+            "x": 496.66666666666663,
+            "y": 323.2097993252242
+          },
+          "control2": {
+            "x": 496.66666666666663,
+            "y": 328.19956067803787
+          },
+          "end": {
+            "x": 590,
+            "y": 328.19956067803787
+          }
+        },
+        "gradient": {
+          "x1": 403.3333333333333,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#76b7b2"
+            },
+            {
+              "offset": "100%",
+              "color": "#edc949"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

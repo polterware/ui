@@ -1,0 +1,126 @@
+{
+  "name": "12-link-color-custom",
+  "source": "---\nconfig:\n  sankey:\n    linkColor: \"#ff8800\"\n---\nsankey-beta\n\nDistricts,Schools,22.505\nDistricts,Hospitals,46.184\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -3.4638958368304884e-14,
+      "width": 600,
+      "height": 400.00000000000006
+    },
+    "nodes": [
+      {
+        "id": "Districts",
+        "x": 0,
+        "y": 21.385879961176858,
+        "width": 10,
+        "height": 373,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Schools",
+        "x": 590,
+        "y": -3.4638958368304884e-14,
+        "width": 10,
+        "height": 122.20828662522385,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Hospitals",
+        "x": 590,
+        "y": 149.20828662522382,
+        "width": 10,
+        "height": 250.79171337477618,
+        "fill": "#e15759",
+        "layer": 1
+      }
+    ],
+    "labels": [
+      {
+        "node": "Districts",
+        "class": null,
+        "x": 16,
+        "y": 207.88587996117684,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Districts\n68.69"
+      },
+      {
+        "node": "Schools",
+        "class": null,
+        "x": 584,
+        "y": 61.104143312611896,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Schools\n22.51"
+      },
+      {
+        "node": "Hospitals",
+        "class": null,
+        "x": 584,
+        "y": 274.6041433126119,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Hospitals\n46.18"
+      }
+    ],
+    "links": [
+      {
+        "source": "Districts",
+        "target": "Schools",
+        "value": 22.505,
+        "width": 122.20828662522383,
+        "stroke": "#ff8800",
+        "strokeWidth": 122.20828662522383,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 82.49002327378878
+          },
+          "control1": {
+            "x": 300,
+            "y": 82.49002327378878
+          },
+          "control2": {
+            "x": 300,
+            "y": 61.10414331261188
+          },
+          "end": {
+            "x": 590,
+            "y": 61.10414331261188
+          }
+        },
+        "gradient": null
+      },
+      {
+        "source": "Districts",
+        "target": "Hospitals",
+        "value": 46.184,
+        "width": 250.79171337477618,
+        "stroke": "#ff8800",
+        "strokeWidth": 250.79171337477618,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 268.9900232737888
+          },
+          "control1": {
+            "x": 300,
+            "y": 268.9900232737888
+          },
+          "control2": {
+            "x": 300,
+            "y": 274.6041433126119
+          },
+          "end": {
+            "x": 590,
+            "y": 274.6041433126119
+          }
+        },
+        "gradient": null
+      }
+    ]
+  }
+}

@@ -31,12 +31,14 @@
 //! * Parse errors carry a [`Span`](crate::error::Span); jison reports a line and an excerpt.
 //!
 //! No app breaks: `Diagram::Sankey(Ast)` keeps its variant and the placeholder `Ast` had no
-//! consumers. `sankeyRenderer.ts` and `styles.js` are out of scope.
+//! consumers. `sankeyRenderer.ts` and `styles.js` are ported in [`render`], which draws the
+//! parsed database to a [`crate::Scene`].
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Link, Node};
 

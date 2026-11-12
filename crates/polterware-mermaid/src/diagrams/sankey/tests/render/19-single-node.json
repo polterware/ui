@@ -1,0 +1,94 @@
+{
+  "name": "19-single-node",
+  "source": "sankey-beta\n\nStandalone,Nowhere,1\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400
+    },
+    "nodes": [
+      {
+        "id": "Standalone",
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 400,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Nowhere",
+        "x": 590,
+        "y": 0,
+        "width": 10,
+        "height": 400,
+        "fill": "#f28e2c",
+        "layer": 1
+      }
+    ],
+    "labels": [
+      {
+        "node": "Standalone",
+        "class": null,
+        "x": 16,
+        "y": 200,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Standalone\n1"
+      },
+      {
+        "node": "Nowhere",
+        "class": null,
+        "x": 584,
+        "y": 200,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Nowhere\n1"
+      }
+    ],
+    "links": [
+      {
+        "source": "Standalone",
+        "target": "Nowhere",
+        "value": 1,
+        "width": 400,
+        "stroke": "url(#linearGradient-144)",
+        "strokeWidth": 400,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 200
+          },
+          "control1": {
+            "x": 300,
+            "y": 200
+          },
+          "control2": {
+            "x": 300,
+            "y": 200
+          },
+          "end": {
+            "x": 590,
+            "y": 200
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

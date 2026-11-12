@@ -50,6 +50,8 @@ pub enum RenderError {
     Parse(ParseError),
     Config(crate::config::ConfigError),
     Layout(crate::render::layout_dagre::LayoutError),
+    /// A d3-sankey layout failure, the error `sankeyRenderer.ts` lets d3 throw.
+    Sankey(crate::layout::sankey::SankeyError),
     /// A diagram type the renderer does not draw yet (the detector's kind name).
     Unsupported(String),
 }
@@ -60,6 +62,7 @@ impl std::fmt::Display for RenderError {
             Self::Parse(error) => error.fmt(f),
             Self::Config(error) => error.fmt(f),
             Self::Layout(error) => error.fmt(f),
+            Self::Sankey(error) => error.fmt(f),
             Self::Unsupported(kind) => write!(f, "{kind} diagrams are not supported yet"),
         }
     }
@@ -125,6 +128,17 @@ impl From<crate::diagrams::er::render::ErRenderError> for RenderError {
         match error {
             crate::diagrams::er::render::ErRenderError::Parse(error) => Self::Parse(error),
             crate::diagrams::er::render::ErRenderError::Layout(error) => Self::Layout(error),
+        }
+    }
+}
+
+impl From<crate::diagrams::sankey::render::SankeyRenderError> for RenderError {
+    fn from(error: crate::diagrams::sankey::render::SankeyRenderError) -> Self {
+        match error {
+            crate::diagrams::sankey::render::SankeyRenderError::Parse(error) => Self::Parse(error),
+            crate::diagrams::sankey::render::SankeyRenderError::Layout(error) => {
+                Self::Sankey(error)
+            }
         }
     }
 }

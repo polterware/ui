@@ -1,0 +1,210 @@
+{
+  "name": "16-quoted-ids",
+  "source": "sankey-beta\n\n\"District heating\",\"Heating and cooling, homes\",46.184\n\"District heating\",\"Heating and cooling, commercial\",22.505\n\"District heating\",Industry,10.639\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400
+    },
+    "nodes": [
+      {
+        "id": "District heating",
+        "x": 0,
+        "y": 8.76057229067771,
+        "width": 10,
+        "height": 346,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Heating and cooling, homes",
+        "x": 590,
+        "y": 0,
+        "width": 10,
+        "height": 201.4378781766841,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Heating and cooling, commercial",
+        "x": 590,
+        "y": 228.4378781766841,
+        "width": 10,
+        "height": 98.15865772488914,
+        "fill": "#e15759",
+        "layer": 1
+      },
+      {
+        "id": "Industry",
+        "x": 590,
+        "y": 353.59653590157325,
+        "width": 10,
+        "height": 46.40346409842675,
+        "fill": "#76b7b2",
+        "layer": 1
+      }
+    ],
+    "labels": [
+      {
+        "node": "District heating",
+        "class": null,
+        "x": 16,
+        "y": 181.76057229067771,
+        "dy": 0,
+        "anchor": "start",
+        "text": "District heating\n79.33"
+      },
+      {
+        "node": "Heating and cooling, homes",
+        "class": null,
+        "x": 584,
+        "y": 100.71893908834205,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Heating and cooling, homes\n46.18"
+      },
+      {
+        "node": "Heating and cooling, commercial",
+        "class": null,
+        "x": 584,
+        "y": 277.51720703912866,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Heating and cooling, commercial\n22.51"
+      },
+      {
+        "node": "Industry",
+        "class": null,
+        "x": 584,
+        "y": 376.7982679507866,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Industry\n10.64"
+      }
+    ],
+    "links": [
+      {
+        "source": "District heating",
+        "target": "Heating and cooling, homes",
+        "value": 46.184,
+        "width": 201.43787817668417,
+        "stroke": "url(#linearGradient-116)",
+        "strokeWidth": 201.43787817668417,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 109.4795113790198
+          },
+          "control1": {
+            "x": 300,
+            "y": 109.4795113790198
+          },
+          "control2": {
+            "x": 300,
+            "y": 100.71893908834208
+          },
+          "end": {
+            "x": 590,
+            "y": 100.71893908834208
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "District heating",
+        "target": "Heating and cooling, commercial",
+        "value": 22.505,
+        "width": 98.15865772488908,
+        "stroke": "url(#linearGradient-117)",
+        "strokeWidth": 98.15865772488908,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 259.27777932980644
+          },
+          "control1": {
+            "x": 300,
+            "y": 259.27777932980644
+          },
+          "control2": {
+            "x": 300,
+            "y": 277.51720703912866
+          },
+          "end": {
+            "x": 590,
+            "y": 277.51720703912866
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#e15759"
+            }
+          ]
+        }
+      },
+      {
+        "source": "District heating",
+        "target": "Industry",
+        "value": 10.639,
+        "width": 46.403464098426795,
+        "stroke": "url(#linearGradient-118)",
+        "strokeWidth": 46.403464098426795,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 331.55884024146434
+          },
+          "control1": {
+            "x": 300,
+            "y": 331.55884024146434
+          },
+          "control2": {
+            "x": 300,
+            "y": 376.7982679507866
+          },
+          "end": {
+            "x": 590,
+            "y": 376.7982679507866
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

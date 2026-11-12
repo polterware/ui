@@ -1,0 +1,268 @@
+{
+  "name": "06-alignment-right",
+  "source": "---\nconfig:\n  sankey:\n    nodeAlignment: right\n---\nsankey-beta\n\nSolar,Electricity grid,59.901\nWind,Electricity grid,289.366\nElectricity grid,Homes,93.494\nElectricity grid,Industry,342.165\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -1.9539925233402755e-14,
+      "width": 600,
+      "height": 400
+    },
+    "nodes": [
+      {
+        "id": "Solar",
+        "x": 0,
+        "y": 12.190254240531539,
+        "width": 10,
+        "height": 51.285691331982115,
+        "fill": "#4e79a7",
+        "layer": 0
+      },
+      {
+        "id": "Electricity grid",
+        "x": 295,
+        "y": 27.00000000000003,
+        "width": 10,
+        "height": 373,
+        "fill": "#f28e2c",
+        "layer": 1
+      },
+      {
+        "id": "Wind",
+        "x": 0,
+        "y": 90.47594557251365,
+        "width": 10,
+        "height": 247.74770634831373,
+        "fill": "#e15759",
+        "layer": 0
+      },
+      {
+        "id": "Homes",
+        "x": 590,
+        "y": -1.9539925233402755e-14,
+        "width": 10,
+        "height": 80.04715155660735,
+        "fill": "#76b7b2",
+        "layer": 2
+      },
+      {
+        "id": "Industry",
+        "x": 590,
+        "y": 107.04715155660733,
+        "width": 10,
+        "height": 292.95284844339267,
+        "fill": "#59a14f",
+        "layer": 2
+      }
+    ],
+    "labels": [
+      {
+        "node": "Solar",
+        "class": null,
+        "x": 16,
+        "y": 37.8330999065226,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Solar\n59.9"
+      },
+      {
+        "node": "Electricity grid",
+        "class": null,
+        "x": 311,
+        "y": 213.5,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Electricity grid\n435.66"
+      },
+      {
+        "node": "Wind",
+        "class": null,
+        "x": 16,
+        "y": 214.3497987466705,
+        "dy": 0,
+        "anchor": "start",
+        "text": "Wind\n289.37"
+      },
+      {
+        "node": "Homes",
+        "class": null,
+        "x": 584,
+        "y": 40.02357577830366,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Homes\n93.49"
+      },
+      {
+        "node": "Industry",
+        "class": null,
+        "x": 584,
+        "y": 253.52357577830367,
+        "dy": 0,
+        "anchor": "end",
+        "text": "Industry\n342.17"
+      }
+    ],
+    "links": [
+      {
+        "source": "Solar",
+        "target": "Electricity grid",
+        "value": 59.901,
+        "width": 51.28569133198212,
+        "stroke": "url(#linearGradient-45)",
+        "strokeWidth": 51.28569133198212,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 37.8330999065226
+          },
+          "control1": {
+            "x": 152.5,
+            "y": 37.8330999065226
+          },
+          "control2": {
+            "x": 152.5,
+            "y": 52.64284566599109
+          },
+          "end": {
+            "x": 295,
+            "y": 52.64284566599109
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 295,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#4e79a7"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Wind",
+        "target": "Electricity grid",
+        "value": 289.366,
+        "width": 247.74770634831367,
+        "stroke": "url(#linearGradient-46)",
+        "strokeWidth": 247.74770634831367,
+        "path": {
+          "start": {
+            "x": 10,
+            "y": 214.3497987466705
+          },
+          "control1": {
+            "x": 152.5,
+            "y": 214.3497987466705
+          },
+          "control2": {
+            "x": 152.5,
+            "y": 202.15954450613899
+          },
+          "end": {
+            "x": 295,
+            "y": 202.15954450613899
+          }
+        },
+        "gradient": {
+          "x1": 10,
+          "x2": 295,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#e15759"
+            },
+            {
+              "offset": "100%",
+              "color": "#f28e2c"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Electricity grid",
+        "target": "Homes",
+        "value": 93.494,
+        "width": 80.04715155660735,
+        "stroke": "url(#linearGradient-47)",
+        "strokeWidth": 80.04715155660735,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 67.0235757783037
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 67.0235757783037
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 40.02357577830365
+          },
+          "end": {
+            "x": 590,
+            "y": 40.02357577830365
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#76b7b2"
+            }
+          ]
+        }
+      },
+      {
+        "source": "Electricity grid",
+        "target": "Industry",
+        "value": 342.165,
+        "width": 292.95284844339267,
+        "stroke": "url(#linearGradient-48)",
+        "strokeWidth": 292.95284844339267,
+        "path": {
+          "start": {
+            "x": 305,
+            "y": 253.52357577830372
+          },
+          "control1": {
+            "x": 447.5,
+            "y": 253.52357577830372
+          },
+          "control2": {
+            "x": 447.5,
+            "y": 253.52357577830367
+          },
+          "end": {
+            "x": 590,
+            "y": 253.52357577830367
+          }
+        },
+        "gradient": {
+          "x1": 305,
+          "x2": 590,
+          "stops": [
+            {
+              "offset": "0%",
+              "color": "#f28e2c"
+            },
+            {
+              "offset": "100%",
+              "color": "#59a14f"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
