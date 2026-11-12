@@ -1,0 +1,649 @@
+{
+  "shape": "usecaseActor",
+  "cases": [
+    {
+      "name": "short",
+      "label": "A",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-actor-variant usecase-actor-normal",
+      "width": 76,
+      "height": 112,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "usecase-actor-outline",
+          "x": -38,
+          "y": -56,
+          "width": 76,
+          "height": 112,
+          "rx": null,
+          "opacity": 0
+        },
+        {
+          "tag": "label",
+          "class": "label actor-label usecase-actor-label",
+          "x": -20,
+          "y": 34,
+          "text": "A"
+        },
+        {
+          "tag": "g",
+          "class": "usecase-actor-glyph usecase-actor-shape usecase-actor-normal",
+          "x": 0,
+          "y": -10,
+          "children": [
+            {
+              "tag": "path",
+              "class": "usecase-actor-stick",
+              "fill": null,
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 6.627,
+                  "c1y": -12,
+                  "c2x": 12,
+                  "c2y": -17.373,
+                  "x": 12,
+                  "y": -24
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 12,
+                  "c1y": -30.627,
+                  "c2x": 6.627,
+                  "c2y": -36,
+                  "x": 0,
+                  "y": -36
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -6.627,
+                  "c1y": -36,
+                  "c2x": -12,
+                  "c2y": -30.627,
+                  "x": -12,
+                  "y": -24
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -12,
+                  "c1y": -17.373,
+                  "c2x": -6.627,
+                  "c2y": -12,
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "lineTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "moveTo",
+                  "x": -17,
+                  "y": -5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 17,
+                  "y": -5
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "lineTo",
+                  "x": -15,
+                  "y": 28
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "lineTo",
+                  "x": 15,
+                  "y": 28
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            38,
+            19
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -38,
+            -19
+          ]
+        }
+      ]
+    },
+    {
+      "name": "long",
+      "label": "A much longer use case label",
+      "label_size": [
+        240,
+        24
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-actor-variant usecase-actor-normal",
+      "width": 260,
+      "height": 124,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "usecase-actor-outline",
+          "x": -130,
+          "y": -62,
+          "width": 260,
+          "height": 124,
+          "rx": null,
+          "opacity": 0
+        },
+        {
+          "tag": "label",
+          "class": "label actor-label usecase-actor-label",
+          "x": -120,
+          "y": 28,
+          "text": "A much longer use case label"
+        },
+        {
+          "tag": "g",
+          "class": "usecase-actor-glyph usecase-actor-shape usecase-actor-normal",
+          "x": 0,
+          "y": -16,
+          "children": [
+            {
+              "tag": "path",
+              "class": "usecase-actor-stick",
+              "fill": null,
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 6.627,
+                  "c1y": -12,
+                  "c2x": 12,
+                  "c2y": -17.373,
+                  "x": 12,
+                  "y": -24
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 12,
+                  "c1y": -30.627,
+                  "c2x": 6.627,
+                  "c2y": -36,
+                  "x": 0,
+                  "y": -36
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -6.627,
+                  "c1y": -36,
+                  "c2x": -12,
+                  "c2y": -30.627,
+                  "x": -12,
+                  "y": -24
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -12,
+                  "c1y": -17.373,
+                  "c2x": -6.627,
+                  "c2y": -12,
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "lineTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "moveTo",
+                  "x": -17,
+                  "y": -5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 17,
+                  "y": -5
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "lineTo",
+                  "x": -15,
+                  "y": 28
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "lineTo",
+                  "x": 15,
+                  "y": 28
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            124,
+            62
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -124,
+            -62
+          ]
+        }
+      ]
+    },
+    {
+      "name": "business",
+      "label": "Customer",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": true,
+      "rows": null,
+      "class": "node usecase-actor-variant usecase-actor-normal",
+      "width": 76,
+      "height": 112,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "usecase-actor-outline",
+          "x": -38,
+          "y": -56,
+          "width": 76,
+          "height": 112,
+          "rx": null,
+          "opacity": 0
+        },
+        {
+          "tag": "label",
+          "class": "label actor-label usecase-actor-label",
+          "x": -20,
+          "y": 34,
+          "text": "Customer"
+        },
+        {
+          "tag": "g",
+          "class": "usecase-actor-glyph usecase-actor-shape usecase-actor-normal",
+          "x": 0,
+          "y": -10,
+          "children": [
+            {
+              "tag": "path",
+              "class": "usecase-actor-stick",
+              "fill": null,
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 6.627,
+                  "c1y": -12,
+                  "c2x": 12,
+                  "c2y": -17.373,
+                  "x": 12,
+                  "y": -24
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 12,
+                  "c1y": -30.627,
+                  "c2x": 6.627,
+                  "c2y": -36,
+                  "x": 0,
+                  "y": -36
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -6.627,
+                  "c1y": -36,
+                  "c2x": -12,
+                  "c2y": -30.627,
+                  "x": -12,
+                  "y": -24
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -12,
+                  "c1y": -17.373,
+                  "c2x": -6.627,
+                  "c2y": -12,
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "lineTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "moveTo",
+                  "x": -17,
+                  "y": -5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 17,
+                  "y": -5
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "lineTo",
+                  "x": -15,
+                  "y": 28
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "lineTo",
+                  "x": 15,
+                  "y": 28
+                }
+              ]
+            },
+            {
+              "tag": "path",
+              "class": "usecase-business-marker usecase-actor-business-marker",
+              "fill": "none",
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 1.4353829072479556,
+                  "y": -12.086156123669387
+                },
+                {
+                  "op": "lineTo",
+                  "x": 11.035382907247959,
+                  "y": -28.71384387633061
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            38,
+            19
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -38,
+            -19
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stereotype",
+      "label": "Customer",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 10,
+      "stereotype": "system",
+      "business": false,
+      "rows": null,
+      "class": "node usecase-actor-variant usecase-actor-normal",
+      "width": 76,
+      "height": 126,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "usecase-actor-outline",
+          "x": -38,
+          "y": -63,
+          "width": 76,
+          "height": 126,
+          "rx": null,
+          "opacity": 0
+        },
+        {
+          "tag": "label",
+          "class": "label actor-label usecase-actor-label",
+          "x": -20,
+          "y": 41,
+          "text": "Customer"
+        },
+        {
+          "tag": "label",
+          "class": "label usecase-stereotype",
+          "x": -20,
+          "y": 27,
+          "text": "«system»"
+        },
+        {
+          "tag": "g",
+          "class": "usecase-actor-glyph usecase-actor-shape usecase-actor-normal",
+          "x": 0,
+          "y": -17,
+          "children": [
+            {
+              "tag": "path",
+              "class": "usecase-actor-stick",
+              "fill": null,
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 6.627,
+                  "c1y": -12,
+                  "c2x": 12,
+                  "c2y": -17.373,
+                  "x": 12,
+                  "y": -24
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": 12,
+                  "c1y": -30.627,
+                  "c2x": 6.627,
+                  "c2y": -36,
+                  "x": 0,
+                  "y": -36
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -6.627,
+                  "c1y": -36,
+                  "c2x": -12,
+                  "c2y": -30.627,
+                  "x": -12,
+                  "y": -24
+                },
+                {
+                  "op": "cubicTo",
+                  "c1x": -12,
+                  "c1y": -17.373,
+                  "c2x": -6.627,
+                  "c2y": -12,
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": -12
+                },
+                {
+                  "op": "lineTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "moveTo",
+                  "x": -17,
+                  "y": -5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 17,
+                  "y": -5
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "lineTo",
+                  "x": -15,
+                  "y": 28
+                },
+                {
+                  "op": "moveTo",
+                  "x": 0,
+                  "y": 8
+                },
+                {
+                  "op": "lineTo",
+                  "x": 15,
+                  "y": 28
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            38,
+            19
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -38,
+            -19
+          ]
+        }
+      ]
+    }
+  ]
+}

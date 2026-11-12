@@ -1,0 +1,320 @@
+{
+  "shape": "usecaseJsonTable",
+  "cases": [
+    {
+      "name": "short",
+      "label": "A",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-json-table",
+      "width": 58,
+      "height": 22,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "label-container usecase-json-border",
+          "x": -29,
+          "y": -11,
+          "width": 58,
+          "height": 22,
+          "rx": null,
+          "opacity": null
+        },
+        {
+          "tag": "g",
+          "class": "usecase-json-table-grid",
+          "x": 0,
+          "y": 0,
+          "children": [
+            {
+              "tag": "rect",
+              "class": "usecase-json-cell usecase-json-title-cell",
+              "x": -28,
+              "y": -10,
+              "width": 56,
+              "height": 20,
+              "rx": null,
+              "opacity": null
+            },
+            {
+              "tag": "label",
+              "class": "label usecase-json-title",
+              "x": -20,
+              "y": -6,
+              "text": "A"
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            22,
+            11
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -22,
+            -11
+          ]
+        }
+      ]
+    },
+    {
+      "name": "long",
+      "label": "A much longer use case label",
+      "label_size": [
+        240,
+        24
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node usecase-json-table",
+      "width": 258,
+      "height": 34,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "label-container usecase-json-border",
+          "x": -129,
+          "y": -17,
+          "width": 258,
+          "height": 34,
+          "rx": null,
+          "opacity": null
+        },
+        {
+          "tag": "g",
+          "class": "usecase-json-table-grid",
+          "x": 0,
+          "y": 0,
+          "children": [
+            {
+              "tag": "rect",
+              "class": "usecase-json-cell usecase-json-title-cell",
+              "x": -128,
+              "y": -16,
+              "width": 256,
+              "height": 32,
+              "rx": null,
+              "opacity": null
+            },
+            {
+              "tag": "label",
+              "class": "label usecase-json-title",
+              "x": -120,
+              "y": -12,
+              "text": "A much longer use case label"
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            34,
+            17
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -34,
+            -17
+          ]
+        }
+      ]
+    },
+    {
+      "name": "rows",
+      "label": "Order",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 10,
+      "stereotype": null,
+      "business": false,
+      "rows": [
+        [
+          "id",
+          "42"
+        ],
+        [
+          "status",
+          "open"
+        ]
+      ],
+      "class": "node usecase-json-table",
+      "width": 114,
+      "height": 62,
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "label-container usecase-json-border",
+          "x": -57,
+          "y": -31,
+          "width": 114,
+          "height": 62,
+          "rx": null,
+          "opacity": null
+        },
+        {
+          "tag": "g",
+          "class": "usecase-json-table-grid",
+          "x": 0,
+          "y": 0,
+          "children": [
+            {
+              "tag": "rect",
+              "class": "usecase-json-cell usecase-json-title-cell",
+              "x": -56,
+              "y": -30,
+              "width": 112,
+              "height": 20,
+              "rx": null,
+              "opacity": null
+            },
+            {
+              "tag": "label",
+              "class": "label usecase-json-title",
+              "x": -20,
+              "y": -26,
+              "text": "Order"
+            },
+            {
+              "tag": "g",
+              "class": "usecase-json-row",
+              "x": 0,
+              "y": -10,
+              "children": [
+                {
+                  "tag": "rect",
+                  "class": "usecase-json-cell usecase-json-value-cell",
+                  "x": 0,
+                  "y": 0,
+                  "width": 56,
+                  "height": 20,
+                  "rx": null,
+                  "opacity": null
+                },
+                {
+                  "tag": "rect",
+                  "class": "usecase-json-cell usecase-json-key-cell",
+                  "x": -56,
+                  "y": 0,
+                  "width": 56,
+                  "height": 20,
+                  "rx": null,
+                  "opacity": null
+                },
+                {
+                  "tag": "label",
+                  "class": "label usecase-json-key",
+                  "x": -48,
+                  "y": 4,
+                  "text": "id"
+                },
+                {
+                  "tag": "label",
+                  "class": "label usecase-json-value",
+                  "x": 8,
+                  "y": 4,
+                  "text": "42"
+                }
+              ]
+            },
+            {
+              "tag": "g",
+              "class": "usecase-json-row",
+              "x": 0,
+              "y": 10,
+              "children": [
+                {
+                  "tag": "rect",
+                  "class": "usecase-json-cell usecase-json-value-cell",
+                  "x": 0,
+                  "y": 0,
+                  "width": 56,
+                  "height": 20,
+                  "rx": null,
+                  "opacity": null
+                },
+                {
+                  "tag": "rect",
+                  "class": "usecase-json-cell usecase-json-key-cell",
+                  "x": -56,
+                  "y": 0,
+                  "width": 56,
+                  "height": 20,
+                  "rx": null,
+                  "opacity": null
+                },
+                {
+                  "tag": "label",
+                  "class": "label usecase-json-key",
+                  "x": -48,
+                  "y": 4,
+                  "text": "status"
+                },
+                {
+                  "tag": "label",
+                  "class": "label usecase-json-value",
+                  "x": 8,
+                  "y": 4,
+                  "text": "open"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            57,
+            28.5
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -57,
+            -28.5
+          ]
+        }
+      ]
+    }
+  ]
+}
