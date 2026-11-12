@@ -10,8 +10,10 @@
 //! - [`edge_step`]: `edgeStep.ts`
 //! - [`edge_corner_radius`]: `edgeCornerRadius.ts`
 //! - [`dagre`]: `layout-algorithms/dagre/index.js`
+//! - [`cose_bilkent`][]: `layout-algorithms/cose-bilkent/index.js`
 
 pub mod clone_layout_data_for_measure;
+pub mod cose_bilkent;
 pub mod create_graph;
 pub mod dagre;
 pub mod edge_corner_radius;
@@ -28,6 +30,7 @@ use crate::render::layout_dagre::LayoutError;
 use crate::scene::Scene;
 
 pub use clone_layout_data_for_measure::*;
+pub use cose_bilkent::*;
 pub use create_graph::*;
 pub use dagre::*;
 pub use edge_corner_radius::*;
@@ -66,6 +69,13 @@ fn get_registry() -> HashMap<String, LayoutLoaderDefinition> {
         },
     );
     map.insert(
+        "cose-bilkent".to_string(),
+        LayoutLoaderDefinition {
+            name: "cose-bilkent".to_string(),
+            algorithm: None,
+        },
+    );
+    map.insert(
         "swimlane".to_string(),
         LayoutLoaderDefinition {
             name: "swimlane".to_string(),
@@ -84,6 +94,13 @@ pub fn register_layout_loaders(loaders: Vec<LayoutLoaderDefinition>) {
             "dagre".to_string(),
             LayoutLoaderDefinition {
                 name: "dagre".to_string(),
+                algorithm: None,
+            },
+        );
+        m.insert(
+            "cose-bilkent".to_string(),
+            LayoutLoaderDefinition {
+                name: "cose-bilkent".to_string(),
                 algorithm: None,
             },
         );
@@ -112,6 +129,10 @@ pub fn register_default_layout_loaders() {
     register_layout_loaders(vec![
         LayoutLoaderDefinition {
             name: "dagre".to_string(),
+            algorithm: None,
+        },
+        LayoutLoaderDefinition {
+            name: "cose-bilkent".to_string(),
             algorithm: None,
         },
         LayoutLoaderDefinition {
@@ -159,7 +180,8 @@ pub fn render(
     let resolved_algo = get_registered_layout_algorithm(algo, Some(LAST_RESORT_LAYOUT));
 
     match resolved_algo.as_str() {
-        "dagre" | _ => dagre_render(data4_layout, measure),
+        "cose-bilkent" => cose_bilkent_render(data4_layout, measure),
+        _ => dagre_render(data4_layout, measure),
     }
 }
 

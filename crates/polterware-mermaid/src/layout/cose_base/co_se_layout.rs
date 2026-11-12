@@ -204,6 +204,28 @@ pub struct CoSELayout<V = ()> {
     /// The last position the relaxed walk used for each id along y, upstream's
     /// `nodeToTempPositionMapVertical` (cose-base 2.x).
     pub node_to_temp_position_map_vertical: Vec<(String, f64)>,
+    /// Layout quality: 0 draft, 1 default, 2 proof.
+    pub quality: Option<i32>,
+    /// Node repulsion strength.
+    pub node_repulsion: Option<f64>,
+    /// Ideal edge length.
+    pub ideal_edge_length: Option<f64>,
+    /// Spring elasticity.
+    pub edge_elasticity: Option<f64>,
+    /// Nesting factor for compound edges.
+    pub nesting_factor: Option<f64>,
+    /// Gravity strength.
+    pub gravity: Option<f64>,
+    /// Max iterations.
+    pub num_iter: Option<i64>,
+    /// Gravity range factor.
+    pub gravity_range: Option<f64>,
+    /// Compound gravity strength.
+    pub gravity_compound: Option<f64>,
+    /// Compound gravity range factor.
+    pub gravity_range_compound: Option<f64>,
+    /// Initial energy on incremental layout.
+    pub initial_energy_on_incremental: Option<f64>,
 }
 
 impl<V> Default for CoSELayout<V> {
@@ -251,6 +273,17 @@ impl<V> CoSELayout<V> {
             node_to_relative_constraint_map_vertical: Vec::new(),
             node_to_temp_position_map_horizontal: Vec::new(),
             node_to_temp_position_map_vertical: Vec::new(),
+            quality: None,
+            node_repulsion: None,
+            ideal_edge_length: None,
+            edge_elasticity: None,
+            nesting_factor: None,
+            gravity: None,
+            num_iter: None,
+            gravity_range: None,
+            gravity_compound: None,
+            gravity_range_compound: None,
+            initial_energy_on_incremental: None,
         }
     }
 
@@ -303,6 +336,40 @@ impl<V> CoSELayout<V> {
             self.fd.gravity_range_factor = constants::DEFAULT_GRAVITY_RANGE_FACTOR;
             self.fd.compound_gravity_range_factor =
                 constants::DEFAULT_COMPOUND_GRAVITY_RANGE_FACTOR;
+
+            if let Some(repulsion) = self.node_repulsion {
+                self.fd.repulsion_constant = repulsion;
+            }
+            if let Some(ideal) = self.ideal_edge_length {
+                self.fd.ideal_edge_length = ideal.max(10.0);
+            }
+            if let Some(spring) = self.edge_elasticity {
+                self.fd.spring_constant = spring;
+            }
+            if let Some(nesting) = self.nesting_factor {
+                self.fd.per_level_ideal_edge_length_factor = nesting;
+            }
+            if let Some(gravity) = self.gravity {
+                self.fd.gravity_constant = gravity;
+            }
+            if let Some(num_iter) = self.num_iter {
+                self.fd.max_iterations = num_iter;
+            }
+            if let Some(gravity_range) = self.gravity_range {
+                self.fd.gravity_range_factor = gravity_range;
+            }
+            if let Some(gravity_comp) = self.gravity_compound {
+                self.fd.compound_gravity_constant = gravity_comp;
+            }
+            if let Some(gravity_range_comp) = self.gravity_range_compound {
+                self.fd.compound_gravity_range_factor = gravity_range_comp;
+            }
+            if let Some(cooling_inc) = self.initial_energy_on_incremental {
+                self.fd.initial_cooling_factor = cooling_inc;
+            }
+            if let Some(quality) = self.quality {
+                self.fd.layout.layout_quality = quality;
+            }
 
             // Variables for tree reduction support.
             self.pruned_nodes_all = Vec::new();

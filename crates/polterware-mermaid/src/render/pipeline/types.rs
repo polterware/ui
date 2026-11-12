@@ -375,6 +375,8 @@ pub struct LayoutData {
     pub node_spacing: Option<f64>,
     #[serde(default)]
     pub rank_spacing: Option<f64>,
+    #[serde(default)]
+    pub root_node: Option<serde_json::Value>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
