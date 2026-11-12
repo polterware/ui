@@ -1,0 +1,234 @@
+{
+  "name": "09-namespaced-streams",
+  "source": "eventmodeling\n  tf 01 evt Billing.InvoiceIssued\n  tf 02 evt Billing.InvoicePaid\n  tf 03 evt Shipping.OrderShipped\n  tf 04 evt Shipping.OrderDelivered\n",
+  "expected": {
+    "viewBox": {
+      "x": -30,
+      "y": -30,
+      "width": 1034,
+      "height": 610
+    },
+    "rawViewBox": "-30 -30 1034 610",
+    "swimlanes": [
+      {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 974,
+          "height": 130,
+          "rx": 3,
+          "fill": "rgb(250,250,250)",
+          "stroke": "rgb(240,240,240)"
+        },
+        "text": {
+          "x": 30,
+          "y": 30,
+          "text": "Stream: Billing",
+          "fontWeight": "bold"
+        }
+      },
+      {
+        "rect": {
+          "x": 0,
+          "y": 140,
+          "width": 974,
+          "height": 130,
+          "rx": 3,
+          "fill": "rgb(250,250,250)",
+          "stroke": "rgb(240,240,240)"
+        },
+        "text": {
+          "x": 30,
+          "y": 170,
+          "text": "Stream: Billing",
+          "fontWeight": "bold"
+        }
+      },
+      {
+        "rect": {
+          "x": 0,
+          "y": 280,
+          "width": 974,
+          "height": 130,
+          "rx": 3,
+          "fill": "rgb(250,250,250)",
+          "stroke": "rgb(240,240,240)"
+        },
+        "text": {
+          "x": 30,
+          "y": 310,
+          "text": "Stream: Shipping",
+          "fontWeight": "bold"
+        }
+      },
+      {
+        "rect": {
+          "x": 0,
+          "y": 420,
+          "width": 974,
+          "height": 130,
+          "rx": 3,
+          "fill": "rgb(250,250,250)",
+          "stroke": "rgb(240,240,240)"
+        },
+        "text": {
+          "x": 30,
+          "y": 450,
+          "text": "Stream: Shipping",
+          "fontWeight": "bold"
+        }
+      }
+    ],
+    "boxes": [
+      {
+        "rect": {
+          "x": 250,
+          "y": 15,
+          "width": 232,
+          "height": 100,
+          "rx": 3,
+          "fill": "#ffb778",
+          "stroke": "#c19a0f"
+        },
+        "foreignObject": {
+          "x": 260,
+          "y": 25,
+          "width": 212,
+          "height": 80
+        },
+        "textLines": [
+          "InvoiceIssued"
+        ]
+      },
+      {
+        "rect": {
+          "x": 412,
+          "y": 155,
+          "width": 213,
+          "height": 100,
+          "rx": 3,
+          "fill": "#ffb778",
+          "stroke": "#c19a0f"
+        },
+        "foreignObject": {
+          "x": 422,
+          "y": 165,
+          "width": 193,
+          "height": 80
+        },
+        "textLines": [
+          "InvoicePaid"
+        ]
+      },
+      {
+        "rect": {
+          "x": 555,
+          "y": 295,
+          "width": 222,
+          "height": 100,
+          "rx": 3,
+          "fill": "#ffb778",
+          "stroke": "#c19a0f"
+        },
+        "foreignObject": {
+          "x": 565,
+          "y": 305,
+          "width": 202,
+          "height": 80
+        },
+        "textLines": [
+          "OrderShipped"
+        ]
+      },
+      {
+        "rect": {
+          "x": 707,
+          "y": 435,
+          "width": 242,
+          "height": 100,
+          "rx": 3,
+          "fill": "#ffb778",
+          "stroke": "#c19a0f"
+        },
+        "foreignObject": {
+          "x": 717,
+          "y": 445,
+          "width": 222,
+          "height": 80
+        },
+        "textLines": [
+          "OrderDelivered"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "d": "M404.66666666666663 115 L483 155",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 404.66666666666663,
+            "y": 115
+          },
+          {
+            "op": "lineTo",
+            "x": 483,
+            "y": 155
+          }
+        ],
+        "fill": "none",
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerEnd": "url(#em-arrowhead-em-diagram-9)"
+      },
+      {
+        "d": "M554 255 L629 295",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 554,
+            "y": 255
+          },
+          {
+            "op": "lineTo",
+            "x": 629,
+            "y": 295
+          }
+        ],
+        "fill": "none",
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerEnd": "url(#em-arrowhead-em-diagram-9)"
+      },
+      {
+        "d": "M703 395 L787.6666666666666 435",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 703,
+            "y": 395
+          },
+          {
+            "op": "lineTo",
+            "x": 787.6666666666666,
+            "y": 435
+          }
+        ],
+        "fill": "none",
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerEnd": "url(#em-arrowhead-em-diagram-9)"
+      }
+    ],
+    "marker": {
+      "idPrefix": "em-arrowhead-",
+      "markerWidth": 10,
+      "markerHeight": 7,
+      "refX": 10,
+      "refY": 3.5,
+      "orient": "auto",
+      "points": "0 0, 10 3.5, 0 7",
+      "fill": "#333333"
+    }
+  }
+}

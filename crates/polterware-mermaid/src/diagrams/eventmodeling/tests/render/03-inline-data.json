@@ -1,0 +1,182 @@
+{
+  "name": "03-inline-data",
+  "source": "eventmodeling\n  tf 01 cmd AddItem { productId: 7 }\n  tf 02 evt ItemAdded { productId: 7 }\n  tf 03 pcr Projection\n",
+  "expected": {
+    "viewBox": {
+      "x": -30,
+      "y": -30,
+      "width": 1034.6666666666665,
+      "height": 470
+    },
+    "rawViewBox": "-30 -30 1034.6666666666665 470",
+    "swimlanes": [
+      {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 974.6666666666665,
+          "height": 130,
+          "rx": 3,
+          "fill": "rgb(250,250,250)",
+          "stroke": "rgb(240,240,240)"
+        },
+        "text": {
+          "x": 30,
+          "y": 30,
+          "text": "UI/Automation",
+          "fontWeight": "bold"
+        }
+      },
+      {
+        "rect": {
+          "x": 0,
+          "y": 140,
+          "width": 974.6666666666665,
+          "height": 130,
+          "rx": 3,
+          "fill": "rgb(250,250,250)",
+          "stroke": "rgb(240,240,240)"
+        },
+        "text": {
+          "x": 30,
+          "y": 170,
+          "text": "Command/Read Model",
+          "fontWeight": "bold"
+        }
+      },
+      {
+        "rect": {
+          "x": 0,
+          "y": 280,
+          "width": 974.6666666666665,
+          "height": 130,
+          "rx": 3,
+          "fill": "rgb(250,250,250)",
+          "stroke": "rgb(240,240,240)"
+        },
+        "text": {
+          "x": 30,
+          "y": 310,
+          "text": "Events",
+          "fontWeight": "bold"
+        }
+      }
+    ],
+    "boxes": [
+      {
+        "rect": {
+          "x": 250,
+          "y": 155,
+          "width": 318.3333333333333,
+          "height": 100,
+          "rx": 3,
+          "fill": "#bcd6fe",
+          "stroke": "#679ac3"
+        },
+        "foreignObject": {
+          "x": 260,
+          "y": 165,
+          "width": 298.3333333333333,
+          "height": 80
+        },
+        "textLines": [
+          "AddItem",
+          "",
+          "productId: 7"
+        ]
+      },
+      {
+        "rect": {
+          "x": 498.33333333333326,
+          "y": 295,
+          "width": 318.3333333333333,
+          "height": 100,
+          "rx": 3,
+          "fill": "#ffb778",
+          "stroke": "#c19a0f"
+        },
+        "foreignObject": {
+          "x": 508.33333333333326,
+          "y": 305,
+          "width": 298.3333333333333,
+          "height": 80
+        },
+        "textLines": [
+          "ItemAdded",
+          "",
+          "productId: 7"
+        ]
+      },
+      {
+        "rect": {
+          "x": 746.6666666666665,
+          "y": 15,
+          "width": 203,
+          "height": 100,
+          "rx": 3,
+          "fill": "#edb3f6",
+          "stroke": "#b88cbf"
+        },
+        "foreignObject": {
+          "x": 756.6666666666665,
+          "y": 25,
+          "width": 183,
+          "height": 80
+        },
+        "textLines": [
+          "Projection"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "d": "M462.2222222222222 255 L604.4444444444443 295",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 462.2222222222222,
+            "y": 255
+          },
+          {
+            "op": "lineTo",
+            "x": 604.4444444444443,
+            "y": 295
+          }
+        ],
+        "fill": "none",
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerEnd": "url(#em-arrowhead-em-diagram-3)"
+      },
+      {
+        "d": "M710.5555555555554 295 L814.3333333333331 115",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 710.5555555555554,
+            "y": 295
+          },
+          {
+            "op": "lineTo",
+            "x": 814.3333333333331,
+            "y": 115
+          }
+        ],
+        "fill": "none",
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerEnd": "url(#em-arrowhead-em-diagram-3)"
+      }
+    ],
+    "marker": {
+      "idPrefix": "em-arrowhead-",
+      "markerWidth": 10,
+      "markerHeight": 7,
+      "refX": 10,
+      "refY": 3.5,
+      "orient": "auto",
+      "points": "0 0, 10 3.5, 0 7",
+      "fill": "#333333"
+    }
+  }
+}

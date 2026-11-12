@@ -13,15 +13,11 @@
 //!
 //! # Where the port stops short of upstream
 //!
-//! * `getState` is not ported. It is the layout projection the renderer reads (box and
-//!   swimlane geometry from `calculateTextProps`, `calculateSwimlaneProps`, the
-//!   `PositionFrame`/`PositionRelation` deciders and their evolvers, and `diagramProps`), and
-//!   its text measurement needs a DOM. Relation inference for a reset frame without explicit
-//!   sources lives there, so the state-based assertion of `eventmodeling.spec.ts` is skipped.
-//! * Configuration is not owned by this crate, so `getConfig`,
+//! * Configuration setters are not owned by this crate, so `getConfig`,
 //!   `DEFAULT_EVENTMODELING_CONFIG`, `setOptions`, `getOptions`, and the constant
-//!   `getDirection` are absent. The `themeVariables.em*` fills and strokes and
-//!   `EventModelingDiagramConfig` are not applied.
+//!   `getDirection` are absent. The theme's `em*` fills and strokes and the
+//!   `EventModelingDiagramConfig` padding are read from [`crate::config::Config`] by the
+//!   renderer.
 //! * `EventModelingValidator` (`event-modeling-validator.ts`) is not ported: it runs in
 //!   Langium's validation phase, which `mermaidAPI.parse` does not invoke, and it only adds
 //!   diagnostics about which frame type may feed which. Those parser-package validation tests
@@ -35,12 +31,16 @@
 //!   `title`, `accTitle`, and `accDescr` only match on the same line as a previous token; and
 //!   the value converter keys on `TITLE`/`ACC_TITLE`/`ACC_DESCR`, not on `EM_*`, so their
 //!   values reach the database raw (the common database still sanitizes them).
-//! * Nothing here lays out or draws; `renderer.ts` is out of scope.
+//! * `getState` and `renderer.ts` are ported in [`render`], which lays the boxes and swimlanes
+//!   out and describes the drawing as a [`Scene`](crate::scene::Scene). The letter of
+//!   `renderer.ts` is kept, including the `foreignObject` label, whose HTML becomes styled text
+//!   lines in the scene.
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{
     Ast, DataEntity, Frame, FrameKind, Gwt, GwtStatement, ModelEntity, ModelEntityType, NoteEntity,
