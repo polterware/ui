@@ -4179,6 +4179,7 @@ dependencies = [
  "gpui",
  "image",
  "polterware-assets",
+ "polterware-mermaid",
  "polterware-motion",
  "polterware-theme",
  "polterware-window",
@@ -7769,6 +7770,10 @@ dependencies = [
 
 [[patch.unused]]
 name = "polterware-assets"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "polterware-mermaid"
 version = "0.1.0"
 
 [[patch.unused]]

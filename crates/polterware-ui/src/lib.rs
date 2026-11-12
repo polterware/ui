@@ -43,6 +43,7 @@ pub mod markdown;
 pub mod markdown_tools;
 pub mod material;
 pub mod menu;
+pub mod mermaid;
 pub mod number_stepper;
 pub mod pointer;
 pub mod popover;
@@ -94,6 +95,7 @@ pub use material::{
     rim_fade,
 };
 pub use menu::{Menu, MenuEntry, MenuItem};
+pub use mermaid::{MermaidEvent, MermaidView, SceneHit, SceneViewport, hit_test, paint_scene};
 pub use number_stepper::{NumberStepper, StepperChanged};
 pub use patterns::ChatBubble;
 pub use patterns::{
