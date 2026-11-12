@@ -8,4 +8,5 @@ pub mod grid;
 pub mod hierarchy;
 pub mod layout_base;
 pub mod sankey;
+pub mod swimlanes;
 pub mod venn;
