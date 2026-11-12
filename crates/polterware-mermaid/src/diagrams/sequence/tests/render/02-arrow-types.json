@@ -1,0 +1,318 @@
+{
+  "name": "02-arrow-types",
+  "source": "sequenceDiagram\n  Alice->>Bob: Solid arrow\n  Bob-->>Alice: Dotted arrow\n  Alice->Bob: Solid open\n  Bob-->Alice: Dotted open\n  Alice-xBob: Solid cross\n  Bob--xAlice: Dotted cross\n  Alice-)Bob: Solid point\n  Bob--)Alice: Dotted point\n  Alice<<->>Bob: Bidirectional solid\n  Bob<<-->>Alice: Bidirectional dotted\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 545
+      },
+      {
+        "id": "Bob",
+        "x": 262,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 545
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "0",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 333,
+        "starty": 65,
+        "stopy": 101,
+        "height": 36
+      },
+      {
+        "id": "1",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 1,
+        "startx": 336,
+        "stopx": 79,
+        "starty": 111,
+        "stopy": 147,
+        "height": 36
+      },
+      {
+        "id": "2",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 5,
+        "startx": 76,
+        "stopx": 336,
+        "starty": 157,
+        "stopy": 193,
+        "height": 36
+      },
+      {
+        "id": "3",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 6,
+        "startx": 336,
+        "stopx": 76,
+        "starty": 203,
+        "stopy": 239,
+        "height": 36
+      },
+      {
+        "id": "4",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 3,
+        "startx": 76,
+        "stopx": 333,
+        "starty": 249,
+        "stopy": 285,
+        "height": 36
+      },
+      {
+        "id": "5",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 4,
+        "startx": 336,
+        "stopx": 79,
+        "starty": 295,
+        "stopy": 331,
+        "height": 36
+      },
+      {
+        "id": "6",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 24,
+        "startx": 76,
+        "stopx": 333,
+        "starty": 341,
+        "stopy": 377,
+        "height": 36
+      },
+      {
+        "id": "7",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 25,
+        "startx": 336,
+        "stopx": 79,
+        "starty": 387,
+        "stopy": 423,
+        "height": 36
+      },
+      {
+        "id": "8",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 33,
+        "startx": 79,
+        "stopx": 333,
+        "starty": 433,
+        "stopy": 469,
+        "height": 36
+      },
+      {
+        "id": "9",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 34,
+        "startx": 333,
+        "stopx": 79,
+        "starty": 479,
+        "stopy": 515,
+        "height": 36
+      }
+    ],
+    "notes": [],
+    "loops": [],
+    "edges": [
+      {
+        "id": "i0",
+        "points": [
+          {
+            "x": 76,
+            "y": 111
+          },
+          {
+            "x": 333,
+            "y": 111
+          }
+        ],
+        "x1": 76,
+        "y1": 111,
+        "x2": 333,
+        "y2": 111
+      },
+      {
+        "id": "i1",
+        "points": [
+          {
+            "x": 336,
+            "y": 157
+          },
+          {
+            "x": 79,
+            "y": 157
+          }
+        ],
+        "x1": 336,
+        "y1": 157,
+        "x2": 79,
+        "y2": 157
+      },
+      {
+        "id": "i2",
+        "points": [
+          {
+            "x": 76,
+            "y": 203
+          },
+          {
+            "x": 336,
+            "y": 203
+          }
+        ],
+        "x1": 76,
+        "y1": 203,
+        "x2": 336,
+        "y2": 203
+      },
+      {
+        "id": "i3",
+        "points": [
+          {
+            "x": 336,
+            "y": 249
+          },
+          {
+            "x": 76,
+            "y": 249
+          }
+        ],
+        "x1": 336,
+        "y1": 249,
+        "x2": 76,
+        "y2": 249
+      },
+      {
+        "id": "i4",
+        "points": [
+          {
+            "x": 76,
+            "y": 295
+          },
+          {
+            "x": 333,
+            "y": 295
+          }
+        ],
+        "x1": 76,
+        "y1": 295,
+        "x2": 333,
+        "y2": 295
+      },
+      {
+        "id": "i5",
+        "points": [
+          {
+            "x": 336,
+            "y": 341
+          },
+          {
+            "x": 79,
+            "y": 341
+          }
+        ],
+        "x1": 336,
+        "y1": 341,
+        "x2": 79,
+        "y2": 341
+      },
+      {
+        "id": "i6",
+        "points": [
+          {
+            "x": 76,
+            "y": 387
+          },
+          {
+            "x": 333,
+            "y": 387
+          }
+        ],
+        "x1": 76,
+        "y1": 387,
+        "x2": 333,
+        "y2": 387
+      },
+      {
+        "id": "i7",
+        "points": [
+          {
+            "x": 336,
+            "y": 433
+          },
+          {
+            "x": 79,
+            "y": 433
+          }
+        ],
+        "x1": 336,
+        "y1": 433,
+        "x2": 79,
+        "y2": 433
+      },
+      {
+        "id": "i8",
+        "points": [
+          {
+            "x": 79,
+            "y": 479
+          },
+          {
+            "x": 333,
+            "y": 479
+          }
+        ],
+        "x1": 79,
+        "y1": 479,
+        "x2": 333,
+        "y2": 479
+      },
+      {
+        "id": "i9",
+        "points": [
+          {
+            "x": 333,
+            "y": 525
+          },
+          {
+            "x": 79,
+            "y": 525
+          }
+        ],
+        "x1": 333,
+        "y1": 525,
+        "x2": 79,
+        "y2": 525
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -10,
+      "width": 512,
+      "height": 631
+    },
+    "rawViewBox": "-50 -10 512 631"
+  }
+}

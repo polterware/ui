@@ -1,0 +1,94 @@
+{
+  "name": "14-title-and-acc",
+  "source": "sequenceDiagram\n  title User Authentication Flow\n  Alice->>Bob: Login\n  Bob-->>Alice: Token\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 177
+      },
+      {
+        "id": "Bob",
+        "x": 200,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 177
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "0",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 65,
+        "stopy": 101,
+        "height": 36
+      },
+      {
+        "id": "1",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 1,
+        "startx": 274,
+        "stopx": 79,
+        "starty": 111,
+        "stopy": 147,
+        "height": 36
+      }
+    ],
+    "notes": [],
+    "loops": [],
+    "edges": [
+      {
+        "id": "i0",
+        "points": [
+          {
+            "x": 76,
+            "y": 111
+          },
+          {
+            "x": 271,
+            "y": 111
+          }
+        ],
+        "x1": 76,
+        "y1": 111,
+        "x2": 271,
+        "y2": 111
+      },
+      {
+        "id": "i1",
+        "points": [
+          {
+            "x": 274,
+            "y": 157
+          },
+          {
+            "x": 79,
+            "y": 157
+          }
+        ],
+        "x1": 274,
+        "y1": 157,
+        "x2": 79,
+        "y2": 157
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -50,
+      "width": 450,
+      "height": 303
+    },
+    "rawViewBox": "-50 -50 450 303"
+  }
+}

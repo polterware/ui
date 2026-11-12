@@ -1,0 +1,130 @@
+{
+  "name": "11-rect-background",
+  "source": "sequenceDiagram\n  rect rgb(200, 220, 240)\n    Alice->>Bob: Inside rect\n    Bob-->>Alice: Inside reply\n  end\n  Alice->>Bob: Outside rect\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 253
+      },
+      {
+        "id": "Bob",
+        "x": 200,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 253
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "1",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 85,
+        "stopy": 121,
+        "height": 36
+      },
+      {
+        "id": "2",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 1,
+        "startx": 274,
+        "stopx": 79,
+        "starty": 131,
+        "stopy": 167,
+        "height": 36
+      },
+      {
+        "id": "4",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 187,
+        "stopy": 223,
+        "height": 36
+      }
+    ],
+    "notes": [],
+    "loops": [
+      {
+        "startx": 64,
+        "stopx": 286,
+        "starty": 75,
+        "stopy": 187,
+        "height": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": "i1",
+        "points": [
+          {
+            "x": 76,
+            "y": 131
+          },
+          {
+            "x": 271,
+            "y": 131
+          }
+        ],
+        "x1": 76,
+        "y1": 131,
+        "x2": 271,
+        "y2": 131
+      },
+      {
+        "id": "i2",
+        "points": [
+          {
+            "x": 274,
+            "y": 177
+          },
+          {
+            "x": 79,
+            "y": 177
+          }
+        ],
+        "x1": 274,
+        "y1": 177,
+        "x2": 79,
+        "y2": 177
+      },
+      {
+        "id": "i4",
+        "points": [
+          {
+            "x": 76,
+            "y": 233
+          },
+          {
+            "x": 271,
+            "y": 233
+          }
+        ],
+        "x1": 76,
+        "y1": 233,
+        "x2": 271,
+        "y2": 233
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -10,
+      "width": 450,
+      "height": 339
+    },
+    "rawViewBox": "-50 -10 450 339"
+  }
+}

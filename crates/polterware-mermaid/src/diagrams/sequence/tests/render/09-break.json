@@ -1,0 +1,131 @@
+{
+  "name": "09-break",
+  "source": "sequenceDiagram\n  Alice->>Bob: Process\n  break when failed\n    Bob-->>Alice: Abort\n  end\n  Bob->>Alice: Continue\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 278
+      },
+      {
+        "id": "Bob",
+        "x": 200,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 278
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "0",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 65,
+        "stopy": 101,
+        "height": 36
+      },
+      {
+        "id": "2",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 1,
+        "startx": 274,
+        "stopx": 79,
+        "starty": 156,
+        "stopy": 192,
+        "height": 36
+      },
+      {
+        "id": "4",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 0,
+        "startx": 274,
+        "stopx": 79,
+        "starty": 212,
+        "stopy": 248,
+        "height": 36
+      }
+    ],
+    "notes": [],
+    "loops": [
+      {
+        "title": "[when failed]",
+        "startx": 64,
+        "stopx": 286,
+        "starty": 121,
+        "stopy": 212,
+        "height": 91
+      }
+    ],
+    "edges": [
+      {
+        "id": "i0",
+        "points": [
+          {
+            "x": 76,
+            "y": 111
+          },
+          {
+            "x": 271,
+            "y": 111
+          }
+        ],
+        "x1": 76,
+        "y1": 111,
+        "x2": 271,
+        "y2": 111
+      },
+      {
+        "id": "i2",
+        "points": [
+          {
+            "x": 274,
+            "y": 202
+          },
+          {
+            "x": 79,
+            "y": 202
+          }
+        ],
+        "x1": 274,
+        "y1": 202,
+        "x2": 79,
+        "y2": 202
+      },
+      {
+        "id": "i4",
+        "points": [
+          {
+            "x": 274,
+            "y": 258
+          },
+          {
+            "x": 79,
+            "y": 258
+          }
+        ],
+        "x1": 274,
+        "y1": 258,
+        "x2": 79,
+        "y2": 258
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -10,
+      "width": 450,
+      "height": 364
+    },
+    "rawViewBox": "-50 -10 450 364"
+  }
+}

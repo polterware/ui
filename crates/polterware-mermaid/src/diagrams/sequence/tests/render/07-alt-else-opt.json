@@ -1,0 +1,195 @@
+{
+  "name": "07-alt-else-opt",
+  "source": "sequenceDiagram\n  Alice->>Bob: Request\n  alt is successful\n    Bob-->>Alice: 200 OK\n  else is deferred\n    Bob-->>Alice: 202 Accepted\n  else has error\n    Bob-->>Alice: 500 Error\n  end\n  opt Extra check\n    Alice->>Bob: Confirm\n  end\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 515
+      },
+      {
+        "id": "Bob",
+        "x": 200,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 515
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "0",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 65,
+        "stopy": 101,
+        "height": 36
+      },
+      {
+        "id": "2",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 1,
+        "startx": 274,
+        "stopx": 79,
+        "starty": 156,
+        "stopy": 192,
+        "height": 36
+      },
+      {
+        "id": "4",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 1,
+        "startx": 274,
+        "stopx": 79,
+        "starty": 247,
+        "stopy": 283,
+        "height": 36
+      },
+      {
+        "id": "6",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 1,
+        "startx": 274,
+        "stopx": 79,
+        "starty": 338,
+        "stopy": 374,
+        "height": 36
+      },
+      {
+        "id": "9",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 439,
+        "stopy": 475,
+        "height": 36
+      }
+    ],
+    "notes": [],
+    "loops": [
+      {
+        "title": "[is successful]",
+        "startx": 64,
+        "stopx": 286,
+        "starty": 121,
+        "stopy": 394,
+        "height": 273
+      },
+      {
+        "title": "[Extra check]",
+        "startx": 64,
+        "stopx": 286,
+        "starty": 404,
+        "stopy": 495,
+        "height": 91
+      }
+    ],
+    "edges": [
+      {
+        "id": "i0",
+        "points": [
+          {
+            "x": 76,
+            "y": 111
+          },
+          {
+            "x": 271,
+            "y": 111
+          }
+        ],
+        "x1": 76,
+        "y1": 111,
+        "x2": 271,
+        "y2": 111
+      },
+      {
+        "id": "i2",
+        "points": [
+          {
+            "x": 274,
+            "y": 202
+          },
+          {
+            "x": 79,
+            "y": 202
+          }
+        ],
+        "x1": 274,
+        "y1": 202,
+        "x2": 79,
+        "y2": 202
+      },
+      {
+        "id": "i4",
+        "points": [
+          {
+            "x": 274,
+            "y": 293
+          },
+          {
+            "x": 79,
+            "y": 293
+          }
+        ],
+        "x1": 274,
+        "y1": 293,
+        "x2": 79,
+        "y2": 293
+      },
+      {
+        "id": "i6",
+        "points": [
+          {
+            "x": 274,
+            "y": 384
+          },
+          {
+            "x": 79,
+            "y": 384
+          }
+        ],
+        "x1": 274,
+        "y1": 384,
+        "x2": 79,
+        "y2": 384
+      },
+      {
+        "id": "i9",
+        "points": [
+          {
+            "x": 76,
+            "y": 485
+          },
+          {
+            "x": 271,
+            "y": 485
+          }
+        ],
+        "x1": 76,
+        "y1": 485,
+        "x2": 271,
+        "y2": 485
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -10,
+      "width": 450,
+      "height": 601
+    },
+    "rawViewBox": "-50 -10 450 601"
+  }
+}

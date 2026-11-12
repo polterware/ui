@@ -1,0 +1,98 @@
+{
+  "name": "13-self-call",
+  "source": "sequenceDiagram\n  Alice->>Alice: Self thinking\n  Alice->>Bob: Shared idea\n  Bob->>Bob: Internal processing\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 283
+      },
+      {
+        "id": "Bob",
+        "x": 200,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 283
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "0",
+        "from": "Alice",
+        "to": "Alice",
+        "type": 0,
+        "startx": 76,
+        "stopx": 76,
+        "starty": 65,
+        "stopy": 131,
+        "height": 66
+      },
+      {
+        "id": "1",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 141,
+        "stopy": 177,
+        "height": 36
+      },
+      {
+        "id": "2",
+        "from": "Bob",
+        "to": "Bob",
+        "type": 0,
+        "startx": 276,
+        "stopx": 276,
+        "starty": 187,
+        "stopy": 253,
+        "height": 66
+      }
+    ],
+    "notes": [],
+    "loops": [],
+    "edges": [
+      {
+        "id": "i1",
+        "points": [
+          {
+            "x": 76,
+            "y": 187
+          },
+          {
+            "x": 271,
+            "y": 187
+          }
+        ],
+        "x1": 76,
+        "y1": 187,
+        "x2": 271,
+        "y2": 187
+      },
+      {
+        "id": "i0",
+        "d": "M 76,111 C 136,101 136,141 76,131",
+        "points": []
+      },
+      {
+        "id": "i2",
+        "d": "M 276,233 C 336,223 336,263 276,253",
+        "points": []
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -10,
+      "width": 467,
+      "height": 369
+    },
+    "rawViewBox": "-50 -10 467 369"
+  }
+}

@@ -37,8 +37,13 @@ mod db;
 mod lexer;
 mod metadata;
 mod parser;
+pub mod render;
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+#[path = "tests/render_tests.rs"]
+mod render_tests;
 
 pub use ast::{Actor, Ast, Box, LineType, Message, MessageText, Placement};
 pub use parser::parse;
+pub use render::{SequenceLayoutData, SequenceRenderError, draw, draw_ast, draw_layout_ast, render};

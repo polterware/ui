@@ -1,0 +1,158 @@
+{
+  "name": "04-activations",
+  "source": "sequenceDiagram\n  Alice->>+Bob: Hello\n  Bob->>+John: Forward\n  John-->>-Bob: Response\n  Bob-->>-Alice: Reply\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 269
+      },
+      {
+        "id": "Bob",
+        "x": 200,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 269
+      },
+      {
+        "id": "John",
+        "x": 400,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 269
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "0",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 267,
+        "starty": 65,
+        "stopy": 101,
+        "height": 36
+      },
+      {
+        "id": "2",
+        "from": "Bob",
+        "to": "John",
+        "type": 0,
+        "startx": 280,
+        "stopx": 467,
+        "starty": 111,
+        "stopy": 147,
+        "height": 36
+      },
+      {
+        "id": "4",
+        "from": "John",
+        "to": "Bob",
+        "type": 1,
+        "startx": 470,
+        "stopx": 283,
+        "starty": 157,
+        "stopy": 193,
+        "height": 36
+      },
+      {
+        "id": "6",
+        "from": "Bob",
+        "to": "Alice",
+        "type": 1,
+        "startx": 270,
+        "stopx": 79,
+        "starty": 203,
+        "stopy": 239,
+        "height": 36
+      }
+    ],
+    "notes": [],
+    "loops": [],
+    "edges": [
+      {
+        "id": "i0",
+        "points": [
+          {
+            "x": 76,
+            "y": 111
+          },
+          {
+            "x": 267,
+            "y": 111
+          }
+        ],
+        "x1": 76,
+        "y1": 111,
+        "x2": 267,
+        "y2": 111
+      },
+      {
+        "id": "i2",
+        "points": [
+          {
+            "x": 280,
+            "y": 157
+          },
+          {
+            "x": 467,
+            "y": 157
+          }
+        ],
+        "x1": 280,
+        "y1": 157,
+        "x2": 467,
+        "y2": 157
+      },
+      {
+        "id": "i4",
+        "points": [
+          {
+            "x": 470,
+            "y": 203
+          },
+          {
+            "x": 283,
+            "y": 203
+          }
+        ],
+        "x1": 470,
+        "y1": 203,
+        "x2": 283,
+        "y2": 203
+      },
+      {
+        "id": "i6",
+        "points": [
+          {
+            "x": 270,
+            "y": 249
+          },
+          {
+            "x": 79,
+            "y": 249
+          }
+        ],
+        "x1": 270,
+        "y1": 249,
+        "x2": 79,
+        "y2": 249
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -10,
+      "width": 650,
+      "height": 355
+    },
+    "rawViewBox": "-50 -10 650 355"
+  }
+}

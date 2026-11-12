@@ -56,6 +56,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::flowchart::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Sequence => {
+            let scene = diagrams::sequence::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }
