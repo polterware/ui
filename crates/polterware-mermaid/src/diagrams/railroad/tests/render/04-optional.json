@@ -1,0 +1,318 @@
+{
+  "name": "04-optional",
+  "source": "%%{init: {\"themeVariables\": {\"fontFamily\": \"monospace\"}}}%%\nrailroad-beta\nSigned = sequence(optional(terminal(\"-\")), nonterminal(\"Number\"));\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 309,
+      "height": 106.4
+    },
+    "rawViewBox": "0 0 309 106.4",
+    "shapes": [
+      {
+        "kind": "rect",
+        "class": "railroad-terminal",
+        "x": 136.8,
+        "y": 30,
+        "width": 29.6,
+        "height": 38.4,
+        "rx": 10,
+        "ry": 10,
+        "paint": {
+          "fill": "#ffffde",
+          "stroke": "hsl(60, 60%, 83.5294117647%)",
+          "strokeWidth": 2,
+          "dash": []
+        }
+      },
+      {
+        "kind": "text",
+        "class": "railroad-terminal",
+        "text": "-",
+        "x": 151.60000000000002,
+        "y": 49.2,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontFamily": "monospace",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false,
+        "paint": {
+          "fill": "#000021",
+          "stroke": null,
+          "strokeWidth": 1,
+          "dash": []
+        }
+      },
+      {
+        "kind": "path",
+        "class": "railroad-line",
+        "d": "M 0 39.2 L 20 39.2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 116.8,
+            "y": 49.2
+          },
+          {
+            "op": "lineTo",
+            "x": 136.8,
+            "y": 49.2
+          }
+        ],
+        "paint": {
+          "fill": "none",
+          "stroke": "#333333",
+          "strokeWidth": 2,
+          "dash": []
+        }
+      },
+      {
+        "kind": "path",
+        "class": "railroad-line",
+        "d": "M 49.6 39.2 L 69.6 39.2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 166.4,
+            "y": 49.2
+          },
+          {
+            "op": "lineTo",
+            "x": 186.39999999999998,
+            "y": 49.2
+          }
+        ],
+        "paint": {
+          "fill": "none",
+          "stroke": "#333333",
+          "strokeWidth": 2,
+          "dash": []
+        }
+      },
+      {
+        "kind": "path",
+        "class": "railroad-line",
+        "d": "M 0 39.2 A 10 10 0 0 0 10 29.200000000000003 L 10 10 A 10 10 0 0 1 20 0 L 49.599999999999994 0 A 10 10 0 0 1 59.599999999999994 10 L 59.599999999999994 29.200000000000003 A 10 10 0 0 0 69.6 39.2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 116.8,
+            "y": 49.2
+          },
+          {
+            "op": "arcTo",
+            "rx": 10,
+            "ry": 10,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 126.8,
+            "y": 39.2
+          },
+          {
+            "op": "lineTo",
+            "x": 126.8,
+            "y": 20
+          },
+          {
+            "op": "arcTo",
+            "rx": 10,
+            "ry": 10,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 136.8,
+            "y": 10
+          },
+          {
+            "op": "lineTo",
+            "x": 166.39999999999998,
+            "y": 10
+          },
+          {
+            "op": "arcTo",
+            "rx": 10,
+            "ry": 10,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 176.39999999999998,
+            "y": 20
+          },
+          {
+            "op": "lineTo",
+            "x": 176.39999999999998,
+            "y": 39.2
+          },
+          {
+            "op": "arcTo",
+            "rx": 10,
+            "ry": 10,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 186.39999999999998,
+            "y": 49.2
+          }
+        ],
+        "paint": {
+          "fill": "none",
+          "stroke": "#333333",
+          "strokeWidth": 2,
+          "dash": []
+        }
+      },
+      {
+        "kind": "path",
+        "class": "railroad-line",
+        "d": "M 69.6 39.2 L 79.6 39.2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 186.39999999999998,
+            "y": 49.2
+          },
+          {
+            "op": "lineTo",
+            "x": 196.39999999999998,
+            "y": 49.2
+          }
+        ],
+        "paint": {
+          "fill": "none",
+          "stroke": "#333333",
+          "strokeWidth": 2,
+          "dash": []
+        }
+      },
+      {
+        "kind": "rect",
+        "class": "railroad-nonterminal",
+        "x": 196.39999999999998,
+        "y": 30.000000000000004,
+        "width": 77.6,
+        "height": 38.4,
+        "rx": 0,
+        "ry": 0,
+        "paint": {
+          "fill": "#ECECFF",
+          "stroke": "hsl(240, 60%, 86.2745098039%)",
+          "strokeWidth": 2,
+          "dash": []
+        }
+      },
+      {
+        "kind": "text",
+        "class": "railroad-nonterminal",
+        "text": "Number",
+        "x": 235.2,
+        "y": 49.2,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontFamily": "monospace",
+        "fontSize": 16,
+        "bold": false,
+        "italic": false,
+        "paint": {
+          "fill": "#131300",
+          "stroke": null,
+          "strokeWidth": 1,
+          "dash": []
+        }
+      },
+      {
+        "kind": "text",
+        "class": "railroad-rule-name",
+        "text": "Signed =",
+        "x": 0,
+        "y": 49.2,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontFamily": "monospace",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "paint": {
+          "fill": "#333",
+          "stroke": null,
+          "strokeWidth": 1,
+          "dash": []
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "railroad-start",
+        "cx": 96.8,
+        "cy": 49.2,
+        "r": 5,
+        "paint": {
+          "fill": "#333333",
+          "stroke": null,
+          "strokeWidth": 1,
+          "dash": []
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "railroad-end",
+        "cx": 284,
+        "cy": 49.2,
+        "r": 5,
+        "paint": {
+          "fill": "#333333",
+          "stroke": null,
+          "strokeWidth": 1,
+          "dash": []
+        }
+      },
+      {
+        "kind": "path",
+        "class": "railroad-line",
+        "d": "M 101.8 39.2 L 116.8 39.2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 101.8,
+            "y": 49.2
+          },
+          {
+            "op": "lineTo",
+            "x": 116.8,
+            "y": 49.2
+          }
+        ],
+        "paint": {
+          "fill": "none",
+          "stroke": "#333333",
+          "strokeWidth": 2,
+          "dash": []
+        }
+      },
+      {
+        "kind": "path",
+        "class": "railroad-line",
+        "d": "M 274 39.2 L 279 39.2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 274,
+            "y": 49.2
+          },
+          {
+            "op": "lineTo",
+            "x": 279,
+            "y": 49.2
+          }
+        ],
+        "paint": {
+          "fill": "none",
+          "stroke": "#333333",
+          "strokeWidth": 2,
+          "dash": []
+        }
+      }
+    ]
+  }
+}

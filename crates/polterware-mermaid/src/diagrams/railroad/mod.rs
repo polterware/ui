@@ -12,9 +12,6 @@
 //!
 //! # Where the port stops short of upstream
 //!
-//! * Nothing here lays out or draws: `railroadRenderer.ts`, its spec, and `styles.ts` are out
-//!   of scope. The Langium AST types generated from `railroad.langium` are replaced by
-//!   [`Node`].
 //! * Configuration is not owned by this crate, so `getConfig`, `getRailroadConfig`, and
 //!   `DEFAULT_RAILROAD_CONFIG` are absent.
 //! * `sanitizeText` is approximated: `script`/`style` elements are dropped and a stray `<` is
@@ -33,11 +30,16 @@
 //! * Only the `railroad-beta` grammar is ported. Upstream's `railroad-ebnf`,
 //!   `railroad-abnf`, and `railroad-peg` are separate grammars in `railroad-ebnf/`,
 //!   `railroad-abnf/`, and `railroad-peg/`.
+//!
+//! The renderer is [`render`], ported from `railroadRenderer.ts` with `styles.ts`' options,
+//! drawing directly with d3-style appends and `getBBox()` measurement (no unified pipeline),
+//! as upstream does.
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Node, Rule};
 
