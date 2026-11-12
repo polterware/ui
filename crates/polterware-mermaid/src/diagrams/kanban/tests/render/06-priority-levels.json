@@ -1,0 +1,262 @@
+{
+  "name": "06-priority-levels",
+  "source": "kanban\n  Levels\n    veryHigh@{ label: \"Very High\", priority: \"Very High\" }\n    high@{ label: \"High\", priority: \"High\" }\n    medium@{ label: \"Medium\", priority: \"Medium\" }\n    low@{ label: \"Low\", priority: \"Low\" }\n    veryLow@{ label: \"Very Low\", priority: \"Very Low\" }\n    unknown@{ label: \"Custom\", priority: \"Whenever\" }\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 220,
+      "height": 310.3999999999999
+    },
+    "sections": [
+      {
+        "id": "mermaid-Levels",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 290.3999999999999,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 171.2,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Levels"
+            ],
+            "width": 57.599999999999994,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-veryHigh",
+        "transform": {
+          "x": 200,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Very High"
+              ],
+              "width": 86.39999999999999,
+              "height": 18.4
+            }
+          }
+        ],
+        "priorityLine": {
+          "x1": -90.5,
+          "y1": -17.2,
+          "x2": -90.5,
+          "y2": 17.2,
+          "stroke": "red"
+        }
+      },
+      {
+        "id": "mermaid-high",
+        "transform": {
+          "x": 200,
+          "y": -212.40000000000003
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "High"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          }
+        ],
+        "priorityLine": {
+          "x1": -90.5,
+          "y1": -17.2,
+          "x2": -90.5,
+          "y2": 17.2,
+          "stroke": "orange"
+        }
+      },
+      {
+        "id": "mermaid-medium",
+        "transform": {
+          "x": 200,
+          "y": -169.00000000000006
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Medium"
+              ],
+              "width": 57.599999999999994,
+              "height": 18.4
+            }
+          }
+        ],
+        "priorityLine": {
+          "x1": -90.5,
+          "y1": -17.2,
+          "x2": -90.5,
+          "y2": 17.2,
+          "stroke": null
+        }
+      },
+      {
+        "id": "mermaid-low",
+        "transform": {
+          "x": 200,
+          "y": -125.60000000000007
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Low"
+              ],
+              "width": 28.799999999999997,
+              "height": 18.4
+            }
+          }
+        ],
+        "priorityLine": {
+          "x1": -90.5,
+          "y1": -17.2,
+          "x2": -90.5,
+          "y2": 17.2,
+          "stroke": "blue"
+        }
+      },
+      {
+        "id": "mermaid-veryLow",
+        "transform": {
+          "x": 200,
+          "y": -82.20000000000006
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Very Low"
+              ],
+              "width": 76.8,
+              "height": 18.4
+            }
+          }
+        ],
+        "priorityLine": {
+          "x1": -90.5,
+          "y1": -17.2,
+          "x2": -90.5,
+          "y2": 17.2,
+          "stroke": "lightblue"
+        }
+      },
+      {
+        "id": "mermaid-unknown",
+        "transform": {
+          "x": 200,
+          "y": -38.800000000000054
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Custom"
+              ],
+              "width": 57.599999999999994,
+              "height": 18.4
+            }
+          }
+        ],
+        "priorityLine": {
+          "x1": -90.5,
+          "y1": -17.2,
+          "x2": -90.5,
+          "y2": 17.2,
+          "stroke": null
+        }
+      }
+    ]
+  }
+}

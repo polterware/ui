@@ -3,9 +3,9 @@
 //! `kanbanDb.ts` with its `getData` projection.
 //!
 //! The body the parser receives starts with the header line, with its line endings normalized;
-//! frontmatter and `%%{init}%%` directives are removed by [`crate::preprocess`]. Nothing here
-//! lays out or draws: the [`Ast`] holds what upstream's kanban database holds after parsing
-//! (`getSections` and the node list), plus the nodes `getData` derives for a renderer.
+//! frontmatter and `%%{init}%%` directives are removed by [`crate::preprocess`]. The [`Ast`]
+//! holds what upstream's kanban database holds after parsing (`getSections` and the node
+//! list), plus the nodes `getData` derives for a renderer; [`render`] draws them.
 //!
 //! The grammar is jison, so `lexer.rs` reproduces the `%lex` rules in their order and states and
 //! `parser.rs` is the recursive descent of the `%%` grammar; the tests in `tests.rs` port
@@ -14,9 +14,10 @@
 //! # Where the port stops short of upstream
 //!
 //! * Configuration is not owned by this crate, so `getConfig` and the fields `addNode` and
-//!   `getData` copy from it are absent: `mindmap.padding`, `mindmap.maxNodeWidth`, the section
-//!   `width`/`padding`, and `look`. No `kanban.spec.ts` case reads them, so no case is skipped
-//!   for this reason.
+//!   `getData` copy from it are absent from the database: `mindmap.padding`,
+//!   `mindmap.maxNodeWidth`, the section `width`/`padding`, and `look`. No `kanban.spec.ts`
+//!   case reads them, so no case is skipped for this reason. The renderer reads the same
+//!   values from the [`crate::config::Config`] it is handed.
 //! * `sanitizeText` is approximated: `script`/`style` elements are dropped and a stray `<` is
 //!   escaped, but there is no DOMPurify (a DOM library).
 //! * `@{ ... }` metadata runs through a YAML subset (js-yaml `JSON_SCHEMA` flow and block
@@ -29,13 +30,14 @@
 //! * The `doc.shape === 'kanbanItem'` assignment in `addNode` is unreachable upstream too: that
 //!   spelling fails the lowercase check just before it, so it stays unreachable here.
 //! * `setElementForId`/`getElementById` (the DOM elements the renderer registers) are not
-//!   ported, and nothing renders: `kanbanRenderer.ts` is out of scope.
+//!   ported: the scene carries the geometry instead of DOM handles.
 
 mod ast;
 mod db;
 mod lexer;
 mod metadata;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, DataNode, DataShape, Node, NodeType};
 

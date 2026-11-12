@@ -1,0 +1,126 @@
+{
+  "name": "04-long-section-title",
+  "source": "kanban\n  A very long section title that certainly wraps around\n    a[Task]\n  Short\n    b[Task]\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 425,
+      "height": 121.99999999999997
+    },
+    "sections": [
+      {
+        "id": "mermaid-A very long section title that certainly wraps around",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 101.99999999999997,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 104,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "A very long section",
+              "title that certainly",
+              "wraps around"
+            ],
+            "width": 192,
+            "height": 53.6
+          }
+        }
+      },
+      {
+        "id": "mermaid-Short",
+        "rect": {
+          "x": 305,
+          "y": -300,
+          "width": 200,
+          "height": 101.99999999999997,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 381,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Short"
+            ],
+            "width": 48,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-a",
+        "transform": {
+          "x": 200,
+          "y": -227.20000000000002
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Task"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-b",
+        "transform": {
+          "x": 405,
+          "y": -227.20000000000002
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Task"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

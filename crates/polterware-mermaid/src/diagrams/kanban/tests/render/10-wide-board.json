@@ -1,0 +1,346 @@
+{
+  "name": "10-wide-board",
+  "source": "kanban\n  Ideas\n    a[Collect]\n  Discovery\n    b[Interview]\n    c[Research]\n  Design\n    d[Sketch]\n    e[Prototype]\n  Build\n    f[Implement]\n  Ship\n    g[Release]\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 1040,
+      "height": 136.79999999999995
+    },
+    "sections": [
+      {
+        "id": "mermaid-Ideas",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 73.39999999999998,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 176,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Ideas"
+            ],
+            "width": 48,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Discovery",
+        "rect": {
+          "x": 305,
+          "y": -300,
+          "width": 200,
+          "height": 116.79999999999995,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 361.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Discovery"
+            ],
+            "width": 86.39999999999999,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Design",
+        "rect": {
+          "x": 510,
+          "y": -300,
+          "width": 200,
+          "height": 116.79999999999995,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 581.2,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Design"
+            ],
+            "width": 57.599999999999994,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Build",
+        "rect": {
+          "x": 715,
+          "y": -300,
+          "width": 200,
+          "height": 73.39999999999998,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 791,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Build"
+            ],
+            "width": 48,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Ship",
+        "rect": {
+          "x": 920,
+          "y": -300,
+          "width": 200,
+          "height": 73.39999999999998,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 1000.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Ship"
+            ],
+            "width": 38.4,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-a",
+        "transform": {
+          "x": 200,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Collect"
+              ],
+              "width": 67.2,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-b",
+        "transform": {
+          "x": 405,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Interview"
+              ],
+              "width": 86.39999999999999,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-c",
+        "transform": {
+          "x": 405,
+          "y": -212.40000000000003
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Research"
+              ],
+              "width": 76.8,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-d",
+        "transform": {
+          "x": 610,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Sketch"
+              ],
+              "width": 57.599999999999994,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-e",
+        "transform": {
+          "x": 610,
+          "y": -212.40000000000003
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Prototype"
+              ],
+              "width": 86.39999999999999,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-f",
+        "transform": {
+          "x": 815,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Implement"
+              ],
+              "width": 86.39999999999999,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-g",
+        "transform": {
+          "x": 1020,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Release"
+              ],
+              "width": 67.2,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

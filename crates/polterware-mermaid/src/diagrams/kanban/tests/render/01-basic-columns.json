@@ -1,0 +1,149 @@
+{
+  "name": "01-basic-columns",
+  "source": "kanban\n  Todo\n    [Create documentation]\n  In progress\n    id1[Design the parser]\n  Done\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 630,
+      "height": 111
+    },
+    "sections": [
+      {
+        "id": "mermaid-Todo",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 91,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 180.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Todo"
+            ],
+            "width": 38.4,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-In progress",
+        "rect": {
+          "x": 305,
+          "y": -300,
+          "width": 200,
+          "height": 73.39999999999998,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 352.2,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "In progress"
+            ],
+            "width": 105.6,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Done",
+        "rect": {
+          "x": 510,
+          "y": -300,
+          "width": 200,
+          "height": 50,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 590.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Done"
+            ],
+            "width": 38.4,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-Create documentation",
+        "transform": {
+          "x": 200,
+          "y": -247
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -28,
+          "width": 185,
+          "height": 56,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -18
+            },
+            "text": {
+              "lines": [
+                "Create",
+                "documentation"
+              ],
+              "width": 124.8,
+              "height": 36
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-id1",
+        "transform": {
+          "x": 405,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Design the parser"
+              ],
+              "width": 163.2,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

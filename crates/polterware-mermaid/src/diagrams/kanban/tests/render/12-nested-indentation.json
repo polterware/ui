@@ -1,0 +1,184 @@
+{
+  "name": "12-nested-indentation",
+  "source": "kanban\n  Root\n    child1\n      leaf1\n    child2\n  Other\n    leaf2\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 425,
+      "height": 180.19999999999993
+    },
+    "sections": [
+      {
+        "id": "mermaid-Root",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 160.19999999999993,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 180.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Root"
+            ],
+            "width": 38.4,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Other",
+        "rect": {
+          "x": 305,
+          "y": -300,
+          "width": 200,
+          "height": 73.39999999999998,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 381,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Other"
+            ],
+            "width": 48,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-child1",
+        "transform": {
+          "x": 200,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "child1"
+              ],
+              "width": 57.599999999999994,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-leaf1",
+        "transform": {
+          "x": 200,
+          "y": -212.40000000000003
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "leaf1"
+              ],
+              "width": 48,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-child2",
+        "transform": {
+          "x": 200,
+          "y": -169.00000000000006
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "child2"
+              ],
+              "width": 57.599999999999994,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-leaf2",
+        "transform": {
+          "x": 405,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "leaf2"
+              ],
+              "width": 48,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

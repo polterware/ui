@@ -1,0 +1,209 @@
+{
+  "name": "05-ticket-and-assignee",
+  "source": "kanban\n  Todo\n    id1@{ ticket: MC-1, assigned: knsv, priority: \"Very High\" }\n    id2@{ ticket: MC-2, assigned: erick, priority: \"Low\" }\n    id3@{ ticket: MC-3 }\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 220,
+      "height": 207.80000000000007
+    },
+    "sections": [
+      {
+        "id": "mermaid-Todo",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 187.80000000000007,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 180.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Todo"
+            ],
+            "width": 38.4,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-id1",
+        "transform": {
+          "x": 200,
+          "y": -251.2
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -23.799999999999997,
+          "width": 185,
+          "height": 47.599999999999994,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -18.4
+            },
+            "text": {
+              "lines": [
+                "id1"
+              ],
+              "width": 28.799999999999997,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": -82.5,
+              "y": 0
+            },
+            "text": {
+              "lines": [
+                "MC-1"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": 44.099999999999994,
+              "y": 0
+            },
+            "text": {
+              "lines": [
+                "knsv"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          }
+        ],
+        "priorityLine": {
+          "x1": -90.5,
+          "y1": -21.799999999999997,
+          "x2": -90.5,
+          "y2": 21.799999999999997,
+          "stroke": "red"
+        }
+      },
+      {
+        "id": "mermaid-id2",
+        "transform": {
+          "x": 200,
+          "y": -198.59999999999997
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -23.799999999999997,
+          "width": 185,
+          "height": 47.599999999999994,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -18.4
+            },
+            "text": {
+              "lines": [
+                "id2"
+              ],
+              "width": 28.799999999999997,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": -82.5,
+              "y": 0
+            },
+            "text": {
+              "lines": [
+                "MC-2"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": 34.5,
+              "y": 0
+            },
+            "text": {
+              "lines": [
+                "erick"
+              ],
+              "width": 48,
+              "height": 18.4
+            }
+          }
+        ],
+        "priorityLine": {
+          "x1": -90.5,
+          "y1": -21.799999999999997,
+          "x2": -90.5,
+          "y2": 21.799999999999997,
+          "stroke": "blue"
+        }
+      },
+      {
+        "id": "mermaid-id3",
+        "transform": {
+          "x": 200,
+          "y": -145.99999999999994
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -23.799999999999997,
+          "width": 185,
+          "height": 47.599999999999994,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -18.4
+            },
+            "text": {
+              "lines": [
+                "id3"
+              ],
+              "width": 28.799999999999997,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": -82.5,
+              "y": 0
+            },
+            "text": {
+              "lines": [
+                "MC-3"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

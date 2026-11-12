@@ -1,0 +1,172 @@
+{
+  "name": "08-metadata-overrides",
+  "source": "kanban\n  Roadmap\n    a@{ label: \"Renamed item\", assigned: ana }\n    b@{ icon: star, ticket: AX-9, assigned: bo }\n    c@{ label: \"A renamed label that is long enough to wrap onto two lines\" }\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 220,
+      "height": 255.40000000000003
+    },
+    "sections": [
+      {
+        "id": "mermaid-Roadmap",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 235.40000000000003,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 166.4,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Roadmap"
+            ],
+            "width": 67.2,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-a",
+        "transform": {
+          "x": 200,
+          "y": -251.2
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -23.799999999999997,
+          "width": 185,
+          "height": 47.599999999999994,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -18.4
+            },
+            "text": {
+              "lines": [
+                "Renamed item"
+              ],
+              "width": 115.19999999999999,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": 53.7,
+              "y": 0
+            },
+            "text": {
+              "lines": [
+                "ana"
+              ],
+              "width": 28.799999999999997,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-b",
+        "transform": {
+          "x": 200,
+          "y": -196.59999999999997
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -25.799999999999997,
+          "width": 185,
+          "height": 51.599999999999994,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -20.4
+            },
+            "text": {
+              "lines": [
+                "b"
+              ],
+              "width": 9.6,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": -82.5,
+              "y": 2
+            },
+            "text": {
+              "lines": [
+                "AX-9"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": 63.3,
+              "y": 2
+            },
+            "text": {
+              "lines": [
+                "bo"
+              ],
+              "width": 19.2,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-c",
+        "transform": {
+          "x": 200,
+          "y": -120.19999999999996
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -45.6,
+          "width": 185,
+          "height": 91.2,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -35.6
+            },
+            "text": {
+              "lines": [
+                "A renamed label",
+                "that is long",
+                "enough to wrap",
+                "onto two lines"
+              ],
+              "width": 144,
+              "height": 71.2
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,245 @@
+{
+  "name": "02-ids-and-shapes",
+  "source": "kanban\n  id1[Todo]\n    id2[Create JISON]\n    id3[Update DB function]\n    id4[Create parsing tests]\n    id5[define getData]\n    id6[Create renderer]\n  id7[In progress]\n    id8[Design grammar]\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 425,
+      "height": 284.59999999999997
+    },
+    "sections": [
+      {
+        "id": "mermaid-id1",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 264.59999999999997,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 180.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Todo"
+            ],
+            "width": 38.4,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-id7",
+        "rect": {
+          "x": 305,
+          "y": -300,
+          "width": 200,
+          "height": 73.39999999999998,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 352.2,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "In progress"
+            ],
+            "width": 105.6,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-id2",
+        "transform": {
+          "x": 200,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Create JISON"
+              ],
+              "width": 115.19999999999999,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-id3",
+        "transform": {
+          "x": 200,
+          "y": -212.40000000000003
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Update DB function"
+              ],
+              "width": 172.79999999999998,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-id4",
+        "transform": {
+          "x": 200,
+          "y": -160.20000000000005
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -28,
+          "width": 185,
+          "height": 56,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -18
+            },
+            "text": {
+              "lines": [
+                "Create parsing",
+                "tests"
+              ],
+              "width": 134.4,
+              "height": 36
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-id5",
+        "transform": {
+          "x": 200,
+          "y": -108.00000000000004
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "define getData"
+              ],
+              "width": 134.4,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-id6",
+        "transform": {
+          "x": 200,
+          "y": -64.60000000000004
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Create renderer"
+              ],
+              "width": 144,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-id8",
+        "transform": {
+          "x": 405,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Design grammar"
+              ],
+              "width": 134.4,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

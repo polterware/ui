@@ -1,0 +1,130 @@
+{
+  "name": "09-single-column",
+  "source": "kanban\n  Only\n    a[One]\n    b[Two]\n    c[Three]\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 220,
+      "height": 180.19999999999993
+    },
+    "sections": [
+      {
+        "id": "mermaid-Only",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 160.19999999999993,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 180.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Only"
+            ],
+            "width": 38.4,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-a",
+        "transform": {
+          "x": 200,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "One"
+              ],
+              "width": 28.799999999999997,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-b",
+        "transform": {
+          "x": 200,
+          "y": -212.40000000000003
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Two"
+              ],
+              "width": 28.799999999999997,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-c",
+        "transform": {
+          "x": 200,
+          "y": -169.00000000000006
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Three"
+              ],
+              "width": 48,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "name": "07-empty-sections",
+  "source": "kanban\n  Empty\n  Also empty\n  Done\n    a[Only task]\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 630,
+      "height": 93.39999999999998
+    },
+    "sections": [
+      {
+        "id": "mermaid-Empty",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 50,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 176,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Empty"
+            ],
+            "width": 48,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Also empty",
+        "rect": {
+          "x": 305,
+          "y": -300,
+          "width": 200,
+          "height": 50,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 357,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Also empty"
+            ],
+            "width": 96,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Done",
+        "rect": {
+          "x": 510,
+          "y": -300,
+          "width": 200,
+          "height": 73.39999999999998,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 590.8,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Done"
+            ],
+            "width": 38.4,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-a",
+        "transform": {
+          "x": 610,
+          "y": -255.8
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Only task"
+              ],
+              "width": 86.39999999999999,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
