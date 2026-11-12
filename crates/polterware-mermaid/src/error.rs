@@ -151,6 +151,16 @@ impl From<crate::diagrams::info::render::InfoRenderError> for RenderError {
     }
 }
 
+impl From<crate::diagrams::ishikawa::render::IshikawaRenderError> for RenderError {
+    fn from(error: crate::diagrams::ishikawa::render::IshikawaRenderError) -> Self {
+        match error {
+            crate::diagrams::ishikawa::render::IshikawaRenderError::Parse(error) => {
+                Self::Parse(error)
+            }
+        }
+    }
+}
+
 impl From<crate::diagrams::requirement::render::RequirementRenderError> for RenderError {
     fn from(error: crate::diagrams::requirement::render::RequirementRenderError) -> Self {
         match error {

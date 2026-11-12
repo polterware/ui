@@ -1,0 +1,243 @@
+{
+  "name": "07-long-cause-labels",
+  "source": "ishikawa\n  Stock outs\n    Supplier delays during the holiday season\n    Inaccurate demand forecasts every quarter\n    No safety stock\n",
+  "expected": {
+    "viewBox": {
+      "x": -342.7173100960066,
+      "y": 158.2865965629215,
+      "width": 552.5586550480033,
+      "height": 183.42680687415702
+    },
+    "rawViewBox": "-342.7173100960066 158.2865965629215 552.5586550480033 183.42680687415702",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -302.7173100960066,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -36.099999999999994 L 0 36.099999999999994 Q 216 0 0 -36.099999999999994 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 213.9
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 286.1
+          },
+          {
+            "op": "quadTo",
+            "cx": 216,
+            "cy": 250,
+            "x": 0,
+            "y": 213.9
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Stock outs"
+        ],
+        "x": 48,
+        "y": 250,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": 6,
+          "y": 241.95,
+          "width": 84,
+          "height": 16.099999999999998
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -243.75865504800328,
+        "y": 178.2865965629215,
+        "width": 433.59999999999997,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Supplier delays during the holiday season"
+        ],
+        "x": -26.958655048003283,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -223.75865504800328,
+          "y": 180.2865965629215,
+          "width": 393.59999999999997,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 299.5134034370785,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -243.75865504800328,
+        "y": 299.31340343707853,
+        "width": 433.59999999999997,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Inaccurate demand forecasts every quarter"
+        ],
+        "x": -26.958655048003283,
+        "y": 310.5134034370785,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -223.75865504800328,
+          "y": 301.31340343707853,
+          "width": 393.59999999999997,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -223.75865504800328,
+        "y1": 250,
+        "x2": -230.71731009600657,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -322.7173100960066,
+        "y": 178.2865965629215,
+        "width": 184,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "No safety stock"
+        ],
+        "x": -230.71731009600657,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -302.7173100960066,
+          "y": 180.2865965629215,
+          "width": 144,
+          "height": 18.4
+        }
+      }
+    ]
+  }
+}

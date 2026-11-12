@@ -1,0 +1,413 @@
+{
+  "name": "09-many-causes",
+  "source": "ishikawa\n  Support tickets rising\n    Product bugs\n    Slow answers\n    Unclear documentation\n    No self-service\n    Pricing questions\n    Broken links\n    Missing FAQ\n",
+  "expected": {
+    "viewBox": {
+      "x": -380.63462019201313,
+      "y": 158.2865965629215,
+      "width": 478.3946201920131,
+      "height": 183.42680687415702
+    },
+    "rawViewBox": "-380.63462019201313 158.2865965629215 478.3946201920131 183.42680687415702",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -340.63462019201313,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -69.7 L 0 69.7 Q 155.52 0 0 -69.7 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 180.3
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 319.7
+          },
+          {
+            "op": "quadTo",
+            "cx": 155.52,
+            "cy": 250,
+            "x": 0,
+            "y": 180.3
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Support",
+          "tickets",
+          "rising"
+        ],
+        "x": 35.400000000000006,
+        "y": 250,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": 16.8,
+        "fill": "#333",
+        "box": {
+          "x": 6.0000000000000036,
+          "y": 225.15,
+          "width": 58.800000000000004,
+          "height": 49.7
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -104.55865504800327,
+        "y": 178.2865965629215,
+        "width": 155.2,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Product bugs"
+        ],
+        "x": -26.958655048003283,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -84.55865504800327,
+          "y": 180.2865965629215,
+          "width": 115.19999999999999,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 299.5134034370785,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -104.55865504800327,
+        "y": 299.31340343707853,
+        "width": 155.2,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Slow answers"
+        ],
+        "x": -26.958655048003283,
+        "y": 310.5134034370785,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -84.55865504800327,
+          "y": 301.31340343707853,
+          "width": 115.19999999999999,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -84.55865504800327,
+        "y1": 250,
+        "x2": -91.51731009600655,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -212.31731009600657,
+        "y": 178.2865965629215,
+        "width": 241.6,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Unclear documentation"
+        ],
+        "x": -91.51731009600655,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -192.31731009600657,
+          "y": 180.2865965629215,
+          "width": 201.6,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -84.55865504800327,
+        "y1": 250,
+        "x2": -91.51731009600655,
+        "y2": 299.5134034370785,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -183.51731009600655,
+        "y": 299.31340343707853,
+        "width": 184,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "No self-service"
+        ],
+        "x": -91.51731009600655,
+        "y": 310.5134034370785,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -163.51731009600655,
+          "y": 301.31340343707853,
+          "width": 144,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -192.31731009600657,
+        "y1": 250,
+        "x2": -199.27596514400986,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -300.87596514400985,
+        "y": 178.2865965629215,
+        "width": 203.2,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Pricing questions"
+        ],
+        "x": -199.27596514400986,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -280.87596514400985,
+          "y": 180.2865965629215,
+          "width": 163.2,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -192.31731009600657,
+        "y1": 250,
+        "x2": -199.27596514400986,
+        "y2": 299.5134034370785,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -276.87596514400985,
+        "y": 299.31340343707853,
+        "width": 155.2,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Broken links"
+        ],
+        "x": -199.27596514400986,
+        "y": 310.5134034370785,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -256.87596514400985,
+          "y": 301.31340343707853,
+          "width": 115.19999999999999,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -280.87596514400985,
+        "y1": 250,
+        "x2": -287.8346201920131,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -360.63462019201313,
+        "y": 178.2865965629215,
+        "width": 145.6,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Missing FAQ"
+        ],
+        "x": -287.8346201920131,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -340.63462019201313,
+          "y": 180.2865965629215,
+          "width": 105.6,
+          "height": 18.4
+        }
+      }
+    ]
+  }
+}

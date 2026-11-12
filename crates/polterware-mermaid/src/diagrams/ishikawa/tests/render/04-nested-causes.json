@@ -1,0 +1,327 @@
+{
+  "name": "04-nested-causes",
+  "source": "ishikawa\n  Defects\n    People\n      Little training\n      High turnover\n    Process\n      No review\n      Deadlines are always too tight\n",
+  "expected": {
+    "viewBox": {
+      "x": -237.19551682667762,
+      "y": -39.76701718539256,
+      "width": 334.95551682667764,
+      "height": 579.5340343707851
+    },
+    "rawViewBox": "-237.19551682667762 -39.76701718539256 334.95551682667764 579.5340343707851",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -217.19551682667762,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -36.099999999999994 L 0 36.099999999999994 Q 155.52 0 0 -36.099999999999994 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 213.9
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 286.1
+          },
+          {
+            "op": "quadTo",
+            "cx": 155.52,
+            "cy": 250,
+            "x": 0,
+            "y": 213.9
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Defects"
+        ],
+        "x": 35.400000000000006,
+        "y": 250,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": 6.0000000000000036,
+          "y": 241.95,
+          "width": 58.800000000000004,
+          "height": 16.099999999999998
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -54.79327524001642,
+        "y2": 2.432982814607442,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -103.59327524001642,
+        "y": -19.767017185392557,
+        "width": 97.6,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "People"
+        ],
+        "x": -54.79327524001642,
+        "y": -8.567017185392558,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -83.59327524001642,
+          "y": -17.767017185392557,
+          "width": 57.599999999999994,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -31.597758413338806,
+        "y1": 167.4776609382025,
+        "x2": -61.59775841333881,
+        "y2": 167.4776609382025,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label align",
+        "lines": [
+          "High turnover"
+        ],
+        "x": -61.59775841333881,
+        "y": 167.4776609382025,
+        "anchor": "end",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -186.3977584133388,
+          "y": 158.2776609382025,
+          "width": 124.8,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -43.19551682667761,
+        "y1": 84.95532187640498,
+        "x2": -73.19551682667762,
+        "y2": 84.95532187640498,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label align",
+        "lines": [
+          "Little training"
+        ],
+        "x": -73.19551682667762,
+        "y": 84.95532187640498,
+        "anchor": "end",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -217.19551682667762,
+          "y": 75.75532187640498,
+          "width": 144,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -54.79327524001642,
+        "y2": 497.56701718539256,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -108.39327524001642,
+        "y": 497.36701718539257,
+        "width": 107.2,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Process"
+        ],
+        "x": -54.79327524001642,
+        "y": 508.56701718539256,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -88.39327524001642,
+          "y": 499.36701718539257,
+          "width": 67.2,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -31.59775841333881,
+        "y1": 332.52233906179754,
+        "x2": -61.59775841333881,
+        "y2": 332.52233906179754,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label align",
+        "lines": [
+          "No review"
+        ],
+        "x": -61.59775841333881,
+        "y": 332.52233906179754,
+        "anchor": "end",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -147.9977584133388,
+          "y": 323.32233906179755,
+          "width": 86.39999999999999,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -43.19551682667761,
+        "y1": 415.044678123595,
+        "x2": -73.19551682667762,
+        "y2": 415.044678123595,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label align",
+        "lines": [
+          "Deadlines are",
+          "always too",
+          "tight"
+        ],
+        "x": -73.19551682667762,
+        "y": 398.244678123595,
+        "anchor": "end",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": 16.8,
+        "fill": "#333",
+        "box": {
+          "x": -197.9955168266776,
+          "y": 372.244678123595,
+          "width": 124.8,
+          "height": 52
+        }
+      }
+    ]
+  }
+}

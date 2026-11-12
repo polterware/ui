@@ -1,0 +1,249 @@
+{
+  "name": "06-long-effect",
+  "source": "ishikawa\n  Customers abandoning the checkout after the payment step\n    Slow payment provider\n    Unclear shipping costs\n    No saved cards\n",
+  "expected": {
+    "viewBox": {
+      "x": -246.7173100960066,
+      "y": 93.10000000000002,
+      "width": 374.7173100960066,
+      "height": 313.79999999999995
+    },
+    "rawViewBox": "-246.7173100960066 93.10000000000002 374.7173100960066 313.79999999999995",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -206.7173100960066,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -136.89999999999998 L 0 136.89999999999998 Q 216 0 0 -136.89999999999998 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 113.10000000000002
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 386.9
+          },
+          {
+            "op": "quadTo",
+            "cx": 216,
+            "cy": 250,
+            "x": 0,
+            "y": 113.10000000000002
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Customers",
+          "abandoning",
+          "the",
+          "checkout",
+          "after the",
+          "payment",
+          "step"
+        ],
+        "x": 48,
+        "y": 249.99999999999997,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": 16.8,
+        "fill": "#333",
+        "box": {
+          "x": 6,
+          "y": 191.54999999999998,
+          "width": 84,
+          "height": 116.89999999999999
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -147.75865504800328,
+        "y": 178.2865965629215,
+        "width": 241.6,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Slow payment provider"
+        ],
+        "x": -26.958655048003283,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -127.75865504800328,
+          "y": 180.2865965629215,
+          "width": 201.6,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 299.5134034370785,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -152.5586550480033,
+        "y": 299.31340343707853,
+        "width": 251.2,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Unclear shipping costs"
+        ],
+        "x": -26.958655048003283,
+        "y": 310.5134034370785,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -132.5586550480033,
+          "y": 301.31340343707853,
+          "width": 211.2,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -132.5586550480033,
+        "y1": 250,
+        "x2": -139.51731009600658,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -226.7173100960066,
+        "y": 178.2865965629215,
+        "width": 174.4,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "No saved cards"
+        ],
+        "x": -139.51731009600658,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -206.7173100960066,
+          "y": 180.2865965629215,
+          "width": 134.4,
+          "height": 18.4
+        }
+      }
+    ]
+  }
+}

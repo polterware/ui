@@ -1,0 +1,201 @@
+{
+  "name": "10-beta-header",
+  "source": "ishikawa-beta\n  Churn\n    Price too high\n    Competitor offers\n",
+  "expected": {
+    "viewBox": {
+      "x": -148.5586550480033,
+      "y": 158.2865965629215,
+      "width": 243.2,
+      "height": 183.42680687415702
+    },
+    "rawViewBox": "-148.5586550480033 158.2865965629215 243.2 183.42680687415702",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -108.55865504800327,
+        "y1": 250,
+        "x2": 0,
+        "y2": 250,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -36.099999999999994 L 0 36.099999999999994 Q 144 0 0 -36.099999999999994 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 213.9
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 286.1
+          },
+          {
+            "op": "quadTo",
+            "cx": 144,
+            "cy": 250,
+            "x": 0,
+            "y": 213.9
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Churn"
+        ],
+        "x": 33,
+        "y": 250,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": 12,
+          "y": 241.95,
+          "width": 42,
+          "height": 16.099999999999998
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 200.48659656292148,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -114.15865504800328,
+        "y": 178.2865965629215,
+        "width": 174.4,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Price too high"
+        ],
+        "x": -26.958655048003283,
+        "y": 189.48659656292148,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -94.15865504800328,
+          "y": 180.2865965629215,
+          "width": 134.4,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 250,
+        "x2": -26.958655048003283,
+        "y2": 299.5134034370785,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -128.5586550480033,
+        "y": 299.31340343707853,
+        "width": 203.2,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Competitor offers"
+        ],
+        "x": -26.958655048003283,
+        "y": 310.5134034370785,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -108.55865504800327,
+          "y": 301.31340343707853,
+          "width": 163.2,
+          "height": 18.4
+        }
+      }
+    ]
+  }
+}

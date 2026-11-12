@@ -1,0 +1,356 @@
+{
+  "name": "05-deep-tree",
+  "source": "ishikawa\n  Downtime\n    Hardware\n      Disk failure\n        Old drives\n      Power loss\n    Software\n      Memory leak\n        Leaky cache\n",
+  "expected": {
+    "viewBox": {
+      "x": -241.07596514400984,
+      "y": -39.280420622471084,
+      "width": 348.9159651440099,
+      "height": 579.5340343707852
+    },
+    "rawViewBox": "-241.07596514400984 -39.280420622471084 348.9159651440099 579.5340343707852",
+    "markers": [
+      {
+        "id": "ishikawa-arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "reference": {
+          "x": 0,
+          "y": 5
+        },
+        "width": 6,
+        "height": 6,
+        "orient": "auto",
+        "class": "ishikawa-arrow",
+        "d": "M 10 0 L 0 5 L 10 10 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 5
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 10
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#333333"
+      }
+    ],
+    "items": [
+      {
+        "kind": "line",
+        "class": "ishikawa-spine",
+        "x1": -221.07596514400984,
+        "y1": 300,
+        "x2": 0,
+        "y2": 300,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": null
+      },
+      {
+        "kind": "path",
+        "class": "ishikawa-head",
+        "d": "M 0 -36.099999999999994 L 0 36.099999999999994 Q 175.68 0 0 -36.099999999999994 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 263.9
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 336.1
+          },
+          {
+            "op": "quadTo",
+            "cx": 175.68,
+            "cy": 300,
+            "x": 0,
+            "y": 263.9
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-head-label",
+        "lines": [
+          "Downtime"
+        ],
+        "x": 39.6,
+        "y": 300,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 14,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": 6,
+          "y": 291.95,
+          "width": 67.2,
+          "height": 16.099999999999998
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 300,
+        "x2": -61.75193028801971,
+        "y2": 2.919579377528919,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -120.15193028801971,
+        "y": -19.28042062247108,
+        "width": 116.8,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Hardware"
+        ],
+        "x": -61.75193028801971,
+        "y": -8.080420622471081,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -100.15193028801971,
+          "y": -17.28042062247108,
+          "width": 76.8,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -30.437982572004927,
+        "y1": 225.72989484438222,
+        "x2": -60.43798257200493,
+        "y2": 225.72989484438222,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label align",
+        "lines": [
+          "Power loss"
+        ],
+        "x": -60.43798257200493,
+        "y": 225.72989484438222,
+        "anchor": "end",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -156.43798257200493,
+          "y": 216.52989484438223,
+          "width": 96,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -40.875965144009854,
+        "y1": 151.45978968876446,
+        "x2": -105.87596514400985,
+        "y2": 151.45978968876446,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label align",
+        "lines": [
+          "Disk failure"
+        ],
+        "x": -105.87596514400985,
+        "y": 151.45978968876446,
+        "anchor": "end",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -221.07596514400984,
+          "y": 142.25978968876447,
+          "width": 115.19999999999999,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -73.37596514400985,
+        "y1": 151.45978968876446,
+        "x2": -83.81394771601478,
+        "y2": 77.1896845331467,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label up",
+        "lines": [
+          "Old drives"
+        ],
+        "x": -83.81394771601478,
+        "y": 77.1896845331467,
+        "anchor": "end",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -179.81394771601478,
+          "y": 58.789684533146705,
+          "width": 96,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-branch",
+        "x1": -20,
+        "y1": 300,
+        "x2": -47.83462019201313,
+        "y2": 498.0536137483141,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "rect",
+        "class": "ishikawa-label-box",
+        "x": -106.23462019201313,
+        "y": 497.8536137483141,
+        "width": 116.8,
+        "height": 22.4,
+        "fill": "#ECECFF",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label cause",
+        "lines": [
+          "Software"
+        ],
+        "x": -47.83462019201313,
+        "y": 509.0536137483141,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -86.23462019201313,
+          "y": 499.8536137483141,
+          "width": 76.8,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -29.278206730671045,
+        "y1": 366.01787124943803,
+        "x2": -94.27820673067104,
+        "y2": 366.01787124943803,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label align",
+        "lines": [
+          "Memory leak"
+        ],
+        "x": -94.27820673067104,
+        "y": 366.01787124943803,
+        "anchor": "end",
+        "baseline": "middle",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -199.87820673067102,
+          "y": 356.81787124943804,
+          "width": 105.6,
+          "height": 18.4
+        }
+      },
+      {
+        "kind": "line",
+        "class": "ishikawa-sub-branch",
+        "x1": -61.778206730671045,
+        "y1": 366.01787124943803,
+        "x2": -71.05641346134209,
+        "y2": 432.03574249887606,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "markerStart": "ishikawa-arrow"
+      },
+      {
+        "kind": "text",
+        "class": "ishikawa-label down",
+        "lines": [
+          "Leaky cache"
+        ],
+        "x": -71.05641346134209,
+        "y": 432.03574249887606,
+        "anchor": "end",
+        "baseline": "hanging",
+        "fontSize": 16,
+        "lineHeight": null,
+        "fill": "#333",
+        "box": {
+          "x": -176.65641346134208,
+          "y": 432.03574249887606,
+          "width": 105.6,
+          "height": 18.4
+        }
+      }
+    ]
+  }
+}
