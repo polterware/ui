@@ -5,7 +5,7 @@
 //! configures the d3-sankey generator (ported in [`crate::layout::sankey`]), fills the node
 //! rectangles, the node labels and the links, and fits the viewport with
 //! `setupGraphViewbox(svg, 0, useMaxWidth)`. Here those are [`super::parse`], [`Sankey`], this
-//! module's item construction, and [`Scene::bounds`] grown by the zero padding.
+//! module's item construction, and this module's painted-item bounds grown by the zero padding.
 //!
 //! Look: `diagrams/sankey/styles.js` (`.node rect`, `.node-labels`, `.link`,
 //! `.sankey-label-bg`, `.sankey-label-fg`) and the attributes `sankeyRenderer.ts` writes. The
@@ -43,15 +43,15 @@ use crate::layout::sankey::{
     Sankey, SankeyAlignment, SankeyError, SankeyGraph, SankeyLink, SankeyLinkInput,
     SankeyNodeInput, number::format_number,
 };
-use crate::measure::{FallbackMeasure, Font, TextBlock, TextLine, TextMeasure, TextSpan};
+use crate::measure::{FallbackMeasure, Font, TextMeasure};
 use crate::scene::{
     Color, Group, Item, Path, PathStyle, Point, Rect, RectShape, Scene, Size, SourceRef,
-    TextAnchor, TextRun, Transform,
+    TextAnchor, TextBlock, TextLine, TextRun, TextSpan, Transform,
 };
 
 use super::ast::Ast;
 
-/// `d3.schemeTableau10`, the ordinal scale's range ([`d3-scale-chromatic`], the palette
+/// `d3.schemeTableau10`, the ordinal scale's range (d3-scale-chromatic's palette, the one
 /// `d3scaleOrdinal(d3schemeTableau10)` cycles for nodes without a `nodeColors` entry).
 pub const SCHEME_TABLEAU_10: [&str; 10] = [
     "#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f", "#edc949", "#af7aa1", "#ff9da7",
@@ -125,7 +125,11 @@ pub fn draw_layout_ast(
     let mut palette = OrdinalColors::default();
     let mut colors: Vec<Color> = Vec::with_capacity(graph.nodes.len());
     for node in &graph.nodes {
-        colors.push(node_color(&node.id, sankey.node_colors.as_ref(), &mut palette));
+        colors.push(node_color(
+            &node.id,
+            sankey.node_colors.as_ref(),
+            &mut palette,
+        ));
     }
 
     let mut scene = Scene::fitted(Rect::ZERO, 0.0);
@@ -611,8 +615,18 @@ mod tests {
                     .find(|(candidate, _, _)| candidate == id)
                     .unwrap_or_else(|| panic!("{file}: node {id} in scene"));
                 assert_eq!(actual_id, id);
-                close(rect.x, expected_node["x"].as_f64().expect("node x"), &format!("node {id} x"), &file);
-                close(rect.y, expected_node["y"].as_f64().expect("node y"), &format!("node {id} y"), &file);
+                close(
+                    rect.x,
+                    expected_node["x"].as_f64().expect("node x"),
+                    &format!("node {id} x"),
+                    &file,
+                );
+                close(
+                    rect.y,
+                    expected_node["y"].as_f64().expect("node y"),
+                    &format!("node {id} y"),
+                    &file,
+                );
                 close(
                     rect.width,
                     expected_node["width"].as_f64().expect("node width"),
@@ -695,7 +709,9 @@ mod tests {
             let shapes = link_shapes(&scene);
             let expected_links = expected["links"].as_array().expect("expected links");
             assert_eq!(shapes.len(), expected_links.len(), "{file}: link count");
-            for (link, (shape, expected_link)) in graph.links.iter().zip(shapes.iter().zip(expected_links)) {
+            for (link, (shape, expected_link)) in
+                graph.links.iter().zip(shapes.iter().zip(expected_links))
+            {
                 let what = format!("link {}", link.index);
                 let expected_path = &expected_link["path"];
                 let commands = &shape.path.commands;
@@ -703,8 +719,18 @@ mod tests {
                 let Some(crate::scene::PathCommand::MoveTo { x, y }) = commands.first() else {
                     panic!("{file}: {what} does not start with a move");
                 };
-                close(*x, point_of(&expected_path["start"]).x, &format!("{what} start x"), &file);
-                close(*y, point_of(&expected_path["start"]).y, &format!("{what} start y"), &file);
+                close(
+                    *x,
+                    point_of(&expected_path["start"]).x,
+                    &format!("{what} start x"),
+                    &file,
+                );
+                close(
+                    *y,
+                    point_of(&expected_path["start"]).y,
+                    &format!("{what} start y"),
+                    &file,
+                );
                 let Some(crate::scene::PathCommand::CubicTo {
                     c1x,
                     c1y,
@@ -716,19 +742,54 @@ mod tests {
                 else {
                     panic!("{file}: {what} is not a cubic");
                 };
-                close(*c1x, point_of(&expected_path["control1"]).x, &format!("{what} c1 x"), &file);
-                close(*c1y, point_of(&expected_path["control1"]).y, &format!("{what} c1 y"), &file);
-                close(*c2x, point_of(&expected_path["control2"]).x, &format!("{what} c2 x"), &file);
-                close(*c2y, point_of(&expected_path["control2"]).y, &format!("{what} c2 y"), &file);
-                close(*x, point_of(&expected_path["end"]).x, &format!("{what} end x"), &file);
-                close(*y, point_of(&expected_path["end"]).y, &format!("{what} end y"), &file);
+                close(
+                    *c1x,
+                    point_of(&expected_path["control1"]).x,
+                    &format!("{what} c1 x"),
+                    &file,
+                );
+                close(
+                    *c1y,
+                    point_of(&expected_path["control1"]).y,
+                    &format!("{what} c1 y"),
+                    &file,
+                );
+                close(
+                    *c2x,
+                    point_of(&expected_path["control2"]).x,
+                    &format!("{what} c2 x"),
+                    &file,
+                );
+                close(
+                    *c2y,
+                    point_of(&expected_path["control2"]).y,
+                    &format!("{what} c2 y"),
+                    &file,
+                );
+                close(
+                    *x,
+                    point_of(&expected_path["end"]).x,
+                    &format!("{what} end x"),
+                    &file,
+                );
+                close(
+                    *y,
+                    point_of(&expected_path["end"]).y,
+                    &format!("{what} end y"),
+                    &file,
+                );
                 close(
                     shape.style.stroke_width,
                     expected_link["strokeWidth"].as_f64().expect("stroke width"),
                     &format!("{what} stroke width"),
                     &file,
                 );
-                close(shape.style.stroke_opacity, LINK_STROKE_OPACITY, &format!("{what} stroke opacity"), &file);
+                close(
+                    shape.style.stroke_opacity,
+                    LINK_STROKE_OPACITY,
+                    &format!("{what} stroke opacity"),
+                    &file,
+                );
                 assert_eq!(shape.style.fill, None, "{file}: {what} fill");
                 let stroke = shape.style.stroke.as_ref().expect("stroke");
                 if let Some(gradient) = expected_link["gradient"].as_object() {
@@ -771,21 +832,55 @@ mod tests {
             }
 
             let view_box = &expected["viewBox"];
-            close(scene.view_box.x, view_box["x"].as_f64().expect("viewBox x"), "viewBox x", &file);
-            close(scene.view_box.y, view_box["y"].as_f64().expect("viewBox y"), "viewBox y", &file);
-            close(scene.view_box.width, view_box["width"].as_f64().expect("viewBox width"), "viewBox width", &file);
-            close(scene.view_box.height, view_box["height"].as_f64().expect("viewBox height"), "viewBox height", &file);
-            assert_eq!(scene.bounds, scene.view_box, "{file}: zero padding keeps the bounds");
+            close(
+                scene.view_box.x,
+                view_box["x"].as_f64().expect("viewBox x"),
+                "viewBox x",
+                &file,
+            );
+            close(
+                scene.view_box.y,
+                view_box["y"].as_f64().expect("viewBox y"),
+                "viewBox y",
+                &file,
+            );
+            close(
+                scene.view_box.width,
+                view_box["width"].as_f64().expect("viewBox width"),
+                "viewBox width",
+                &file,
+            );
+            close(
+                scene.view_box.height,
+                view_box["height"].as_f64().expect("viewBox height"),
+                "viewBox height",
+                &file,
+            );
+            assert_eq!(
+                scene.bounds, scene.view_box,
+                "{file}: zero padding keeps the bounds"
+            );
         }
     }
 
     #[test]
-    fn draws_a_rendered_scene_with_view_box() {
-        let scene = render(
-            "sankey-beta\n\nA,B,10\nB,C,4\nB,D,6\n",
-            &Config::default(),
+    fn the_pipeline_dispatch_draws_a_sankey_diagram() {
+        let source = "---\nconfig:\n  sankey:\n    showValues: false\n---\nsankey-beta\n\nCoal,Industry,10\nIndustry,Homes,6\nIndustry,Commerce,4\n";
+        let config = Config::default();
+        let dispatched =
+            crate::render_diagram(source, &config).expect("render through the dispatch");
+        let direct = render(
+            &crate::preprocess::preprocess(source).body,
+            &config_for(source),
         )
-        .expect("render sankey diagram");
+        .expect("render sankey");
+        assert_eq!(dispatched, direct);
+    }
+
+    #[test]
+    fn draws_a_rendered_scene_with_view_box() {
+        let scene = render("sankey-beta\n\nA,B,10\nB,C,4\nB,D,6\n", &Config::default())
+            .expect("render sankey diagram");
         assert!(scene.view_box.width > 0.0);
         assert!(scene.view_box.height > 0.0);
         assert!(!scene.items.is_empty());
@@ -851,7 +946,7 @@ mod tests {
         assert_eq!(palette.get("a"), "#4e79a7");
         assert_eq!(palette.get("b"), "#f28e2c");
         assert_eq!(palette.get("a"), "#4e79a7");
-        for index in 2..10 {
+        for index in 2..9 {
             let _ = palette.get(&format!("n{index}"));
         }
         assert_eq!(palette.get("tenth"), "#bab0ab");

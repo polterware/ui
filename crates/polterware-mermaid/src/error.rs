@@ -119,7 +119,9 @@ impl From<crate::diagrams::sankey::render::SankeyRenderError> for RenderError {
     fn from(error: crate::diagrams::sankey::render::SankeyRenderError) -> Self {
         match error {
             crate::diagrams::sankey::render::SankeyRenderError::Parse(error) => Self::Parse(error),
-            crate::diagrams::sankey::render::SankeyRenderError::Layout(error) => Self::Sankey(error),
+            crate::diagrams::sankey::render::SankeyRenderError::Layout(error) => {
+                Self::Sankey(error)
+            }
         }
     }
 }
