@@ -1,0 +1,514 @@
+{
+  "name": "04-trends-and-flows",
+  "source": "wardley-beta\ntitle Trends and Flows\nanchor Customer [0.95, 0.7]\ncomponent Cup of Tea [0.7, 0.6]\ncomponent Tea [0.5, 0.75]\ncomponent Water [0.2, 0.5]\nevolve Tea 0.72\nevolve Water 0.58\nCustomer -> Cup of Tea\nCup of Tea -.-> Tea\nCup of Tea +'serves'> Water\nTea +<> Water\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 600
+    },
+    "background": {
+      "width": 900,
+      "height": 600,
+      "fill": "white"
+    },
+    "title": {
+      "text": "Trends and Flows",
+      "x": 450,
+      "y": 24,
+      "fill": "#131300",
+      "fontSize": 12.600000000000001,
+      "fontWeight": "bold",
+      "anchor": "middle",
+      "baseline": "middle",
+      "rotate": null
+    },
+    "axes": {
+      "lines": [
+        {
+          "kind": "line",
+          "x1": 48,
+          "y1": 552,
+          "x2": 852,
+          "y2": 552,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": null,
+          "opacity": null,
+          "markerStart": null,
+          "markerEnd": null
+        },
+        {
+          "kind": "line",
+          "x1": 48,
+          "y1": 48,
+          "x2": 48,
+          "y2": 552,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": null,
+          "opacity": null,
+          "markerStart": null,
+          "markerEnd": null
+        }
+      ],
+      "labels": [
+        {
+          "text": "Evolution",
+          "x": 450,
+          "y": 588,
+          "fill": "#131300",
+          "fontSize": 12,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        },
+        {
+          "text": "Visibility",
+          "x": 16,
+          "y": 300,
+          "fill": "#131300",
+          "fontSize": 12,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": {
+            "angle": -90,
+            "x": 16,
+            "y": 300
+          }
+        }
+      ]
+    },
+    "stages": {
+      "labels": [
+        {
+          "text": "Genesis",
+          "x": 148.5,
+          "y": 568,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        },
+        {
+          "text": "Custom Built",
+          "x": 349.5,
+          "y": 568,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        },
+        {
+          "text": "Product",
+          "x": 550.5,
+          "y": 568,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        },
+        {
+          "text": "Commodity",
+          "x": 751.5,
+          "y": 568,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        }
+      ],
+      "dividers": [
+        {
+          "kind": "line",
+          "x1": 249,
+          "y1": 48,
+          "x2": 249,
+          "y2": 552,
+          "stroke": "#000",
+          "strokeWidth": 1,
+          "dash": "5 5",
+          "opacity": 0.8,
+          "markerStart": null,
+          "markerEnd": null
+        },
+        {
+          "kind": "line",
+          "x1": 450,
+          "y1": 48,
+          "x2": 450,
+          "y2": 552,
+          "stroke": "#000",
+          "strokeWidth": 1,
+          "dash": "5 5",
+          "opacity": 0.8,
+          "markerStart": null,
+          "markerEnd": null
+        },
+        {
+          "kind": "line",
+          "x1": 651,
+          "y1": 48,
+          "x2": 651,
+          "y2": 552,
+          "stroke": "#000",
+          "strokeWidth": 1,
+          "dash": "5 5",
+          "opacity": 0.8,
+          "markerStart": null,
+          "markerEnd": null
+        }
+      ]
+    },
+    "grid": [],
+    "pipelines": {
+      "boxes": [],
+      "links": []
+    },
+    "links": [
+      {
+        "kind": "line",
+        "x1": 607.5725155424569,
+        "y1": 78.25799803047794,
+        "x2": 533.627484457543,
+        "y2": 194.14200196952217,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "line",
+        "x1": 535.0036906078835,
+        "y1": 203.04786080658923,
+        "x2": 646.3963093921164,
+        "y2": 296.1521391934108,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": "6 6",
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "line",
+        "x1": 528.5762845700331,
+        "y1": 204.91612298944847,
+        "x2": 451.82371542996685,
+        "y2": 445.48387701055157,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": "link-arrow-end"
+      },
+      {
+        "kind": "line",
+        "x1": 646.2051575831418,
+        "y1": 303.60686653447243,
+        "x2": 454.7948424168582,
+        "y2": 447.59313346552756,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": "link-arrow-start",
+        "markerEnd": "link-arrow-end"
+      }
+    ],
+    "linkLabels": [
+      {
+        "text": "serves",
+        "x": 497.82149731926455,
+        "y": 327.63162057328924,
+        "fill": "#131300",
+        "fontSize": 10,
+        "fontWeight": "normal",
+        "anchor": "middle",
+        "baseline": "middle",
+        "rotate": {
+          "angle": 287.6951592112556,
+          "x": 497.82149731926455,
+          "y": 327.63162057328924
+        }
+      }
+    ],
+    "trends": [
+      {
+        "kind": "line",
+        "x1": 651,
+        "y1": 300,
+        "x2": 634.88,
+        "y2": 300,
+        "stroke": "#dc3545",
+        "strokeWidth": 1,
+        "dash": "4 4",
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": "arrow"
+      },
+      {
+        "kind": "line",
+        "x1": 450,
+        "y1": 451.2,
+        "x2": 506.31999999999994,
+        "y2": 451.2,
+        "stroke": "#dc3545",
+        "strokeWidth": 1,
+        "dash": "4 4",
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": "arrow"
+      }
+    ],
+    "nodes": [
+      {
+        "className": "wardley-node wardley-node--anchor",
+        "shapes": [],
+        "label": {
+          "text": "Customer",
+          "x": 610.8,
+          "y": 70.20000000000005,
+          "fill": "#000",
+          "fontSize": 10,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "middle",
+          "rotate": null,
+          "order": 0
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 530.4,
+            "cy": 199.20000000000005,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Cup of Tea",
+          "x": 538.4,
+          "y": 191.20000000000005,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 1
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 651,
+            "cy": 300,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Tea",
+          "x": 659,
+          "y": 292,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 1
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 450,
+            "cy": 451.2,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Water",
+          "x": 458,
+          "y": 443.2,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 1
+        }
+      }
+    ],
+    "annotations": {
+      "lines": [],
+      "marks": [],
+      "box": null
+    },
+    "notes": [],
+    "accelerators": {
+      "paths": [],
+      "labels": []
+    },
+    "deaccelerators": {
+      "paths": [],
+      "labels": []
+    },
+    "markers": [
+      {
+        "kind": "arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "refX": 9,
+        "refY": 5,
+        "markerWidth": 6,
+        "markerHeight": 6,
+        "orient": "auto-start-reverse",
+        "path": {
+          "kind": "path",
+          "d": "M 0 0 L 10 5 L 0 10 z",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "op": "lineTo",
+              "x": 10,
+              "y": 5
+            },
+            {
+              "op": "lineTo",
+              "x": 0,
+              "y": 10
+            },
+            {
+              "op": "close"
+            }
+          ],
+          "fill": "#dc3545",
+          "stroke": "none",
+          "strokeWidth": 0
+        }
+      },
+      {
+        "kind": "link-arrow-end",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "refX": 9,
+        "refY": 5,
+        "markerWidth": 5,
+        "markerHeight": 5,
+        "orient": "auto",
+        "path": {
+          "kind": "path",
+          "d": "M 0 0 L 10 5 L 0 10 z",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "op": "lineTo",
+              "x": 10,
+              "y": 5
+            },
+            {
+              "op": "lineTo",
+              "x": 0,
+              "y": 10
+            },
+            {
+              "op": "close"
+            }
+          ],
+          "fill": "#333333",
+          "stroke": "none",
+          "strokeWidth": 0
+        }
+      },
+      {
+        "kind": "link-arrow-start",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "refX": 1,
+        "refY": 5,
+        "markerWidth": 5,
+        "markerHeight": 5,
+        "orient": "auto",
+        "path": {
+          "kind": "path",
+          "d": "M 10 0 L 0 5 L 10 10 z",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 10,
+              "y": 0
+            },
+            {
+              "op": "lineTo",
+              "x": 0,
+              "y": 5
+            },
+            {
+              "op": "lineTo",
+              "x": 10,
+              "y": 10
+            },
+            {
+              "op": "close"
+            }
+          ],
+          "fill": "#333333",
+          "stroke": "none",
+          "strokeWidth": 0
+        }
+      }
+    ]
+  }
+}
