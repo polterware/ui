@@ -31,6 +31,8 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
+mod render_tests;
+
 fn parsed(body: &str) -> Ast {
     parse(body).unwrap_or_else(|error| panic!("parse failed for {body:?}: {error}"))
 }
