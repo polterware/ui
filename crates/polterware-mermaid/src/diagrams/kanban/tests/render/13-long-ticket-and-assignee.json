@@ -1,0 +1,158 @@
+{
+  "name": "13-long-ticket-and-assignee",
+  "source": "kanban\n  Support\n    a@{ ticket: \"SUPPORT-12345-a-very-long-ticket-reference\", assigned: \"a-very-long-assignee-name\" }\n    b@{ label: \"A card whose ticket wraps below its title\", ticket: \"SUPPORT-98765\", assigned: \"another-long-assignee\" }\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 220,
+      "height": 216.8
+    },
+    "sections": [
+      {
+        "id": "mermaid-Support",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 196.8,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 166.4,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Support"
+            ],
+            "width": 67.2,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-a",
+        "transform": {
+          "x": 200,
+          "y": -242.4
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -32.6,
+          "width": 185,
+          "height": 65.2,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -36
+            },
+            "text": {
+              "lines": [
+                "a"
+              ],
+              "width": 9.6,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -17.6
+            },
+            "text": {
+              "lines": [
+                "SUPPORT-12345-a-ve",
+                "ry-long-ticket-ref",
+                "erence"
+              ],
+              "width": 172.79999999999998,
+              "height": 53.6
+            }
+          },
+          {
+            "transform": {
+              "x": -90.29999999999998,
+              "y": -17.6
+            },
+            "text": {
+              "lines": [
+                "a-very-long-assign",
+                "ee-name"
+              ],
+              "width": 172.79999999999998,
+              "height": 36
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-b",
+        "transform": {
+          "x": 200,
+          "y": -159
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -45.8,
+          "width": 185,
+          "height": 91.6,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -44.8
+            },
+            "text": {
+              "lines": [
+                "A card whose",
+                "ticket wraps below",
+                "its title"
+              ],
+              "width": 172.79999999999998,
+              "height": 53.6
+            }
+          },
+          {
+            "transform": {
+              "x": -82.5,
+              "y": 8.8
+            },
+            "text": {
+              "lines": [
+                "SUPPORT-98765"
+              ],
+              "width": 124.8,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": -90.29999999999998,
+              "y": 8.8
+            },
+            "text": {
+              "lines": [
+                "another-long-assig",
+                "nee"
+              ],
+              "width": 172.79999999999998,
+              "height": 36
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -19,13 +19,17 @@
 //!   as in the other shape ports.
 //! * Empty ticket and assignee labels (upstream still appends an empty `<g class="label">`)
 //!   draw no text and are not added to the scene.
+//! * A section past `THEME_COLOR_LIMIT` has no `.section-N` rule upstream, so its rectangle
+//!   keeps SVG's black fill and no stroke and its title the `.cluster-label` colour; the
+//!   palette here stops at the same index instead of wrapping.
 //! * The ticket link's `<a>` wrapper is not represented; the ticket text is a plain run.
 //! * The kanban `<text y="-10.1">` baseline trick lives in `createText.ts` and is absorbed by
 //!   the scene's text runs; positions follow the label groups upstream transforms.
 //! * The SVG size attributes (`useMaxWidth`) have no scene equivalent; the view box matches
 //!   `setupGraphViewbox` with `mindmap.padding`.
-//! * Icon metadata only adds a label background upstream, which this crate does not paint for
-//!   kanban cards; the icon image itself is not drawn by `kanbanItem.ts`.
+//! * Icon metadata adds a label background (`createFormattedText`'s `addSvgBackground`) and
+//!   the four pixels it adds to the measured title box; the icon image itself is not drawn
+//!   by `kanbanItem.ts`.
 
 use crate::config::Config;
 use crate::error::ParseError;
@@ -61,6 +65,12 @@ const DEFAULT_RADIUS: f64 = 5.0;
 /// `kanbanItem.ts`'s priority stripe width.
 const PRIORITY_STROKE_WIDTH: f64 = 4.0;
 
+/// `THEME_COLOR_LIMIT`'s default: the number of `.section-N` rules `genSections` writes.
+const DEFAULT_THEME_COLOR_LIMIT: usize = 12;
+
+/// SVG's initial `fill`, which a section rectangle keeps when no `.section-N` rule matches.
+const SVG_DEFAULT_FILL: &str = "#000000";
+
 /// The font the upstream harness measures with: mermaid's SVG labels use the configured
 /// monospace family at the default 16px size.
 fn font() -> Font {
@@ -90,10 +100,11 @@ pub fn draw_ast_with_id(
     diagram_id: &str,
 ) -> Result<Scene, ParseError> {
     let data = ast.data();
-    let section_width = if config.kanban.section_width > 0.0 {
-        config.kanban.section_width
-    } else {
+    // `conf?.kanban?.sectionWidth || 200`: `0` is the only falsy value.
+    let section_width = if config.kanban.section_width == 0.0 {
         DEFAULT_SECTION_WIDTH
+    } else {
+        config.kanban.section_width
     };
     let item_width = section_width - 1.5 * ITEM_PADDING;
     let diagram_font = font();
@@ -114,6 +125,9 @@ pub fn draw_ast_with_id(
         });
     }
 
+    // `getSubGraphTitleMargins`' `subGraphTitleTopMargin`, which `kanbanSection` adds to the
+    // label's y.
+    let title_margin = config.flowchart.sub_graph_title_margin.top;
     let top = (-section_width * 3.0) / 2.0 + max_label_height;
     let mut sections_group = Group::new().with_class("sections");
     let mut items_group = Group::new().with_class("items");
@@ -137,13 +151,22 @@ pub fn draw_ast_with_id(
                 .ticket
                 .as_deref()
                 .filter(|ticket| !ticket.is_empty())
-                .map(|ticket| measure_text(ticket, item_width, &diagram_font, measure))
+                .map(|ticket| {
+                    measure_text(ticket, item_width - LABEL_PADDING_X, &diagram_font, measure)
+                })
                 .transpose()?;
             let assigned = item
                 .assigned
                 .as_deref()
                 .filter(|assigned| !assigned.is_empty())
-                .map(|assigned| measure_text(assigned, item_width, &diagram_font, measure))
+                .map(|assigned| {
+                    measure_text(
+                        assigned,
+                        item_width - LABEL_PADDING_X,
+                        &diagram_font,
+                        measure,
+                    )
+                })
                 .transpose()?;
             let height_adj = ticket
                 .as_ref()
@@ -156,7 +179,10 @@ pub fn draw_ast_with_id(
                         .unwrap_or(0.0),
                 )
                 / 2.0;
-            let title_height = title.size.height + if item.icon.is_some() { 4.0 } else { 0.0 };
+            // `labelHelper`'s `addBackground = !!node.icon` widens the measured box by the
+            // two pixels `createFormattedText` adds around the text on every side.
+            let has_icon = item.icon.as_deref().is_some_and(|icon| !icon.is_empty());
+            let title_height = title.size.height + if has_icon { 4.0 } else { 0.0 };
             let total_height = (title_height + LABEL_PADDING_Y * 2.0).max(0.0) + height_adj;
             let center_y = cursor + total_height / 2.0;
             cursor = center_y + total_height / 2.0 + ITEM_PADDING / 2.0;
@@ -199,7 +225,7 @@ pub fn draw_ast_with_id(
                     title,
                     &diagram_font,
                     item_text_color(config),
-                    item.icon.as_ref().map(|_| label_background(config)),
+                    has_icon.then(|| label_background(config)),
                     source.clone(),
                 ));
             }
@@ -287,7 +313,7 @@ pub fn draw_ast_with_id(
                 radius(None),
                 PathStyle {
                     fill: Some(Color::new(fill)),
-                    stroke: Some(Color::new(stroke)),
+                    stroke: stroke.map(Color::new),
                     stroke_width: 1.0,
                     ..PathStyle::default()
                 },
@@ -297,12 +323,10 @@ pub fn draw_ast_with_id(
 
         let label_width = section.label.size.width;
         let label_height = section.label.size.height;
+        let label_y = -section_width * 3.0 / 2.0 + title_margin;
         let mut label = Group::new()
             .with_class("cluster-label")
-            .with_transform(Transform::translate(
-                section.x - label_width / 2.0,
-                -section_width * 3.0 / 2.0,
-            ))
+            .with_transform(Transform::translate(section.x - label_width / 2.0, label_y))
             .with_source(SourceRef::cluster(section.node.id.clone()));
         label.push(
             TextRun::new(Point::ZERO, diagram_font.clone(), section.label.clone())
@@ -316,7 +340,7 @@ pub fn draw_ast_with_id(
         // `getBBox()` includes it, so the view box must too.
         bounds = Some(bounds.unwrap_or_default().union(Rect::new(
             section.x - label_width / 2.0,
-            -section_width * 3.0 / 2.0,
+            label_y,
             label_width,
             label_height,
         )));
@@ -431,11 +455,24 @@ fn theme_bool(config: &Config, key: &str) -> Option<bool> {
 }
 
 /// `.section-N` selects `cScale{N+1}` (styles.ts writes `.section-${i - 1}` for `cScale{i}`),
-/// adjusted like `genSections`' `adjuster`.
-fn section_palette(config: &Config, count: usize) -> (String, String, String) {
-    let index = (count + 1) % 12;
+/// adjusted like `genSections`' `adjuster`. Returns `None` for a section past the rules.
+///
+/// `genSections` loops `i` over `0..THEME_COLOR_LIMIT`, so `.section-N` exists while
+/// `N + 1 < THEME_COLOR_LIMIT`. A section past that keeps SVG's defaults: a black fill, no
+/// stroke, and the `.cluster-label` text colour.
+fn section_palette(config: &Config, count: usize) -> Option<(String, String, String)> {
+    let limit = config
+        .theme_variables
+        .get("THEME_COLOR_LIMIT")
+        .and_then(serde_json::Value::as_f64)
+        .map(|limit| limit.max(0.0) as usize)
+        .unwrap_or(DEFAULT_THEME_COLOR_LIMIT);
+    let index = count + 1;
+    if index >= limit {
+        return None;
+    }
     let base = theme_string(config, &format!("cScale{index}")).unwrap_or("#ECECFF");
-    let dark = config.dark_mode || theme_bool(config, "darkMode").unwrap_or(false);
+    let dark = theme_bool(config, "darkMode").unwrap_or(false);
     let adjusted = if dark {
         color::darken(base, 10.0)
     } else {
@@ -445,16 +482,21 @@ fn section_palette(config: &Config, count: usize) -> (String, String, String) {
     let label = theme_string(config, &format!("cScaleLabel{index}"))
         .unwrap_or("#333")
         .to_string();
-    (adjusted.clone(), adjusted, label)
+    Some((adjusted.clone(), adjusted, label))
 }
 
-fn section_colors(config: &Config, count: usize) -> (String, String) {
-    let (fill, stroke, _) = section_palette(config, count);
-    (fill, stroke)
+fn section_colors(config: &Config, count: usize) -> (String, Option<String>) {
+    match section_palette(config, count) {
+        Some((fill, stroke, _)) => (fill, Some(stroke)),
+        None => (SVG_DEFAULT_FILL.to_string(), None),
+    }
 }
 
 fn section_text_color(config: &Config, count: usize) -> String {
-    section_palette(config, count).2
+    match section_palette(config, count) {
+        Some((_, _, label)) => label,
+        None => item_text_color(config).to_string(),
+    }
 }
 
 fn card_colors(config: &Config) -> (String, String) {
@@ -473,8 +515,11 @@ fn item_text_color(config: &Config) -> &str {
 }
 
 fn label_background(config: &Config) -> String {
-    theme_string(config, "labelBackground")
-        .unwrap_or("rgba(232,232,232, 0.8)")
+    // `createFormattedText`'s background `<rect>` sits inside the `.node` group, so
+    // `.node rect` fills it with the theme's `background`; the helper only pins its stroke
+    // to none. `labelBackground` is for edge labels, not this one.
+    theme_string(config, "background")
+        .unwrap_or("#FFFFFF")
         .to_string()
 }
 
@@ -866,5 +911,75 @@ mod tests {
         );
         assert_eq!(priority_color(&json!("high")), None);
         assert_eq!(priority_color(&json!(5)), None);
+    }
+
+    #[test]
+    fn maps_sections_to_the_theme_palette() {
+        let config = Config::default();
+        let scale = theme_string(&config, "cScale2").expect("cScale2");
+        let expected = color::lighten(scale, 10.0).expect("lighten");
+        assert_eq!(
+            section_colors(&config, 1),
+            (expected.clone(), Some(expected))
+        );
+        assert_eq!(
+            section_text_color(&config, 1),
+            theme_string(&config, "cScaleLabel2").expect("cScaleLabel2")
+        );
+
+        // `genSections` writes `.section-0` through `.section-10`; `.section-11` has no rule.
+        assert!(section_palette(&config, 10).is_some());
+        assert!(section_palette(&config, 11).is_none());
+        assert_eq!(
+            section_colors(&config, 11),
+            (SVG_DEFAULT_FILL.to_string(), None)
+        );
+        assert_eq!(section_text_color(&config, 11), item_text_color(&config));
+    }
+
+    #[test]
+    fn darkens_the_section_palette_only_when_the_theme_variables_say_dark() {
+        let mut config = Config::default();
+        let mut directive = serde_json::Map::new();
+        directive.insert("theme".to_string(), serde_json::json!("dark"));
+        config.apply(&directive).expect("dark theme");
+        // A dark theme's variables do not set `darkMode` themselves, and `genSections`
+        // reads only that flag, so the palette still lightens.
+        let scale = theme_string(&config, "cScale2").expect("cScale2");
+        let expected = color::lighten(scale, 10.0).expect("lighten");
+        assert_eq!(section_colors(&config, 1).0, expected);
+
+        let mut config = Config::default();
+        let mut directive = serde_json::Map::new();
+        directive.insert("theme".to_string(), serde_json::json!("dark"));
+        directive.insert(
+            "themeVariables".to_string(),
+            serde_json::json!({ "darkMode": true }),
+        );
+        config.apply(&directive).expect("darkMode override");
+        let scale = theme_string(&config, "cScale2").expect("cScale2");
+        let expected = color::darken(scale, 10.0).expect("darken");
+        assert_eq!(section_colors(&config, 1).0, expected);
+    }
+
+    #[test]
+    fn moves_section_titles_by_the_subgraph_title_margin() {
+        let mut config = Config::default();
+        config.flowchart.sub_graph_title_margin.top = 7.0;
+        let scene = render("kanban\n  Todo\n    Task\n", &config).expect("render");
+        let section = scene
+            .items
+            .iter()
+            .find_map(|item| match item {
+                Item::Group(group) if group.class.as_deref() == Some("sections") => Some(group),
+                _ => None,
+            })
+            .and_then(|group| group_items(group, "cluster").into_iter().next())
+            .expect("section");
+        let label = group_items(section, "cluster-label")
+            .into_iter()
+            .next()
+            .expect("section label");
+        close(label.transform.f, -300.0 + 7.0, "label y", "margin");
     }
 }
