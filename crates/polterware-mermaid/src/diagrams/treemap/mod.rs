@@ -14,9 +14,9 @@
 //!
 //! # Where the port stops short of upstream
 //!
-//! * Configuration is not owned by this crate, so `getConfig` and the `TreemapDiagramConfig`
-//!   defaults are absent; nothing here formats values or sizes the picture.
-//! * `renderer.ts` and `styles.ts` lay out and draw, so they are out of scope.
+//! * `renderer.ts` and `styles.ts` draw with plain d3; [`render`] ports `draw` and resolves the
+//!   styles into the scene's paints. Configuration is owned by [`crate::config`], so the
+//!   `TreemapDiagramConfig` defaults live there and `draw` reads them from [`crate::config::Config`].
 //! * `treemap-validator.ts`'s `checkSingleRoot` is a document-validation check, not a parser
 //!   check: mermaid's `parse` only rejects lexer and parser errors, so multiple root nodes
 //!   parse here too, as the upstream parser spec expects.
@@ -42,6 +42,8 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
+
+pub mod render;
 
 pub use ast::{Ast, StyleClass, TreemapNode};
 

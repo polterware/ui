@@ -1,0 +1,218 @@
+{
+  "name": "05-values-hidden",
+  "source": "%%{init: {\"treemap\": {\"showValues\": false}}}%%\ntreemap title Values hidden\n  \"Alpha\"\n    \"One\": 10\n    \"Two\": 20\n    \"Three\": 30\n",
+  "expected": {
+    "viewBox": {
+      "x": 2,
+      "y": -1.049999999999999,
+      "width": 996,
+      "height": 429.05
+    },
+    "rawViewBox": "2 -1.049999999999999 996 429.05",
+    "title": {
+      "text": "Values hidden",
+      "x": 500,
+      "y": 15,
+      "fontSize": 14,
+      "styleFontSize": null,
+      "fill": "#333",
+      "anchor": "middle",
+      "baseline": "middle",
+      "weight": "",
+      "italic": null,
+      "display": null
+    },
+    "containerTransform": {
+      "x": 0,
+      "y": 30
+    },
+    "sections": [
+      {
+        "transform": {
+          "x": 0,
+          "y": 0
+        },
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 25,
+          "fill": "none",
+          "fillOpacity": 0.6,
+          "stroke": null,
+          "strokeWidth": 0.6,
+          "strokeOpacity": 1,
+          "display": "none"
+        },
+        "body": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 400,
+          "fill": "transparent",
+          "fillOpacity": 0.6,
+          "stroke": "transparent",
+          "strokeWidth": 2,
+          "strokeOpacity": 0.4,
+          "display": "none"
+        },
+        "label": {
+          "text": "",
+          "x": 6,
+          "y": 12.5,
+          "fontSize": 16,
+          "styleFontSize": null,
+          "fill": null,
+          "anchor": null,
+          "baseline": "middle",
+          "weight": "bold",
+          "italic": null,
+          "display": "none"
+        },
+        "value": null
+      },
+      {
+        "transform": {
+          "x": 10,
+          "y": 35
+        },
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 980,
+          "height": 25,
+          "fill": "none",
+          "fillOpacity": 0.6,
+          "stroke": null,
+          "strokeWidth": 0.6,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "body": {
+          "x": 0,
+          "y": 0,
+          "width": 980,
+          "height": 355,
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.6,
+          "stroke": "hsl(240, 100%, 61.2745098039%)",
+          "strokeWidth": 2,
+          "strokeOpacity": 0.4,
+          "display": null
+        },
+        "label": {
+          "text": "Alpha",
+          "x": 6,
+          "y": 12.5,
+          "fontSize": 12,
+          "styleFontSize": "12px",
+          "fill": "#ffffff",
+          "anchor": null,
+          "baseline": "middle",
+          "weight": "bold",
+          "italic": null,
+          "display": null
+        },
+        "value": null
+      }
+    ],
+    "leaves": [
+      {
+        "transform": {
+          "x": 20,
+          "y": 70
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 475,
+          "height": 310,
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.3,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeWidth": 3,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "label": {
+          "text": "Three",
+          "x": 237.5,
+          "y": 155,
+          "fontSize": 38,
+          "styleFontSize": "38px",
+          "fill": "black",
+          "anchor": "middle",
+          "baseline": "middle",
+          "weight": "",
+          "italic": null,
+          "display": null
+        },
+        "value": null
+      },
+      {
+        "transform": {
+          "x": 505,
+          "y": 70
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 313,
+          "height": 310,
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.3,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeWidth": 3,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "label": {
+          "text": "Two",
+          "x": 156.5,
+          "y": 155,
+          "fontSize": 38,
+          "styleFontSize": "38px",
+          "fill": "black",
+          "anchor": "middle",
+          "baseline": "middle",
+          "weight": "",
+          "italic": null,
+          "display": null
+        },
+        "value": null
+      },
+      {
+        "transform": {
+          "x": 828,
+          "y": 70
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 310,
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.3,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeWidth": 3,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "label": {
+          "text": "One",
+          "x": 76,
+          "y": 155,
+          "fontSize": 38,
+          "styleFontSize": "38px",
+          "fill": "#ffffff",
+          "anchor": "middle",
+          "baseline": "middle",
+          "weight": "",
+          "italic": null,
+          "display": null
+        },
+        "value": null
+      }
+    ]
+  }
+}

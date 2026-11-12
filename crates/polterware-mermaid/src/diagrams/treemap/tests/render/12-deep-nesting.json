@@ -1,0 +1,390 @@
+{
+  "name": "12-deep-nesting",
+  "source": "treemap-beta title Deep\n  \"Level 1\"\n    \"Level 2\"\n      \"Level 3\"\n        \"Leaf A\": 25\n        \"Leaf B\": 35\n      \"Leaf C\": 40\n",
+  "expected": {
+    "viewBox": {
+      "x": 2,
+      "y": -1.049999999999999,
+      "width": 996,
+      "height": 429.05
+    },
+    "rawViewBox": "2 -1.049999999999999 996 429.05",
+    "title": {
+      "text": "Deep",
+      "x": 500,
+      "y": 15,
+      "fontSize": 14,
+      "styleFontSize": null,
+      "fill": "#333",
+      "anchor": "middle",
+      "baseline": "middle",
+      "weight": "",
+      "italic": null,
+      "display": null
+    },
+    "containerTransform": {
+      "x": 0,
+      "y": 30
+    },
+    "sections": [
+      {
+        "transform": {
+          "x": 0,
+          "y": 0
+        },
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 25,
+          "fill": "none",
+          "fillOpacity": 0.6,
+          "stroke": null,
+          "strokeWidth": 0.6,
+          "strokeOpacity": 1,
+          "display": "none"
+        },
+        "body": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 400,
+          "fill": "transparent",
+          "fillOpacity": 0.6,
+          "stroke": "transparent",
+          "strokeWidth": 2,
+          "strokeOpacity": 0.4,
+          "display": "none"
+        },
+        "label": {
+          "text": "",
+          "x": 6,
+          "y": 12.5,
+          "fontSize": 16,
+          "styleFontSize": null,
+          "fill": null,
+          "anchor": null,
+          "baseline": "middle",
+          "weight": "bold",
+          "italic": null,
+          "display": "none"
+        },
+        "value": {
+          "text": "100",
+          "x": 990,
+          "y": 12.5,
+          "fontSize": 16,
+          "styleFontSize": null,
+          "fill": null,
+          "anchor": "end",
+          "baseline": "middle",
+          "weight": "",
+          "italic": "italic",
+          "display": "none"
+        }
+      },
+      {
+        "transform": {
+          "x": 10,
+          "y": 35
+        },
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 980,
+          "height": 25,
+          "fill": "none",
+          "fillOpacity": 0.6,
+          "stroke": null,
+          "strokeWidth": 0.6,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "body": {
+          "x": 0,
+          "y": 0,
+          "width": 980,
+          "height": 355,
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.6,
+          "stroke": "hsl(240, 100%, 61.2745098039%)",
+          "strokeWidth": 2,
+          "strokeOpacity": 0.4,
+          "display": null
+        },
+        "label": {
+          "text": "Level 1",
+          "x": 6,
+          "y": 12.5,
+          "fontSize": 12,
+          "styleFontSize": "12px",
+          "fill": "#ffffff",
+          "anchor": null,
+          "baseline": "middle",
+          "weight": "bold",
+          "italic": null,
+          "display": null
+        },
+        "value": {
+          "text": "100",
+          "x": 970,
+          "y": 12.5,
+          "fontSize": 10,
+          "styleFontSize": "10px",
+          "fill": "#ffffff",
+          "anchor": "end",
+          "baseline": "middle",
+          "weight": "",
+          "italic": "italic",
+          "display": null
+        }
+      },
+      {
+        "transform": {
+          "x": 20,
+          "y": 70
+        },
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 960,
+          "height": 25,
+          "fill": "none",
+          "fillOpacity": 0.6,
+          "stroke": null,
+          "strokeWidth": 0.6,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "body": {
+          "x": 0,
+          "y": 0,
+          "width": 960,
+          "height": 310,
+          "fill": "hsl(60, 100%, 73.5294117647%)",
+          "fillOpacity": 0.6,
+          "stroke": "hsl(60, 100%, 48.5294117647%)",
+          "strokeWidth": 2,
+          "strokeOpacity": 0.4,
+          "display": null
+        },
+        "label": {
+          "text": "Level 2",
+          "x": 6,
+          "y": 12.5,
+          "fontSize": 12,
+          "styleFontSize": "12px",
+          "fill": "black",
+          "anchor": null,
+          "baseline": "middle",
+          "weight": "bold",
+          "italic": null,
+          "display": null
+        },
+        "value": {
+          "text": "100",
+          "x": 950,
+          "y": 12.5,
+          "fontSize": 10,
+          "styleFontSize": "10px",
+          "fill": "black",
+          "anchor": "end",
+          "baseline": "middle",
+          "weight": "",
+          "italic": "italic",
+          "display": null
+        }
+      },
+      {
+        "transform": {
+          "x": 30,
+          "y": 105
+        },
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 560,
+          "height": 25,
+          "fill": "none",
+          "fillOpacity": 0.6,
+          "stroke": null,
+          "strokeWidth": 0.6,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "body": {
+          "x": 0,
+          "y": 0,
+          "width": 560,
+          "height": 265,
+          "fill": "hsl(80, 100%, 76.2745098039%)",
+          "fillOpacity": 0.6,
+          "stroke": "hsl(80, 100%, 56.2745098039%)",
+          "strokeWidth": 2,
+          "strokeOpacity": 0.4,
+          "display": null
+        },
+        "label": {
+          "text": "Level 3",
+          "x": 6,
+          "y": 12.5,
+          "fontSize": 12,
+          "styleFontSize": "12px",
+          "fill": "black",
+          "anchor": null,
+          "baseline": "middle",
+          "weight": "bold",
+          "italic": null,
+          "display": null
+        },
+        "value": {
+          "text": "60",
+          "x": 550,
+          "y": 12.5,
+          "fontSize": 10,
+          "styleFontSize": "10px",
+          "fill": "black",
+          "anchor": "end",
+          "baseline": "middle",
+          "weight": "",
+          "italic": "italic",
+          "display": null
+        }
+      }
+    ],
+    "leaves": [
+      {
+        "transform": {
+          "x": 40,
+          "y": 140
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 311,
+          "height": 220,
+          "fill": "hsl(80, 100%, 76.2745098039%)",
+          "fillOpacity": 0.3,
+          "stroke": "hsl(80, 100%, 76.2745098039%)",
+          "strokeWidth": 3,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "label": {
+          "text": "Leaf B",
+          "x": 155.5,
+          "y": 110,
+          "fontSize": 38,
+          "styleFontSize": "38px",
+          "fill": "#ffffff",
+          "anchor": "middle",
+          "baseline": "middle",
+          "weight": "",
+          "italic": null,
+          "display": null
+        },
+        "value": {
+          "text": "35",
+          "x": 155.5,
+          "y": 131,
+          "fontSize": 23,
+          "styleFontSize": "23px",
+          "fill": "#ffffff",
+          "anchor": "middle",
+          "baseline": "hanging",
+          "weight": "",
+          "italic": null,
+          "display": null
+        }
+      },
+      {
+        "transform": {
+          "x": 361,
+          "y": 140
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 219,
+          "height": 220,
+          "fill": "hsl(80, 100%, 76.2745098039%)",
+          "fillOpacity": 0.3,
+          "stroke": "hsl(80, 100%, 76.2745098039%)",
+          "strokeWidth": 3,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "label": {
+          "text": "Leaf A",
+          "x": 109.5,
+          "y": 110,
+          "fontSize": 38,
+          "styleFontSize": "38px",
+          "fill": "black",
+          "anchor": "middle",
+          "baseline": "middle",
+          "weight": "",
+          "italic": null,
+          "display": null
+        },
+        "value": {
+          "text": "25",
+          "x": 109.5,
+          "y": 131,
+          "fontSize": 23,
+          "styleFontSize": "23px",
+          "fill": "black",
+          "anchor": "middle",
+          "baseline": "hanging",
+          "weight": "",
+          "italic": null,
+          "display": null
+        }
+      },
+      {
+        "transform": {
+          "x": 600,
+          "y": 105
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 370,
+          "height": 265,
+          "fill": "hsl(60, 100%, 73.5294117647%)",
+          "fillOpacity": 0.3,
+          "stroke": "hsl(60, 100%, 73.5294117647%)",
+          "strokeWidth": 3,
+          "strokeOpacity": 1,
+          "display": null
+        },
+        "label": {
+          "text": "Leaf C",
+          "x": 185,
+          "y": 132.5,
+          "fontSize": 38,
+          "styleFontSize": "38px",
+          "fill": "black",
+          "anchor": "middle",
+          "baseline": "middle",
+          "weight": "",
+          "italic": null,
+          "display": null
+        },
+        "value": {
+          "text": "40",
+          "x": 185,
+          "y": 153.5,
+          "fontSize": 23,
+          "styleFontSize": "23px",
+          "fill": "black",
+          "anchor": "middle",
+          "baseline": "hanging",
+          "weight": "",
+          "italic": null,
+          "display": null
+        }
+      }
+    ]
+  }
+}
