@@ -230,11 +230,18 @@ impl RenderOnce for Morph {
 
         let request = self.on_open_change.clone();
         let open_it = request.clone();
-        let mut trigger = self.trigger.full_width();
+        let mut trigger = self.trigger;
+        if self.grow {
+            trigger = trigger.full_width();
+        }
         if let Some(open_it) = open_it {
             trigger = trigger.on_click(move |window, cx| open_it(true, window, cx));
         }
         let anchor = div()
+            .debug_selector({
+                let id = self.id.clone();
+                move || format!("{id}-anchor")
+            })
             .relative()
             .min_w(px(0.0))
             .when(self.grow, |anchor| anchor.flex_1())
@@ -425,9 +432,94 @@ impl RenderOnce for Morph {
 
 #[cfg(test)]
 mod tests {
-    use gpui::{Bounds, point, px, size};
+    use gpui::{Bounds, TestAppContext, div, point, prelude::*, px, size};
 
-    use super::{MorphAlign, morph_target};
+    use super::{Morph, MorphAlign, morph_target};
+    use crate::button::{Button, ButtonKind, ButtonSize};
+    use crate::icons::Icon;
+    use crate::test_support::{draw, open};
+
+    fn trigger(id: &'static str, label: &'static str) -> Button {
+        Button::new(id, ButtonKind::Primary)
+            .size(ButtonSize::Sm)
+            .label(label)
+            .icon(Icon::Inbox)
+    }
+
+    #[gpui::test]
+    fn a_closed_morph_keeps_the_triggers_natural_width(cx: &mut TestAppContext) {
+        let mut visual = open(cx, size(600.0, 300.0), |_, _| {
+            div()
+                .size_full()
+                .flex()
+                .items_start()
+                .gap(px(8.0))
+                .child(
+                    Morph::new("morph", trigger("morph-trigger", "Decide"), "Decide")
+                        .body(div().w_full().h(px(32.0)))
+                        .action(
+                            Button::new("morph-action", ButtonKind::Primary)
+                                .label("Confirm")
+                                .full_width(),
+                        ),
+                )
+                .child(trigger("plain-trigger", "Decide"))
+                .into_any_element()
+        });
+        draw(&mut visual);
+
+        let anchor = visual
+            .debug_bounds("morph-anchor")
+            .expect("the morph anchor draws");
+        let morph_trigger = visual
+            .debug_bounds("morph-trigger")
+            .expect("the morph trigger draws");
+        let plain_trigger = visual
+            .debug_bounds("plain-trigger")
+            .expect("the plain trigger draws");
+        assert_eq!(anchor.size.width, morph_trigger.size.width);
+        assert_eq!(anchor.size.width, plain_trigger.size.width);
+    }
+
+    #[gpui::test]
+    fn morphs_in_a_justified_row_keep_their_button_widths(cx: &mut TestAppContext) {
+        let mut visual = open(cx, size(600.0, 300.0), |_, _| {
+            div()
+                .size_full()
+                .flex()
+                .justify_end()
+                .gap(px(8.0))
+                .child(Morph::new(
+                    "first",
+                    trigger("first-trigger", "Decide"),
+                    "Decide",
+                ))
+                .child(Morph::new(
+                    "second",
+                    trigger("second-trigger", "Later"),
+                    "Later",
+                ))
+                .into_any_element()
+        });
+        draw(&mut visual);
+
+        let first = visual
+            .debug_bounds("first-anchor")
+            .expect("first anchor draws");
+        let first_button = visual
+            .debug_bounds("first-trigger")
+            .expect("first trigger draws");
+        let second = visual
+            .debug_bounds("second-anchor")
+            .expect("second anchor draws");
+        let second_button = visual
+            .debug_bounds("second-trigger")
+            .expect("second trigger draws");
+        assert_eq!(first.size.width, first_button.size.width);
+        assert_eq!(second.size.width, second_button.size.width);
+        assert_eq!(second.right(), px(600.0));
+        assert_eq!(second.left() - first.right(), px(8.0));
+    }
 
     #[test]
     fn the_panel_grows_up_from_the_trigger_and_stays_in_the_window() {
