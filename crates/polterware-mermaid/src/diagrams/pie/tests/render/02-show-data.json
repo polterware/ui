@@ -1,0 +1,253 @@
+{
+  "name": "02-show-data",
+  "source": "pie showData title Key elements in product X\n  \"Calcium\" : 42.96\n  \"Potassium\" : 50.05\n  \"Magnesium\" : 10.01\n  \"Iron\" : 5\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 685.4,
+      "height": 450
+    },
+    "rawViewBox": "0 0 685.4 450",
+    "rootTransform": {
+      "x": 225,
+      "y": 225
+    },
+    "pieTransform": {
+      "x": 0,
+      "y": 0
+    },
+    "outerCircle": {
+      "cx": 0,
+      "cy": 0,
+      "r": 186
+    },
+    "slices": [
+      {
+        "d": "M0,-185A185,185,0,0,1,110.888,148.084L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": -185
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 110.888,
+            "y": 148.084
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "class": "pieCircle"
+      },
+      {
+        "d": "M110.888,148.084A185,185,0,0,1,-141.768,-118.856L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 110.888,
+            "y": 148.084
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": -141.768,
+            "y": -118.856
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ffffde",
+        "class": "pieCircle"
+      },
+      {
+        "d": "M-141.768,-118.856A185,185,0,0,1,-53.049,-177.231L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -141.768,
+            "y": -118.856
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": -53.049,
+            "y": -177.231
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "hsl(80, 100%, 56.2745098039%)",
+        "class": "pieCircle"
+      },
+      {
+        "d": "M-53.049,-177.231A185,185,0,0,1,0,-185L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -53.049,
+            "y": -177.231
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 0,
+            "y": -185
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "hsl(240, 100%, 86.2745098039%)",
+        "class": "pieCircle"
+      }
+    ],
+    "sliceLabels": [
+      {
+        "text": "40%",
+        "transform": {
+          "x": 131.64640972699524,
+          "y": -43.82676472193778
+        }
+      },
+      {
+        "text": "46%",
+        "transform": {
+          "x": -100.77014352835897,
+          "y": 95.3778835646605
+        }
+      },
+      {
+        "text": "9%",
+        "transform": {
+          "x": -76.26559717903304,
+          "y": -115.90997017912422
+        }
+      },
+      {
+        "text": "5%",
+        "transform": {
+          "x": -20.105598508463803,
+          "y": -137.2855688286881
+        }
+      }
+    ],
+    "title": {
+      "text": "Key elements in product X",
+      "x": 0,
+      "y": -200
+    },
+    "legend": [
+      {
+        "transform": {
+          "x": 216,
+          "y": -44
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "#ECECFF",
+          "stroke": "#ECECFF"
+        },
+        "text": {
+          "text": "Calcium [42.96]",
+          "x": 22,
+          "y": 14
+        }
+      },
+      {
+        "transform": {
+          "x": 216,
+          "y": -22
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "#ffffde",
+          "stroke": "#ffffde"
+        },
+        "text": {
+          "text": "Potassium [50.05]",
+          "x": 22,
+          "y": 14
+        }
+      },
+      {
+        "transform": {
+          "x": 216,
+          "y": 0
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "hsl(80, 100%, 56.2745098039%)",
+          "stroke": "hsl(80, 100%, 56.2745098039%)"
+        },
+        "text": {
+          "text": "Magnesium [10.01]",
+          "x": 22,
+          "y": 14
+        }
+      },
+      {
+        "transform": {
+          "x": 216,
+          "y": 22
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "hsl(240, 100%, 86.2745098039%)",
+          "stroke": "hsl(240, 100%, 86.2745098039%)"
+        },
+        "text": {
+          "text": "Iron [5]",
+          "x": 22,
+          "y": 14
+        }
+      }
+    ]
+  }
+}

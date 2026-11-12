@@ -1,0 +1,199 @@
+{
+  "name": "07-legend-bottom",
+  "source": "%%{init: {\"pie\": {\"legendPosition\": \"bottom\"}}}%%\npie title Budget split\n  \"People\" : 55\n  \"Tools\" : 25\n  \"Travel\" : 20\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 490,
+      "height": 516
+    },
+    "rawViewBox": "0 0 490 516",
+    "rootTransform": {
+      "x": 225,
+      "y": 225
+    },
+    "pieTransform": {
+      "x": 0,
+      "y": 0
+    },
+    "outerCircle": {
+      "cx": 0,
+      "cy": 0,
+      "r": 186
+    },
+    "slices": [
+      {
+        "d": "M0,-185A185,185,0,1,1,-57.168,175.945L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": -185
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -57.168,
+            "y": 175.945
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "class": "pieCircle"
+      },
+      {
+        "d": "M-57.168,175.945A185,185,0,0,1,-175.945,-57.168L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -57.168,
+            "y": 175.945
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": -175.945,
+            "y": -57.168
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ffffde",
+        "class": "pieCircle"
+      },
+      {
+        "d": "M-175.945,-57.168A185,185,0,0,1,0,-185L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -175.945,
+            "y": -57.168
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 0,
+            "y": -185
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "hsl(80, 100%, 56.2745098039%)",
+        "class": "pieCircle"
+      }
+    ],
+    "sliceLabels": [
+      {
+        "text": "55%",
+        "transform": {
+          "x": 137.04175725757534,
+          "y": 21.705282024332064
+        }
+      },
+      {
+        "text": "25%",
+        "transform": {
+          "x": -123.62715523113609,
+          "y": 62.99118183886202
+        }
+      },
+      {
+        "text": "20%",
+        "transform": {
+          "x": -81.55520375558056,
+          "y": -112.25110796952401
+        }
+      }
+    ],
+    "title": {
+      "text": "Budget split",
+      "x": 0,
+      "y": -200
+    },
+    "legend": [
+      {
+        "transform": {
+          "x": -52.599999999999994,
+          "y": 207
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "#ECECFF",
+          "stroke": "#ECECFF"
+        },
+        "text": {
+          "text": "People",
+          "x": 22,
+          "y": 14
+        }
+      },
+      {
+        "transform": {
+          "x": -52.599999999999994,
+          "y": 229
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "#ffffde",
+          "stroke": "#ffffde"
+        },
+        "text": {
+          "text": "Tools",
+          "x": 22,
+          "y": 14
+        }
+      },
+      {
+        "transform": {
+          "x": -52.599999999999994,
+          "y": 251
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "hsl(80, 100%, 56.2745098039%)",
+          "stroke": "hsl(80, 100%, 56.2745098039%)"
+        },
+        "text": {
+          "text": "Travel",
+          "x": 22,
+          "y": 14
+        }
+      }
+    ]
+  }
+}

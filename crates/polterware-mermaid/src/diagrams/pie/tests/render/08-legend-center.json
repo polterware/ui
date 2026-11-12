@@ -1,0 +1,199 @@
+{
+  "name": "08-legend-center",
+  "source": "%%{init: {\"pie\": {\"legendPosition\": \"center\"}}}%%\npie title Survey answers\n  \"Yes\" : 48\n  \"No\" : 32\n  \"Maybe\" : 20\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 490,
+      "height": 450
+    },
+    "rawViewBox": "0 0 490 450",
+    "rootTransform": {
+      "x": 225,
+      "y": 225
+    },
+    "pieTransform": {
+      "x": 0,
+      "y": 0
+    },
+    "outerCircle": {
+      "cx": 0,
+      "cy": 0,
+      "r": 186
+    },
+    "slices": [
+      {
+        "d": "M0,-185A185,185,0,0,1,23.187,183.541L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": -185
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 23.187,
+            "y": 183.541
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ECECFF",
+        "class": "pieCircle"
+      },
+      {
+        "d": "M23.187,183.541A185,185,0,0,1,-175.945,-57.168L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 23.187,
+            "y": 183.541
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": -175.945,
+            "y": -57.168
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "#ffffde",
+        "class": "pieCircle"
+      },
+      {
+        "d": "M-175.945,-57.168A185,185,0,0,1,0,-185L0,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -175.945,
+            "y": -57.168
+          },
+          {
+            "op": "arcTo",
+            "rx": 185,
+            "ry": 185,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 0,
+            "y": -185
+          },
+          {
+            "op": "lineTo",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "fill": "hsl(80, 100%, 56.2745098039%)",
+        "class": "pieCircle"
+      }
+    ],
+    "sliceLabels": [
+      {
+        "text": "48%",
+        "transform": {
+          "x": 138.47620856942268,
+          "y": -8.712184584692212
+        }
+      },
+      {
+        "text": "32%",
+        "transform": {
+          "x": -106.90871243514077,
+          "y": 88.44257857763067
+        }
+      },
+      {
+        "text": "20%",
+        "transform": {
+          "x": -81.55520375558066,
+          "y": -112.25110796952394
+        }
+      }
+    ],
+    "title": {
+      "text": "Survey answers",
+      "x": 0,
+      "y": -200
+    },
+    "legend": [
+      {
+        "transform": {
+          "x": -47.5,
+          "y": -33
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "#ECECFF",
+          "stroke": "#ECECFF"
+        },
+        "text": {
+          "text": "Yes",
+          "x": 22,
+          "y": 14
+        }
+      },
+      {
+        "transform": {
+          "x": -47.5,
+          "y": -11
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "#ffffde",
+          "stroke": "#ffffde"
+        },
+        "text": {
+          "text": "No",
+          "x": 22,
+          "y": 14
+        }
+      },
+      {
+        "transform": {
+          "x": -47.5,
+          "y": 11
+        },
+        "rect": {
+          "width": 18,
+          "height": 18,
+          "fill": "hsl(80, 100%, 56.2745098039%)",
+          "stroke": "hsl(80, 100%, 56.2745098039%)"
+        },
+        "text": {
+          "text": "Maybe",
+          "x": 22,
+          "y": 14
+        }
+      }
+    ]
+  }
+}
