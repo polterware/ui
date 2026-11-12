@@ -241,7 +241,8 @@ impl Ast {
     /// and [`super::layout_data::layout_data`] adds them.
     ///
     /// Relationship labels stay HTML-escaped (`&lt;&lt;contains&gt;&gt;`) exactly as upstream
-    /// returns them; the layout conversion decodes them because `createText` does.
+    /// returns them; `createText` tokenizes that string and decodes each word when it draws,
+    /// so the renderer decodes the label only for the scene text.
     pub fn data(&self) -> Data {
         let mut nodes: Vec<Node> = Vec::new();
         for requirement in &self.requirements {
@@ -291,7 +292,10 @@ impl Ast {
                 end: self
                     .requirement(&relation.dst)
                     .map(|requirement| requirement.name.clone())
-                    .or_else(|| self.element(&relation.dst).map(|element| element.name.clone())),
+                    .or_else(|| {
+                        self.element(&relation.dst)
+                            .map(|element| element.name.clone())
+                    }),
                 label: format!("&lt;&lt;{}&gt;&gt;", relation.relationship_type.as_str()),
                 classes: "relationshipLine".to_string(),
                 style: vec![

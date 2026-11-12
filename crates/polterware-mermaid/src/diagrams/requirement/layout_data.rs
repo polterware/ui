@@ -8,11 +8,10 @@
 //! requirement markers, the diagram id, and the viewport padding and `useMaxWidth`.
 //!
 //! The relationship label `getData` returns is HTML-escaped (`&lt;&lt;contains&gt;&gt;`);
-//! `createText` decodes it before measuring, so the layout edge carries the decoded text that
-//! decides the label box and therefore the dagre layout.
+//! `createText` tokenizes that escaped string and decodes each word only when it writes the
+//! tspan, so the layout edge keeps the escaped label that decides the box and the layout.
 
 use crate::config::Config;
-use crate::measure::decode_html_entities;
 use crate::render::pipeline::{
     Edge as PipelineEdge, ElementNodeData, LayoutData, Node as PipelineNode, RequirementNodeData,
     get_registered_layout_algorithm,
@@ -59,7 +58,9 @@ pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
         .iter()
         .map(|edge| PipelineEdge {
             id: edge.id.clone(),
-            label: Some(decode_html_entities(&edge.label)),
+            // `createText` tokenizes the escaped label and decodes each word only when it
+            // writes the tspan, so `&lt;&lt;contains&gt;&gt;` measures as one word.
+            label: Some(edge.label.clone()),
             classes: Some(edge.classes.clone()),
             start: edge.start.clone(),
             end: edge.end.clone(),
@@ -88,18 +89,8 @@ pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
         // `draw` reads `conf` from the `state` configuration section.
         use_max_width: Some(config.state.use_max_width),
         padding: Some(VIEWPORT_PADDING),
-        node_spacing: Some(
-            config
-                .state
-                .node_spacing
-                .unwrap_or(DEFAULT_NODE_SPACING),
-        ),
-        rank_spacing: Some(
-            config
-                .state
-                .rank_spacing
-                .unwrap_or(DEFAULT_RANK_SPACING),
-        ),
+        node_spacing: Some(config.state.node_spacing.unwrap_or(DEFAULT_NODE_SPACING)),
+        rank_spacing: Some(config.state.rank_spacing.unwrap_or(DEFAULT_RANK_SPACING)),
         root_node: None,
     }
 }
@@ -108,8 +99,10 @@ fn layout_node(node: &RequirementNode, config: &Config) -> PipelineNode {
     PipelineNode {
         id: node.id.clone(),
         label: Some(node.label.clone()),
-        requirement: node.requirement.as_ref().map(|requirement| {
-            RequirementNodeData {
+        requirement: node
+            .requirement
+            .as_ref()
+            .map(|requirement| RequirementNodeData {
                 type_name: requirement.type_name.clone(),
                 requirement_id: requirement.requirement_id.clone(),
                 text: requirement.text.clone(),
@@ -121,8 +114,7 @@ fn layout_node(node: &RequirementNode, config: &Config) -> PipelineNode {
                     .verify_method
                     .map(|verify_method| verify_method.as_str().to_string())
                     .unwrap_or_default(),
-            }
-        }),
+            }),
         element: node.element.as_ref().map(|element| ElementNodeData {
             type_name: element.type_name.clone(),
             doc_ref: element.doc_ref.clone(),
@@ -148,7 +140,11 @@ mod tests {
     #[test]
     fn maps_draw_settings_from_the_configuration() {
         let config = Config::default();
-        let data = layout_data(&ast("requirementDiagram\n  requirement r {\n  }\n"), &config, "d");
+        let data = layout_data(
+            &ast("requirementDiagram\n  requirement r {\n  }\n"),
+            &config,
+            "d",
+        );
 
         assert_eq!(data.direction.as_deref(), Some("TB"));
         assert_eq!(data.r#type.as_deref(), Some(DIAGRAM_TYPE));
@@ -164,7 +160,11 @@ mod tests {
     fn uses_the_neo_markers_for_the_neo_look() {
         let mut config = Config::default();
         config.look = "neo".to_string();
-        let data = layout_data(&ast("requirementDiagram\n  requirement r {\n  }\n"), &config, "d");
+        let data = layout_data(
+            &ast("requirementDiagram\n  requirement r {\n  }\n"),
+            &config,
+            "d",
+        );
         assert_eq!(data.markers, MARKERS_NEO);
     }
 
@@ -220,7 +220,7 @@ mod tests {
             "d",
         );
         let contains = &data.edges[0];
-        assert_eq!(contains.label.as_deref(), Some("<<contains>>"));
+        assert_eq!(contains.label.as_deref(), Some("&lt;&lt;contains&gt;&gt;"));
         assert_eq!(contains.pattern.as_deref(), Some("normal"));
         assert_eq!(
             contains.arrow_type_start.as_deref(),
@@ -229,19 +229,20 @@ mod tests {
         assert_eq!(contains.arrow_type_end.as_deref(), Some(""));
 
         let traces = &data.edges[1];
-        assert_eq!(traces.label.as_deref(), Some("<<traces>>"));
+        assert_eq!(traces.label.as_deref(), Some("&lt;&lt;traces&gt;&gt;"));
         assert_eq!(traces.pattern.as_deref(), Some("dashed"));
         assert_eq!(traces.arrow_type_start.as_deref(), Some(""));
-        assert_eq!(
-            traces.arrow_type_end.as_deref(),
-            Some("requirement_arrow")
-        );
+        assert_eq!(traces.arrow_type_end.as_deref(), Some("requirement_arrow"));
     }
 
     #[test]
     fn keeps_relationships_to_missing_nodes_without_endpoints() {
         let config = Config::default();
-        let data = layout_data(&ast("requirementDiagram\n  a - copies -> b\n"), &config, "d");
+        let data = layout_data(
+            &ast("requirementDiagram\n  a - copies -> b\n"),
+            &config,
+            "d",
+        );
         assert!(data.edges[0].start.is_none());
         assert!(data.edges[0].end.is_none());
     }

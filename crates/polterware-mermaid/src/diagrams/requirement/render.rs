@@ -164,25 +164,30 @@ fn complete_edges(
             false,
         ) {
             if let Some(marker) = placement.start {
-                path.start_markers.push(if let Some(color) = marker_color.clone() {
-                    marker.with_color(color)
-                } else {
-                    marker
-                });
+                path.start_markers
+                    .push(if let Some(color) = marker_color.clone() {
+                        marker.with_color(color)
+                    } else {
+                        marker
+                    });
             }
             if let Some(marker) = placement.end {
-                path.end_markers.push(if let Some(color) = marker_color.clone() {
-                    marker.with_color(color)
-                } else {
-                    marker
-                });
+                path.end_markers
+                    .push(if let Some(color) = marker_color.clone() {
+                        marker.with_color(color)
+                    } else {
+                        marker
+                    });
             }
         }
 
         let edge_data = EdgeData {
             id: edge.id.clone(),
             points: edge.points.clone().unwrap_or_default(),
-            label: edge.label.clone(),
+            label: edge
+                .label
+                .as_deref()
+                .map(crate::measure::decode_html_entities),
             label_width: edge.width.unwrap_or(0.0),
             label_height: edge.height.unwrap_or(0.0),
             label_x: edge.x,
@@ -198,25 +203,27 @@ fn complete_edges(
             let mut group = Group::new()
                 .with_class("edgeLabel")
                 .with_source(SourceRef::edge(edge.id.clone()));
-            group.transform =
-                crate::scene::Transform::translate(bounds.x, bounds.y);
-            if let Some(background) = label.background {
-                let mut background_style = PathStyle::default();
-                background_style.fill = label_background.clone();
-                background_style.stroke = None;
+            group.transform = crate::scene::Transform::translate(bounds.x, bounds.y);
+            if label.background.is_some() {
+                // `createFormattedText` already measured the edge label with two pixels of
+                // background padding on each side, so the background is this box.
+                let background_style = PathStyle {
+                    fill: label_background.clone(),
+                    stroke: None,
+                    ..PathStyle::default()
+                };
                 group.push(RectShape::new(
-                    Rect::new(
-                        background.x - bounds.x,
-                        background.y - bounds.y,
-                        background.width,
-                        background.height,
-                    ),
+                    Rect::new(0.0, 0.0, bounds.width, bounds.height),
                     0.0,
                     background_style,
                 ));
             }
             let block = plain_text_block(&label.text, &font, measure);
-            let mut text = TextRun::new(Point::ZERO, font.clone(), block);
+            // The label group is anchored at the background's top-left, so centre the text
+            // in the box and give it `createText`'s first-baseline offset below the origin.
+            let x = bounds.width / 2.0;
+            let y = (bounds.height - block.size.height) / 2.0 + font.size - 10.1;
+            let mut text = TextRun::centered(Point::new(x, y), font.clone(), block);
             text.fill = Some(label_color.clone());
             group.push(Item::Text(text));
             labels.push(Item::Group(group));
@@ -315,8 +322,8 @@ mod tests {
         for (file, fixture) in fixtures {
             let source = fixture["source"].as_str().expect("fixture source");
             let body = crate::preprocess::preprocess(source).body;
-            let ast = super::super::parse(&body)
-                .unwrap_or_else(|error| panic!("{file}: parse: {error}"));
+            let ast =
+                super::super::parse(&body).unwrap_or_else(|error| panic!("{file}: parse: {error}"));
             let (data, scene) = draw_layout_ast(&ast, &Config::default(), &FallbackMeasure)
                 .unwrap_or_else(|error| panic!("{file}: render: {error}"));
             let expected = &fixture["expected"];
@@ -416,7 +423,9 @@ mod tests {
             );
             close(
                 scene.view_box.height,
-                expected_view_box["height"].as_f64().expect("viewBox height"),
+                expected_view_box["height"]
+                    .as_f64()
+                    .expect("viewBox height"),
                 "viewBox height",
                 &file,
             );
@@ -451,9 +460,12 @@ mod tests {
             .filter_map(|item| match item {
                 Item::Group(group) if group.class.as_deref() == Some("edgeLabel") => {
                     group.items.iter().find_map(|item| match item {
-                        Item::Text(text) => {
-                            Some(text.lines.iter().map(|line| line.text()).collect::<String>())
-                        }
+                        Item::Text(text) => Some(
+                            text.lines
+                                .iter()
+                                .map(|line| line.text())
+                                .collect::<String>(),
+                        ),
                         _ => None,
                     })
                 }
@@ -473,6 +485,95 @@ mod tests {
         assert!(scene.view_box.width > 0.0);
         assert!(scene.view_box.height > 0.0);
         assert!(!scene.items.is_empty());
+    }
+
+    #[test]
+    fn places_node_and_edge_labels_where_the_upstream_svg_does() {
+        // Upstream's SVG for the first fixture: the `<<Requirement>>` label sits at
+        // translate(-72, -82.4) inside the `test_req` node (centre 114, 277.8), and its
+        // first baseline is 5.9px below that, at y=201.3. The `<<satisfies>>` edge label is
+        // centred on (114, 151.4) with its first baseline at y=148.1.
+        let scene = render(
+            "requirementDiagram\n  requirement test_req {\n    id: 1\n    text: the test text.\n    risk: high\n    verifymethod: test\n  }\n  element test_entity {\n    type: simulation\n  }\n  test_entity - satisfies -> test_req\n",
+            &Config::default(),
+        )
+        .expect("render requirement diagram");
+
+        let mut type_label = None;
+        let mut edge_text = None;
+        for item in &scene.items {
+            let Item::Group(group) = item else {
+                continue;
+            };
+            if group.class.as_deref() == Some("node default") {
+                for child in &group.items {
+                    let Item::Group(label) = child else {
+                        continue;
+                    };
+                    if label.class.as_deref() == Some("label") {
+                        let text = label.items.iter().find_map(|item| match item {
+                            Item::Text(text) => Some(text),
+                            _ => None,
+                        });
+                        if text.is_some_and(|text| {
+                            text.lines
+                                .iter()
+                                .map(|line| line.text())
+                                .collect::<String>()
+                                == "<<Requirement>>"
+                        }) {
+                            type_label = Some((group, label, text.expect("text")));
+                        }
+                    }
+                }
+            }
+            if group.class.as_deref() == Some("edgeLabel") {
+                edge_text = group.items.iter().find_map(|item| match item {
+                    Item::Text(text) => Some((group.transform, text.position)),
+                    _ => None,
+                });
+            }
+        }
+
+        let (node, label, text) = type_label.expect("type label");
+        assert_eq!(
+            node.transform,
+            crate::scene::Transform::translate(114.0, 277.8)
+        );
+        assert_eq!(
+            label.transform,
+            crate::scene::Transform::translate(-72.0, -82.4)
+        );
+        close(
+            node.transform.f + label.transform.f + text.position.y,
+            201.3,
+            "type label baseline",
+            "01-requirement-and-element",
+        );
+
+        let (edge_group, edge_text) = edge_text.expect("edge label text");
+        close(
+            edge_group.e + edge_text.x,
+            114.0,
+            "edge label x",
+            "01-requirement-and-element",
+        );
+        close(
+            edge_group.f + edge_text.y,
+            148.1,
+            "edge label baseline",
+            "01-requirement-and-element",
+        );
+    }
+
+    #[test]
+    fn render_diagram_dispatches_requirement() {
+        let scene = crate::render_diagram(
+            "requirementDiagram\n  requirement a {\n   id: 1\n  }\n",
+            &Config::default(),
+        )
+        .expect("dispatch requirement");
+        assert!(scene.view_box.width > 0.0);
     }
 
     #[test]

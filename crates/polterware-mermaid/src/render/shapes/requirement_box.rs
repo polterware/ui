@@ -11,11 +11,14 @@
 //! box (`1.15em` for the monospace measurement this crate uses), and the box keeps six pixels
 //! of that label's height as spacing before the next row. The outer rectangle is the union of
 //! the labels plus the 20px padding. Labels are centred inside the box; body rows start at
-//! `x + padding / 2`, as SVG's `text-anchor: middle` at those translations reads.
+//! `x + padding / 2`, as SVG's `text-anchor: middle` at those translations reads. `createText`
+//! writes its first baseline at `fontSize - 10.1` below the `<text>` origin (`y="-10.1"` plus
+//! the tspan's `-0.1em`/`1.1em`), which the text runs carry so they land where the SVG does.
 //!
-//! The theme's `requirementBackground` and `requirementBorderColor` paint the box and
-//! `requirementBorderSize` its stroke, while `nodeTextColor`/`textColor` paint the labels,
-//! as the `.reqBox` and `.label text` rules in `styles.js` do. Declarations from
+//! `userNodeOverrides` paints the box with `mainBkg` and `nodeBorder` at a 1.3 stroke, and the
+//! requirement stylesheet gives the divider `nodeBorder` at 1. `nodeTextColor`/`textColor`
+//! paint the labels, as the `.label text` rule in `styles.js` does; `requirementBackground`
+//! and `requirementBorderColor` do not reach the shape's `.reqBox` rule. Declarations from
 //! `classDef`/`style` (`node.cssStyles`) override the fill, stroke, stroke width and label
 //! colour. The `neo` divider (a 0.001-high polygon) and the `borderColorArray` palette stamp
 //! are not painted: the classic divider line drawn here is the one both looks share, and the
@@ -23,8 +26,8 @@
 use super::{IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, get_node_classes};
 use crate::measure::{Font, plain_text_block};
 use crate::scene::{
-    Color, Group, Item, Path, PathShape, PathStyle, Point, Rect, RectShape, Size, SourceRef, TextRun,
-    Transform,
+    Color, Group, Item, Path, PathShape, PathStyle, Point, Rect, RectShape, Size, SourceRef,
+    TextRun, Transform,
 };
 
 /// `const padding = 20` in `requirementBox`.
@@ -85,8 +88,11 @@ fn add_text(
     }
     let block = plain_text_block(text, &font, ctx.measure);
     let size = block.size;
+    // `createFormattedText` draws the first line at `y="-10.1"` with a `-0.1em` tspan and a
+    // `1.1em` dy, so the baseline sits `fontSize - 10.1` below the group origin.
+    let baseline = font.size - 10.1;
     let mut group = Group::new().with_class("label").with_source(source.clone());
-    group.push(TextRun::new(Point::ZERO, font, block));
+    group.push(TextRun::new(Point::new(0.0, baseline), font, block));
     Ok(Some(Label {
         group,
         width: size.width,
@@ -131,11 +137,7 @@ impl StyleOverrides {
     }
 }
 
-fn theme_color(
-    ctx: &ShapeContext<'_>,
-    name: &str,
-    fallback: Option<&str>,
-) -> Option<Color> {
+fn theme_color(ctx: &ShapeContext<'_>, name: &str, fallback: Option<&str>) -> Option<Color> {
     ctx.theme
         .color(name)
         .map(|value| Color::new(value.to_string()))
@@ -175,13 +177,7 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         .unwrap_or(0.0);
 
     let mut accumulative_height = type_height;
-    if let Some(label) = add_text(
-        &node.label,
-        name_font,
-        accumulative_height,
-        &source,
-        ctx,
-    )? {
+    if let Some(label) = add_text(&node.label, name_font, accumulative_height, &source, ctx)? {
         labels.push(label);
     }
     let name_height = labels
@@ -235,20 +231,19 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     let fill = overrides
         .fill
         .clone()
-        .or_else(|| theme_color(ctx, "requirementBackground", Some("#ECECFF")));
+        .or_else(|| theme_color(ctx, "mainBkg", Some("#ECECFF")));
     let stroke = overrides
         .stroke
         .clone()
-        .or_else(|| theme_color(ctx, "requirementBorderColor", Some("#9370DB")));
-    let stroke_width = overrides.stroke_width.unwrap_or_else(|| {
-        ctx.theme
-            .number("requirementBorderSize")
-            .unwrap_or(1.0)
-    });
-    let mut style = PathStyle::default();
-    style.fill = fill;
-    style.stroke = stroke;
-    style.stroke_width = stroke_width;
+        .or_else(|| theme_color(ctx, "nodeBorder", Some("#9370DB")));
+    // `userNodeOverrides`'s `strokeWidth: stylesMap.get('stroke-width') || 1.3`.
+    let stroke_width = overrides.stroke_width.unwrap_or(1.3);
+    let style = PathStyle {
+        fill,
+        stroke,
+        stroke_width,
+        ..PathStyle::default()
+    };
     group.push(RectShape::new(bounds, 0.0, style).with_source(source.clone()));
 
     // Re-translate the labels now that the rectangle is centred. Type and name keep the
@@ -262,7 +257,11 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         } else {
             x + PADDING / 2.0
         };
-        let translate_y = label.y_offset - total_height / 2.0 + PADDING;
+        // `addText` centers the label's bbox (height plus the 6px SVG allowance) on its
+        // yOffset, then the box re-centers that on the outer rectangle.
+        let translate_y =
+            label.y_offset - (label.height + SVG_LABEL_EXTRA_HEIGHT) / 2.0 - total_height / 2.0
+                + PADDING;
         label.group.transform = Transform::translate(translate_x, translate_y);
         if let Some(color) = &body_color
             && let Some(Item::Text(text)) = label.group.items.first_mut()
@@ -275,11 +274,13 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     // Insert the divider before the body text, as upstream inserts it in the shape group.
     if has_body {
         let line_y = y + type_height + name_height + GAP;
-        let divider_color = theme_color(ctx, "nodeBorder", Some("#333"));
-        let mut divider_style = PathStyle::default();
-        divider_style.fill = None;
-        divider_style.stroke = divider_color;
-        divider_style.stroke_width = 1.0;
+        let divider_color = theme_color(ctx, "nodeBorder", Some("#9370DB"));
+        let divider_style = PathStyle {
+            fill: None,
+            stroke: divider_color,
+            stroke_width: 1.0,
+            ..PathStyle::default()
+        };
         let mut line = Path::new();
         line.move_to(Point::new(x, line_y));
         line.line_to(Point::new(x + total_width, line_y));
@@ -376,7 +377,10 @@ mod tests {
         let rendered = draw(&node, &ctx()).unwrap();
         let labels = label_groups(&rendered.group.items);
         let texts: Vec<String> = labels.iter().map(|label| label_text(label)).collect();
-        assert_eq!(texts, ["<<Element>>", "e", "Type: simulation", "Doc Ref: r1"]);
+        assert_eq!(
+            texts,
+            ["<<Element>>", "e", "Type: simulation", "Doc Ref: r1"]
+        );
 
         let rendered = draw(&node_with_no_rows(), &ctx()).unwrap();
         assert!(!rendered.group.items.iter().any(|item| matches!(
@@ -389,6 +393,50 @@ mod tests {
         let mut node = node("e", None);
         node.element = Some(ElementNodeData::default());
         node
+    }
+
+    #[test]
+    fn draws_the_theme_box_and_label_colours() {
+        let theme = crate::theme::Theme::Default
+            .variables(&serde_json::Map::new())
+            .expect("default theme variables");
+        let ctx = ShapeContext {
+            measure: &FallbackMeasure,
+            theme: &theme,
+        };
+        let rendered = draw(&node("r", Some(RequirementNodeData::default())), &ctx).unwrap();
+        let Item::Rect(rect) = rendered
+            .group
+            .items
+            .iter()
+            .find(|item| matches!(item, Item::Rect(_)))
+            .expect("box rect")
+        else {
+            unreachable!()
+        };
+        assert_eq!(
+            rect.style.fill,
+            theme
+                .color("mainBkg")
+                .map(|value| Color::new(value.to_string()))
+        );
+        assert_eq!(
+            rect.style.stroke,
+            theme
+                .color("nodeBorder")
+                .map(|value| Color::new(value.to_string()))
+        );
+        assert_eq!(rect.style.stroke_width, 1.3);
+        let labels = label_groups(&rendered.group.items);
+        let Some(Item::Text(text)) = labels[0].items.first() else {
+            panic!("label text")
+        };
+        assert_eq!(
+            text.fill,
+            theme
+                .color("textColor")
+                .map(|value| Color::new(value.to_string()))
+        );
     }
 
     #[test]

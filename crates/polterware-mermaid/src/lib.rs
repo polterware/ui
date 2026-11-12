@@ -40,8 +40,8 @@ pub fn parse(text: &str) -> Result<Diagram, ParseError> {
 /// describes what a painter draws.
 ///
 /// The source's frontmatter and `%%{init}%%` directives are applied over `config` before the
-/// diagram is drawn. Flowcharts, class, ER, and requirement diagrams are the diagram types
-/// this entry draws for now; another type reports [`RenderError::Unsupported`].
+/// diagram is drawn. Flowcharts, class, ER, requirement, and info diagrams are the diagram
+/// types this entry draws for now; another type reports [`RenderError::Unsupported`].
 pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, RenderError> {
     let preprocessed = preprocess::preprocess(source);
     if let Some(message) = preprocessed.error {
@@ -66,6 +66,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
         }
         DiagramKind::Requirement => {
             let scene = diagrams::requirement::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
+        DiagramKind::Info => {
+            let scene = diagrams::info::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),

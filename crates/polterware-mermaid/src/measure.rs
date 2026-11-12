@@ -944,12 +944,10 @@ fn parse_inline(text: &str) -> Vec<Inline> {
                 // marked's inline HTML only starts a tag with a name character, `/`, `!`, or
                 // `?`. A `<<Stereotype>>` label is text, not markup, so both angle brackets
                 // stay in the word.
-                let tag_start = chars
-                    .get(i + 1)
-                    .is_some_and(|next| next.is_ascii_alphanumeric() || matches!(next, '/' | '!' | '?'));
-                if tag_start
-                    && let Some(end) = chars[i + 1..].iter().position(|ch| *ch == '>')
-                {
+                let tag_start = chars.get(i + 1).is_some_and(|next| {
+                    next.is_ascii_alphanumeric() || matches!(next, '/' | '!' | '?')
+                });
+                if tag_start && let Some(end) = chars[i + 1..].iter().position(|ch| *ch == '>') {
                     let end = i + 1 + end;
                     push_text(&mut out, &mut buffer);
                     out.push(Inline::Html(chars[i..=end].iter().collect()));
@@ -1216,10 +1214,7 @@ pub fn plain_text_block(
         .iter()
         .map(|line| measure.width(&line.text(), font))
         .fold(0.0, f64::max);
-    let last = lines
-        .iter()
-        .rposition(|line| !line.is_empty())
-        .unwrap_or(0);
+    let last = lines.iter().rposition(|line| !line.is_empty()).unwrap_or(0);
     let line_advance = LINE_HEIGHT_EM * font.size;
     let height = measure.line_height(font) + line_advance * last as f64;
     TextBlock::new(lines, crate::scene::Size::new(width, height), line_advance)

@@ -23,11 +23,14 @@
 //!   skipping characters; this crate's [`ParseError`] carries a
 //!   [`Span`](crate::error::Span) instead and reports the first offending character, which is
 //!   the same character upstream's message points at.
-//! * Nothing here lays out or draws the version text; `infoRenderer.ts` is out of scope.
+//!
+//! The renderer is [`render`], ported from `infoRenderer.ts`; it draws the version text that
+//! renderer appends, in the scene's 400x100 canvas.
 
 mod ast;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::Ast;
 
