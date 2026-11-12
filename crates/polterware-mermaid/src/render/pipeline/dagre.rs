@@ -236,14 +236,13 @@ pub fn measure_dagre_graph(
 
     // Sync edge label sizes back into the prepared dagre graph
     for edge in &data4_layout.edges {
-        if let (Some(start), Some(end)) = (&edge.start, &edge.end) {
-            if let Some(e) = prepared
+        if let (Some(start), Some(end)) = (&edge.start, &edge.end)
+            && let Some(e) = prepared
                 .graph
                 .edge_object_mut(&GraphEdge::named(start, end, &edge.id))
-            {
-                e.width = edge.width;
-                e.height = edge.height;
-            }
+        {
+            e.width = edge.width;
+            e.height = edge.height;
         }
     }
 
@@ -312,34 +311,32 @@ pub fn apply_dagre_layout_result(
             &measured.graph,
             &node_id,
             measured.sub_graph_title_total_margin,
-        ) {
-            if let Some(&idx) = node_map.get(&node_id) {
-                apply_dagre_node_layout(&mut data4_layout.nodes[idx], &dagre_node);
-            }
+        ) && let Some(&idx) = node_map.get(&node_id)
+        {
+            apply_dagre_node_layout(&mut data4_layout.nodes[idx], &dagre_node);
         }
     }
 
     // Also check extracted clusters for positions
     for (cid, subgraph) in &measured.cluster_index.extracted {
         for nid in subgraph.nodes() {
-            if let Some(n) = subgraph.node(&nid) {
-                if let Some(&idx) = node_map.get(&nid) {
-                    if data4_layout.nodes[idx].x.is_none() {
-                        data4_layout.nodes[idx].x = n.x;
-                        data4_layout.nodes[idx].y = n.y;
-                        data4_layout.nodes[idx].width = Some(n.width);
-                        data4_layout.nodes[idx].height = Some(n.height);
-                    }
-                }
+            if let Some(n) = subgraph.node(&nid)
+                && let Some(&idx) = node_map.get(&nid)
+                && data4_layout.nodes[idx].x.is_none()
+            {
+                data4_layout.nodes[idx].x = n.x;
+                data4_layout.nodes[idx].y = n.y;
+                data4_layout.nodes[idx].width = Some(n.width);
+                data4_layout.nodes[idx].height = Some(n.height);
             }
         }
-        if let Some(&idx) = node_map.get(cid) {
-            if let Some(cn) = measured.graph.node(cid) {
-                data4_layout.nodes[idx].x = cn.x;
-                data4_layout.nodes[idx].y = cn.y;
-                data4_layout.nodes[idx].width = Some(cn.width);
-                data4_layout.nodes[idx].height = Some(cn.height);
-            }
+        if let Some(&idx) = node_map.get(cid)
+            && let Some(cn) = measured.graph.node(cid)
+        {
+            data4_layout.nodes[idx].x = cn.x;
+            data4_layout.nodes[idx].y = cn.y;
+            data4_layout.nodes[idx].width = Some(cn.width);
+            data4_layout.nodes[idx].height = Some(cn.height);
         }
     }
 
@@ -447,18 +444,18 @@ pub fn dagre_render(
 
     // Paint nodes
     for node in &data4_layout.nodes {
-        if node.is_group != Some(true) {
-            if let Some(mut group) = measured.created.node_elements.remove(&node.id) {
-                position_node(
-                    &mut group,
-                    &crate::render::shapes::Node::new(&node.id, "", ""),
-                    node.x.unwrap_or(0.0),
-                    node.y.unwrap_or(0.0),
-                    false,
-                    0.0,
-                );
-                scene.push(group);
-            }
+        if node.is_group != Some(true)
+            && let Some(mut group) = measured.created.node_elements.remove(&node.id)
+        {
+            position_node(
+                &mut group,
+                &crate::render::shapes::Node::new(&node.id, "", ""),
+                node.x.unwrap_or(0.0),
+                node.y.unwrap_or(0.0),
+                false,
+                0.0,
+            );
+            scene.push(group);
         }
     }
 
@@ -504,17 +501,16 @@ pub fn dagre_render(
             min_y = min_y.min(y - h / 2.0);
             max_y = max_y.max(y + h / 2.0);
         }
-        if node.is_group == Some(true) {
-            if let Some(bbox) = &node.label_b_box {
-                if let (Some(x), Some(y)) = (node.x, node.y) {
-                    if bbox.width > 0.0 && bbox.height > 0.0 {
-                        min_x = min_x.min(x - bbox.width / 2.0);
-                        max_x = max_x.max(x + bbox.width / 2.0);
-                        min_y = min_y.min(y - node.height.unwrap_or(0.0) / 2.0);
-                        max_y = max_y.max(y - node.height.unwrap_or(0.0) / 2.0 + bbox.height);
-                    }
-                }
-            }
+        if node.is_group == Some(true)
+            && let Some(bbox) = &node.label_b_box
+            && let (Some(x), Some(y)) = (node.x, node.y)
+            && bbox.width > 0.0
+            && bbox.height > 0.0
+        {
+            min_x = min_x.min(x - bbox.width / 2.0);
+            max_x = max_x.max(x + bbox.width / 2.0);
+            min_y = min_y.min(y - node.height.unwrap_or(0.0) / 2.0);
+            max_y = max_y.max(y - node.height.unwrap_or(0.0) / 2.0 + bbox.height);
         }
     }
 
@@ -528,13 +524,13 @@ pub fn dagre_render(
             }
         }
         if let (Some(lx), Some(ly), Some(lw), Some(lh)) = (edge.x, edge.y, edge.width, edge.height)
+            && lw > 0.0
+            && lh > 0.0
         {
-            if lw > 0.0 && lh > 0.0 {
-                min_x = min_x.min(lx - lw / 2.0);
-                max_x = max_x.max(lx + lw / 2.0);
-                min_y = min_y.min(ly - lh / 2.0);
-                max_y = max_y.max(ly + lh / 2.0);
-            }
+            min_x = min_x.min(lx - lw / 2.0);
+            max_x = max_x.max(lx + lw / 2.0);
+            min_y = min_y.min(ly - lh / 2.0);
+            max_y = max_y.max(ly + lh / 2.0);
         }
     }
 
