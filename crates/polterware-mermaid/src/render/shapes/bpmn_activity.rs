@@ -105,7 +105,11 @@ pub fn draw_with_extras(
     group.push(Item::Group(label));
 
     update_bounds(&mut node, width, height);
-    node.intersect = IntersectKind::Rect;
+    node.intersect = IntersectKind::FaceProject {
+        width,
+        height,
+        face: None,
+    };
     Ok(RenderedNode { node, group })
 }
 

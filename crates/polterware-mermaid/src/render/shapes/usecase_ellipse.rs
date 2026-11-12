@@ -337,7 +337,7 @@ mod tests {
     #[test]
     fn matches_upstream_fixtures() {
         let fixture: serde_json::Value =
-            serde_json::from_str(include_str!("../testdata/shapes/usecaseEllipse.json"))
+            serde_json::from_str(include_str!("../testdata/shapes/usecase_ellipse.json"))
                 .expect("fixture parses");
         let theme = ThemeVariables::default();
         for case in fixture["cases"].as_array().expect("cases") {

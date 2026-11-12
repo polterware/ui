@@ -50,7 +50,7 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         -text.height / 2.0 + node.padding / 1.5,
     );
     group.push(Item::Group(label));
-    node.intersect = IntersectKind::Polygon(cylinder_outline(w, h, ry, 128));
+    node.intersect = IntersectKind::Cylinder { rx, ry };
     Ok(RenderedNode { node, group })
 }
 
@@ -73,6 +73,7 @@ pub(super) fn cylinder_outline(width: f64, height: f64, ry: f64, steps: usize) -
 mod tests {
     use super::*;
     use crate::measure::FallbackMeasure;
+    use crate::render::intersect::Intersectable;
 
     #[test]
     fn classic_cylinder_has_two_curved_ends_and_elliptic_intersection() {
@@ -91,14 +92,7 @@ mod tests {
             panic!("path")
         };
         assert_eq!(path.path.commands.len(), 6);
-        let hit = crate::render::intersect::intersect_polygon(
-            rendered.node.bounds,
-            match &rendered.node.intersect {
-                IntersectKind::Polygon(p) => p,
-                _ => unreachable!(),
-            },
-            Point::new(100.0, 0.0),
-        );
+        let hit = rendered.node.intersect(Point::new(100.0, 0.0));
         assert!(hit.x > 0.0 && hit.x <= rendered.node.bounds.right());
     }
 }

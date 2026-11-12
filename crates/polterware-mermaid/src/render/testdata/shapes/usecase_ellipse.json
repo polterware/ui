@@ -1,0 +1,115 @@
+{
+  "shape": "usecaseEllipse",
+  "cases": [
+    {
+      "name": "short",
+      "label": "A",
+      "label_size": [
+        40,
+        12
+      ],
+      "padding": 20,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node",
+      "width": 80,
+      "height": 52,
+      "elements": [
+        {
+          "tag": "ellipse",
+          "class": "basic label-container",
+          "fill": null,
+          "cx": 0,
+          "cy": 0,
+          "rx": 40,
+          "ry": 26
+        },
+        {
+          "tag": "label",
+          "class": "label",
+          "x": 0,
+          "y": -6,
+          "text": "A"
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            31.70496,
+            15.85248
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -31.70496,
+            -15.85248
+          ]
+        }
+      ]
+    },
+    {
+      "name": "long",
+      "label": "A much longer use case label",
+      "label_size": [
+        240,
+        24
+      ],
+      "padding": 20,
+      "stereotype": null,
+      "business": false,
+      "rows": null,
+      "class": "node",
+      "width": 280,
+      "height": 64,
+      "elements": [
+        {
+          "tag": "ellipse",
+          "class": "basic label-container",
+          "fill": null,
+          "cx": 0,
+          "cy": 0,
+          "rx": 140,
+          "ry": 32
+        },
+        {
+          "tag": "label",
+          "class": "label",
+          "x": 0,
+          "y": -12,
+          "text": "A much longer use case label"
+        }
+      ],
+      "intersect": [
+        {
+          "query": [
+            120,
+            60
+          ],
+          "point": [
+            58.206366,
+            29.103183
+          ]
+        },
+        {
+          "query": [
+            -80,
+            -40
+          ],
+          "point": [
+            -58.206366,
+            -29.103183
+          ]
+        }
+      ]
+    }
+  ]
+}

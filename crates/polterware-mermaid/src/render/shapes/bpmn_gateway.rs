@@ -72,7 +72,10 @@ pub fn draw_with_icon(
     }
     group.push(Item::Group(label));
 
-    node.intersect = IntersectKind::Polygon(diamond.to_vec());
+    node.intersect = IntersectKind::FaceCentre {
+        width: GATEWAY_SIZE,
+        height: GATEWAY_SIZE,
+    };
     Ok(RenderedNode { node, group })
 }
 

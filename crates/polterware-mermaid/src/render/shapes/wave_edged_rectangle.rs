@@ -3,7 +3,7 @@ use super::{
     IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, generate_full_sine_wave_points,
     prepare, shape_style,
 };
-use crate::scene::{Group, Item, PathShape, Point, Rect, SourceRef, Transform};
+use crate::scene::{Group, Item, PathShape, Point, Rect, Size, SourceRef, Transform};
 
 // handDrawn: rough.js (later)
 pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeError> {
@@ -46,16 +46,12 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     ]);
     let shape = PathShape::new(super::create_path_from_points(&points), shape_style())
         .with_source(SourceRef::node(node.id.clone()));
-    let bounds = Rect::new(left, -final_h / 2.0, right - left, final_h);
-    node.bounds = bounds;
+    node.bounds = Rect::centered(Point::ZERO, Size::new(right - left, final_h + amp));
     let mut shape_group = Group::new().with_class("basic label-container outer-path");
     shape_group.push(shape);
     shape_group.transform = Transform::translate(0.0, -amp / 2.0);
     group.push(shape_group);
-    label.transform = Transform::translate(
-        -text.width / 2.0 + node.padding,
-        -text.height / 2.0 + node.padding - amp,
-    );
+    label.transform = Transform::translate(-w / 2.0 + pad_x, -h / 2.0 + pad_y - amp);
     group.push(Item::Group(label));
     node.intersect = IntersectKind::Polygon(points);
     Ok(RenderedNode { node, group })

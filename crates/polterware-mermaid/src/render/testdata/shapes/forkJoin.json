@@ -1,0 +1,80 @@
+{
+  "shape": "forkJoin",
+  "look": "classic",
+  "cases": [
+    {
+      "label": "Hi",
+      "width": 74,
+      "height": 14,
+      "labelTransform": null,
+      "pathData": "M-35 -5 L35 -5 L35 5 L-35 5",
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 37,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 7
+        },
+        {
+          "x": -11.666666666666666,
+          "y": -7
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "width": 74,
+      "height": 14,
+      "labelTransform": null,
+      "pathData": "M-35 -5 L35 -5 L35 5 L-35 5",
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 37,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 7
+        },
+        {
+          "x": -11.666666666666666,
+          "y": -7
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    }
+  ]
+}

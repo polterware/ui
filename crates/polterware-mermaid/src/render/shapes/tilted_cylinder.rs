@@ -41,20 +41,6 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     group.push(shape);
     label.transform = Transform::translate(-text.width / 2.0 - rx, -text.height / 2.0);
     group.push(Item::Group(label));
-    node.intersect = IntersectKind::Polygon(tilted_outline(w, h, rx, 128));
+    node.intersect = IntersectKind::HorizontalCylinder { rx, ry };
     Ok(RenderedNode { node, group })
-}
-
-fn tilted_outline(width: f64, height: f64, rx: f64, steps: usize) -> Vec<Point> {
-    let ry = height / 2.0;
-    let mut points = Vec::with_capacity(steps * 2 + 2);
-    for i in 0..=steps {
-        let a = -std::f64::consts::FRAC_PI_2 + std::f64::consts::PI * i as f64 / steps as f64;
-        points.push(Point::new(-width / 2.0 - rx + rx * a.cos(), ry * a.sin()));
-    }
-    for i in 0..=steps {
-        let a = std::f64::consts::FRAC_PI_2 + std::f64::consts::PI * i as f64 / steps as f64;
-        points.push(Point::new(width / 2.0 + rx + rx * a.cos(), ry * a.sin()));
-    }
-    points
 }

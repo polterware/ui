@@ -30,10 +30,21 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     } else {
         LABEL_PADDING
     };
-    let bbox_width = text.width + LABEL_BACKGROUND_PADDING * 2.0;
-    let bbox_height = text.height + LABEL_BACKGROUND_PADDING * 2.0;
-    let icon_width = ICON_SIZE;
-    let icon_height = ICON_SIZE;
+    let bg_pad = if node.icon.is_some() || node.img.is_some() {
+        LABEL_BACKGROUND_PADDING
+    } else {
+        0.0
+    };
+    let bbox_width = text.width + bg_pad * 2.0;
+    let bbox_height = text.height + bg_pad * 2.0;
+    let (icon_width, icon_height) = if node.icon.is_some() {
+        (
+            node.asset_width.unwrap_or(ICON_SIZE),
+            node.asset_height.unwrap_or(ICON_SIZE),
+        )
+    } else {
+        (0.0, 0.0)
+    };
 
     let diameter = icon_width.max(icon_height) * std::f64::consts::SQRT_2 + CIRCLE_PADDING * 2.0;
     let outer_width = diameter.max(bbox_width);
@@ -44,11 +55,14 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         });
     }
 
+    let top_label = node.pos.as_deref() == Some("t");
+    let icon_offset_y = if top_label {
+        bbox_height / 2.0 + label_padding / 2.0
+    } else {
+        -bbox_height / 2.0 - label_padding / 2.0
+    };
     // handDrawn: rough.js (later)
-    let mut icon = Group::new().with_transform(Transform::translate(
-        0.0,
-        -bbox_height / 2.0 - label_padding / 2.0,
-    ));
+    let mut icon = Group::new().with_transform(Transform::translate(0.0, icon_offset_y));
     icon.push(
         EllipseShape::new(Point::ZERO, diameter / 2.0, diameter / 2.0, disc_style(ctx))
             .with_source(SourceRef::node(node.id.clone())),
@@ -64,7 +78,12 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     );
 
     let mut label = label;
-    label.transform = Transform::translate(-bbox_width / 2.0, outer_height / 2.0 - bbox_height);
+    let label_y = if top_label {
+        -outer_height / 2.0
+    } else {
+        outer_height / 2.0 - bbox_height
+    };
+    label.transform = Transform::translate(-bbox_width / 2.0, label_y);
     group.items.push(Item::Group(label));
 
     node.bounds = Rect::centered(Point::ZERO, Size::new(outer_width, outer_height));

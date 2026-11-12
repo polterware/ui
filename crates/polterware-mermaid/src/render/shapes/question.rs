@@ -5,17 +5,21 @@ use crate::scene::{Item, Path, PathShape, Point, Rect, Size, SourceRef};
 pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeError> {
     let mut node = node.clone();
     let (mut group, label, text_size) = prepare(&node, ctx)?;
-    let s = text_size.width + text_size.height + node.padding;
+    let w = text_size.width + node.padding;
+    let h = text_size.height + node.padding;
+    let s = (w + h)
+        .max(node.width.unwrap_or(0.0))
+        .max(node.height.unwrap_or(0.0));
     node.bounds = Rect::centered(Point::ZERO, Size::new(s, s));
     let points = vec![
         Point::new(s / 2.0, 0.0),
-        Point::new(s, s / 2.0),
-        Point::new(s / 2.0, s),
-        Point::new(0.0, s / 2.0),
+        Point::new(s, -s / 2.0),
+        Point::new(s / 2.0, -s),
+        Point::new(0.0, -s / 2.0),
     ];
     let local: Vec<Point> = points
         .iter()
-        .map(|p| p.translated(-s / 2.0, -s / 2.0))
+        .map(|p| Point::new(p.x - s / 2.0, p.y + s / 2.0))
         .collect();
     group.push(
         PathShape::new(Path::polygon(local), shape_style())

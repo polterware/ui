@@ -123,6 +123,28 @@ pub struct Node {
     pub look: String,
     pub bounds: Rect,
     pub intersect: IntersectKind,
+
+    // Upstream Node fields
+    pub icon: Option<String>,
+    pub img: Option<String>,
+    pub asset_width: Option<f64>,
+    pub asset_height: Option<f64>,
+    pub pos: Option<String>,
+    pub constraint: Option<String>,
+
+    // Diagram payload fields
+    pub members: Vec<String>,
+    pub methods: Vec<String>,
+    pub annotations: Vec<String>,
+    pub attributes: Vec<String>,
+    pub requirement_id: Option<String>,
+    pub requirement_type: Option<String>,
+    pub risk: Option<String>,
+    pub verify_method: Option<String>,
+    pub ticket: Option<String>,
+    pub assigned: Option<String>,
+    pub priority: Option<String>,
+    pub container_type: Option<String>,
 }
 
 impl Node {
@@ -141,6 +163,26 @@ impl Node {
             look: "neo".into(),
             bounds: Rect::ZERO,
             intersect: IntersectKind::Rect,
+
+            icon: None,
+            img: None,
+            asset_width: None,
+            asset_height: None,
+            pos: None,
+            constraint: None,
+
+            members: Vec::new(),
+            methods: Vec::new(),
+            annotations: Vec::new(),
+            attributes: Vec::new(),
+            requirement_id: None,
+            requirement_type: None,
+            risk: None,
+            verify_method: None,
+            ticket: None,
+            assigned: None,
+            priority: None,
+            container_type: None,
         }
     }
 }
@@ -150,8 +192,31 @@ impl Node {
 pub enum IntersectKind {
     Rect,
     Circle,
-    Ellipse { rx: f64, ry: f64 },
+    Ellipse {
+        rx: f64,
+        ry: f64,
+    },
     Polygon(Vec<Point>),
+    Ring {
+        diameter: f64,
+    },
+    Cylinder {
+        rx: f64,
+        ry: f64,
+    },
+    HorizontalCylinder {
+        rx: f64,
+        ry: f64,
+    },
+    FaceProject {
+        width: f64,
+        height: f64,
+        face: Option<bpmn_shape_core::ShapeFace>,
+    },
+    FaceCentre {
+        width: f64,
+        height: f64,
+    },
 }
 
 impl Intersectable for Node {
@@ -169,6 +234,67 @@ impl Intersectable for Node {
             }
             IntersectKind::Polygon(points) => {
                 intersect::intersect_polygon(self.bounds, points, point)
+            }
+            IntersectKind::Ring { diameter } => {
+                bpmn_shape_core::ring_intersect(self.bounds.center(), *diameter, point)
+            }
+            IntersectKind::FaceProject {
+                width,
+                height,
+                face,
+            } => bpmn_shape_core::face_project_intersect_at(
+                self.bounds.center(),
+                *width,
+                *height,
+                point,
+                *face,
+            ),
+            IntersectKind::FaceCentre { width, height } => {
+                bpmn_shape_core::face_centre_intersect(self.bounds.center(), *width, *height, point)
+            }
+            IntersectKind::Cylinder { rx, ry } => {
+                let mut pos = intersect::intersect_rect(self.bounds, point);
+                let center = self.bounds.center();
+                let x = pos.x - center.x;
+                let half_w = self.bounds.width / 2.0;
+                let half_h = self.bounds.height / 2.0;
+                if *rx != 0.0
+                    && (x.abs() < half_w
+                        || (x.abs() == half_w && (pos.y - center.y).abs() > half_h - *ry))
+                {
+                    let mut y = ry * ry * (1.0 - (x * x) / (rx * rx));
+                    if y > 0.0 {
+                        y = y.sqrt();
+                    }
+                    let mut offset = ry - y;
+                    if point.y - center.y > 0.0 {
+                        offset = -offset;
+                    }
+                    pos.y += offset;
+                }
+                pos
+            }
+            IntersectKind::HorizontalCylinder { rx, ry } => {
+                let mut pos = intersect::intersect_rect(self.bounds, point);
+                let center = self.bounds.center();
+                let y = pos.y - center.y;
+                let half_w = self.bounds.width / 2.0;
+                let half_h = self.bounds.height / 2.0;
+                if *ry != 0.0
+                    && (y.abs() < half_h
+                        || (y.abs() == half_h && (pos.x - center.x).abs() > half_w - *rx))
+                {
+                    let mut x = rx * rx * (1.0 - (y * y) / (ry * ry));
+                    if x != 0.0 {
+                        x = x.abs().sqrt();
+                    }
+                    let mut offset = rx - x;
+                    if point.x - center.x > 0.0 {
+                        offset = -offset;
+                    }
+                    pos.x += offset;
+                }
+                pos
             }
         }
     }
@@ -303,7 +429,7 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         short_name: "lean-r",
         description: "Represents input or output",
         aliases: &["lean-right", "in-out"],
-        internal_aliases: &["lean_right"],
+        internal_aliases: &["lean_right", "leanRight"],
         upstream_file: "shapes/leanRight.js",
         kind: ShapeKind::Unported,
     },
@@ -313,7 +439,7 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         short_name: "lean-l",
         description: "Represents output or input",
         aliases: &["lean-left", "out-in"],
-        internal_aliases: &["lean_left"],
+        internal_aliases: &["lean_left", "leanLeft"],
         upstream_file: "shapes/leanLeft.js",
         kind: ShapeKind::Unported,
     },
@@ -333,7 +459,7 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         short_name: "trap-t",
         description: "Represents a manual task",
         aliases: &["manual", "trapezoid-top", "inv-trapezoid"],
-        internal_aliases: &["inv_trapezoid"],
+        internal_aliases: &["inv_trapezoid", "invertedTrapezoid"],
         upstream_file: "shapes/invertedTrapezoid.js",
         kind: ShapeKind::Unported,
     },
@@ -343,7 +469,7 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         short_name: "dbl-circ",
         description: "Represents a stop point",
         aliases: &["double-circle"],
-        internal_aliases: &["doublecircle"],
+        internal_aliases: &["doublecircle", "doubleCircle"],
         upstream_file: "shapes/doubleCircle.js",
         kind: ShapeKind::Unported,
     },
@@ -498,7 +624,7 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         short_name: "div-rect",
         description: "Divided process shape",
         aliases: &["div-proc", "divided-rectangle", "divided-process"],
-        internal_aliases: &[],
+        internal_aliases: &["dividedRect"],
         upstream_file: "shapes/dividedRect.js",
         kind: ShapeKind::Unported,
     },
@@ -638,7 +764,7 @@ pub const SHAPE_DEFINITIONS: &[ShapeDefinition] = &[
         short_name: "odd",
         description: "Odd shape",
         aliases: &[],
-        internal_aliases: &["rect_left_inv_arrow"],
+        internal_aliases: &["rect_left_inv_arrow", "rectLeftInvArrow"],
         upstream_file: "shapes/rectLeftInvArrow.js",
         kind: ShapeKind::Unported,
     },
@@ -1733,10 +1859,23 @@ fn prepare(
     let group = Group::new()
         .with_class(get_node_classes(node, None))
         .with_source(SourceRef::node(node.id.clone()));
+    let font_size = ctx
+        .theme
+        .color("fontSize")
+        .and_then(|s| s.trim_end_matches("px").parse::<f64>().ok())
+        .or_else(|| ctx.theme.number("fontSize"))
+        .unwrap_or(12.0);
+    let font_family = ctx.theme.color("fontFamily").unwrap_or("Arial").to_string();
+    let font = Font {
+        family: font_family,
+        size: font_size,
+        weight: crate::scene::NORMAL_WEIGHT,
+        italic: false,
+    };
     let label = create_label(
         &LabelOptions {
             text: node.label.clone(),
-            font: Font::default(),
+            font,
             markdown: false,
             width: f64::INFINITY,
             centered: false,
@@ -2236,14 +2375,13 @@ mod tests {
             );
             // A placeholder file still answers with an error naming its upstream file;
             // a ported one renders. Either way the name reached the right file.
-            match result {
-                Err(error) => assert!(
+            if let Err(error) = result {
+                assert!(
                     definition.kind == ShapeKind::Unported
                         && error.message.contains(&format!("shapes/{file}.js")),
                     "{name}: {}",
                     error.message
-                ),
-                Ok(_) => {}
+                );
             }
         }
     }
@@ -2302,5 +2440,132 @@ mod tests {
             generate_circle_points(0.0, 0.0, 2.0, 3, 0.0, 180.0).len(),
             3
         );
+    }
+
+    #[derive(serde::Deserialize)]
+    struct ShapeFixture {
+        shape: String,
+        #[serde(default)]
+        look: String,
+        cases: Vec<ShapeCase>,
+    }
+
+    #[derive(serde::Deserialize)]
+    struct ShapeCase {
+        label: String,
+        width: f64,
+        height: f64,
+        #[allow(dead_code)]
+        #[serde(rename = "labelTransform")]
+        label_transform: Option<String>,
+        #[serde(default)]
+        intersects: Vec<PointProbe>,
+        #[serde(default)]
+        probes: Vec<PointProbe>,
+    }
+
+    #[derive(serde::Deserialize)]
+    struct PointProbe {
+        x: f64,
+        y: f64,
+    }
+
+    #[test]
+    fn matches_upstream_shape_fixtures() {
+        let dir =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/render/testdata/shapes");
+        let mut entries: Vec<_> = std::fs::read_dir(&dir)
+            .expect("shapes testdata dir exists")
+            .filter_map(Result::ok)
+            .filter(|e| e.path().extension().is_some_and(|ext| ext == "json"))
+            .collect();
+        entries.sort_by_key(|e| e.file_name());
+
+        let mut overrides = serde_json::Map::new();
+        overrides.insert("fontFamily".into(), serde_json::json!("monospace"));
+        overrides.insert("fontSize".into(), serde_json::json!("16px"));
+        let theme = crate::theme::Theme::Default.variables(&overrides).unwrap();
+
+        let mut tested_count = 0;
+        let mut differences = Vec::new();
+
+        for entry in entries {
+            let content = std::fs::read_to_string(entry.path()).expect("read fixture");
+            let Ok(fixture) = serde_json::from_str::<ShapeFixture>(&content) else {
+                continue;
+            };
+            if fixture.cases.is_empty()
+                || fixture.cases[0].width == 0.0
+                || fixture.cases[0].probes.is_empty()
+            {
+                continue;
+            }
+
+            for case in &fixture.cases {
+                let mut node = Node::new("n", &case.label, &fixture.shape);
+                node.padding = 8.0;
+                node.look = if fixture.look.is_empty() {
+                    "classic".into()
+                } else {
+                    fixture.look.clone()
+                };
+                if fixture.shape == "kanbanItem" || fixture.shape == "kanban_item" {
+                    node.width = Some(200.0);
+                }
+
+                let rendered = match render_node(node, &FallbackMeasure, &theme) {
+                    Ok(r) => r,
+                    Err(e) => {
+                        differences.push(format!("{}: render error: {}", fixture.shape, e.message));
+                        continue;
+                    }
+                };
+
+                let w_diff = (rendered.node.bounds.width - case.width).abs();
+                let h_diff = (rendered.node.bounds.height - case.height).abs();
+                if w_diff > 0.01 || h_diff > 0.01 {
+                    differences.push(format!(
+                        "{} ('{}'): size expected {}x{}, got {}x{} (diff {:.3}x{:.3})",
+                        fixture.shape,
+                        case.label,
+                        case.width,
+                        case.height,
+                        rendered.node.bounds.width,
+                        rendered.node.bounds.height,
+                        w_diff,
+                        h_diff
+                    ));
+                }
+
+                for (probe, expected) in case.probes.iter().zip(&case.intersects) {
+                    let hit = rendered.node.intersect(Point::new(probe.x, probe.y));
+                    let x_diff = (hit.x - expected.x).abs();
+                    let y_diff = (hit.y - expected.y).abs();
+                    if x_diff > 0.01 || y_diff > 0.01 {
+                        differences.push(format!(
+                            "{} ('{}'): probe ({}, {}) expected ({}, {}), got ({:.3}, {:.3})",
+                            fixture.shape,
+                            case.label,
+                            probe.x,
+                            probe.y,
+                            expected.x,
+                            expected.y,
+                            hit.x,
+                            hit.y
+                        ));
+                    }
+                }
+            }
+            tested_count += 1;
+        }
+
+        println!("Tested {tested_count} shape fixtures against upstream.");
+        if !differences.is_empty() {
+            panic!(
+                "Differences in {} fixtures:\n{}",
+                differences.len(),
+                differences.join("\n")
+            );
+        }
     }
 }

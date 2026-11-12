@@ -14,12 +14,14 @@ fn finish(
     let max_x = points.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
     let min_y = points.iter().map(|p| p.y).fold(f64::INFINITY, f64::min);
     let max_y = points.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
-    node.bounds = Rect::new(min_x, min_y, max_x - min_x, max_y - min_y);
+    let width = max_x - min_x;
+    let height = max_y - min_y;
+    node.bounds = Rect::centered(Point::ZERO, crate::scene::Size::new(width, height));
     let path = Path::polygon(points.iter().copied());
     group.push(PathShape::new(path, shape_style()).with_source(SourceRef::node(node.id.clone())));
     let mut label = label;
     label.transform = Transform::translate(label_offset.x, label_offset.y);
-    node.intersect = IntersectKind::Polygon(points);
+    node.intersect = IntersectKind::Rect;
     group.items.push(Item::Group(label));
     Ok(RenderedNode { node, group })
 }

@@ -53,7 +53,9 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         PathShape::new(super::create_path_from_points(&points), shape_style())
             .with_source(SourceRef::node(node.id.clone())),
     );
-    node.bounds = Rect::centered(Point::ZERO, Size::new(w, final_h));
+    let min_y = points.iter().map(|p| p.y).fold(f64::INFINITY, f64::min);
+    let max_y = points.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
+    node.bounds = Rect::centered(Point::ZERO, Size::new(w, max_y - min_y));
     group.push(shape);
     group.push(Item::Group(label));
     node.intersect = IntersectKind::Polygon(points);

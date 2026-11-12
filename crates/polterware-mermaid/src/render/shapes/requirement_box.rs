@@ -53,23 +53,48 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         .with_class(get_node_classes(&node, None))
         .with_source(SourceRef::node(node.id.clone()));
 
-    let (mut type_label, type_size) =
-        add_text("&lt;&lt;Element&gt;&gt;", Font::default(), &node, ctx)?;
-    let (mut name_label, name_size) =
-        add_text(node.label.as_str(), Font::default().bold(), &node, ctx)?;
+    let font_size = ctx
+        .theme
+        .color("fontSize")
+        .and_then(|s| s.trim_end_matches("px").parse::<f64>().ok())
+        .or_else(|| ctx.theme.number("fontSize"))
+        .unwrap_or(Font::default().size);
+    let font_family = ctx
+        .theme
+        .color("fontFamily")
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| Font::default().family);
+    let is_monospace = font_family.to_ascii_lowercase().contains("mono");
+    let type_font = Font {
+        family: font_family.clone(),
+        size: font_size,
+        weight: crate::scene::NORMAL_WEIGHT,
+        italic: false,
+    };
+    let name_font = Font {
+        family: font_family,
+        size: font_size,
+        weight: if is_monospace {
+            crate::scene::NORMAL_WEIGHT
+        } else {
+            crate::scene::BOLD_WEIGHT
+        },
+        italic: false,
+    };
+
+    let (mut type_label, type_size) = add_text("&lt;&lt;Element&gt;&gt;", type_font, &node, ctx)?;
+    let (mut name_label, name_size) = add_text(node.label.as_str(), name_font, &node, ctx)?;
 
     let type_height = type_size.height + SVG_LABEL_EXTRA_HEIGHT;
     let name_height = name_size.height + SVG_LABEL_EXTRA_HEIGHT;
-    let type_y = -type_height / 2.0;
-    let name_offset = type_height;
-    let name_y = -name_height / 2.0 + name_offset;
+    let type_trans_y = -type_height / 2.0;
+    let name_trans_y = -name_height / 2.0 + type_height;
 
-    let inner_width = type_size.width.max(name_size.width);
-    let inner_top = type_y;
-    let inner_bottom = name_y + name_size.height;
-    let width = inner_width + PADDING;
-    let height = (inner_bottom - inner_top) + PADDING;
-    let rect = Rect::centered(Point::ZERO, Size::new(width, height));
+    let y_min = type_trans_y;
+    let y_max = name_trans_y + name_size.height;
+    let total_height = (y_max - y_min) + PADDING;
+    let total_width = type_size.width.max(name_size.width) + PADDING;
+    let rect = Rect::centered(Point::ZERO, Size::new(total_width, total_height));
     node.bounds = rect;
 
     let mut shape = Group::new().with_class("basic label-container outer-path");
@@ -81,8 +106,8 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
 
     // Re-translate the labels once the rectangle is centred, then undo the SVG label's
     // centred bbox: scene text runs start at their position.
-    let final_type_y = type_y - height / 2.0 + PADDING;
-    let final_name_y = name_y - height / 2.0 + PADDING;
+    let final_type_y = type_trans_y - total_height / 2.0 + PADDING;
+    let final_name_y = name_trans_y - total_height / 2.0 + PADDING;
     type_label.transform = Transform::translate(-type_size.width, final_type_y);
     name_label.transform = Transform::translate(-name_size.width, final_name_y);
     group.push(Item::Group(type_label));

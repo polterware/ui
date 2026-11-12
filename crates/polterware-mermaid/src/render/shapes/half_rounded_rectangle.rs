@@ -49,13 +49,15 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         Point::new(-w / 2.0, -h / 2.0),
         Point::new(w / 2.0 - r, -h / 2.0),
     ];
-    for i in 0..50 {
-        let a = (90.0 + 180.0 * i as f64 / 49.0).to_radians();
-        pts.push(Point::new(-w / 2.0 + r + r * a.cos(), r * a.sin()));
-    }
-    pts.extend([
-        Point::new(w / 2.0 - r, h / 2.0),
-        Point::new(-w / 2.0, h / 2.0),
-    ]); // handDrawn: rough.js (later)
-    finish(node, group, label, pts, Point::ZERO)
+    pts.extend(super::generate_circle_points(
+        -w / 2.0 + r,
+        0.0,
+        r,
+        50,
+        90.0,
+        270.0,
+    ));
+    pts.push(Point::new(w / 2.0 - r, h / 2.0));
+    pts.push(Point::new(-w / 2.0, h / 2.0));
+    finish(node, group, label, pts, Point::new(0.0, -b.height / 2.0))
 }

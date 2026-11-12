@@ -86,9 +86,8 @@ pub fn render_with_icon(
     }
     group.push(Item::Group(label));
 
-    node.intersect = IntersectKind::Ellipse {
-        rx: radius,
-        ry: radius,
+    node.intersect = IntersectKind::Ring {
+        diameter: EVENT_DIAMETER,
     };
     Ok(RenderedNode { node, group })
 }

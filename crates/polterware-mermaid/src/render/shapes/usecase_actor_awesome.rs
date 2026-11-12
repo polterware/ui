@@ -50,9 +50,10 @@ mod tests {
     #[test]
     fn matches_upstream_fixtures() {
         use crate::render::shapes::usecase_ellipse::difftest;
-        let fixture: serde_json::Value =
-            serde_json::from_str(include_str!("../testdata/shapes/usecaseActorAwesome.json"))
-                .expect("fixture parses");
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../testdata/shapes/usecase_actor_awesome.json"
+        ))
+        .expect("fixture parses");
         let theme = ThemeVariables::default();
         for case in fixture["cases"].as_array().expect("cases") {
             let measure = difftest::FixedMeasure::from_case(case);

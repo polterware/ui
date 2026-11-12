@@ -1,0 +1,80 @@
+{
+  "shape": "bpmnEnd",
+  "look": "classic",
+  "cases": [
+    {
+      "label": "Hi",
+      "width": 36,
+      "height": 84.8,
+      "labelTransform": "translate(-9.6,24.000000000000004)",
+      "pathData": null,
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 18,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 18
+        },
+        {
+          "x": -9.482088377567466,
+          "y": -15.299999999999999
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "width": 115.19999999999999,
+      "height": 120,
+      "labelTransform": "translate(-57.599999999999994,24)",
+      "pathData": null,
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 18,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 18
+        },
+        {
+          "x": -9.482088377567466,
+          "y": -15.299999999999999
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    }
+  ]
+}

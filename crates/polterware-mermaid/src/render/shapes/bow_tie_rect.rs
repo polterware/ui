@@ -40,20 +40,19 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     let h = node.height.unwrap_or(b.height) + py;
     let ry = h / 2.0;
     let rx = ry / (2.5 + h / 50.0);
-    let sag = ry * (1.0 - (1.0 - (h / (2.0 * ry)).powi(2)).sqrt());
-    let w = (node.width.unwrap_or(b.width) + px * 2.0 + sag) - sag;
+    let w = node.width.unwrap_or(b.width) + px * 2.0;
     let mut pts = vec![
-        Point::new(w / 2.0, -h / 2.0),
-        Point::new(-w / 2.0, -h / 2.0),
+        Point::new(w / 2.0 + rx / 2.0, -h / 2.0),
+        Point::new(-w / 2.0 + rx / 2.0, -h / 2.0),
     ];
     for i in 0..20 {
-        let a = std::f64::consts::PI + (std::f64::consts::PI * i as f64 / 19.0);
-        pts.push(Point::new(-w / 2.0 - rx * a.sin(), ry * a.cos()));
+        let a = -std::f64::consts::FRAC_PI_2 - (std::f64::consts::PI * i as f64 / 19.0);
+        pts.push(Point::new(-w / 2.0 + rx / 2.0 + rx * a.cos(), ry * a.sin()));
     }
-    pts.push(Point::new(w / 2.0, h / 2.0));
+    pts.push(Point::new(w / 2.0 + rx / 2.0, h / 2.0));
     for i in 0..20 {
-        let a = std::f64::consts::PI / 2.0 - (std::f64::consts::PI * i as f64 / 19.0);
-        pts.push(Point::new(w / 2.0 + rx * a.sin(), ry * a.cos()));
-    } // handDrawn: rough.js (later)
-    finish(node, group, label, pts, Point::ZERO)
+        let a = std::f64::consts::FRAC_PI_2 - (std::f64::consts::PI * i as f64 / 19.0);
+        pts.push(Point::new(w / 2.0 + rx / 2.0 - rx * a.cos(), ry * a.sin()));
+    }
+    finish(node, group, label, pts, Point::new(0.0, -b.height / 2.0))
 }

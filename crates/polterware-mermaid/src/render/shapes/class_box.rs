@@ -31,10 +31,33 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         .with_class(get_node_classes(&node, None))
         .with_source(SourceRef::node(node.id.clone()));
 
+    let font_size = ctx
+        .theme
+        .color("fontSize")
+        .and_then(|s| s.trim_end_matches("px").parse::<f64>().ok())
+        .or_else(|| ctx.theme.number("fontSize"))
+        .unwrap_or(Font::default().size);
+    let font_family = ctx
+        .theme
+        .color("fontFamily")
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| Font::default().family);
+    let is_monospace = font_family.to_ascii_lowercase().contains("mono");
+    let font = Font {
+        family: font_family,
+        size: font_size,
+        weight: if is_monospace {
+            crate::scene::NORMAL_WEIGHT
+        } else {
+            crate::scene::BOLD_WEIGHT
+        },
+        italic: false,
+    };
+
     let mut label = create_label(
         &LabelOptions {
             text: node.label.clone(),
-            font: Font::default().bold(),
+            font,
             markdown: false,
             width: f64::INFINITY,
             centered: false,

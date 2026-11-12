@@ -187,6 +187,19 @@ pub fn bpmn_label(
     ctx: &ShapeContext<'_>,
     wrap_width: f64,
 ) -> Result<BpmnLabel, ShapeError> {
+    let font_size = ctx
+        .theme
+        .color("fontSize")
+        .and_then(|s| s.trim_end_matches("px").parse::<f64>().ok())
+        .or_else(|| ctx.theme.number("fontSize"))
+        .unwrap_or(12.0);
+    let font_family = ctx.theme.color("fontFamily").unwrap_or("Arial").to_string();
+    let font = Font {
+        family: font_family,
+        size: font_size,
+        weight: crate::scene::NORMAL_WEIGHT,
+        italic: false,
+    };
     let has_explicit_width = node.width.is_some_and(|width| width != 0.0);
     let min_width = if !node.label.is_empty() && !has_explicit_width {
         node.min_width.unwrap_or(0.0)
@@ -200,7 +213,7 @@ pub fn bpmn_label(
             markdown: false,
             min_width,
         },
-        &Font::default(),
+        &font,
         ctx.measure,
     )
     .map_err(|error| ShapeError {
@@ -208,7 +221,7 @@ pub fn bpmn_label(
     })?;
     let mut group = Group::translated(0.0, -block.size.height / 2.0).with_class("label");
     group.source = Some(SourceRef::node(node.id.clone()));
-    group.push(TextRun::new(Point::ZERO, Font::default(), block.clone()));
+    group.push(TextRun::new(Point::ZERO, font, block.clone()));
     Ok(BpmnLabel {
         group,
         width: block.size.width,
