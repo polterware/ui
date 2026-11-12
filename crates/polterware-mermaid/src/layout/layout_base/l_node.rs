@@ -9,7 +9,8 @@
 //! computed" and throw from their getters; the port stores `Option`s. `labelWidth`,
 //! `labelHeight`, and `labelPos` are read only when `NODE_DIMENSIONS_INCLUDE_LABELS` is
 //! set (it is `false`). `paddingLeft` is a property upstream reads off the v-level node
-//! through `getParent()`, kept here as [`LNode::padding_left`].
+//! through `getParent()`, kept here as [`LNode::padding_left`]; cose-base's tiling reads
+//! the other three sides as well, kept here the same way.
 
 use super::LayoutError;
 use super::l_edge::EdgeId;
@@ -64,6 +65,16 @@ pub struct LNode<V> {
     /// Padding the parent node applies to this node's graph, upstream's v-level
     /// `paddingLeft` read through `getParent()`.
     pub padding_left: Option<f64>,
+    /// Padding the parent node applies to this node's graph, upstream's v-level
+    /// `paddingRight` read by cose-base's tiling. `None` behaves as JavaScript's
+    /// `undefined`, which upstream guards with `|| 0` where it matters.
+    pub padding_right: Option<f64>,
+    /// Padding the parent node applies to this node's graph, upstream's v-level
+    /// `paddingTop` read by cose-base's tiling.
+    pub padding_top: Option<f64>,
+    /// Padding the parent node applies to this node's graph, upstream's v-level
+    /// `paddingBottom` read by cose-base's tiling.
+    pub padding_bottom: Option<f64>,
 }
 
 impl<V> Default for LNode<V> {
@@ -80,6 +91,9 @@ impl<V> Default for LNode<V> {
             label_height: 0.0,
             label_pos: None,
             padding_left: None,
+            padding_right: None,
+            padding_top: None,
+            padding_bottom: None,
         }
     }
 }
