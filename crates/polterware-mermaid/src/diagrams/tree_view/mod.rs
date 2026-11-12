@@ -13,8 +13,8 @@
 //!
 //! # Where the port stops short of upstream
 //!
-//! * Nothing here lays out or draws, so `renderer.ts` and `styles.ts` are out of scope, and
-//!   `Node.BBox` (which the renderer assigns) is not part of the database.
+//! * The database holds no layout: `Node.BBox` (which the renderer assigns) is not part of
+//!   it, and `renderer.ts`/`styles.ts` are ported separately in [`render`].
 //! * `icons.ts` resolves a node's icon at render time from `showIcons` and the
 //!   `filenameIcons`/`extensionIcons` config maps; this crate owns no configuration, so the
 //!   database keeps only the `icon` annotation, as upstream's database does.
@@ -35,6 +35,7 @@ mod box_drawing;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Node, NodeType};
 
