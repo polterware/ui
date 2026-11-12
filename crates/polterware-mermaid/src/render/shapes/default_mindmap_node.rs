@@ -58,7 +58,7 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     group.push(rule_group);
 
     let mut label = label;
-    label.transform = Transform::translate(-text_size.width, -text_size.height / 2.0);
+    label.transform = Transform::translate(-text_size.width / 2.0, -text_size.height / 2.0);
     group.push(Item::Group(label));
 
     node.intersect = IntersectKind::Rect;

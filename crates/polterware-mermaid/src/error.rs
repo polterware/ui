@@ -111,3 +111,16 @@ impl From<crate::diagrams::er::render::ErRenderError> for RenderError {
         }
     }
 }
+
+impl From<crate::diagrams::mindmap::render::MindmapRenderError> for RenderError {
+    fn from(error: crate::diagrams::mindmap::render::MindmapRenderError) -> Self {
+        match error {
+            crate::diagrams::mindmap::render::MindmapRenderError::Parse(error) => {
+                Self::Parse(error)
+            }
+            crate::diagrams::mindmap::render::MindmapRenderError::Layout(error) => {
+                Self::Layout(error)
+            }
+        }
+    }
+}

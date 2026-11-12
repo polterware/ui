@@ -1,0 +1,326 @@
+{
+  "name": "01-basic-branches",
+  "source": "mindmap\n  root((mindmap))\n    Origins\n      Long history\n      Popularisation\n    Research\n      On effectiveness\n      On automatic creation\n    Tools\n      Pen and paper\n      Mermaid\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "0",
+        "x": 323.2973537907544,
+        "y": 198.45292605421085,
+        "width": 89.67352438336961,
+        "height": 89.67352438336961,
+        "domId": "mindmap-diagram-1-node_0",
+        "shape": "mindmapCircle",
+        "classes": "mindmap-node section-root section--1",
+        "level": 0
+      },
+      {
+        "id": "1",
+        "x": 476.5780505748984,
+        "y": 208.11085461779993,
+        "width": 107.2,
+        "height": 28.4,
+        "domId": "mindmap-diagram-1-node_1",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-0",
+        "level": 2,
+        "section": 0
+      },
+      {
+        "id": "2",
+        "x": 606.8301327051034,
+        "y": 161.15794208565745,
+        "width": 155.2,
+        "height": 28.4,
+        "domId": "mindmap-diagram-1-node_2",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-0",
+        "level": 4,
+        "section": 0
+      },
+      {
+        "id": "3",
+        "x": 533.0016166050441,
+        "y": 278.8623132002477,
+        "width": 174.4,
+        "height": 28.4,
+        "domId": "mindmap-diagram-1-node_3",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-0",
+        "level": 4,
+        "section": 0
+      },
+      {
+        "id": "4",
+        "x": 276.465873680933,
+        "y": 307.4770075627261,
+        "width": 116.8,
+        "height": 28.4,
+        "domId": "mindmap-diagram-1-node_4",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-1",
+        "level": 2,
+        "section": 1
+      },
+      {
+        "id": "5",
+        "x": 357.33249916322217,
+        "y": 368.5381020877671,
+        "width": 193.6,
+        "height": 28.4,
+        "domId": "mindmap-diagram-1-node_5",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-1",
+        "level": 4,
+        "section": 1
+      },
+      {
+        "id": "6",
+        "x": 92.6,
+        "y": 355.9711136175838,
+        "width": 155.2,
+        "height": 46,
+        "domId": "mindmap-diagram-1-node_6",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-1",
+        "level": 4,
+        "section": 1
+      },
+      {
+        "id": "7",
+        "x": 258.8427625457082,
+        "y": 92.97831128568869,
+        "width": 88,
+        "height": 28.4,
+        "domId": "mindmap-diagram-1-node_7",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-2",
+        "level": 2,
+        "section": 2
+      },
+      {
+        "id": "8",
+        "x": 101.14708362872435,
+        "y": 56.042848859965446,
+        "width": 164.8,
+        "height": 28.4,
+        "domId": "mindmap-diagram-1-node_8",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-2",
+        "level": 4,
+        "section": 2
+      },
+      {
+        "id": "9",
+        "x": 332.75445294725444,
+        "y": 29.2,
+        "width": 107.2,
+        "height": 28.4,
+        "domId": "mindmap-diagram-1-node_9",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-2",
+        "level": 4,
+        "section": 2
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge_0_1",
+        "points": [
+          {
+            "x": 338.2676669805025,
+            "y": 199.39617734673823
+          },
+          {
+            "x": 399.9377021828264,
+            "y": 203.2818903360054
+          },
+          {
+            "x": 461.6077373851503,
+            "y": 207.16760332527255
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_1_2",
+        "points": [
+          {
+            "x": 490.689214207183,
+            "y": 203.02410114010053
+          },
+          {
+            "x": 541.7040916400009,
+            "y": 184.6343983517287
+          },
+          {
+            "x": 592.7189690728188,
+            "y": 166.24469556335686
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_1_3",
+        "points": [
+          {
+            "x": 485.9305151919842,
+            "y": 219.83823307959423
+          },
+          {
+            "x": 504.78983358997124,
+            "y": 243.4865839090238
+          },
+          {
+            "x": 523.6491519879582,
+            "y": 267.13493473845335
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_4",
+        "points": [
+          {
+            "x": 317.3771523405036,
+            "y": 212.23520506707544
+          },
+          {
+            "x": 299.8816137358437,
+            "y": 252.9649668084685
+          },
+          {
+            "x": 282.3860751311838,
+            "y": 293.6947285498615
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_4_5",
+        "points": [
+          {
+            "x": 288.4365981068113,
+            "y": 316.5159099695275
+          },
+          {
+            "x": 316.8991864220776,
+            "y": 338.0075548252466
+          },
+          {
+            "x": 345.36177473734386,
+            "y": 359.49919968096566
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_4_6",
+        "points": [
+          {
+            "x": 261.961861368049,
+            "y": 311.30239993837984
+          },
+          {
+            "x": 184.53293684046645,
+            "y": 331.724060590155
+          },
+          {
+            "x": 107.10401231288398,
+            "y": 352.14572124193006
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_7",
+        "points": [
+          {
+            "x": 315.4757907634716,
+            "y": 185.65358420354357
+          },
+          {
+            "x": 291.0700581682313,
+            "y": 145.71561866994978
+          },
+          {
+            "x": 266.664325572991,
+            "y": 105.77765313635595
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_7_8",
+        "points": [
+          {
+            "x": 244.2380147080566,
+            "y": 89.55758905221063
+          },
+          {
+            "x": 179.99492308721625,
+            "y": 74.51058007282707
+          },
+          {
+            "x": 115.75183146637593,
+            "y": 59.463571093443505
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_7_9",
+        "points": [
+          {
+            "x": 270.1992499307217,
+            "y": 83.17881159060073
+          },
+          {
+            "x": 295.7986077464813,
+            "y": 61.08915564284435
+          },
+          {
+            "x": 321.3979655622409,
+            "y": 38.99949969508796
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 5,
+      "y": 5,
+      "width": 689.4301327051035,
+      "height": 387.73810208776706
+    },
+    "rawViewBox": "5 5 689.4301327051035 387.73810208776706"
+  }
+}

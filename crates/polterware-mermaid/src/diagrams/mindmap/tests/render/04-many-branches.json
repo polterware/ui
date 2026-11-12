@@ -1,0 +1,458 @@
+{
+  "name": "04-many-branches",
+  "source": "mindmap\n  root((sections))\n    branch one\n    branch two\n    branch three\n    branch four\n    branch five\n    branch six\n    branch seven\n    branch eight\n    branch nine\n    branch ten\n    branch eleven\n    branch twelve\n    branch thirteen\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "0",
+        "x": 305.1281863796346,
+        "y": 160.87117790741107,
+        "width": 98.97341324775066,
+        "height": 98.97341324775066,
+        "domId": "mindmap-diagram-4-node_0",
+        "shape": "mindmapCircle",
+        "classes": "mindmap-node section-root section--1",
+        "level": 0
+      },
+      {
+        "id": "1",
+        "x": 214.7863822080601,
+        "y": 287.4302675440409,
+        "width": 136,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_1",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-0",
+        "level": 2,
+        "section": 0
+      },
+      {
+        "id": "2",
+        "x": 417.603052767613,
+        "y": 243.28158792329435,
+        "width": 136,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_2",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-1",
+        "level": 2,
+        "section": 1
+      },
+      {
+        "id": "3",
+        "x": 473.9175211126129,
+        "y": 200.77917539758943,
+        "width": 155.2,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_3",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-2",
+        "level": 2,
+        "section": 2
+      },
+      {
+        "id": "4",
+        "x": 208.60033532784047,
+        "y": 239.22660870189515,
+        "width": 145.6,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_4",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-3",
+        "level": 2,
+        "section": 3
+      },
+      {
+        "id": "5",
+        "x": 335.06770669023723,
+        "y": 29.2,
+        "width": 145.6,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_5",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-4",
+        "level": 2,
+        "section": 4
+      },
+      {
+        "id": "6",
+        "x": 372.1087334183071,
+        "y": 289.08003533140896,
+        "width": 136,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_6",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-5",
+        "level": 2,
+        "section": 5
+      },
+      {
+        "id": "7",
+        "x": 189.2900019980594,
+        "y": 61.75272708136761,
+        "width": 155.2,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_7",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-6",
+        "level": 2,
+        "section": 6
+      },
+      {
+        "id": "8",
+        "x": 125.64916397108922,
+        "y": 203.06626346448417,
+        "width": 155.2,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_8",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-7",
+        "level": 2,
+        "section": 7
+      },
+      {
+        "id": "9",
+        "x": 435.5499797448379,
+        "y": 116.62257395282366,
+        "width": 145.6,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_9",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-8",
+        "level": 2,
+        "section": 8
+      },
+      {
+        "id": "10",
+        "x": 429.7215350512297,
+        "y": 65.13136662375594,
+        "width": 136,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_10",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-9",
+        "level": 2,
+        "section": 9
+      },
+      {
+        "id": "11",
+        "x": 519.0341406579927,
+        "y": 153.16695244688657,
+        "width": 164.8,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_11",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-10",
+        "level": 2,
+        "section": 10
+      },
+      {
+        "id": "12",
+        "x": 97.4,
+        "y": 151.9430291222646,
+        "width": 164.8,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_12",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-0",
+        "level": 2,
+        "section": 0
+      },
+      {
+        "id": "13",
+        "x": 163.452335521353,
+        "y": 112.0382046580681,
+        "width": 184,
+        "height": 28.4,
+        "domId": "mindmap-diagram-4-node_13",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-1",
+        "level": 2,
+        "section": 1
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge_0_1",
+        "points": [
+          {
+            "x": 296.4132896510754,
+            "y": 173.07980498053226
+          },
+          {
+            "x": 259.95728429384735,
+            "y": 224.15072272572598
+          },
+          {
+            "x": 223.50127893661931,
+            "y": 275.2216404709197
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_2",
+        "points": [
+          {
+            "x": 317.22791082089645,
+            "y": 169.73665411828273
+          },
+          {
+            "x": 361.3656195736238,
+            "y": 202.07638291535272
+          },
+          {
+            "x": 405.50332832635115,
+            "y": 234.4161117124227
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_3",
+        "points": [
+          {
+            "x": 319.7257167005481,
+            "y": 164.32257016706666
+          },
+          {
+            "x": 389.52285374612376,
+            "y": 180.82517665250023
+          },
+          {
+            "x": 459.3199907916994,
+            "y": 197.32778313793384
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_4",
+        "points": [
+          {
+            "x": 293.482140682426,
+            "y": 170.32472854294102
+          },
+          {
+            "x": 256.86426085373756,
+            "y": 200.04889330465312
+          },
+          {
+            "x": 220.2463810250491,
+            "y": 229.7730580663652
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_5",
+        "points": [
+          {
+            "x": 308.4540083992773,
+            "y": 146.24452730333704
+          },
+          {
+            "x": 320.0979465349359,
+            "y": 95.03558895370553
+          },
+          {
+            "x": 331.7418846705945,
+            "y": 43.82665060407403
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_6",
+        "points": [
+          {
+            "x": 312.0739273256273,
+            "y": 174.1661650345639
+          },
+          {
+            "x": 338.61845989897085,
+            "y": 224.97560661941
+          },
+          {
+            "x": 365.1629924723144,
+            "y": 275.7850482042561
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_7",
+        "points": [
+          {
+            "x": 293.7310077288986,
+            "y": 151.11903358920046
+          },
+          {
+            "x": 247.20909418884702,
+            "y": 111.31195249438932
+          },
+          {
+            "x": 200.68718064879545,
+            "y": 71.5048713995782
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_8",
+        "points": [
+          {
+            "x": 290.5262893098866,
+            "y": 164.30404871250778
+          },
+          {
+            "x": 215.38867517536187,
+            "y": 181.96872068594763
+          },
+          {
+            "x": 140.25106104083721,
+            "y": 199.63339265938748
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_9",
+        "points": [
+          {
+            "x": 319.33292147419183,
+            "y": 156.0518936355036
+          },
+          {
+            "x": 370.3390830622362,
+            "y": 138.74687593011737
+          },
+          {
+            "x": 421.34524465028073,
+            "y": 121.44185822473113
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_10",
+        "points": [
+          {
+            "x": 317.0222146774423,
+            "y": 151.7315887016016
+          },
+          {
+            "x": 367.42486071543215,
+            "y": 113.00127226558351
+          },
+          {
+            "x": 417.82750675342197,
+            "y": 74.27095582956541
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_11",
+        "points": [
+          {
+            "x": 320.11846671670645,
+            "y": 160.33127475313523
+          },
+          {
+            "x": 412.08116351881364,
+            "y": 157.01906517714883
+          },
+          {
+            "x": 504.0438603209208,
+            "y": 153.7068556011624
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_12",
+        "points": [
+          {
+            "x": 290.1420217903138,
+            "y": 160.2270731785149
+          },
+          {
+            "x": 201.26409318981732,
+            "y": 156.40710351483784
+          },
+          {
+            "x": 112.38616458932083,
+            "y": 152.5871338511608
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_13",
+        "points": [
+          {
+            "x": 290.94695111314695,
+            "y": 155.98317562462438
+          },
+          {
+            "x": 234.2902609504938,
+            "y": 136.4546912827396
+          },
+          {
+            "x": 177.63357078784063,
+            "y": 116.9262069408548
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 5,
+      "y": 5,
+      "width": 606.4341406579927,
+      "height": 308.28003533140895
+    },
+    "rawViewBox": "5 5 606.4341406579927 308.28003533140895"
+  }
+}
