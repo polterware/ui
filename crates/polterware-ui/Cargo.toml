@@ -14,6 +14,7 @@ bots = ["dep:bot-avatar", "dep:image", "dep:smallvec"]
 [dependencies]
 gpui.workspace = true
 polterware-assets.workspace = true
+polterware-mermaid = { path = "../polterware-mermaid", version = "0.1.0" }
 polterware-motion.workspace = true
 polterware-theme.workspace = true
 polterware-window.workspace = true
