@@ -9,6 +9,17 @@ use crate::scene::Point;
 
 pub type MarkdownWordType = String;
 
+/// One line of a class box: a member or a method, as `classBox.ts` reads it from the
+/// `ClassNode` that `getData()` spreads into the layout node. `text` is the member's
+/// display text and `css_style` its `parseClassifier()` style.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ClassMemberData {
+    pub text: String,
+    #[serde(default)]
+    pub css_style: String,
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MarkdownWord {
     pub content: String,
@@ -42,10 +53,44 @@ pub struct TerminalLabelSize {
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct NodeAttribute {
+    /// The declared type (`Attribute.type`).
+    #[serde(rename = "type")]
+    pub type_name: String,
+    pub name: String,
+    #[serde(default)]
+    pub keys: Vec<String>,
+    #[serde(default)]
+    pub comment: String,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Node {
     pub id: String,
     #[serde(default)]
     pub label: Option<String>,
+    /// `ClassNode.text`: the label with the generic type escaped, which the class box draws
+    /// instead of `label`.
+    #[serde(default)]
+    pub text: Option<String>,
+    /// `ClassNode.members` and `ClassNode.methods`, the rows a class box draws.
+    #[serde(default)]
+    pub members: Vec<ClassMemberData>,
+    #[serde(default)]
+    pub methods: Vec<ClassMemberData>,
+    /// `ClassNode.annotations`, the `«interface»` row.
+    #[serde(default)]
+    pub annotations: Vec<String>,
+    /// `ClassNode.styles`, the `style`/`classDef` declarations applied to the box.
+    #[serde(default)]
+    pub styles: Vec<String>,
+    /// `config.class.padding`; `classBox.ts` reads it from the configuration, not the node.
+    #[serde(default)]
+    pub class_padding: Option<f64>,
+    /// `config.class.hideEmptyMembersBox`.
+    #[serde(default)]
+    pub hide_empty_members_box: Option<bool>,
     #[serde(default)]
     pub description: Option<Vec<String>>,
     #[serde(default)]
@@ -160,6 +205,12 @@ pub struct Node {
     pub stroke: Option<String>,
     #[serde(default)]
     pub color_index: Option<usize>,
+    /// ER entity attributes (`EntityNode.attributes`); empty for every other diagram.
+    #[serde(default)]
+    pub attributes: Vec<NodeAttribute>,
+    /// The ER entity alias from `name[alias]`, if the diagram declared one.
+    #[serde(default)]
+    pub alias: Option<String>,
     #[serde(default)]
     pub shape: Option<String>,
     #[serde(default)]

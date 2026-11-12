@@ -1,0 +1,53 @@
+{
+  "name": "05-labels-and-annotations",
+  "source": "classDiagram\n  class Shape {\n    <<interface>>\n    +draw()\n  }\n  class Square\n  Shape <|.. Square\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Shape",
+        "x": 80,
+        "y": 74.6,
+        "width": 144,
+        "height": 133.2
+      },
+      {
+        "id": "Square",
+        "x": 80,
+        "y": 230.39999999999998,
+        "width": 81.6,
+        "height": 78.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_Shape_Square_1",
+        "points": [
+          {
+            "x": 80,
+            "y": 141.2
+          },
+          {
+            "x": 80,
+            "y": 166.2
+          },
+          {
+            "x": 80,
+            "y": 191.2
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 160,
+      "height": 277.6
+    },
+    "rawViewBox": "0 0 160 277.6"
+  }
+}

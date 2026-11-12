@@ -5,9 +5,11 @@ use std::collections::HashMap;
 
 use crate::layout::dagre::{EdgeLabel, LayeredGraph, NodeLabel, Point};
 use crate::layout::graphlib::{Edge as GraphEdge, GraphOptions};
-use crate::measure::TextMeasure;
+use crate::measure::{Font, TextMeasure, TextOptions, shape_text};
 use crate::render::clusters::{ClusterNode as RenderClusterNode, render_cluster_measured};
-use crate::render::edges::{EdgeData, insert_edge_with_type};
+use crate::render::edges::{
+    EdgeData, TerminalPosition, insert_edge_with_type, terminal_label_position,
+};
 use crate::render::layout_dagre::{
     ClusterIndex, DagreConfig, LayoutError, SelfLoopSegment, adjust_clusters_and_edges,
     configure_graph, run_prepared_layout, sort_nodes_by_hierarchy,
@@ -245,6 +247,42 @@ pub fn measure_dagre_graph(
             e.width = edge.width;
             e.height = edge.height;
             e.labelpos = edge.labelpos.clone();
+        }
+    }
+
+    // Upstream measures the middle self-loop segment's label with the original edge id, so the
+    // segment the renderer reads for its width carries the real label box.
+    let mut loop_updates = Vec::new();
+    for segment in &prepared.self_loops {
+        if segment.order == 1
+            && let Some(logical) = data4_layout
+                .edges
+                .iter()
+                .find(|edge| edge.id == segment.logical_id)
+        {
+            loop_updates.push((
+                segment.edge.edge.clone(),
+                logical.width,
+                logical.height,
+                logical.labelpos.clone(),
+            ));
+        }
+    }
+    for (key, width, height, labelpos) in &loop_updates {
+        if let Some(e) = prepared.graph.edge_object_mut(key) {
+            e.width = *width;
+            e.height = *height;
+            e.labelpos = labelpos.clone();
+        }
+    }
+    for segment in &mut prepared.self_loops {
+        if segment.order == 1
+            && let Some((_, width, height, _)) = loop_updates
+                .iter()
+                .find(|(key, _, _, _)| *key == segment.edge.edge)
+        {
+            segment.edge.label.width = *width;
+            segment.edge.label.height = *height;
         }
     }
 
@@ -575,6 +613,74 @@ pub fn dagre_render(
             max_x = max_x.max(lx + lw / 2.0);
             min_y = min_y.min(ly - lh / 2.0);
             max_y = max_y.max(ly + lh / 2.0);
+        }
+
+        // `positionEdgeLabel` places each measured terminal label centred on
+        // `calcTerminalLabelPosition`; the labels are part of the SVG bbox the viewport is
+        // fitted to, so their boxes join the bounds even before they are painted.
+        let font = Font {
+            family: theme_vars
+                .color("fontFamily")
+                .unwrap_or("monospace")
+                .to_string(),
+            size: theme_vars
+                .color("fontSize")
+                .and_then(|value| value.trim_end_matches("px").parse::<f64>().ok())
+                .or_else(|| theme_vars.number("fontSize"))
+                .unwrap_or(16.0),
+            weight: crate::scene::NORMAL_WEIGHT,
+            italic: false,
+        };
+        let points = edge.points.clone().unwrap_or_default();
+        for (text, position, arrow) in [
+            (
+                &edge.start_label_left,
+                TerminalPosition::StartLeft,
+                &edge.arrow_type_start,
+            ),
+            (
+                &edge.start_label_right,
+                TerminalPosition::StartRight,
+                &edge.arrow_type_start,
+            ),
+            (
+                &edge.end_label_left,
+                TerminalPosition::EndLeft,
+                &edge.arrow_type_end,
+            ),
+            (
+                &edge.end_label_right,
+                TerminalPosition::EndRight,
+                &edge.arrow_type_end,
+            ),
+        ] {
+            let Some(text) = text.as_ref().filter(|text| !text.is_empty()) else {
+                continue;
+            };
+            let marker_size = if arrow.as_ref().is_some_and(|arrow| !arrow.is_empty()) {
+                10.0
+            } else {
+                0.0
+            };
+            let Some(center) = terminal_label_position(&points, position, marker_size) else {
+                continue;
+            };
+            let size = shape_text(
+                text,
+                &TextOptions {
+                    width: f64::INFINITY,
+                    markdown: false,
+                    min_width: 0.0,
+                },
+                &font,
+                measure,
+            )
+            .map(|block| block.size)
+            .unwrap_or(crate::scene::Size::ZERO);
+            min_x = min_x.min(center.x - size.width / 2.0);
+            max_x = max_x.max(center.x + size.width / 2.0);
+            min_y = min_y.min(center.y - size.height / 2.0);
+            max_y = max_y.max(center.y + size.height / 2.0);
         }
     }
 

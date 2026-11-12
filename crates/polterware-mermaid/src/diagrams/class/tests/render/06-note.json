@@ -1,0 +1,60 @@
+{
+  "name": "06-note",
+  "source": "classDiagram\n  class Animal\n  note for Animal \"This is an animal\"\n  note \"A plain note\"\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Animal",
+        "x": 62,
+        "y": 145.2,
+        "width": 81.6,
+        "height": 78.4
+      },
+      {
+        "id": "note0",
+        "x": 62,
+        "y": 32,
+        "width": 108,
+        "height": 48
+      },
+      {
+        "id": "note1",
+        "x": 229.6,
+        "y": 32,
+        "width": 127.19999999999999,
+        "height": 30.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edgeNote0",
+        "points": [
+          {
+            "x": 62,
+            "y": 56
+          },
+          {
+            "x": 62,
+            "y": 81
+          },
+          {
+            "x": 62,
+            "y": 105.99999999999999
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 301.2,
+      "height": 192.39999999999998
+    },
+    "rawViewBox": "0 0 301.2 192.39999999999998"
+  }
+}

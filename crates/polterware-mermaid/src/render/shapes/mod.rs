@@ -107,11 +107,25 @@ pub mod wave_edged_rectangle;
 pub mod wave_rectangle;
 pub mod window_pane;
 
+/// One ER entity attribute (`EntityNode.attributes` in upstream).
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Attribute {
+    /// The declared type, including a generic `type~T~` part when present.
+    pub type_name: String,
+    pub name: String,
+    /// The declared keys, as written (`PK`, `FK`, `UK`).
+    pub keys: Vec<String>,
+    /// The comment without its surrounding quotes.
+    pub comment: String,
+}
+
 /// Mutable geometry/state corresponding to upstream rendering `Node`.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Node {
     pub id: String,
     pub label: String,
+    /// The ER entity alias, drawn instead of the name when present.
+    pub alias: Option<String>,
     pub shape: String,
     pub width: Option<f64>,
     pub height: Option<f64>,
@@ -136,10 +150,23 @@ pub struct Node {
     pub constraint: Option<String>,
 
     // Diagram payload fields
+    /// `ClassNode.text`: the label a class box draws, with the generic type escaped.
+    pub text: Option<String>,
+    /// `node.labelType`, which selects markdown measurement in `labelHelper` and `note.ts`.
+    pub label_type: Option<String>,
+    /// `ClassNode.members` and `ClassNode.methods`, each with its `parseClassifier()` style.
+    pub class_members: Vec<crate::render::pipeline::types::ClassMemberData>,
+    pub class_methods: Vec<crate::render::pipeline::types::ClassMemberData>,
+    /// `ClassNode.styles`, the `style`/`classDef` declarations applied to the box.
+    pub class_styles: Vec<String>,
+    /// `config.class.padding`, read by `classBox.ts` from the configuration.
+    pub class_padding: Option<f64>,
+    /// `config.class.hideEmptyMembersBox`.
+    pub hide_empty_members_box: bool,
     pub members: Vec<String>,
     pub methods: Vec<String>,
     pub annotations: Vec<String>,
-    pub attributes: Vec<String>,
+    pub attributes: Vec<Attribute>,
     pub requirement_id: Option<String>,
     pub requirement_type: Option<String>,
     pub risk: Option<String>,
@@ -155,6 +182,7 @@ impl Node {
         Self {
             id: id.into(),
             label: label.into(),
+            alias: None,
             shape: shape.into(),
             width: None,
             height: None,
@@ -179,6 +207,13 @@ impl Node {
             methods: Vec::new(),
             annotations: Vec::new(),
             attributes: Vec::new(),
+            text: None,
+            label_type: None,
+            class_members: Vec::new(),
+            class_methods: Vec::new(),
+            class_styles: Vec::new(),
+            class_padding: None,
+            hide_empty_members_box: false,
             requirement_id: None,
             requirement_type: None,
             risk: None,

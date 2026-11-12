@@ -1,0 +1,24 @@
+{
+  "name": "10-visibility",
+  "source": "classDiagram\n  class Account {\n    +String owner\n    -double balance\n    #int id\n    ~String note\n    +deposit(amount)\n    +withdraw(amount) bool\n    +getBalance() double\n  }\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Account",
+        "x": 152,
+        "y": 125.09999999999998,
+        "width": 288,
+        "height": 234.19999999999996
+      }
+    ],
+    "clusters": [],
+    "edges": [],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 304,
+      "height": 250.19999999999996
+    },
+    "rawViewBox": "0 0 304 250.19999999999996"
+  }
+}
