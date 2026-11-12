@@ -1,0 +1,126 @@
+{
+  "name": "11-assignee-only",
+  "source": "kanban\n  Review\n    a@{ assigned: carol }\n    b@{ ticket: RV-7 }\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 220,
+      "height": 155.20000000000005
+    },
+    "sections": [
+      {
+        "id": "mermaid-Review",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 135.20000000000005,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 171.2,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Review"
+            ],
+            "width": 57.599999999999994,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-a",
+        "transform": {
+          "x": 200,
+          "y": -251.2
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -23.799999999999997,
+          "width": 185,
+          "height": 47.599999999999994,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -18.4
+            },
+            "text": {
+              "lines": [
+                "a"
+              ],
+              "width": 9.6,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": 34.5,
+              "y": 0
+            },
+            "text": {
+              "lines": [
+                "carol"
+              ],
+              "width": 48,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-b",
+        "transform": {
+          "x": 200,
+          "y": -198.59999999999997
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -23.799999999999997,
+          "width": 185,
+          "height": 47.599999999999994,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -18.4
+            },
+            "text": {
+              "lines": [
+                "b"
+              ],
+              "width": 9.6,
+              "height": 18.4
+            }
+          },
+          {
+            "transform": {
+              "x": -82.5,
+              "y": 0
+            },
+            "text": {
+              "lines": [
+                "RV-7"
+              ],
+              "width": 38.4,
+              "height": 18.4
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

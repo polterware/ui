@@ -1,0 +1,193 @@
+{
+  "name": "03-long-item-labels",
+  "source": "kanban\n  Backlog\n    a[Another item with a label long enough to wrap onto a second line]\n    b[A very long single word: supercalifragilisticexpialidocious]\n    c[Short]\n  Ready\n    d[Write the renderer that turns every measured box into scene items]\n",
+  "expected": {
+    "viewBox": {
+      "x": 90,
+      "y": -310,
+      "width": 425,
+      "height": 285.79999999999995
+    },
+    "sections": [
+      {
+        "id": "mermaid-Backlog",
+        "rect": {
+          "x": 100,
+          "y": -300,
+          "width": 200,
+          "height": 265.79999999999995,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 166.4,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Backlog"
+            ],
+            "width": 67.2,
+            "height": 18.4
+          }
+        }
+      },
+      {
+        "id": "mermaid-Ready",
+        "rect": {
+          "x": 305,
+          "y": -300,
+          "width": 200,
+          "height": 126.19999999999999,
+          "rx": 5,
+          "ry": 5
+        },
+        "label": {
+          "transform": {
+            "x": 381,
+            "y": -300
+          },
+          "text": {
+            "lines": [
+              "Ready"
+            ],
+            "width": 48,
+            "height": 18.4
+          }
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mermaid-a",
+        "transform": {
+          "x": 200,
+          "y": -229.4
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -45.6,
+          "width": 185,
+          "height": 91.2,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -35.6
+            },
+            "text": {
+              "lines": [
+                "Another item with",
+                "a label long",
+                "enough to wrap",
+                "onto a second line"
+              ],
+              "width": 172.79999999999998,
+              "height": 71.2
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-b",
+        "transform": {
+          "x": 200,
+          "y": -133.20000000000002
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -45.6,
+          "width": 185,
+          "height": 91.2,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -35.6
+            },
+            "text": {
+              "lines": [
+                "A very long single",
+                "word:",
+                "supercalifragilist",
+                "icexpialidocious"
+              ],
+              "width": 172.79999999999998,
+              "height": 71.2
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-c",
+        "transform": {
+          "x": 200,
+          "y": -63.40000000000002
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -19.2,
+          "width": 185,
+          "height": 38.4,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -9.2
+            },
+            "text": {
+              "lines": [
+                "Short"
+              ],
+              "width": 48,
+              "height": 18.4
+            }
+          }
+        ]
+      },
+      {
+        "id": "mermaid-d",
+        "transform": {
+          "x": 405,
+          "y": -229.4
+        },
+        "rect": {
+          "x": -92.5,
+          "y": -45.6,
+          "width": 185,
+          "height": 91.2,
+          "rx": 5,
+          "ry": 5
+        },
+        "labels": [
+          {
+            "transform": {
+              "x": -82.5,
+              "y": -35.6
+            },
+            "text": {
+              "lines": [
+                "Write the renderer",
+                "that turns every",
+                "measured box into",
+                "scene items"
+              ],
+              "width": 172.79999999999998,
+              "height": 71.2
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
