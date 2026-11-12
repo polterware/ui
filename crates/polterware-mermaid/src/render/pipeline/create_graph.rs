@@ -218,9 +218,11 @@ pub fn create_graph_with_elements(
             };
             measure_group_label(node, measure_w, measure, &font);
 
-            let mut nl = NodeLabel::default();
-            nl.width = node.width.unwrap_or(0.0);
-            nl.height = node.height.unwrap_or(0.0);
+            let nl = NodeLabel {
+                width: node.width.unwrap_or(0.0),
+                height: node.height.unwrap_or(0.0),
+                ..NodeLabel::default()
+            };
             graph.set_node_with(&node.id, nl);
         } else {
             let dir = resolve_node_dir(node, &info_by_id, diagram_dir);
@@ -236,9 +238,11 @@ pub fn create_graph_with_elements(
             )?;
             node_elements.insert(node.id.clone(), rendered.group);
 
-            let mut nl = NodeLabel::default();
-            nl.width = node.width.unwrap_or(0.0);
-            nl.height = node.height.unwrap_or(0.0);
+            let nl = NodeLabel {
+                width: node.width.unwrap_or(0.0),
+                height: node.height.unwrap_or(0.0),
+                ..NodeLabel::default()
+            };
             graph.set_node_with(&node.id, nl);
         }
         if let Some(parent_id) = &node.parent_id {

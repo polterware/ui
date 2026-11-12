@@ -2,14 +2,14 @@
 //! and unified layout-and-render pipeline.
 //!
 //! Submodules port the individual pipeline modules:
-//! - [`types`]: `types.ts`
-//! - [`create_graph`]: `createGraph.ts`
-//! - [`clone_layout_data_for_measure`]: `cloneLayoutDataForMeasure.ts`
-//! - [`setup_view_port_for_svg`]: `setupViewPortForSVG.ts`
-//! - [`label_transform`]: `labelTransform.ts`
-//! - [`edge_step`]: `edgeStep.ts`
-//! - [`edge_corner_radius`]: `edgeCornerRadius.ts`
-//! - [`dagre`]: `layout-algorithms/dagre/index.js`
+//! - [`types`][]: `types.ts`
+//! - [`create_graph`][]: `createGraph.ts`
+//! - [`clone_layout_data_for_measure`][]: `cloneLayoutDataForMeasure.ts`
+//! - [`setup_view_port_for_svg`][]: `setupViewPortForSVG.ts`
+//! - [`label_transform`][]: `labelTransform.ts`
+//! - [`edge_step`][]: `edgeStep.ts`
+//! - [`edge_corner_radius`][]: `edgeCornerRadius.ts`
+//! - [`dagre`][]: `layout-algorithms/dagre/index.js`
 //! - [`cose_bilkent`][]: `layout-algorithms/cose-bilkent/index.js`
 //! - [`fcose`]: the `fcose` layout of cytoscape-fcose, run by the architecture renderer
 

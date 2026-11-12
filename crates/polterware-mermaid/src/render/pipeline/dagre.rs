@@ -163,12 +163,14 @@ pub fn prepare_layout_for_dagre(data4_layout: &LayoutData) -> DagrePreparedLayou
     configure_graph(&mut graph, dir, &config);
 
     for node in &data4_layout.nodes {
-        let mut nl = NodeLabel::default();
-        nl.width = node.width.unwrap_or(0.0);
-        nl.height = node.height.unwrap_or(0.0);
         // A composite carries the direction of its own document; the recursive layout reads
         // it when the cluster is extracted into a sub-graph.
-        nl.rankdir = node.dir.clone();
+        let nl = NodeLabel {
+            width: node.width.unwrap_or(0.0),
+            height: node.height.unwrap_or(0.0),
+            rankdir: node.dir.clone(),
+            ..NodeLabel::default()
+        };
         graph.set_node_with(&node.id, nl);
         if let Some(parent_id) = &node.parent_id {
             let _ = graph.set_parent(&node.id, Some(parent_id.as_str()));

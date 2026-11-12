@@ -15,8 +15,5 @@ pub fn get_step_duration(value: Option<f64>) -> f64 {
 
 /// True when the edge takes part in the step animation (a positive integer `step`).
 pub fn is_step_edge(edge: &Edge) -> bool {
-    match edge.step {
-        Some(v) if v.is_finite() && v > 0.0 && v.fract() == 0.0 => true,
-        _ => false,
-    }
+    matches!(edge.step, Some(v) if v.is_finite() && v > 0.0 && v.fract() == 0.0)
 }
