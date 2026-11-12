@@ -7,9 +7,7 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     let (mut group, label, text_size) = prepare(&node, ctx)?;
     let w = text_size.width + node.padding;
     let h = text_size.height + node.padding;
-    let s = (w + h)
-        .max(node.width.unwrap_or(0.0))
-        .max(node.height.unwrap_or(0.0));
+    let s = w + h;
     node.bounds = Rect::centered(Point::ZERO, Size::new(s, s));
     let points = vec![
         Point::new(s / 2.0, 0.0),

@@ -1,0 +1,50 @@
+{
+  "name": "09-class-and-style",
+  "source": "block\n  columns 2\n  classDef important color:#ffffff, fill:#000000;\n  mc[\"Memcache\"]\n  db[\"Database\"]\n  class mc important\n  style db fill:#f9F,stroke:#333,stroke-width:4px\n  mc --> db\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "mc",
+        "x": 54.4,
+        "y": 0,
+        "width": 108.8,
+        "height": 34.4
+      },
+      {
+        "id": "db",
+        "x": 171.2,
+        "y": 0,
+        "width": 108.8,
+        "height": 34.4
+      }
+    ],
+    "edges": [
+      {
+        "id": "1-mc-db",
+        "points": [
+          {
+            "x": 108.8,
+            "y": 0
+          },
+          {
+            "x": 112.79999999999998,
+            "y": 0
+          },
+          {
+            "x": 116.79999999999998,
+            "y": 0
+          }
+        ],
+        "d": "M108.8,0L109.467,0C110.133,0,111.467,0,112.133,0C112.8,0,112.8,0,112.8,0L112.8,0"
+      }
+    ],
+    "labels": [],
+    "viewBox": {
+      "x": -5,
+      "y": -22.2,
+      "width": 235.59999999999997,
+      "height": 44.4
+    },
+    "rawViewBox": "-5 -22.2 235.59999999999997 44.4"
+  }
+}

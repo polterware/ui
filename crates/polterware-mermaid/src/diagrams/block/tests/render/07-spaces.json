@@ -1,0 +1,38 @@
+{
+  "name": "07-spaces",
+  "source": "block-beta\n  columns 3\n  a space b\n  space:2 c\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 20.8,
+        "y": -21.2,
+        "width": 41.6,
+        "height": 34.4
+      },
+      {
+        "id": "b",
+        "x": 120,
+        "y": -21.2,
+        "width": 41.6,
+        "height": 34.4
+      },
+      {
+        "id": "c",
+        "x": 120,
+        "y": 21.2,
+        "width": 41.6,
+        "height": 34.4
+      }
+    ],
+    "edges": [],
+    "labels": [],
+    "viewBox": {
+      "x": -5,
+      "y": -43.4,
+      "width": 150.8,
+      "height": 86.8
+    },
+    "rawViewBox": "-5 -43.4 150.8 86.8"
+  }
+}

@@ -1,15 +1,24 @@
 //! Classic port of upstream `shapes/composite.ts`.
 //!
-//! `Node` carries no `positioned` flag, so this is the unpositioned branch: the box hugs the
-//! label plus `node.padding`, with the label centred inside it.
+//! The unpositioned branch (during measurement) hugs the label plus `node.padding`. The
+//! positioned branch, used by the block renderer's second insertion after layout, takes its
+//! box from `node.width`/`node.height`; the label stays centred inside it.
 use super::{IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, prepare, shape_style};
 use crate::scene::{Group, Item, Point, Rect, RectShape, Size, SourceRef, Transform};
 
 pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeError> {
     let mut node = node.clone();
     let (group, label, text_size) = prepare(&node, ctx)?;
-    let total_width = text_size.width + node.padding;
-    let total_height = text_size.height + node.padding;
+    let total_width = if node.positioned {
+        node.width.unwrap_or(0.0)
+    } else {
+        text_size.width + node.padding
+    };
+    let total_height = if node.positioned {
+        node.height.unwrap_or(0.0)
+    } else {
+        text_size.height + node.padding
+    };
     let bounds = Rect::centered(Point::ZERO, Size::new(total_width, total_height));
     node.bounds = bounds;
 
