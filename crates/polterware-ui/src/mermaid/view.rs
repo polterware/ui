@@ -169,7 +169,7 @@ impl MermaidView {
     /// Replaces the drawing and fits it again.
     pub fn set_scene(&mut self, scene: Scene, cx: &mut Context<Self>) {
         self.scene = Rc::new(scene);
-        self.selection = None;
+        self.reselect();
         self.hover = None;
         self.press = None;
         self.end_drag();
@@ -181,7 +181,7 @@ impl MermaidView {
     /// this way, so typing a label does not send the diagram back to its fitted view.
     pub fn update_scene(&mut self, scene: Scene, cx: &mut Context<Self>) {
         self.scene = Rc::new(scene);
-        self.selection = None;
+        self.reselect();
         self.hover = None;
         self.press = None;
         self.end_drag();
@@ -244,6 +244,25 @@ impl MermaidView {
 
     pub fn selection(&self) -> Option<&SceneHit> {
         self.selection.as_ref()
+    }
+
+    /// Selects the node or edge with source `id` from the current drawing, or clears the
+    /// selection with `None`. An app calls this when the selection comes from elsewhere (an
+    /// inspector, a text edit, a palette insert), so the diagram outlines what the rest of the
+    /// editor shows.
+    pub fn select_id(&mut self, id: Option<&str>, cx: &mut Context<Self>) {
+        let hit = id.and_then(|id| source_hit(self.scene.as_ref(), id));
+        if self.selection != hit {
+            self.selection = hit;
+            cx.notify();
+        }
+    }
+
+    /// Re-resolves the selected element against the current drawing, so a redraw keeps the
+    /// outline on it and drops it when the element is gone.
+    fn reselect(&mut self) {
+        let id = self.selection.as_ref().map(|hit| hit.source.id.clone());
+        self.selection = id.and_then(|id| source_hit(self.scene.as_ref(), &id));
     }
 
     pub fn hover(&self) -> Option<&SceneHit> {
@@ -424,6 +443,7 @@ impl MermaidView {
         let dropped = drag.finish(viewport.to_scene(local));
         if let Some(scene) = self.drag_scene.take() {
             self.scene = scene;
+            self.reselect();
         }
         self.drag_base = None;
         self.drag_delta = None;
@@ -541,6 +561,39 @@ impl Render for MermaidView {
                 )
                 .size_full(),
             )
+    }
+}
+
+/// The hit for the element `id` draws: its source and the box its items cover. The first item
+/// that names it wins, which is the element's own group for a node and its path for an edge,
+/// so a label beside it does not widen the outline.
+fn source_hit(scene: &Scene, id: &str) -> Option<SceneHit> {
+    let mut hit = None;
+    collect_source_hit(&scene.items, Transform::IDENTITY, id, &mut hit);
+    hit
+}
+
+fn collect_source_hit(items: &[Item], transform: Transform, id: &str, out: &mut Option<SceneHit>) {
+    for item in items {
+        if out.is_some() {
+            return;
+        }
+        let world = match item {
+            Item::Group(group) => group.transform.then(transform),
+            _ => transform,
+        };
+        if let Some(source) = item.source().filter(|source| source.id == id)
+            && let Some(bounds) = item_bounds(item, transform)
+        {
+            *out = Some(SceneHit {
+                source: source.clone(),
+                bounds,
+            });
+            return;
+        }
+        if let Item::Group(group) = item {
+            collect_source_hit(&group.items, world, id, out);
+        }
     }
 }
 
@@ -879,5 +932,17 @@ mod tests {
             })
             .expect("the label");
         assert_eq!(label.position, ScenePoint::new(60.0, 25.0));
+    }
+
+    #[test]
+    fn a_selection_by_source_id_finds_the_node_and_its_box() {
+        let scene = scene();
+        let hit = source_hit(&scene, "a").expect("the node");
+        assert_eq!(hit.source, SourceRef::node("a"));
+        assert_eq!(hit.bounds, Rect::new(0.0, 0.0, 100.0, 40.0));
+        let edge = source_hit(&scene, "e1").expect("the edge");
+        assert_eq!(edge.source, SourceRef::edge("e1"));
+        assert_eq!(edge.bounds, Rect::new(100.0, 20.0, 120.0, 0.0));
+        assert!(source_hit(&scene, "gone").is_none());
     }
 }
