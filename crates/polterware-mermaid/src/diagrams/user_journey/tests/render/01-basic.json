@@ -1,0 +1,880 @@
+{
+  "name": "01-basic",
+  "source": "journey\n  title My working day\n  section Go to work\n    Make tea: 5: Me\n    Go upstairs: 3: Me\n    Do work: 1: Me, Cat\n  section Go home\n    Go downstairs: 5: Me\n    Sit down: 5: Me\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -25,
+      "width": 1300,
+      "height": 540
+    },
+    "rawViewBox": "0 -25 1300 540",
+    "width": "1300",
+    "height": "565",
+    "preserveAspectRatio": "xMinYMin meet",
+    "marker": {
+      "id": "journey-diagram-1-arrowhead",
+      "refX": 5,
+      "refY": 2,
+      "markerWidth": 6,
+      "markerHeight": 4,
+      "orient": "auto",
+      "viewBox": null,
+      "d": "M 0,0 V 4 L6,2 Z",
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "op": "lineTo",
+          "x": 0,
+          "y": 4
+        },
+        {
+          "op": "lineTo",
+          "x": 6,
+          "y": 2
+        },
+        {
+          "op": "close"
+        }
+      ]
+    },
+    "shapes": [
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 60,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Cat",
+        "lines": [
+          "Cat"
+        ],
+        "x": 50,
+        "y": 67,
+        "elementX": 40,
+        "elementY": 67,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 28.799999999999997,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Cat"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 80,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Me",
+        "lines": [
+          "Me"
+        ],
+        "x": 50,
+        "y": 87,
+        "elementX": 40,
+        "elementY": 87,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 19.2,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Me"
+          }
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 50,
+        "width": 550,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "journey-section section-type-0"
+      },
+      {
+        "kind": "text",
+        "text": "Go to work",
+        "lines": [
+          "Go to work"
+        ],
+        "x": 425,
+        "y": 75,
+        "elementX": 425,
+        "elementY": 75,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 96,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 425,
+            "dy": "0",
+            "text": "Go to work"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 225,
+        "y1": 110,
+        "x2": 225,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 225,
+        "cy": 300,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 220,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 230,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M7.5,0A7.5,7.5,0,1,1,-7.5,0L-6.818,0A6.818,6.818,0,1,0,6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 225,
+          "y": 302
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 164,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Me"
+      },
+      {
+        "kind": "text",
+        "text": "Make tea",
+        "lines": [
+          "Make tea"
+        ],
+        "x": 225,
+        "y": 135,
+        "elementX": 225,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 76.8,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 225,
+            "dy": "0",
+            "text": "Make tea"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 425,
+        "y1": 110,
+        "x2": 425,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 425,
+        "cy": 360,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 420,
+        "cy": 355,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 430,
+        "cy": 355,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "line",
+        "x1": 420,
+        "y1": 367,
+        "x2": 430,
+        "y2": 367,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [],
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 350,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 364,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Me"
+      },
+      {
+        "kind": "text",
+        "text": "Go upstairs",
+        "lines": [
+          "Go upstairs"
+        ],
+        "x": 425,
+        "y": 135,
+        "elementX": 425,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 105.6,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 425,
+            "dy": "0",
+            "text": "Go upstairs"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 625,
+        "y1": 110,
+        "x2": 625,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 625,
+        "cy": 420,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 620,
+        "cy": 415,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 630,
+        "cy": 415,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M-7.5,0A7.5,7.5,0,1,1,7.5,0L6.818,0A6.818,6.818,0,1,0,-6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 625,
+          "y": 427
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 550,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 564,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Me"
+      },
+      {
+        "kind": "circle",
+        "cx": 574,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": "Cat"
+      },
+      {
+        "kind": "text",
+        "text": "Do work",
+        "lines": [
+          "Do work"
+        ],
+        "x": 625,
+        "y": 135,
+        "elementX": 625,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 67.2,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 625,
+            "dy": "0",
+            "text": "Do work"
+          }
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 750,
+        "y": 50,
+        "width": 350,
+        "height": 50,
+        "rx": 3,
+        "fill": "#8B008B",
+        "stroke": "#666",
+        "class": "journey-section section-type-1"
+      },
+      {
+        "kind": "text",
+        "text": "Go home",
+        "lines": [
+          "Go home"
+        ],
+        "x": 925,
+        "y": 75,
+        "elementX": 925,
+        "elementY": 75,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 67.2,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 925,
+            "dy": "0",
+            "text": "Go home"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 825,
+        "y1": 110,
+        "x2": 825,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 825,
+        "cy": 300,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 820,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 830,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M7.5,0A7.5,7.5,0,1,1,-7.5,0L-6.818,0A6.818,6.818,0,1,0,6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 825,
+          "y": 302
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 750,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#8B008B",
+        "stroke": "#666",
+        "class": "task task-type-1"
+      },
+      {
+        "kind": "circle",
+        "cx": 764,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Me"
+      },
+      {
+        "kind": "text",
+        "text": "Go downstairs",
+        "lines": [
+          "Go downstairs"
+        ],
+        "x": 825,
+        "y": 135,
+        "elementX": 825,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 124.8,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 825,
+            "dy": "0",
+            "text": "Go downstairs"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 1025,
+        "y1": 110,
+        "x2": 1025,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 1025,
+        "cy": 300,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 1020,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 1030,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M7.5,0A7.5,7.5,0,1,1,-7.5,0L-6.818,0A6.818,6.818,0,1,0,6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 1025,
+          "y": 302
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 950,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#8B008B",
+        "stroke": "#666",
+        "class": "task task-type-1"
+      },
+      {
+        "kind": "circle",
+        "cx": 964,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Me"
+      },
+      {
+        "kind": "text",
+        "text": "Sit down",
+        "lines": [
+          "Sit down"
+        ],
+        "x": 1025,
+        "y": 135,
+        "elementX": 1025,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 76.8,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 1025,
+            "dy": "0",
+            "text": "Sit down"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "My working day",
+        "lines": [
+          "My working day"
+        ],
+        "x": 150,
+        "y": 25,
+        "elementX": 150,
+        "elementY": 25,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 32,
+        "width": 268.8,
+        "height": 36.8,
+        "fill": "",
+        "tspans": []
+      },
+      {
+        "kind": "line",
+        "x1": 150,
+        "y1": 200,
+        "x2": 1146,
+        "y2": 200,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": [],
+        "class": null,
+        "markerEnd": "url(#journey-diagram-1-arrowhead)"
+      }
+    ]
+  }
+}

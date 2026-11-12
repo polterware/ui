@@ -1,7 +1,8 @@
 //! `user_journey` diagrams: a hand port of upstream mermaid 12.3.0
 //! `packages/mermaid/src/diagrams/user-journey/`, namely the lexer and grammar of
-//! `parser/journey.jison` and the database semantics of `journeyDb.js` with the common
-//! accessibility setters of `diagrams/common/commonDb.ts`.
+//! `parser/journey.jison`, the database semantics of `journeyDb.js` with the common
+//! accessibility setters of `diagrams/common/commonDb.ts`, and the renderer of
+//! `journeyRenderer.ts` and `svgDraw.js` in [`render`].
 //!
 //! The grammar is a Jison LALR grammar, so `lexer` reproduces its start conditions and
 //! Jison's rule selection (the first matching rule, not the longest: the grammar does not set
@@ -31,8 +32,11 @@
 //!   `journey\naccTitle:` a parse error upstream; see `lexer`'s module docs.
 //! * Parse errors carry a [`Span`](crate::error::Span) (line and column); upstream reports a
 //!   line and a caret.
-//! * `styles.js`, `svgDraw.js`, `journeyRenderer.ts`, and `journeyDiagram.ts` are layout,
-//!   styling, and rendering, out of scope here.
+//! * `styles.js` is CSS: the class names and their declarations are resolved into the
+//!   scene's paints by [`render`], not carried as a style sheet.
+//! * `journeyRenderer.ts` and `svgDraw.js` are ported by [`render`], which draws with plain
+//!   d3 (the unified pipeline is not involved); `journeyDiagram.ts` is the diagram
+//!   definition (parser, database, renderer, styles) and has no behavior of its own.
 //!
 //! No app consumes this yet: it replaces the placeholder `Ast`/`parse` and
 //! `Diagram::UserJourney` keeps its shape, so no app breaks.
@@ -41,6 +45,7 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Task};
 

@@ -1,0 +1,1001 @@
+{
+  "name": "09-many-actors",
+  "source": "journey\n  title Everyone\n  section Together\n    Plan: 4: Alice, Bob, Carol\n    Build: 3: Alice, Bob, Carol, Dave\n    Test: 2: Carol, Dave, Erin, Frank, Grace\n    Ship: 5: Everyone, Grace\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -25,
+      "width": 1253.6,
+      "height": 540
+    },
+    "rawViewBox": "0 -25 1253.6 540",
+    "width": "1253.6",
+    "height": "565",
+    "preserveAspectRatio": "xMinYMin meet",
+    "marker": {
+      "id": "journey-diagram-9-arrowhead",
+      "refX": 5,
+      "refY": 2,
+      "markerWidth": 6,
+      "markerHeight": 4,
+      "orient": "auto",
+      "viewBox": null,
+      "d": "M 0,0 V 4 L6,2 Z",
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "op": "lineTo",
+          "x": 0,
+          "y": 4
+        },
+        {
+          "op": "lineTo",
+          "x": 6,
+          "y": 2
+        },
+        {
+          "op": "close"
+        }
+      ]
+    },
+    "shapes": [
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 60,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Alice",
+        "lines": [
+          "Alice"
+        ],
+        "x": 50,
+        "y": 67,
+        "elementX": 40,
+        "elementY": 67,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 48,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Alice"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 80,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Bob",
+        "lines": [
+          "Bob"
+        ],
+        "x": 50,
+        "y": 87,
+        "elementX": 40,
+        "elementY": 87,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 28.799999999999997,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Bob"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 100,
+        "r": 7,
+        "fill": "#00FFFF",
+        "stroke": "#000",
+        "class": "actor-2",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Carol",
+        "lines": [
+          "Carol"
+        ],
+        "x": 50,
+        "y": 107,
+        "elementX": 40,
+        "elementY": 107,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 48,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Carol"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 120,
+        "r": 7,
+        "fill": "#20B2AA",
+        "stroke": "#000",
+        "class": "actor-3",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Dave",
+        "lines": [
+          "Dave"
+        ],
+        "x": 50,
+        "y": 127,
+        "elementX": 40,
+        "elementY": 127,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 38.4,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Dave"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 140,
+        "r": 7,
+        "fill": "#B0E0E6",
+        "stroke": "#000",
+        "class": "actor-4",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Erin",
+        "lines": [
+          "Erin"
+        ],
+        "x": 50,
+        "y": 147,
+        "elementX": 40,
+        "elementY": 147,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 38.4,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Erin"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 160,
+        "r": 7,
+        "fill": "#FFFFE0",
+        "stroke": "#000",
+        "class": "actor-5",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Everyone",
+        "lines": [
+          "Everyone"
+        ],
+        "x": 50,
+        "y": 167,
+        "elementX": 40,
+        "elementY": 167,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 76.8,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Everyone"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 180,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-6",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Frank",
+        "lines": [
+          "Frank"
+        ],
+        "x": 50,
+        "y": 187,
+        "elementX": 40,
+        "elementY": 187,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 48,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Frank"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 200,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-7",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Grace",
+        "lines": [
+          "Grace"
+        ],
+        "x": 50,
+        "y": 207,
+        "elementX": 40,
+        "elementY": 207,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 48,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Grace"
+          }
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 226.8,
+        "y": 50,
+        "width": 750,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "journey-section section-type-0"
+      },
+      {
+        "kind": "text",
+        "text": "Together",
+        "lines": [
+          "Together"
+        ],
+        "x": 601.8,
+        "y": 75,
+        "elementX": 601.8,
+        "elementY": 75,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 76.8,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 601.8,
+            "dy": "0",
+            "text": "Together"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 301.8,
+        "y1": 110,
+        "x2": 301.8,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 301.8,
+        "cy": 330,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 296.8,
+        "cy": 325,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 306.8,
+        "cy": 325,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M7.5,0A7.5,7.5,0,1,1,-7.5,0L-6.818,0A6.818,6.818,0,1,0,6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 301.8,
+          "y": 332
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 226.8,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 240.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": "Alice"
+      },
+      {
+        "kind": "circle",
+        "cx": 250.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Bob"
+      },
+      {
+        "kind": "circle",
+        "cx": 260.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#00FFFF",
+        "stroke": "#000",
+        "class": "actor-2",
+        "title": "Carol"
+      },
+      {
+        "kind": "text",
+        "text": "Plan",
+        "lines": [
+          "Plan"
+        ],
+        "x": 301.8,
+        "y": 135,
+        "elementX": 301.8,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 38.4,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 301.8,
+            "dy": "0",
+            "text": "Plan"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 501.8,
+        "y1": 110,
+        "x2": 501.8,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 501.8,
+        "cy": 360,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 496.8,
+        "cy": 355,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 506.8,
+        "cy": 355,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "line",
+        "x1": 496.8,
+        "y1": 367,
+        "x2": 506.8,
+        "y2": 367,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [],
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 426.8,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 440.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": "Alice"
+      },
+      {
+        "kind": "circle",
+        "cx": 450.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Bob"
+      },
+      {
+        "kind": "circle",
+        "cx": 460.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#00FFFF",
+        "stroke": "#000",
+        "class": "actor-2",
+        "title": "Carol"
+      },
+      {
+        "kind": "circle",
+        "cx": 470.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#20B2AA",
+        "stroke": "#000",
+        "class": "actor-3",
+        "title": "Dave"
+      },
+      {
+        "kind": "text",
+        "text": "Build",
+        "lines": [
+          "Build"
+        ],
+        "x": 501.8,
+        "y": 135,
+        "elementX": 501.8,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 48,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 501.8,
+            "dy": "0",
+            "text": "Build"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 701.8,
+        "y1": 110,
+        "x2": 701.8,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 701.8,
+        "cy": 390,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 696.8,
+        "cy": 385,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 706.8,
+        "cy": 385,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M-7.5,0A7.5,7.5,0,1,1,7.5,0L6.818,0A6.818,6.818,0,1,0,-6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 701.8,
+          "y": 397
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 626.8,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 640.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#00FFFF",
+        "stroke": "#000",
+        "class": "actor-2",
+        "title": "Carol"
+      },
+      {
+        "kind": "circle",
+        "cx": 650.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#20B2AA",
+        "stroke": "#000",
+        "class": "actor-3",
+        "title": "Dave"
+      },
+      {
+        "kind": "circle",
+        "cx": 660.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#B0E0E6",
+        "stroke": "#000",
+        "class": "actor-4",
+        "title": "Erin"
+      },
+      {
+        "kind": "circle",
+        "cx": 670.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-6",
+        "title": "Frank"
+      },
+      {
+        "kind": "circle",
+        "cx": 680.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-7",
+        "title": "Grace"
+      },
+      {
+        "kind": "text",
+        "text": "Test",
+        "lines": [
+          "Test"
+        ],
+        "x": 701.8,
+        "y": 135,
+        "elementX": 701.8,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 38.4,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 701.8,
+            "dy": "0",
+            "text": "Test"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 901.8,
+        "y1": 110,
+        "x2": 901.8,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 901.8,
+        "cy": 300,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 896.8,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 906.8,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M7.5,0A7.5,7.5,0,1,1,-7.5,0L-6.818,0A6.818,6.818,0,1,0,6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 901.8,
+          "y": 302
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 826.8,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 840.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#FFFFE0",
+        "stroke": "#000",
+        "class": "actor-5",
+        "title": "Everyone"
+      },
+      {
+        "kind": "circle",
+        "cx": 850.8,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-7",
+        "title": "Grace"
+      },
+      {
+        "kind": "text",
+        "text": "Ship",
+        "lines": [
+          "Ship"
+        ],
+        "x": 901.8,
+        "y": 135,
+        "elementX": 901.8,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 38.4,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 901.8,
+            "dy": "0",
+            "text": "Ship"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "Everyone",
+        "lines": [
+          "Everyone"
+        ],
+        "x": 226.8,
+        "y": 25,
+        "elementX": 226.8,
+        "elementY": 25,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 32,
+        "width": 153.6,
+        "height": 36.8,
+        "fill": "",
+        "tspans": []
+      },
+      {
+        "kind": "line",
+        "x1": 226.8,
+        "y1": 200,
+        "x2": 1022.8,
+        "y2": 200,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": [],
+        "class": null,
+        "markerEnd": "url(#journey-diagram-9-arrowhead)"
+      }
+    ]
+  }
+}

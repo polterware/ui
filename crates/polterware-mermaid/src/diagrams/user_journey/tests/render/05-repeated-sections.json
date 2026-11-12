@@ -1,0 +1,675 @@
+{
+  "name": "05-repeated-sections",
+  "source": "journey\n  title Back and forth\n  section Alpha\n    First step: 5: Me\n  section Beta\n    Second step: 2: Me\n  section Alpha\n    Third step: 4: Me, You\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -25,
+      "width": 900,
+      "height": 540
+    },
+    "rawViewBox": "0 -25 900 540",
+    "width": "900",
+    "height": "565",
+    "preserveAspectRatio": "xMinYMin meet",
+    "marker": {
+      "id": "journey-diagram-5-arrowhead",
+      "refX": 5,
+      "refY": 2,
+      "markerWidth": 6,
+      "markerHeight": 4,
+      "orient": "auto",
+      "viewBox": null,
+      "d": "M 0,0 V 4 L6,2 Z",
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "op": "lineTo",
+          "x": 0,
+          "y": 4
+        },
+        {
+          "op": "lineTo",
+          "x": 6,
+          "y": 2
+        },
+        {
+          "op": "close"
+        }
+      ]
+    },
+    "shapes": [
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 60,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Me",
+        "lines": [
+          "Me"
+        ],
+        "x": 50,
+        "y": 67,
+        "elementX": 40,
+        "elementY": 67,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 19.2,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Me"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 80,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "You",
+        "lines": [
+          "You"
+        ],
+        "x": 50,
+        "y": 87,
+        "elementX": 40,
+        "elementY": 87,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 28.799999999999997,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "You"
+          }
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 50,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "journey-section section-type-0"
+      },
+      {
+        "kind": "text",
+        "text": "Alpha",
+        "lines": [
+          "Alpha"
+        ],
+        "x": 225,
+        "y": 75,
+        "elementX": 225,
+        "elementY": 75,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 48,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 225,
+            "dy": "0",
+            "text": "Alpha"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 225,
+        "y1": 110,
+        "x2": 225,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 225,
+        "cy": 300,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 220,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 230,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M7.5,0A7.5,7.5,0,1,1,-7.5,0L-6.818,0A6.818,6.818,0,1,0,6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 225,
+          "y": 302
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 150,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 164,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": "Me"
+      },
+      {
+        "kind": "text",
+        "text": "First step",
+        "lines": [
+          "First step"
+        ],
+        "x": 225,
+        "y": 135,
+        "elementX": 225,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 96,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 225,
+            "dy": "0",
+            "text": "First step"
+          }
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 350,
+        "y": 50,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#8B008B",
+        "stroke": "#666",
+        "class": "journey-section section-type-1"
+      },
+      {
+        "kind": "text",
+        "text": "Beta",
+        "lines": [
+          "Beta"
+        ],
+        "x": 425,
+        "y": 75,
+        "elementX": 425,
+        "elementY": 75,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 38.4,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 425,
+            "dy": "0",
+            "text": "Beta"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 425,
+        "y1": 110,
+        "x2": 425,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 425,
+        "cy": 390,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 420,
+        "cy": 385,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 430,
+        "cy": 385,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M-7.5,0A7.5,7.5,0,1,1,7.5,0L6.818,0A6.818,6.818,0,1,0,-6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 425,
+          "y": 397
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 350,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#8B008B",
+        "stroke": "#666",
+        "class": "task task-type-1"
+      },
+      {
+        "kind": "circle",
+        "cx": 364,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": "Me"
+      },
+      {
+        "kind": "text",
+        "text": "Second step",
+        "lines": [
+          "Second step"
+        ],
+        "x": 425,
+        "y": 135,
+        "elementX": 425,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 105.6,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 425,
+            "dy": "0",
+            "text": "Second step"
+          }
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 550,
+        "y": 50,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#4B0082",
+        "stroke": "#666",
+        "class": "journey-section section-type-2"
+      },
+      {
+        "kind": "text",
+        "text": "Alpha",
+        "lines": [
+          "Alpha"
+        ],
+        "x": 625,
+        "y": 75,
+        "elementX": 625,
+        "elementY": 75,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 48,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 625,
+            "dy": "0",
+            "text": "Alpha"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 625,
+        "y1": 110,
+        "x2": 625,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 625,
+        "cy": 330,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 620,
+        "cy": 325,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 630,
+        "cy": 325,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M7.5,0A7.5,7.5,0,1,1,-7.5,0L-6.818,0A6.818,6.818,0,1,0,6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 625,
+          "y": 332
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 550,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#4B0082",
+        "stroke": "#666",
+        "class": "task task-type-2"
+      },
+      {
+        "kind": "circle",
+        "cx": 564,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": "Me"
+      },
+      {
+        "kind": "circle",
+        "cx": 574,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "You"
+      },
+      {
+        "kind": "text",
+        "text": "Third step",
+        "lines": [
+          "Third step"
+        ],
+        "x": 625,
+        "y": 135,
+        "elementX": 625,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 96,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 625,
+            "dy": "0",
+            "text": "Third step"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "Back and forth",
+        "lines": [
+          "Back and forth"
+        ],
+        "x": 150,
+        "y": 25,
+        "elementX": 150,
+        "elementY": 25,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 32,
+        "width": 268.8,
+        "height": 36.8,
+        "fill": "",
+        "tspans": []
+      },
+      {
+        "kind": "line",
+        "x1": 150,
+        "y1": 200,
+        "x2": 746,
+        "y2": 200,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": [],
+        "class": null,
+        "markerEnd": "url(#journey-diagram-5-arrowhead)"
+      }
+    ]
+  }
+}
