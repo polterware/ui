@@ -7,10 +7,15 @@
 //! over the production rules. [`Ast`] holds what upstream's database getters return after
 //! parsing: vertices (connectors included), edges, classes, containers, the `global` scope,
 //! element mappings, diagnostics, and the node and edge projection `getData` derives. Nothing
-//! here lays out or draws.
+//! here lays out or draws it: [`render::draw`] hands the projection to the shared pipeline.
 //!
 //! The body starts with the header line; frontmatter and `%%{init}%%` directives are already
 //! removed by [`crate::preprocess`].
+//!
+//! [`render`] is the Rust side of `agentflow/renderer.ts` `draw`: the `getData` projection
+//! (see [`Ast`]'s `nodes` and `layout_edges`) becomes the pipeline's layout data, the pipeline
+//! lays it out, and the agentflow stylesheet completes the edge paths, their markers and
+//! labels, and the transparent `flowGroup` containers.
 //!
 //! # Where the port stops short of upstream
 //!
@@ -34,9 +39,11 @@
 
 mod ast;
 mod db;
+mod layout_data;
 mod lexer;
 mod metadata;
 mod parser;
+pub mod render;
 
 pub use ast::{
     ArrowEnd, ArrowType, Ast, Diagnostic, Edge, EdgeSemantic, ElementMapping, ElementPosition,
@@ -44,6 +51,7 @@ pub use ast::{
     SemanticEdge, SemanticModel, SemanticSubGraph, SemanticVertex, Severity, Stroke, SubGraph,
     Vertex, VertexKind,
 };
+pub use render::AgentflowRenderError;
 
 use crate::error::ParseError;
 

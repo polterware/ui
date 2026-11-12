@@ -1,0 +1,81 @@
+{
+  "name": "11-link-style",
+  "source": "agentflow-beta TB\n  a[\"A\"] --> b[\"B\"]\n  b --> c[\"C\"]\n  linkStyle 0 stroke:#f00,stroke-width:2px\n  linkStyle 1 interpolate basis\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 83,
+        "y": 32.2,
+        "width": 150,
+        "height": 48.4
+      },
+      {
+        "id": "b",
+        "x": 83,
+        "y": 130.60000000000002,
+        "width": 150,
+        "height": 48.4
+      },
+      {
+        "id": "c",
+        "x": 83,
+        "y": 229,
+        "width": 150,
+        "height": 48.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "L_a_b_0",
+        "points": [
+          {
+            "x": 83,
+            "y": 56.400000000000006
+          },
+          {
+            "x": 83,
+            "y": 81.4
+          },
+          {
+            "x": 83,
+            "y": 106.40000000000002
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "L_b_c_0",
+        "points": [
+          {
+            "x": 83,
+            "y": 154.8
+          },
+          {
+            "x": 83,
+            "y": 179.8
+          },
+          {
+            "x": 83,
+            "y": 204.8
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 3.552713678800501e-15,
+      "width": 166,
+      "height": 261.20000000000005
+    },
+    "rawViewBox": "0 3.552713678800501e-15 166 261.20000000000005"
+  }
+}

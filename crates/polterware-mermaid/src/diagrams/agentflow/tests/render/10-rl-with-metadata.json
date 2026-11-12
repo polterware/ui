@@ -1,0 +1,53 @@
+{
+  "name": "10-rl-with-metadata",
+  "source": "agentflow-beta RL\n  a[/Slanted input/]\n  b[\"A fairly long node label that must wrap at the configured wrapping width\"]\n  a --> b\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 301,
+        "y": 93.80000000000001,
+        "width": 186,
+        "height": 51
+      },
+      {
+        "id": "b",
+        "x": 83,
+        "y": 93.80000000000001,
+        "width": 150,
+        "height": 171.60000000000002
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "L_a_b_0",
+        "points": [
+          {
+            "x": 208,
+            "y": 93.80000000000001
+          },
+          {
+            "x": 183,
+            "y": 93.80000000000001
+          },
+          {
+            "x": 158,
+            "y": 93.80000000000001
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 402,
+      "height": 187.60000000000002
+    },
+    "rawViewBox": "0 0 402 187.60000000000002"
+  }
+}
