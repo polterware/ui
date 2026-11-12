@@ -1,0 +1,212 @@
+{
+  "name": "02-no-points",
+  "source": "quadrantChart\n    title Empty quadrants\n    x-axis Low cost --> High cost\n    y-axis Low value --> High value\n    quadrant-1 Invest\n    quadrant-2 Watch\n    quadrant-3 Drop\n    quadrant-4 Hold\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "height": 500
+    },
+    "rawViewBox": "0 0 500 500",
+    "title": {
+      "text": "Empty quadrants",
+      "x": 250,
+      "y": 10,
+      "rotation": 0,
+      "fill": "#131300",
+      "fontSize": 20,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "width": 180,
+      "height": 23
+    },
+    "quadrants": [
+      {
+        "rect": {
+          "x": 263,
+          "y": 71,
+          "width": 232,
+          "height": 212,
+          "fill": "#ECECFF"
+        },
+        "text": {
+          "text": "Invest",
+          "x": 379,
+          "y": 177,
+          "rotation": 0,
+          "fill": "#131300",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "middle",
+          "width": 57.599999999999994,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 31,
+          "y": 71,
+          "width": 232,
+          "height": 212,
+          "fill": "#f1f1ff"
+        },
+        "text": {
+          "text": "Watch",
+          "x": 147,
+          "y": 177,
+          "rotation": 0,
+          "fill": "#0e0e00",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "middle",
+          "width": 48,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 31,
+          "y": 283,
+          "width": 232,
+          "height": 212,
+          "fill": "#f6f6ff"
+        },
+        "text": {
+          "text": "Drop",
+          "x": 147,
+          "y": 389,
+          "rotation": 0,
+          "fill": "#090900",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "middle",
+          "width": 38.4,
+          "height": 18.4
+        }
+      },
+      {
+        "rect": {
+          "x": 263,
+          "y": 283,
+          "width": 232,
+          "height": 212,
+          "fill": "#fbfbff"
+        },
+        "text": {
+          "text": "Hold",
+          "x": 379,
+          "y": 389,
+          "rotation": 0,
+          "fill": "#040400",
+          "fontSize": 16,
+          "anchor": "middle",
+          "baseline": "middle",
+          "width": 38.4,
+          "height": 18.4
+        }
+      }
+    ],
+    "borderLines": [
+      {
+        "x1": 30,
+        "y1": 71,
+        "x2": 496,
+        "y2": 71,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 495,
+        "y1": 72,
+        "x2": 495,
+        "y2": 494,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 30,
+        "y1": 495,
+        "x2": 496,
+        "y2": 495,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 31,
+        "y1": 72,
+        "x2": 31,
+        "y2": 494,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 263,
+        "y1": 72,
+        "x2": 263,
+        "y2": 494,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1
+      },
+      {
+        "x1": 32,
+        "y1": 283,
+        "x2": 494,
+        "y2": 283,
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "Low cost",
+        "x": 147,
+        "y": 45,
+        "rotation": 0,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 76.8,
+        "height": 18.4
+      },
+      {
+        "text": "High cost",
+        "x": 379,
+        "y": 45,
+        "rotation": 0,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 86.39999999999999,
+        "height": 18.4
+      },
+      {
+        "text": "Low value",
+        "x": 5,
+        "y": 389,
+        "rotation": -90,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 86.39999999999999,
+        "height": 18.4
+      },
+      {
+        "text": "High value",
+        "x": 5,
+        "y": 177,
+        "rotation": -90,
+        "fill": "#131300",
+        "fontSize": 16,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "width": 96,
+        "height": 18.4
+      }
+    ],
+    "points": []
+  }
+}

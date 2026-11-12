@@ -88,6 +88,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::info::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::QuadrantChart => {
+            let scene = diagrams::quadrant_chart::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }
