@@ -1,0 +1,532 @@
+{
+  "name": "08-straight-boundaries",
+  "source": "%%{init: {\"cynefin\": {\"boundaryAmplitude\": 0}}}%%\ncynefin-beta\n  complex\n    \"Straight\"\n  complicated\n    \"Lines\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 880,
+      "height": 680
+    },
+    "rawViewBox": "0 0 880 680",
+    "rootTransform": {
+      "x": 40,
+      "y": 40
+    },
+    "backgrounds": [
+      {
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#E8F5E9",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 400,
+        "y": 0,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#E3F2FD",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 0,
+        "y": 300,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#FBE9E7",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 400,
+        "y": 300,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#FFF8E1",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      }
+    ],
+    "boundaries": [
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 400,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 42.857142857142854,
+            "c2x": 400,
+            "c2y": 42.857142857142854,
+            "x": 400,
+            "y": 85.71428571428571
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 128.57142857142856,
+            "c2x": 400,
+            "c2y": 128.57142857142856,
+            "x": 400,
+            "y": 171.42857142857142
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 214.28571428571428,
+            "c2x": 400,
+            "c2y": 214.28571428571428,
+            "x": 400,
+            "y": 257.1428571428571
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 300,
+            "c2x": 400,
+            "c2y": 300,
+            "x": 400,
+            "y": 342.85714285714283
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 385.71428571428567,
+            "c2x": 400,
+            "c2y": 385.71428571428567,
+            "x": 400,
+            "y": 428.57142857142856
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 471.4285714285714,
+            "c2x": 400,
+            "c2y": 471.4285714285714,
+            "x": 400,
+            "y": 514.2857142857142
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 557.1428571428571,
+            "c2x": 400,
+            "c2y": 557.1428571428571,
+            "x": 400,
+            "y": 600
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [
+          6,
+          3
+        ],
+        "markerEnd": null
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 57.142857142857146,
+            "c1y": 300,
+            "c2x": 57.142857142857146,
+            "c2y": 300,
+            "x": 114.28571428571429,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 171.42857142857144,
+            "c1y": 300,
+            "c2x": 171.42857142857144,
+            "c2y": 300,
+            "x": 228.57142857142858,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 285.7142857142857,
+            "c1y": 300,
+            "c2x": 285.7142857142857,
+            "c2y": 300,
+            "x": 342.8571428571429,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 300,
+            "c2x": 400,
+            "c2y": 300,
+            "x": 457.14285714285717,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 514.2857142857143,
+            "c1y": 300,
+            "c2x": 514.2857142857143,
+            "c2y": 300,
+            "x": 571.4285714285714,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 628.5714285714287,
+            "c1y": 300,
+            "c2x": 628.5714285714287,
+            "c2y": 300,
+            "x": 685.7142857142858,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 742.8571428571429,
+            "c1y": 300,
+            "c2x": 742.8571428571429,
+            "c2y": 300,
+            "x": 800,
+            "y": 300
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [
+          6,
+          3
+        ],
+        "markerEnd": null
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 400,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 424,
+            "c1y": 360,
+            "c2x": 364,
+            "c2y": 465,
+            "x": 412,
+            "y": 525
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 376,
+            "c1y": 555,
+            "c2x": 407.2,
+            "c2y": 585,
+            "x": 400,
+            "y": 600
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#8B0000",
+        "strokeWidth": 4,
+        "dash": [],
+        "markerEnd": null
+      }
+    ],
+    "confusion": {
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 280,
+          "y": 300
+        },
+        {
+          "op": "arcTo",
+          "rx": 120,
+          "ry": 90,
+          "rotation": 0,
+          "large_arc": true,
+          "sweep": true,
+          "x": 520,
+          "y": 300
+        },
+        {
+          "op": "arcTo",
+          "rx": 120,
+          "ry": 90,
+          "rotation": 0,
+          "large_arc": true,
+          "sweep": true,
+          "x": 280,
+          "y": 300
+        },
+        {
+          "op": "close"
+        }
+      ],
+      "fill": "#F3E5F5",
+      "fillOpacity": 0.5,
+      "stroke": "#333333",
+      "strokeWidth": 1.5,
+      "dash": [
+        4,
+        2
+      ],
+      "markerEnd": null
+    },
+    "labels": [
+      {
+        "text": "Complex",
+        "x": 200,
+        "y": 120,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Complicated",
+        "x": 600,
+        "y": 120,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Chaotic",
+        "x": 200,
+        "y": 420,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Clear",
+        "x": 600,
+        "y": 420,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Confusion",
+        "x": 400,
+        "y": 290,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      }
+    ],
+    "subtitles": [
+      {
+        "text": "Probe → Sense → Respond",
+        "x": 200,
+        "y": 140,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Emergent Practices",
+        "x": 200,
+        "y": 155,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Sense → Analyse → Respond",
+        "x": 600,
+        "y": 140,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Good Practices",
+        "x": 600,
+        "y": 155,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Act → Sense → Respond",
+        "x": 200,
+        "y": 440,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Novel Practices",
+        "x": 200,
+        "y": 455,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Sense → Categorise → Respond",
+        "x": 600,
+        "y": 440,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Best Practices",
+        "x": 600,
+        "y": 455,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      },
+      {
+        "text": "Disorder",
+        "x": 400,
+        "y": 308,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 11,
+        "bold": false,
+        "italic": true,
+        "fill": "#333"
+      }
+    ],
+    "items": [
+      {
+        "transform": {
+          "x": 161.2,
+          "y": 175
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 77.6,
+          "height": 26,
+          "rx": 4,
+          "ry": 4,
+          "fill": "#E8F5E9",
+          "fillOpacity": 0.95,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": []
+        },
+        "text": {
+          "text": "Straight",
+          "x": 38.8,
+          "y": 13,
+          "anchor": "middle",
+          "baseline": "central",
+          "fontSize": 12,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 572,
+          "y": 175
+        },
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 56,
+          "height": 26,
+          "rx": 4,
+          "ry": 4,
+          "fill": "#E3F2FD",
+          "fillOpacity": 0.95,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": []
+        },
+        "text": {
+          "text": "Lines",
+          "x": 28,
+          "y": 13,
+          "anchor": "middle",
+          "baseline": "central",
+          "fontSize": 12,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      }
+    ],
+    "arrows": [],
+    "arrowHead": null,
+    "title": null
+  }
+}

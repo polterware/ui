@@ -80,6 +80,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::c4::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Cynefin => {
+            let scene = diagrams::cynefin::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         DiagramKind::Sankey => {
             let scene = diagrams::sankey::render::render(&preprocessed.body, &config)?;
             Ok(scene)

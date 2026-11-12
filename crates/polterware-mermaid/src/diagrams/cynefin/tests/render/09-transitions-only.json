@@ -1,0 +1,462 @@
+{
+  "name": "09-transitions-only",
+  "source": "%%{init: {\"cynefin\": {\"seed\": 7, \"showDomainDescriptions\": false}}}%%\ncynefin-beta\n  complex --> chaotic : \"Collapse\"\n  clear --> complicated\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 880,
+      "height": 680
+    },
+    "rawViewBox": "0 0 880 680",
+    "rootTransform": {
+      "x": 40,
+      "y": 40
+    },
+    "backgrounds": [
+      {
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#E8F5E9",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 400,
+        "y": 0,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#E3F2FD",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 0,
+        "y": 300,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#FBE9E7",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      },
+      {
+        "x": 400,
+        "y": 300,
+        "width": 400,
+        "height": 300,
+        "rx": 0,
+        "ry": 0,
+        "fill": "#FFF8E1",
+        "fillOpacity": 0.4,
+        "stroke": null,
+        "strokeWidth": null,
+        "dash": []
+      }
+    ],
+    "boundaries": [
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 392.1872760504484,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 397.56277377158403,
+            "c1y": 42.857142857142854,
+            "c2x": 391.9368247836828,
+            "c2y": 42.857142857142854,
+            "x": 397.31232250481844,
+            "y": 85.71428571428571
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 396.8659764351323,
+            "c1y": 128.57142857142856,
+            "c2x": 406.0625740243122,
+            "c2y": 128.57142857142856,
+            "x": 405.6162279546261,
+            "y": 171.42857142857142
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 411.0010841656476,
+            "c1y": 214.28571428571428,
+            "c2x": 394.6144116204232,
+            "c2y": 214.28571428571428,
+            "x": 399.99926783144474,
+            "y": 257.1428571428571
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 388.5904287882149,
+            "c1y": 300,
+            "c2x": 407.28900915011764,
+            "c2y": 300,
+            "x": 395.8801701068878,
+            "y": 342.85714285714283
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 397.57670860365033,
+            "c1y": 385.71428571428567,
+            "c2x": 397.17440431937575,
+            "c2y": 385.71428571428567,
+            "x": 398.87094281613827,
+            "y": 428.57142857142856
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 395.1078606322408,
+            "c1y": 471.4285714285714,
+            "c2x": 410.6519886665046,
+            "c2y": 471.4285714285714,
+            "x": 406.8889064826071,
+            "y": 514.2857142857142
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 410.572894949466,
+            "c1y": 557.1428571428571,
+            "c2x": 396.3845450133085,
+            "c2y": 557.1428571428571,
+            "x": 400.0685334801674,
+            "y": 600
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [
+          6,
+          3
+        ],
+        "markerEnd": null
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 0,
+            "y": 307.2117853909731
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 57.142857142857146,
+            "c1y": 307.9525756658986,
+            "c2x": 57.142857142857146,
+            "c2y": 294.43032985087484,
+            "x": 114.28571428571429,
+            "y": 295.17112012580037
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 171.42857142857144,
+            "c1y": 290.7510401951149,
+            "c2x": 171.42857142857144,
+            "c2y": 297.628152850084,
+            "x": 228.57142857142858,
+            "y": 293.20807291939855
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 285.7142857142857,
+            "c1y": 294.1805638503283,
+            "c2x": 285.7142857142857,
+            "c2y": 292.6741569135338,
+            "x": 342.8571428571429,
+            "y": 293.6466478444636
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 400,
+            "c1y": 287.1025216439739,
+            "c2x": 400,
+            "c2y": 313.2805942213163,
+            "x": 457.14285714285717,
+            "y": 306.7364680208266
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 514.2857142857143,
+            "c1y": 317.02376949135214,
+            "c2x": 514.2857142857143,
+            "c2y": 285.1981018995866,
+            "x": 571.4285714285714,
+            "y": 295.4854033701122
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 628.5714285714287,
+            "c1y": 284.3055217731744,
+            "c2x": 628.5714285714287,
+            "c2y": 316.78917443938553,
+            "x": 685.7142857142858,
+            "y": 305.60929284244776
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 742.8571428571429,
+            "c1y": 310.5194429764524,
+            "c2x": 742.8571428571429,
+            "c2y": 302.7468295423314,
+            "x": 800,
+            "y": 307.65697967633605
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [
+          6,
+          3
+        ],
+        "markerEnd": null
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 400,
+            "y": 300
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 424,
+            "c1y": 360,
+            "c2x": 364,
+            "c2y": 465,
+            "x": 412,
+            "y": 525
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 376,
+            "c1y": 555,
+            "c2x": 407.2,
+            "c2y": 585,
+            "x": 400,
+            "y": 600
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#8B0000",
+        "strokeWidth": 4,
+        "dash": [],
+        "markerEnd": null
+      }
+    ],
+    "confusion": {
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 280,
+          "y": 300
+        },
+        {
+          "op": "arcTo",
+          "rx": 120,
+          "ry": 90,
+          "rotation": 0,
+          "large_arc": true,
+          "sweep": true,
+          "x": 520,
+          "y": 300
+        },
+        {
+          "op": "arcTo",
+          "rx": 120,
+          "ry": 90,
+          "rotation": 0,
+          "large_arc": true,
+          "sweep": true,
+          "x": 280,
+          "y": 300
+        },
+        {
+          "op": "close"
+        }
+      ],
+      "fill": "#F3E5F5",
+      "fillOpacity": 0.5,
+      "stroke": "#333333",
+      "strokeWidth": 1.5,
+      "dash": [
+        4,
+        2
+      ],
+      "markerEnd": null
+    },
+    "labels": [
+      {
+        "text": "Complex",
+        "x": 200,
+        "y": 150,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Complicated",
+        "x": 600,
+        "y": 150,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Chaotic",
+        "x": 200,
+        "y": 450,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Clear",
+        "x": 600,
+        "y": 450,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      },
+      {
+        "text": "Confusion",
+        "x": 400,
+        "y": 300,
+        "anchor": "middle",
+        "baseline": "middle",
+        "fontSize": 16,
+        "bold": true,
+        "italic": false,
+        "fill": "#131300"
+      }
+    ],
+    "subtitles": [],
+    "items": [],
+    "arrows": [
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 200,
+            "y": 150
+          },
+          {
+            "op": "quadTo",
+            "cx": 155,
+            "cy": 300,
+            "x": 200,
+            "y": 450
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerEnd": "url(#cynefin-arrow-cynefin)",
+        "label": {
+          "text": "Collapse",
+          "x": 155,
+          "y": 294,
+          "anchor": "middle",
+          "baseline": "auto",
+          "fontSize": 11,
+          "bold": false,
+          "italic": false,
+          "fill": "#333"
+        }
+      },
+      {
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 600,
+            "y": 450
+          },
+          {
+            "op": "quadTo",
+            "cx": 645,
+            "cy": 300,
+            "x": 600,
+            "y": 150
+          }
+        ],
+        "fill": null,
+        "fillOpacity": null,
+        "stroke": "#333333",
+        "strokeWidth": 2,
+        "dash": [],
+        "markerEnd": "url(#cynefin-arrow-cynefin)",
+        "label": null
+      }
+    ],
+    "arrowHead": {
+      "viewBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 10
+      },
+      "refX": 9,
+      "refY": 5,
+      "markerWidth": 6,
+      "markerHeight": 6,
+      "orient": "auto-start-reverse",
+      "fill": "#333333",
+      "stroke": null,
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "op": "lineTo",
+          "x": 10,
+          "y": 5
+        },
+        {
+          "op": "lineTo",
+          "x": 0,
+          "y": 10
+        },
+        {
+          "op": "close"
+        }
+      ]
+    },
+    "title": null
+  }
+}
