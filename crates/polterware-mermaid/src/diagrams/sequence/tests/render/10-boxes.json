@@ -38,7 +38,7 @@
     ],
     "boxes": [
       {
-        "name": "Aqua Service Front",
+        "name": "Service Front",
         "x": 0,
         "y": 0,
         "width": 360,
@@ -49,7 +49,7 @@
         "stopy": 479.00000000000006
       },
       {
-        "name": "LightGreen Backend",
+        "name": "Backend",
         "x": 420,
         "y": 0,
         "width": 360,

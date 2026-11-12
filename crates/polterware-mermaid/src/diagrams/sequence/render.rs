@@ -8,7 +8,7 @@ use std::collections::{HashMap, HashSet};
 
 use serde::{Deserialize, Serialize};
 
-use crate::config::Config;
+use crate::config::{Config, NumberOrString};
 use crate::error::ParseError;
 use crate::measure::{FallbackMeasure, Font, TextDimensions, TextMeasure};
 use crate::scene::{
@@ -23,6 +23,8 @@ use super::ast::{Ast, LineType, Message, MessageText, Placement};
 pub const ACTOR_TYPE_WIDTH: f64 = 36.0;
 /// Height of the stick-figure actor glyph.
 pub const ACTOR_GLYPH_HEIGHT: f64 = 65.0;
+/// Diameter of the circle that bounds the boundary, control and entity glyphs.
+const ACTOR_GLYPH_DIAMETER: f64 = 44.0;
 
 /// Default line-height advance in fallback text measurement (in em).
 const LINE_INK_EM: f64 = 1.15;
@@ -277,13 +279,19 @@ impl BoundsState {
         Self::update_val(&mut self.stopy, self.vertical_pos, f64::max);
     }
 
-    fn new_activation(&mut self, actor: &str, actors: &HashMap<String, ActorModel>, activation_width: f64) {
+    fn new_activation(
+        &mut self,
+        actor: &str,
+        actors: &HashMap<String, ActorModel>,
+        activation_width: f64,
+    ) {
         let actor_rect = match actors.get(actor) {
             Some(a) => a,
             None => return,
         };
         let stacked_size = self.actor_activations(actor).len() as f64;
-        let x = actor_rect.x + actor_rect.width / 2.0 + ((stacked_size - 1.0) * activation_width) / 2.0;
+        let x =
+            actor_rect.x + actor_rect.width / 2.0 + ((stacked_size - 1.0) * activation_width) / 2.0;
         self.activations.push(Activation {
             startx: x,
             starty: self.vertical_pos + 2.0,
@@ -298,22 +306,33 @@ impl BoundsState {
     }
 
     fn actor_activations(&self, actor: &str) -> Vec<&Activation> {
-        self.activations.iter().filter(|a| a.actor == actor).collect()
+        self.activations
+            .iter()
+            .filter(|a| a.actor == actor)
+            .collect()
     }
 
     fn activation_bounds(&self, actor: &str, actors: &HashMap<String, ActorModel>) -> (f64, f64) {
-        let default_x = actors.get(actor).map(|a| a.x + a.width / 2.0).unwrap_or(0.0);
+        let default_x = actors
+            .get(actor)
+            .map(|a| a.x + a.width / 2.0)
+            .unwrap_or(0.0);
         let acts = self.actor_activations(actor);
         let left = acts
             .iter()
             .fold(default_x - 1.0, |acc, a| acc.min(a.startx));
-        let right = acts
-            .iter()
-            .fold(default_x + 1.0, |acc, a| acc.max(a.stopx));
+        let right = acts.iter().fold(default_x + 1.0, |acc, a| acc.max(a.stopx));
         (left, right)
     }
 
-    fn new_loop(&mut self, id: String, title: Option<String>, wrap: bool, fill: Option<String>, kind: String) {
+    fn new_loop(
+        &mut self,
+        id: String,
+        title: Option<String>,
+        wrap: bool,
+        fill: Option<String>,
+        kind: String,
+    ) {
         self.sequence_items.push(LoopItem {
             id,
             title,
@@ -547,7 +566,8 @@ fn calculate_central_connection_offset(msg: &Message, is_arrow_to_right: bool) -
     }
     if (msg.central_connection == LineType::CentralConnectionReverse as u8
         || msg.central_connection == LineType::CentralConnectionDual as u8)
-        && (msg.line_type == LineType::BidirectionalSolid || msg.line_type == LineType::BidirectionalDotted)
+        && (msg.line_type == LineType::BidirectionalSolid
+            || msg.line_type == LineType::BidirectionalDotted)
     {
         offset += if is_arrow_to_right { 0.0 } else { -6.0 };
     }
@@ -581,7 +601,12 @@ fn get_max_message_width_per_actor(
             let font = if is_note { &n_font } else { &msg_font };
             let raw_msg = msg.message.as_str();
             let wrapped = if msg.wrap {
-                wrap_label(raw_msg, conf.sequence.width - 2.0 * conf.sequence.wrap_padding, font, measure)
+                wrap_label(
+                    raw_msg,
+                    conf.sequence.width - 2.0 * conf.sequence.wrap_padding,
+                    font,
+                    measure,
+                )
             } else {
                 raw_msg.to_string()
             };
@@ -653,7 +678,9 @@ fn calculate_actor_margins(
             actor.width = if actor.wrap {
                 conf.sequence.width
             } else {
-                conf.sequence.width.max(dims.width + 2.0 * conf.sequence.wrap_padding)
+                conf.sequence
+                    .width
+                    .max(dims.width + 2.0 * conf.sequence.wrap_padding)
             };
 
             if conf.look == "neo" {
@@ -701,12 +728,7 @@ fn calculate_actor_margins(
         let mut total_width: f64 = box_model
             .actor_keys
             .iter()
-            .map(|k| {
-                actors
-                    .get(k)
-                    .map(|a| a.width + a.margin)
-                    .unwrap_or(0.0)
-            })
+            .map(|k| actors.get(k).map(|a| a.width + a.margin).unwrap_or(0.0))
             .sum();
 
         total_width += conf.sequence.box_margin * 8.0;
@@ -780,8 +802,18 @@ fn calculate_loop_bounds(
             LineType::AltElse | LineType::ParAnd | LineType::CriticalOption => {
                 if !msg.message.as_str().is_empty() {
                     if let Some(current) = stack.last() {
-                        loops.insert(current.id.clone(), LoopWidth { width: current.width });
-                        loops.insert(msg.id.clone(), LoopWidth { width: current.width });
+                        loops.insert(
+                            current.id.clone(),
+                            LoopWidth {
+                                width: current.width,
+                            },
+                        );
+                        loops.insert(
+                            msg.id.clone(),
+                            LoopWidth {
+                                width: current.width,
+                            },
+                        );
                     }
                 }
             }
@@ -792,7 +824,12 @@ fn calculate_loop_bounds(
             | LineType::CriticalEnd
             | LineType::BreakEnd => {
                 if let Some(current) = stack.pop() {
-                    loops.insert(current.id.clone(), LoopWidth { width: current.width });
+                    loops.insert(
+                        current.id.clone(),
+                        LoopWidth {
+                            width: current.width,
+                        },
+                    );
                 }
             }
             LineType::ActiveStart => {
@@ -811,7 +848,8 @@ fn calculate_loop_bounds(
             for stk in &mut stack {
                 stk.from = stk.from.min(note.startx);
                 stk.to = stk.to.max(note.startx + note.width);
-                stk.width = stk.width.max((stk.from - stk.to).abs()) - conf.sequence.label_box_width;
+                stk.width =
+                    stk.width.max((stk.from - stk.to).abs()) - conf.sequence.label_box_width;
             }
         } else {
             let model = build_message_model(msg, actors, &temp_bounds, conf, measure);
@@ -823,9 +861,13 @@ fn calculate_loop_bounds(
                         let from = actors.get(msg.from.as_deref().unwrap_or(""));
                         let to = actors.get(msg.to.as_deref().unwrap_or(""));
                         if let (Some(f), Some(t)) = (from, to) {
-                            stk.from = stk.from.min(f.x - model.width / 2.0).min(f.x - f.width / 2.0);
+                            stk.from = stk
+                                .from
+                                .min(f.x - model.width / 2.0)
+                                .min(f.x - f.width / 2.0);
                             stk.to = stk.to.max(t.x + model.width / 2.0).max(t.x + f.width / 2.0);
-                            stk.width = stk.width.max((stk.to - stk.from).abs()) - conf.sequence.label_box_width;
+                            stk.width = stk.width.max((stk.to - stk.from).abs())
+                                - conf.sequence.label_box_width;
                         }
                     } else {
                         stk.from = stk.from.min(startx);
@@ -879,7 +921,9 @@ fn build_note_model(
         width: if should_wrap {
             conf.sequence.width
         } else {
-            conf.sequence.width.max(text_dimensions.width + 2.0 * conf.sequence.note_margin)
+            conf.sequence
+                .width
+                .max(text_dimensions.width + 2.0 * conf.sequence.note_margin)
         },
         height: 0.0,
         startx,
@@ -894,15 +938,19 @@ fn build_note_model(
             model.width = if should_wrap {
                 conf.sequence.width.max(text_dimensions.width)
             } else {
-                (from_width / 2.0 + to_width / 2.0).max(text_dimensions.width + 2.0 * conf.sequence.note_margin)
+                (from_width / 2.0 + to_width / 2.0)
+                    .max(text_dimensions.width + 2.0 * conf.sequence.note_margin)
             };
             model.startx = startx + (from_width + conf.sequence.actor_margin) / 2.0;
         }
         Some(Placement::LeftOf) => {
             model.width = if should_wrap {
-                conf.sequence.width.max(text_dimensions.width + 2.0 * conf.sequence.note_margin)
+                conf.sequence
+                    .width
+                    .max(text_dimensions.width + 2.0 * conf.sequence.note_margin)
             } else {
-                (from_width / 2.0 + to_width / 2.0).max(text_dimensions.width + 2.0 * conf.sequence.note_margin)
+                (from_width / 2.0 + to_width / 2.0)
+                    .max(text_dimensions.width + 2.0 * conf.sequence.note_margin)
             };
             model.startx = startx - model.width + (from_width - conf.sequence.actor_margin) / 2.0;
         }
@@ -926,7 +974,8 @@ fn build_note_model(
             model.startx = startx + (from_width - model.width) / 2.0;
         }
         _ => {
-            model.width = (startx + from_width / 2.0 - (stopx + to_width / 2.0)).abs() + conf.sequence.actor_margin;
+            model.width = (startx + from_width / 2.0 - (stopx + to_width / 2.0)).abs()
+                + conf.sequence.actor_margin;
             model.startx = if startx < stopx {
                 startx + from_width / 2.0 - conf.sequence.actor_margin / 2.0
             } else {
@@ -936,7 +985,12 @@ fn build_note_model(
     }
 
     if should_wrap {
-        model.message = wrap_label(raw_msg, model.width - 2.0 * conf.sequence.wrap_padding, &n_font, measure);
+        model.message = wrap_label(
+            raw_msg,
+            model.width - 2.0 * conf.sequence.wrap_padding,
+            &n_font,
+            measure,
+        );
     }
 
     model
@@ -976,7 +1030,11 @@ fn build_message_model(
     let (from_left, from_right) = bounds.activation_bounds(from_key, actors);
     let (to_left, to_right) = bounds.activation_bounds(to_key, actors);
     let is_arrow_to_right = from_left <= to_left;
-    let mut startx = if is_arrow_to_right { from_right } else { from_left };
+    let mut startx = if is_arrow_to_right {
+        from_right
+    } else {
+        from_left
+    };
     let mut stopx = if is_arrow_to_right { to_left } else { to_right };
 
     if conf.look == "neo" {
@@ -992,9 +1050,7 @@ fn build_message_model(
     startx += calculate_central_connection_offset(msg, is_arrow_to_right);
     let is_arrow_to_activation = (to_left - to_right).abs() > 2.0;
 
-    let adjust_value = |val: f64| -> f64 {
-        if is_arrow_to_right { -val } else { val }
-    };
+    let adjust_value = |val: f64| -> f64 { if is_arrow_to_right { -val } else { val } };
 
     if from_key == to_key {
         stopx = startx;
@@ -1023,9 +1079,7 @@ fn build_message_model(
             stopx += adjust_value(3.0);
         }
 
-        if is_bidirectional_arrow_type(msg.line_type)
-            || is_reverse_arrow_type(msg.line_type)
-        {
+        if is_bidirectional_arrow_type(msg.line_type) || is_reverse_arrow_type(msg.line_type) {
             startx -= adjust_value(3.0);
         }
     }
@@ -1044,9 +1098,13 @@ fn build_message_model(
     }
     let msg_dims = measure.dimensions(&message_str, &msg_font);
 
-    let width = if msg.wrap { 0.0 } else { msg_dims.width + 2.0 * conf.sequence.wrap_padding }
-        .max(bounded_width + 2.0 * conf.sequence.wrap_padding)
-        .max(conf.sequence.width);
+    let width = if msg.wrap {
+        0.0
+    } else {
+        msg_dims.width + 2.0 * conf.sequence.wrap_padding
+    }
+    .max(bounded_width + 2.0 * conf.sequence.wrap_padding)
+    .max(conf.sequence.width);
 
     let min_bound = all_bounds.iter().copied().fold(f64::INFINITY, f64::min);
     let max_bound = all_bounds.iter().copied().fold(f64::NEG_INFINITY, f64::max);
@@ -1082,7 +1140,9 @@ fn bound_message(
     let startx = msg_model.startx.unwrap_or(0.0);
     let stopx = msg_model.stopx.unwrap_or(0.0);
     let msg_font = message_font(conf);
-    let lines = crate::measure::split_breaks(&msg_model.message).len().max(1) as f64;
+    let lines = crate::measure::split_breaks(&msg_model.message)
+        .len()
+        .max(1) as f64;
     let text_dims = measure.dimensions(&msg_model.message, &msg_font);
 
     let line_height = text_dims.height / lines;
@@ -1111,7 +1171,13 @@ fn bound_message(
     } else {
         total_offset += conf.sequence.box_margin;
         line_start_y = bounds.vertical_pos + total_offset;
-        bounds.insert(startx, line_start_y - 10.0, stopx, line_start_y, conf.sequence.box_margin);
+        bounds.insert(
+            startx,
+            line_start_y - 10.0,
+            stopx,
+            line_start_y,
+            conf.sequence.box_margin,
+        );
     }
 
     bounds.bump_vertical_pos(total_offset);
@@ -1145,9 +1211,15 @@ fn adjust_created_destroyed_data(
     let from_x = actors.get(from_key).map(|a| a.x).unwrap_or(0.0);
     let to_x = actors.get(to_key).map(|a| a.x).unwrap_or(0.0);
 
-    let is_created = created_actors.iter().any(|(id, idx)| id == to_key && *idx == index);
-    let is_destroyed_sender = destroyed_actors.iter().any(|(id, idx)| id == from_key && *idx == index);
-    let is_destroyed_receiver = destroyed_actors.iter().any(|(id, idx)| id == to_key && *idx == index);
+    let is_created = created_actors
+        .iter()
+        .any(|(id, idx)| id == to_key && *idx == index);
+    let is_destroyed_sender = destroyed_actors
+        .iter()
+        .any(|(id, idx)| id == from_key && *idx == index);
+    let is_destroyed_receiver = destroyed_actors
+        .iter()
+        .any(|(id, idx)| id == to_key && *idx == index);
 
     let actor_types = ["actor", "control", "entity", "database"];
 
@@ -1282,7 +1354,11 @@ fn add_actor_rendering_data(
         if let Some(actor) = actors.get_mut(actor_key) {
             actor.width = actor.width.max(conf.sequence.width);
             actor.height = actor.height.max(conf.sequence.height);
-            actor.margin = if actor.margin > 0.0 { actor.margin } else { conf.sequence.actor_margin };
+            actor.margin = if actor.margin > 0.0 {
+                actor.margin
+            } else {
+                conf.sequence.actor_margin
+            };
 
             max_height = max_height.max(actor.height);
 
@@ -1313,6 +1389,29 @@ fn add_actor_rendering_data(
     bounds.bump_vertical_pos(max_height);
 }
 
+/// Port of the classic (`look !== 'neo'`) height each actor shape reports while drawing.
+///
+/// Upstream's `drawActors` (`sequenceRenderer.ts`) draws every actor after the row layout and
+/// lets the specialized shapes overwrite `actor.height` with what they actually measure
+/// (`svgDraw.js`): the stick figure reports its fixed `ACTOR_GLYPH_HEIGHT`, boundary and entity
+/// report the bounding circle plus `labelBoxHeight`, control adds two `labelBoxHeight`s for the
+/// looping arrow, and database reports its cylinder (`width / 3`) plus `labelBoxHeight`.
+/// Participant, collections and queue keep the shared row height. Under `neo` the band model
+/// pins every shape to `actor.height`, so nothing changes there.
+fn classic_actor_height(actor: &ActorModel, conf: &Config) -> f64 {
+    if conf.look == "neo" {
+        return actor.height;
+    }
+    let label = conf.sequence.label_box_height;
+    match actor.actor_type.as_str() {
+        "actor" => ACTOR_GLYPH_HEIGHT,
+        "boundary" | "entity" => ACTOR_GLYPH_DIAMETER + label,
+        "control" => ACTOR_GLYPH_DIAMETER + 2.0 * label,
+        "database" => actor.width / 3.0 + label,
+        _ => actor.height,
+    }
+}
+
 /// Renders an already parsed sequence diagram and returns layout data and scene.
 pub fn draw_layout_ast(
     ast: &Ast,
@@ -1320,15 +1419,19 @@ pub fn draw_layout_ast(
     measure: &dyn TextMeasure,
 ) -> Result<(SequenceLayoutData, Scene), SequenceRenderError> {
     let mut conf = config.clone();
-    // Default appearance settings
-    if conf.sequence.actor_font_family.is_empty() {
-        conf.sequence.actor_font_family = "\"Open Sans\", sans-serif".to_string();
+    // Port of `setConf` (`sequenceRenderer.ts`): the diagram-level font is copied over the
+    // sequence fonts. The root config always carries one, so the per-shape defaults (14px for
+    // actors and notes) never reach the drawing code.
+    if !config.font_family.is_empty() {
+        conf.sequence.actor_font_family = config.font_family.clone();
+        conf.sequence.message_font_family = config.font_family.clone();
+        conf.sequence.note_font_family = config.font_family.clone();
     }
-    if conf.sequence.message_font_family.is_empty() {
-        conf.sequence.message_font_family = "\"trebuchet ms\", verdana, arial, sans-serif".to_string();
-    }
-    if conf.sequence.note_font_family.is_empty() {
-        conf.sequence.note_font_family = "\"trebuchet ms\", verdana, arial, sans-serif".to_string();
+    if config.font_size > 0.0 {
+        let size = NumberOrString::Number(config.font_size);
+        conf.sequence.actor_font_size = size.clone();
+        conf.sequence.message_font_size = size.clone();
+        conf.sequence.note_font_size = size;
     }
 
     let mut actors: HashMap<String, ActorModel> = HashMap::new();
@@ -1441,14 +1544,23 @@ pub fn draw_layout_ast(
     for (index, msg) in ast.messages.iter().enumerate() {
         match msg.line_type {
             LineType::Note => {
-                if bounds.sequence_items.last().map(|it| it.kind == "par").unwrap_or(false) {
+                if bounds
+                    .sequence_items
+                    .last()
+                    .map(|it| it.kind == "par")
+                    .unwrap_or(false)
+                {
                     bounds.vertical_pos = bounds.saved_vertical_pos;
                 }
                 let mut note = build_note_model(msg, &actors, &conf, measure);
                 bounds.bump_vertical_pos(conf.sequence.box_margin);
                 note.height = conf.sequence.box_margin;
                 note.starty = bounds.vertical_pos;
-                let text_height = measure.dimensions(&note.message, &note_font(&conf)).height;
+                // `drawNote` reports `Math.round` of the label's measured height.
+                let text_height = measure
+                    .dimensions(&note.message, &note_font(&conf))
+                    .height
+                    .round();
                 let total_h = text_height + 2.0 * conf.sequence.note_margin;
                 note.height += total_h;
                 bounds.bump_vertical_pos(total_h);
@@ -1507,7 +1619,8 @@ pub fn draw_layout_ast(
                     );
                     let text_dims = measure.dimensions(&wrapped, &msg_font);
                     let total_offset = text_dims.height.max(conf.sequence.label_box_height);
-                    height_adjust = conf.sequence.box_margin + conf.sequence.box_text_margin + total_offset;
+                    height_adjust =
+                        conf.sequence.box_margin + conf.sequence.box_text_margin + total_offset;
                     loop_title = Some(wrapped);
                 }
                 let kind = match msg.line_type {
@@ -1534,10 +1647,17 @@ pub fn draw_layout_ast(
                     );
                     let text_dims = measure.dimensions(&wrapped, &msg_font);
                     let total_offset = text_dims.height.max(conf.sequence.label_box_height);
-                    height_adjust = conf.sequence.box_margin + conf.sequence.box_text_margin + total_offset;
+                    height_adjust =
+                        conf.sequence.box_margin + conf.sequence.box_text_margin + total_offset;
                     loop_title = Some(wrapped);
                 }
-                bounds.new_loop(msg.id.clone(), loop_title, msg.wrap, None, "par".to_string());
+                bounds.new_loop(
+                    msg.id.clone(),
+                    loop_title,
+                    msg.wrap,
+                    None,
+                    "par".to_string(),
+                );
                 bounds.saved_vertical_pos = bounds.vertical_pos;
                 bounds.bump_vertical_pos(height_adjust);
             }
@@ -1592,7 +1712,12 @@ pub fn draw_layout_ast(
                 }
             }
             LineType::Autonumber => {
-                if let MessageText::SequenceIndex { start, step, visible } = &msg.message {
+                if let MessageText::SequenceIndex {
+                    start,
+                    step,
+                    visible,
+                } = &msg.message
+                {
                     if let Some(s) = start {
                         sequence_index = *s;
                     }
@@ -1624,6 +1749,16 @@ pub fn draw_layout_ast(
                 // Step sequence counter
                 sequence_index = ((sequence_index + sequence_index_step) * 100.0).round() / 100.0;
             }
+        }
+    }
+
+    // `drawActors` resolves each specialized shape's real height after the message rows are
+    // laid out, so the footer stack and the recorded layout carry the shape's measurement
+    // rather than the shared row height.
+    for key in &actor_keys {
+        if let Some(actor) = actors.get_mut(key) {
+            let height = classic_actor_height(actor, &conf);
+            actor.height = height;
         }
     }
 
@@ -1743,15 +1878,24 @@ pub fn draw_layout_ast(
         let edge_id = format!("i{}", msg_model.id);
 
         if startx == stopx {
-            let is_autonumber_on = msg_model.sequence_visible || conf.sequence.show_sequence_numbers;
+            let is_autonumber_on =
+                msg_model.sequence_visible || conf.sequence.show_sequence_numbers;
             let is_reverse = is_reverse_arrow_type(msg_model.line_type);
             let is_bi = is_bidirectional_arrow_type(msg_model.line_type);
-            let line_start_x = startx + if is_autonumber_on && (is_reverse || is_bi) { 10.0 } else { 0.0 };
+            let line_start_x = startx
+                + if is_autonumber_on && (is_reverse || is_bi) {
+                    10.0
+                } else {
+                    0.0
+                };
 
             let d = if conf.sequence.right_angles {
                 let text_dims = measure.dimensions(&msg_model.message, &msg_font);
                 let mid_x = startx + (conf.sequence.width / 2.0).max(text_dims.width / 2.0);
-                format!("M  {line_start_x},{line_start_y} H {mid_x} V {} H {startx}", line_start_y + 25.0)
+                format!(
+                    "M  {line_start_x},{line_start_y} H {mid_x} V {} H {startx}",
+                    line_start_y + 25.0
+                )
             } else {
                 format!(
                     "M {},{} C {},{} {},{} {},{}",
@@ -1865,7 +2009,11 @@ pub fn draw_layout_ast(
         orient: MarkerOrient::AutoStartReverse,
         class: Some("arrowhead".to_string()),
         shapes: vec![PathShape::new(
-            Path::polygon([Point::new(-1.0, 0.0), Point::new(10.0, 5.0), Point::new(0.0, 10.0)]),
+            Path::polygon([
+                Point::new(-1.0, 0.0),
+                Point::new(10.0, 5.0),
+                Point::new(0.0, 10.0),
+            ]),
             PathStyle::filled(Color::current()),
         )],
     });
@@ -1959,7 +2107,10 @@ pub fn draw_layout_ast(
 
     // 2. Rect backgrounds
     for r in &background_rects {
-        let fill = r.fill.clone().unwrap_or_else(|| "rgba(128, 128, 128, 0.5)".to_string());
+        let fill = r
+            .fill
+            .clone()
+            .unwrap_or_else(|| "rgba(128, 128, 128, 0.5)".to_string());
         let rect_style = PathStyle::filled(Color::new(fill));
         let rx = r.startx.unwrap_or(0.0);
         let ry = r.starty;
@@ -1983,14 +2134,19 @@ pub fn draw_layout_ast(
         let line_style = PathStyle::stroked(Color::new("#000000"), 2.0);
 
         // Border rectangle
-        scene.push(RectShape::new(Rect::new(lx, ly, lw, lh), 0.0, line_style.clone()));
+        scene.push(RectShape::new(
+            Rect::new(lx, ly, lw, lh),
+            0.0,
+            line_style.clone(),
+        ));
 
         // Divider lines
         for sec in &l.sections {
             let mut div_path = Path::new();
             div_path.move_to(Point::new(lx, sec.y));
             div_path.line_to(Point::new(lx + lw, sec.y));
-            let div_style = PathStyle::stroked(Color::new("#000000"), 1.0).with_dash(vec![3.0, 3.0]);
+            let div_style =
+                PathStyle::stroked(Color::new("#000000"), 1.0).with_dash(vec![3.0, 3.0]);
             scene.push(PathShape::new(div_path, div_style));
         }
 
@@ -2054,7 +2210,11 @@ pub fn draw_layout_ast(
                     dims_size(&dims),
                     16.0,
                 );
-                scene.push(TextRun::centered(Point::new(sec_x, sec_y), msg_font.clone(), block));
+                scene.push(TextRun::centered(
+                    Point::new(sec_x, sec_y),
+                    msg_font.clone(),
+                    block,
+                ));
             }
         }
     }
@@ -2070,8 +2230,12 @@ pub fn draw_layout_ast(
     for n in &completed_notes {
         let note_h = n.stopy - n.starty;
         scene.push(
-            RectShape::new(Rect::new(n.startx, n.starty, n.width, note_h), 0.0, note_style.clone())
-                .with_source(SourceRef::node("note")),
+            RectShape::new(
+                Rect::new(n.startx, n.starty, n.width, note_h),
+                0.0,
+                note_style.clone(),
+            )
+            .with_source(SourceRef::node("note")),
         );
 
         let lines: Vec<TextLine> = crate::measure::split_breaks(&n.message)
@@ -2104,8 +2268,7 @@ pub fn draw_layout_ast(
             lifeline.line_to(Point::new(center, lifeline_end_y));
             let lifeline_style = PathStyle::stroked(Color::new("#999999"), 0.5);
             scene.push(
-                PathShape::new(lifeline, lifeline_style)
-                    .with_source(SourceRef::edge(&actor.name)),
+                PathShape::new(lifeline, lifeline_style).with_source(SourceRef::edge(&actor.name)),
             );
 
             // Actor shape
@@ -2141,10 +2304,31 @@ pub fn draw_layout_ast(
                     let h = actor.width / 3.0;
                     let mut cyl = Path::new();
                     cyl.move_to(Point::new(actor.x + w, actor.starty + 2.0 * ry));
-                    cyl.arc_to(rx, ry, 0.0, false, false, Point::new(actor.x + 2.0 * w, actor.starty + 2.0 * ry));
-                    cyl.arc_to(rx, ry, 0.0, false, false, Point::new(actor.x + w, actor.starty + 2.0 * ry));
+                    cyl.arc_to(
+                        rx,
+                        ry,
+                        0.0,
+                        false,
+                        false,
+                        Point::new(actor.x + 2.0 * w, actor.starty + 2.0 * ry),
+                    );
+                    cyl.arc_to(
+                        rx,
+                        ry,
+                        0.0,
+                        false,
+                        false,
+                        Point::new(actor.x + w, actor.starty + 2.0 * ry),
+                    );
                     cyl.line_to(Point::new(actor.x + w, actor.starty + h));
-                    cyl.arc_to(rx, ry, 0.0, false, false, Point::new(actor.x + 2.0 * w, actor.starty + h));
+                    cyl.arc_to(
+                        rx,
+                        ry,
+                        0.0,
+                        false,
+                        false,
+                        Point::new(actor.x + 2.0 * w, actor.starty + h),
+                    );
                     cyl.line_to(Point::new(actor.x + 2.0 * w, actor.starty + 2.0 * ry));
                     scene.push(PathShape::new(cyl, actor_style.clone()));
                 }
@@ -2185,7 +2369,10 @@ pub fn draw_layout_ast(
         }
 
         // Message text
-        let text_x = msg_model.startx.unwrap_or(0.0).min(msg_model.stopx.unwrap_or(0.0));
+        let text_x = msg_model
+            .startx
+            .unwrap_or(0.0)
+            .min(msg_model.stopx.unwrap_or(0.0));
         let text_w = (msg_model.stopx.unwrap_or(0.0) - msg_model.startx.unwrap_or(0.0)).abs();
         let dims = measure.dimensions(&msg_model.message, &msg_font);
         let block = TextBlock::new(
@@ -2193,7 +2380,10 @@ pub fn draw_layout_ast(
             dims_size(&dims),
             16.0,
         );
-        let text_pos = Point::new(text_x + text_w / 2.0, msg_model.starty + 10.0 + dims.height / 2.0);
+        let text_pos = Point::new(
+            text_x + text_w / 2.0,
+            msg_model.starty + 10.0 + dims.height / 2.0,
+        );
         let mut text_run = TextRun::centered(text_pos, msg_font.clone(), block);
         text_run.baseline = TextBaseline::Middle;
         scene.push(text_run);
@@ -2204,11 +2394,23 @@ pub fn draw_layout_ast(
             if let Some(rest) = d_str.strip_prefix("M ") {
                 let parts: Vec<&str> = rest.split_whitespace().collect();
                 if parts.len() >= 4 && parts[1] == "C" {
-                    let start_coords: Vec<f64> = parts[0].split(',').filter_map(|s| s.parse().ok()).collect();
-                    let c1_coords: Vec<f64> = parts[2].split(',').filter_map(|s| s.parse().ok()).collect();
-                    let c2_coords: Vec<f64> = parts[3].split(',').filter_map(|s| s.parse().ok()).collect();
-                    let end_coords: Vec<f64> = parts.get(4).unwrap_or(&"").split(',').filter_map(|s| s.parse().ok()).collect();
-                    if start_coords.len() == 2 && c1_coords.len() == 2 && c2_coords.len() == 2 && end_coords.len() == 2 {
+                    let start_coords: Vec<f64> =
+                        parts[0].split(',').filter_map(|s| s.parse().ok()).collect();
+                    let c1_coords: Vec<f64> =
+                        parts[2].split(',').filter_map(|s| s.parse().ok()).collect();
+                    let c2_coords: Vec<f64> =
+                        parts[3].split(',').filter_map(|s| s.parse().ok()).collect();
+                    let end_coords: Vec<f64> = parts
+                        .get(4)
+                        .unwrap_or(&"")
+                        .split(',')
+                        .filter_map(|s| s.parse().ok())
+                        .collect();
+                    if start_coords.len() == 2
+                        && c1_coords.len() == 2
+                        && c2_coords.len() == 2
+                        && end_coords.len() == 2
+                    {
                         path.move_to(Point::new(start_coords[0], start_coords[1]));
                         path.cubic_to(
                             Point::new(c1_coords[0], c1_coords[1]),
@@ -2256,9 +2458,17 @@ pub fn draw_layout_ast(
             let autonumber_x = if is_self {
                 msg_model.from_bounds + 1.0
             } else if is_reverse_arrow_type(msg_model.line_type) {
-                if is_ltr { msg_model.to_bounds - 1.0 } else { msg_model.from_bounds + 1.0 }
+                if is_ltr {
+                    msg_model.to_bounds - 1.0
+                } else {
+                    msg_model.from_bounds + 1.0
+                }
             } else {
-                if is_ltr { msg_model.from_bounds + 1.0 } else { msg_model.to_bounds - 1.0 }
+                if is_ltr {
+                    msg_model.from_bounds + 1.0
+                } else {
+                    msg_model.to_bounds - 1.0
+                }
             };
 
             let auto_circle = EllipseShape::new(
