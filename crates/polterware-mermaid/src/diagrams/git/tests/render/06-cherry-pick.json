@@ -1,0 +1,477 @@
+{
+  "name": "06-cherry-pick",
+  "source": "gitGraph\n  commit id: \"A\"\n  branch develop\n  commit id: \"B\"\n  commit id: \"C\"\n  checkout main\n  commit id: \"D\"\n  cherry-pick id: \"C\"\n",
+  "expected": {
+    "viewBox": {
+      "x": -128.2,
+      "y": -37.5,
+      "width": 389.2,
+      "height": 162.51056274847713
+    },
+    "rawViewBox": "-128.2 -37.5 389.2 162.51056274847713",
+    "branches": [
+      {
+        "name": "main",
+        "line": {
+          "x1": 0,
+          "y1": -2,
+          "x2": 250,
+          "y2": -2,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": [
+            2
+          ]
+        },
+        "background": {
+          "x": -91.4,
+          "y": -13.2,
+          "width": 56.4,
+          "height": 22.4,
+          "rx": 4,
+          "fill": "hsl(240, 100%, 46.2745098039%)"
+        },
+        "label": {
+          "text": "main",
+          "x": -82.4,
+          "y": 2.8000000000000007,
+          "fontSize": 16,
+          "fill": "hsl(240, 100%, 46.2745098039%)"
+        }
+      },
+      {
+        "name": "develop",
+        "line": {
+          "x1": 0,
+          "y1": 88,
+          "x2": 250,
+          "y2": 88,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": [
+            2
+          ]
+        },
+        "background": {
+          "x": -120.2,
+          "y": 76.8,
+          "width": 85.2,
+          "height": 22.400000000000006,
+          "rx": 4,
+          "fill": "hsl(60, 100%, 43.5294117647%)"
+        },
+        "label": {
+          "text": "develop",
+          "x": -111.2,
+          "y": 92.8,
+          "fontSize": 16,
+          "fill": "hsl(60, 100%, 43.5294117647%)"
+        }
+      }
+    ],
+    "arrows": [
+      {
+        "d": "M 10 -2 L 10 68 A 20 20, 0, 0, 0, 30 88 L 60 88",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": -2
+          },
+          {
+            "op": "lineTo",
+            "x": 10,
+            "y": 68
+          },
+          {
+            "op": "arcTo",
+            "rx": 20,
+            "ry": 20,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": false,
+            "x": 30,
+            "y": 88
+          },
+          {
+            "op": "lineTo",
+            "x": 60,
+            "y": 88
+          }
+        ],
+        "stroke": "hsl(60, 100%, 43.5294117647%)",
+        "strokeWidth": 8
+      },
+      {
+        "d": "M 60 88 L 110 88",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 60,
+            "y": 88
+          },
+          {
+            "op": "lineTo",
+            "x": 110,
+            "y": 88
+          }
+        ],
+        "stroke": "hsl(60, 100%, 43.5294117647%)",
+        "strokeWidth": 8
+      },
+      {
+        "d": "M 10 -2 L 160 -2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 10,
+            "y": -2
+          },
+          {
+            "op": "lineTo",
+            "x": 160,
+            "y": -2
+          }
+        ],
+        "stroke": "hsl(240, 100%, 46.2745098039%)",
+        "strokeWidth": 8
+      },
+      {
+        "d": "M 160 -2 L 210 -2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 160,
+            "y": -2
+          },
+          {
+            "op": "lineTo",
+            "x": 210,
+            "y": -2
+          }
+        ],
+        "stroke": "hsl(240, 100%, 46.2745098039%)",
+        "strokeWidth": 8
+      },
+      {
+        "d": "M 110 88 L 110 18 A 20 20, 0, 0, 1, 130 -2 L 210 -2",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 110,
+            "y": 88
+          },
+          {
+            "op": "lineTo",
+            "x": 110,
+            "y": 18
+          },
+          {
+            "op": "arcTo",
+            "rx": 20,
+            "ry": 20,
+            "rotation": 0,
+            "large_arc": false,
+            "sweep": true,
+            "x": 130,
+            "y": -2
+          },
+          {
+            "op": "lineTo",
+            "x": 210,
+            "y": -2
+          }
+        ],
+        "stroke": "hsl(240, 100%, 46.2745098039%)",
+        "strokeWidth": 8
+      }
+    ],
+    "bullets": [
+      {
+        "class": "commit A commit0",
+        "fill": "#9370DB",
+        "stroke": "hsl(240, 100%, 46.2745098039%)",
+        "strokeWidth": 1,
+        "shape": "circle",
+        "cx": 10,
+        "cy": -2,
+        "r": 10
+      },
+      {
+        "class": "commit B commit1",
+        "fill": "#9370DB",
+        "stroke": "hsl(60, 100%, 43.5294117647%)",
+        "strokeWidth": 1,
+        "shape": "circle",
+        "cx": 60,
+        "cy": 88,
+        "r": 10
+      },
+      {
+        "class": "commit C commit1",
+        "fill": "#9370DB",
+        "stroke": "hsl(60, 100%, 43.5294117647%)",
+        "strokeWidth": 1,
+        "shape": "circle",
+        "cx": 110,
+        "cy": 88,
+        "r": 10
+      },
+      {
+        "class": "commit D commit0",
+        "fill": "#9370DB",
+        "stroke": "hsl(240, 100%, 46.2745098039%)",
+        "strokeWidth": 1,
+        "shape": "circle",
+        "cx": 160,
+        "cy": -2,
+        "r": 10
+      },
+      {
+        "class": "commit 4-2b919bc commit-cherry-pick",
+        "fill": "#9370DB",
+        "stroke": "none",
+        "strokeWidth": 1,
+        "shape": "circle",
+        "cx": 210,
+        "cy": -2,
+        "r": 10
+      },
+      {
+        "class": "commit 4-2b919bc commit-cherry-pick",
+        "fill": "#fff",
+        "stroke": "none",
+        "strokeWidth": 1,
+        "shape": "circle",
+        "cx": 207,
+        "cy": 0,
+        "r": 2.75
+      },
+      {
+        "class": "commit 4-2b919bc commit-cherry-pick",
+        "fill": "#fff",
+        "stroke": "none",
+        "strokeWidth": 1,
+        "shape": "circle",
+        "cx": 213,
+        "cy": 0,
+        "r": 2.75
+      },
+      {
+        "class": "commit 4-2b919bc commit-cherry-pick",
+        "fill": "none",
+        "stroke": "#fff",
+        "strokeWidth": 1,
+        "shape": "line",
+        "x1": 213,
+        "y1": -1,
+        "x2": 210,
+        "y2": -7
+      },
+      {
+        "class": "commit 4-2b919bc commit-cherry-pick",
+        "fill": "none",
+        "stroke": "#fff",
+        "strokeWidth": 1,
+        "shape": "line",
+        "x1": 207,
+        "y1": -1,
+        "x2": 210,
+        "y2": -7
+      }
+    ],
+    "commitLabels": [
+      {
+        "rectMatrix": [
+          0.7071067811865476,
+          -0.7071067811865475,
+          0.7071067811865475,
+          0.7071067811865476,
+          -12.165786437626906,
+          11.454213562373095
+        ],
+        "rect": {
+          "x": 5,
+          "y": 11.5,
+          "width": 10,
+          "height": 15.5,
+          "fill": "#ffffde",
+          "opacity": 0.5
+        },
+        "textMatrix": [
+          0.7071067811865476,
+          -0.7071067811865475,
+          0.7071067811865475,
+          0.7071067811865476,
+          -12.165786437626906,
+          11.454213562373095
+        ],
+        "text": {
+          "text": "A",
+          "x": 7,
+          "y": 23,
+          "fontSize": 10,
+          "fill": "#000021"
+        }
+      },
+      {
+        "rectMatrix": [
+          0.7071067811865476,
+          -0.7071067811865475,
+          0.7071067811865475,
+          0.7071067811865476,
+          -61.16073580374355,
+          73.1699423149112
+        ],
+        "rect": {
+          "x": 55,
+          "y": 101.5,
+          "width": 10,
+          "height": 15.5,
+          "fill": "#ffffde",
+          "opacity": 0.5
+        },
+        "textMatrix": [
+          0.7071067811865476,
+          -0.7071067811865475,
+          0.7071067811865475,
+          0.7071067811865476,
+          -61.16073580374355,
+          73.1699423149112
+        ],
+        "text": {
+          "text": "B",
+          "x": 57,
+          "y": 113,
+          "fontSize": 10,
+          "fill": "#000021"
+        }
+      },
+      {
+        "rectMatrix": [
+          0.7071067811865476,
+          -0.7071067811865475,
+          0.7071067811865475,
+          0.7071067811865476,
+          -46.516074863070926,
+          108.52528137423857
+        ],
+        "rect": {
+          "x": 105,
+          "y": 101.5,
+          "width": 10,
+          "height": 15.5,
+          "fill": "#ffffde",
+          "opacity": 0.5
+        },
+        "textMatrix": [
+          0.7071067811865476,
+          -0.7071067811865475,
+          0.7071067811865475,
+          0.7071067811865476,
+          -46.516074863070926,
+          108.52528137423857
+        ],
+        "text": {
+          "text": "C",
+          "x": 107,
+          "y": 113,
+          "fontSize": 10,
+          "fill": "#000021"
+        }
+      },
+      {
+        "rectMatrix": [
+          0.7071067811865476,
+          -0.7071067811865475,
+          0.7071067811865475,
+          0.7071067811865476,
+          31.76819638439096,
+          117.5202307403552
+        ],
+        "rect": {
+          "x": 155,
+          "y": 11.5,
+          "width": 10,
+          "height": 15.5,
+          "fill": "#ffffde",
+          "opacity": 0.5
+        },
+        "textMatrix": [
+          0.7071067811865476,
+          -0.7071067811865475,
+          0.7071067811865475,
+          0.7071067811865476,
+          31.76819638439096,
+          117.5202307403552
+        ],
+        "text": {
+          "text": "D",
+          "x": 157,
+          "y": 23,
+          "fontSize": 10,
+          "fill": "#000021"
+        }
+      }
+    ],
+    "tags": [
+      {
+        "polygonMatrix": [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "points": [
+          159,
+          -19.2,
+          159,
+          -23.2,
+          167,
+          -28.95,
+          253,
+          -28.95,
+          253,
+          -13.45,
+          167,
+          -13.45
+        ],
+        "fill": "#ECECFF",
+        "stroke": "hsl(240, 60%, 86.2745098039%)",
+        "strokeWidth": 1,
+        "holeMatrix": [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "hole": {
+          "cx": 163,
+          "cy": -21.2,
+          "r": 1.5,
+          "fill": "#333"
+        },
+        "textMatrix": [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "text": {
+          "text": "cherry-pick:C",
+          "x": 171,
+          "y": -18,
+          "fontSize": 10,
+          "fill": "#131300"
+        }
+      }
+    ],
+    "title": null
+  }
+}

@@ -88,6 +88,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::info::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Git => {
+            let scene = diagrams::git::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         DiagramKind::Xychart => {
             let scene = diagrams::xychart::render::render(&preprocessed.body, &config)?;
             Ok(scene)
