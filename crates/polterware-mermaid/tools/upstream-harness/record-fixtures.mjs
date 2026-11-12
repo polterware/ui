@@ -90,4 +90,5 @@ if (process.argv[1] && process.argv[1].endsWith('record-fixtures.mjs')) {
     }
   }
   console.log(`Done. Success: ${success}, Failed: ${failed}`);
+  process.exit(0);
 }

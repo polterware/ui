@@ -599,33 +599,157 @@ pub fn dagre_render(
     Ok(scene)
 }
 
-/// The box `getBBox()` reports for an edge's `d` attribute: the move, line and arc endpoints
-/// are its geometry, while a cubic or quadratic segment contributes only its starting point
-/// (the preceding move or line). This is the box the fitted viewBox is built from.
+/// The box `getBBox()` reports for an edge's `d` attribute: the real curve extrema, not just
+/// the endpoints, because a browser measures the painted cubic and quadratic segments. This
+/// is the box the fitted viewBox is built from.
 fn svg_path_bounds(path: &crate::scene::Path) -> Option<Rect> {
     use crate::scene::PathCommand;
 
-    let mut min_x = f64::INFINITY;
-    let mut max_x = f64::NEG_INFINITY;
-    let mut min_y = f64::INFINITY;
-    let mut max_y = f64::NEG_INFINITY;
-    let mut include = |x: f64, y: f64| {
-        min_x = min_x.min(x);
-        max_x = max_x.max(x);
-        min_y = min_y.min(y);
-        max_y = max_y.max(y);
-    };
-    for command in &path.commands {
-        match *command {
-            PathCommand::MoveTo { x, y } | PathCommand::LineTo { x, y } => include(x, y),
-            PathCommand::ArcTo { rx, ry, x, y, .. } => {
-                include(x, y);
-                include(x - rx, y - ry);
-                include(x + rx, y + ry);
+    #[derive(Clone, Copy)]
+    struct Bounds {
+        min_x: f64,
+        max_x: f64,
+        min_y: f64,
+        max_y: f64,
+    }
+
+    impl Bounds {
+        fn new() -> Self {
+            Self {
+                min_x: f64::INFINITY,
+                max_x: f64::NEG_INFINITY,
+                min_y: f64::INFINITY,
+                max_y: f64::NEG_INFINITY,
             }
-            PathCommand::CubicTo { .. } | PathCommand::QuadTo { .. } | PathCommand::Close => {}
+        }
+
+        fn include(&mut self, x: f64, y: f64) {
+            self.include_x(x);
+            self.include_y(y);
+        }
+
+        fn include_x(&mut self, value: f64) {
+            self.min_x = self.min_x.min(value);
+            self.max_x = self.max_x.max(value);
+        }
+
+        fn include_y(&mut self, value: f64) {
+            self.min_y = self.min_y.min(value);
+            self.max_y = self.max_y.max(value);
+        }
+
+        fn rect(self) -> Option<Rect> {
+            (self.min_x <= self.max_x && self.min_y <= self.max_y).then(|| {
+                Rect::new(
+                    self.min_x,
+                    self.min_y,
+                    self.max_x - self.min_x,
+                    self.max_y - self.min_y,
+                )
+            })
         }
     }
-    (min_x <= max_x && min_y <= max_y)
-        .then(|| Rect::new(min_x, min_y, max_x - min_x, max_y - min_y))
+
+    let mut bounds = Bounds::new();
+    let mut current = (0.0, 0.0);
+    let mut start = (0.0, 0.0);
+    for command in &path.commands {
+        match *command {
+            PathCommand::MoveTo { x, y } => {
+                bounds.include(x, y);
+                current = (x, y);
+                start = (x, y);
+            }
+            PathCommand::LineTo { x, y } => {
+                bounds.include(x, y);
+                current = (x, y);
+            }
+            PathCommand::CubicTo {
+                c1x,
+                c1y,
+                c2x,
+                c2y,
+                x,
+                y,
+            } => {
+                for value in cubic_extrema(current.0, c1x, c2x, x) {
+                    bounds.include_x(value);
+                }
+                for value in cubic_extrema(current.1, c1y, c2y, y) {
+                    bounds.include_y(value);
+                }
+                bounds.include(x, y);
+                current = (x, y);
+            }
+            PathCommand::QuadTo { cx, cy, x, y } => {
+                for value in quad_extrema(current.0, cx, x) {
+                    bounds.include_x(value);
+                }
+                for value in quad_extrema(current.1, cy, y) {
+                    bounds.include_y(value);
+                }
+                bounds.include(x, y);
+                current = (x, y);
+            }
+            PathCommand::ArcTo { rx, ry, x, y, .. } => {
+                bounds.include(current.0, current.1);
+                bounds.include(x, y);
+                bounds.include(x - rx, y - ry);
+                bounds.include(x + rx, y + ry);
+                current = (x, y);
+            }
+            PathCommand::Close => {
+                bounds.include(start.0, start.1);
+                current = start;
+            }
+        }
+    }
+    bounds.rect()
+}
+
+/// The values a cubic Bézier reaches on one axis, endpoints included: the roots of its
+/// derivative inside the segment plus its two ends.
+fn cubic_extrema(p0: f64, p1: f64, p2: f64, p3: f64) -> Vec<f64> {
+    let mut values = vec![p0, p3];
+    let at = |t: f64| {
+        (1.0 - t).powi(3) * p0
+            + 3.0 * (1.0 - t).powi(2) * t * p1
+            + 3.0 * (1.0 - t) * t * t * p2
+            + t.powi(3) * p3
+    };
+    let a = 3.0 * (p3 - 3.0 * p2 + 3.0 * p1 - p0);
+    let b = 6.0 * (p2 - 2.0 * p1 + p0);
+    let c = 3.0 * (p1 - p0);
+    if a.abs() < 1e-12 {
+        if b.abs() > 1e-12 {
+            let t = -c / b;
+            if t > 0.0 && t < 1.0 {
+                values.push(at(t));
+            }
+        }
+    } else {
+        let discriminant = b * b - 4.0 * a * c;
+        if discriminant >= 0.0 {
+            let root = discriminant.sqrt();
+            for t in [(-b - root) / (2.0 * a), (-b + root) / (2.0 * a)] {
+                if t > 0.0 && t < 1.0 {
+                    values.push(at(t));
+                }
+            }
+        }
+    }
+    values
+}
+
+/// The values a quadratic Bézier reaches on one axis, endpoints included.
+fn quad_extrema(p0: f64, p1: f64, p2: f64) -> Vec<f64> {
+    let mut values = vec![p0, p2];
+    let denominator = p2 - 2.0 * p1 + p0;
+    if denominator.abs() > 1e-12 {
+        let t = (p0 - p1) / denominator;
+        if t > 0.0 && t < 1.0 {
+            values.push((1.0 - t).powi(2) * p0 + 2.0 * (1.0 - t) * t * p1 + t * t * p2);
+        }
+    }
+    values
 }

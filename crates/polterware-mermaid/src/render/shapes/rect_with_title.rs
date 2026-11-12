@@ -35,7 +35,12 @@ fn finish(
 
 pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeError> {
     let node = node.clone();
-    let (group, label, b) = prepare(&node, ctx)?;
+    // `rectWithTitle` builds its title through `createLabel`, which passes
+    // `width: Number.POSITIVE_INFINITY` to `createText`: the title never wraps, ignoring the
+    // diagram's `wrappingWidth`.
+    let mut title_node = node.clone();
+    title_node.wrapping_width = None;
+    let (group, label, b) = prepare(&title_node, ctx)?;
     let p = node.padding;
     let w = (b.width + p).max(node.width.unwrap_or(0.0));
     let h = (b.height + p).max(node.height.unwrap_or(0.0));

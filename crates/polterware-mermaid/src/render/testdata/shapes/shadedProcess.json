@@ -41,24 +41,24 @@
     },
     {
       "label": "A much longer label",
-      "width": 214.4,
-      "height": 34.4,
-      "labelTransform": "translate(-87.2, -9.2)",
-      "pathData": "M-99.2 -17.2 L107.2 -17.2 L107.2 17.2 L-107.2 17.2 L-107.2 -17.2 L-99.2 -17.2 L-99.2 17.2",
+      "width": 147.2,
+      "height": 52,
+      "labelTransform": "translate(-53.599999999999994, -18)",
+      "pathData": "M-65.6 -26 L73.6 -26 L73.6 26 L-73.6 26 L-73.6 -26 L-65.6 -26 L-65.6 26",
       "polygonPoints": null,
       "rectData": null,
       "intersects": [
         {
-          "x": 107.2,
+          "x": 73.6,
           "y": 0
         },
         {
           "x": 0,
-          "y": 17.2
+          "y": 26
         },
         {
-          "x": -28.666666666666668,
-          "y": -17.2
+          "x": -43.333333333333336,
+          "y": -26
         }
       ],
       "probes": [

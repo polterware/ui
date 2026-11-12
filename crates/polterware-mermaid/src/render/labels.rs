@@ -3,7 +3,7 @@
 //! labels are not represented by the scene model.
 
 use crate::measure::{Font, TextMeasure, TextOptions, shape_text};
-use crate::scene::{Group, Point, Size, SourceRef, TextLine, TextRun, Transform};
+use crate::scene::{Group, Point, SourceRef, TextRun, Transform};
 
 /// Text and placement options for an upstream label group.
 #[derive(Clone, Debug, PartialEq)]
@@ -59,19 +59,6 @@ pub fn create_label(
     Ok(group)
 }
 
-/// The box `getBBox()` reports for `createFormattedText`'s `<text>`: each wrapped line is a
-/// `<tspan>` and only a line's first word has no leading space, so the text content runs the
-/// lines together. That box is the joined lines' width and a single line's height, which is
-/// what a flowchart node's `labelHelper` sizes the shape from; the label group keeps the
-/// wrapped block's own box for painting. Empty text has no ink.
-pub(crate) fn svg_text_box(lines: &[TextLine], font: &Font, measure: &dyn TextMeasure) -> Size {
-    let text: String = lines.iter().map(TextLine::text).collect();
-    if text.is_empty() {
-        return Size::ZERO;
-    }
-    Size::new(measure.width(&text, font), measure.line_height(font))
-}
-
 /// `labelTransform.ts`: SVG labels account for bbox origin; HTML labels only use dimensions.
 pub fn label_transform(
     x: Option<f64>,
@@ -114,23 +101,6 @@ mod tests {
                 _ => unreachable!(),
             }
         ); // finite translation
-    }
-
-    #[test]
-    fn svg_text_box_runs_wrapped_lines_together() {
-        let font = Font::new("monospace", 12.0);
-        let block = shape_text(
-            "aa bb cc",
-            &TextOptions::default().with_width(30.0),
-            &font,
-            &FallbackMeasure,
-        )
-        .expect("text shapes");
-        assert_eq!(block.lines.len(), 3);
-        let text_box = svg_text_box(&block.lines, &font, &FallbackMeasure);
-        // "aabbcc" run together is six characters of 0.6 em at 12 px, one line tall.
-        assert!((text_box.width - 43.2).abs() < 1e-9);
-        assert!((text_box.height - 13.8).abs() < 1e-9);
     }
 
     #[test]

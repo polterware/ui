@@ -3,7 +3,7 @@
 
 use crate::measure::{Font, TextMeasure};
 use crate::render::intersect::{self, Intersectable};
-use crate::render::labels::{LabelOptions, create_label, svg_text_box};
+use crate::render::labels::{LabelOptions, create_label};
 use crate::scene::{Color, Group, Item, Path, PathStyle, Point, Rect, SourceRef, Transform};
 use std::collections::HashMap;
 
@@ -1912,7 +1912,7 @@ fn prepare_with(
         message: e.to_string(),
     })?;
     let text_size = match label.items.first() {
-        Some(Item::Text(text)) => svg_text_box(&text.lines, &text.font, ctx.measure),
+        Some(Item::Text(text)) => text.size,
         _ => crate::scene::Size::ZERO,
     };
     // `labelHelper`'s `withMinWidth`: a label narrower than the diagram's minimum is widened
@@ -2536,6 +2536,10 @@ mod tests {
             for case in &fixture.cases {
                 let mut node = Node::new("n", &case.label, &fixture.shape);
                 node.padding = 8.0;
+                // `labelHelper` falls back to the diagram's `flowchart.wrappingWidth` when
+                // the node names none, which is how the harness renders these fixtures.
+                node.wrapping_width =
+                    Some(crate::config::Config::default().flowchart.wrapping_width);
                 node.look = if fixture.look.is_empty() {
                     "classic".into()
                 } else {

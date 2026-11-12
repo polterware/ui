@@ -48,31 +48,31 @@
     },
     {
       "label": "A much longer label",
-      "width": 214.4,
-      "height": 34.4,
-      "labelTransform": "translate(0, -9.2)",
+      "width": 147.2,
+      "height": 52,
+      "labelTransform": "translate(0, -18)",
       "pathData": null,
       "polygonPoints": null,
       "rectData": {
-        "x": -107.2,
-        "y": -17.2,
-        "width": 214.4,
-        "height": 34.4,
+        "x": -73.6,
+        "y": -26,
+        "width": 147.2,
+        "height": 52,
         "rx": 0,
         "ry": 0
       },
       "intersects": [
         {
-          "x": 107.2,
+          "x": 73.6,
           "y": 0
         },
         {
           "x": 0,
-          "y": 17.2
+          "y": 26
         },
         {
-          "x": -28.666666666666668,
-          "y": -17.2
+          "x": -43.333333333333336,
+          "y": -26
         }
       ],
       "probes": [
