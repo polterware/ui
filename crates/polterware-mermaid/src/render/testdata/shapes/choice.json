@@ -1,0 +1,137 @@
+{
+  "shape": "choice",
+  "upstream": "shapes/choice.ts",
+  "look": "classic",
+  "theme": "default",
+  "padding": 8,
+  "labelSize": {
+    "width": 40,
+    "height": 16
+  },
+  "cases": [
+    {
+      "label": "Hi",
+      "primitives": [
+        {
+          "kind": "path",
+          "commands": [
+            [
+              "M",
+              0,
+              14
+            ],
+            [
+              "L",
+              14,
+              0
+            ],
+            [
+              "L",
+              0,
+              -14
+            ],
+            [
+              "L",
+              -14,
+              0
+            ],
+            [
+              "Z"
+            ]
+          ]
+        }
+      ],
+      "labelTransform": null,
+      "bounds": {
+        "x": -14,
+        "y": -14,
+        "width": 28,
+        "height": 28
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 0
+          },
+          "result": {
+            "x": 14,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": -60
+          },
+          "result": {
+            "x": -5.6,
+            "y": -8.4
+          }
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "primitives": [
+        {
+          "kind": "path",
+          "commands": [
+            [
+              "M",
+              0,
+              14
+            ],
+            [
+              "L",
+              14,
+              0
+            ],
+            [
+              "L",
+              0,
+              -14
+            ],
+            [
+              "L",
+              -14,
+              0
+            ],
+            [
+              "Z"
+            ]
+          ]
+        }
+      ],
+      "labelTransform": null,
+      "bounds": {
+        "x": -14,
+        "y": -14,
+        "width": 28,
+        "height": 28
+      },
+      "intersects": [
+        {
+          "point": {
+            "x": 100,
+            "y": 0
+          },
+          "result": {
+            "x": 14,
+            "y": 0
+          }
+        },
+        {
+          "point": {
+            "x": -40,
+            "y": -60
+          },
+          "result": {
+            "x": -5.6,
+            "y": -8.4
+          }
+        }
+      ]
+    }
+  ]
+}
