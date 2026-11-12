@@ -163,10 +163,7 @@ mod tests {
         assert_eq!(data.padding, Some(config.flowchart.diagram_padding));
         assert_eq!(data.node_spacing, Some(config.flowchart.node_spacing));
         assert_eq!(data.rank_spacing, Some(config.flowchart.rank_spacing));
-        assert_eq!(
-            data.use_max_width,
-            Some(config.flowchart.use_max_width)
-        );
+        assert_eq!(data.use_max_width, Some(config.flowchart.use_max_width));
     }
 
     #[test]
@@ -177,10 +174,7 @@ mod tests {
         assert_eq!(node.shape.as_deref(), Some("squareRect"));
         assert_eq!(node.padding, Some(config.flowchart.padding));
         assert_eq!(node.min_width, Some(config.flowchart.min_node_width));
-        assert_eq!(
-            node.wrapping_width,
-            Some(config.flowchart.wrapping_width)
-        );
+        assert_eq!(node.wrapping_width, Some(config.flowchart.wrapping_width));
         assert_eq!(node.look.as_deref(), Some(config.look.as_str()));
     }
 

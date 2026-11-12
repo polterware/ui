@@ -99,11 +99,8 @@ mod tests {
 
     #[test]
     fn draws_a_rendered_scene_with_view_box() {
-        let scene = render(
-            "flowchart TD\n  A[Start] --> B[End]\n",
-            &Config::default(),
-        )
-        .expect("render flowchart");
+        let scene = render("flowchart TD\n  A[Start] --> B[End]\n", &Config::default())
+            .expect("render flowchart");
         assert!(scene.view_box.width > 0.0);
         assert!(scene.view_box.height > 0.0);
         assert!(!scene.items.is_empty());

@@ -3,7 +3,7 @@
 
 use crate::measure::{Font, TextMeasure};
 use crate::render::intersect::{self, Intersectable};
-use crate::render::labels::{LabelOptions, create_label};
+use crate::render::labels::{LabelOptions, create_label, svg_text_box};
 use crate::scene::{Color, Group, Item, Path, PathStyle, Point, Rect, SourceRef, Transform};
 use std::collections::HashMap;
 
@@ -1895,10 +1895,7 @@ fn prepare_with(
     };
     // `labelHelper`: an explicit width wins over the wrapping width, and a label wraps at
     // the diagram's `wrappingWidth` when the node names none.
-    let width = node
-        .width
-        .or(node.wrapping_width)
-        .unwrap_or(f64::INFINITY);
+    let width = node.width.or(node.wrapping_width).unwrap_or(f64::INFINITY);
     let label = create_label(
         &LabelOptions {
             text: node.label.clone(),
@@ -1915,7 +1912,7 @@ fn prepare_with(
         message: e.to_string(),
     })?;
     let text_size = match label.items.first() {
-        Some(Item::Text(text)) => text.size,
+        Some(Item::Text(text)) => svg_text_box(&text.lines, &text.font, ctx.measure),
         _ => crate::scene::Size::ZERO,
     };
     // `labelHelper`'s `withMinWidth`: a label narrower than the diagram's minimum is widened

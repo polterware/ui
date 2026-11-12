@@ -14,7 +14,7 @@ use crate::render::layout_dagre::{
 };
 use crate::render::markers::marker_definitions;
 use crate::render::shapes::{ShapeError, position_node};
-use crate::scene::{PathShape, Rect, Scene};
+use crate::scene::{Group, PathShape, PathStyle, Rect, RectShape, Scene, Transform};
 use crate::theme::{Theme, ThemeVariables};
 
 use super::create_graph::{CreatedGraph, create_graph_with_elements};
@@ -248,6 +248,19 @@ pub fn measure_dagre_graph(
         }
     }
 
+    // Upstream's measurement pass visits every node in the prepared graph. The self-loop
+    // dummies are `labelRect` nodes with an empty label, and `labelRect`'s `updateNodeBounds`
+    // sizes them from its 0.1 × 0.1 rect; the 10 × 10 `prepareLayoutForDagre` sets is only a
+    // placeholder. They carry no shape here, so apply that measurement directly.
+    for node_id in prepared.graph.nodes() {
+        if let Some(node) = prepared.graph.node_mut(&node_id)
+            && node.dummy.as_deref() == Some("selfedge")
+        {
+            node.width = 0.1;
+            node.height = 0.1;
+        }
+    }
+
     let top = data4_layout.config.flowchart.sub_graph_title_margin.top;
     let bottom = data4_layout.config.flowchart.sub_graph_title_margin.bottom;
     let sub_graph_title_total_margin = top + bottom;
@@ -461,7 +474,28 @@ pub fn dagre_render(
         }
     }
 
+    // Upstream paints every node the layout graph holds, self-loop dummies included. A dummy
+    // is a `labelRect` node: a 0.1 × 0.1 rect at the node's origin, invisible but part of the
+    // SVG, and its box is why a self-loop widens the fitted viewBox below the last real node.
+    for node_id in measured.graph.nodes() {
+        let Some(dummy) = measured.graph.node(&node_id) else {
+            continue;
+        };
+        if dummy.dummy.as_deref() != Some("selfedge") {
+            continue;
+        }
+        let mut group = Group::new().with_class("label edgeLabel");
+        group.push(RectShape::new(
+            Rect::new(0.0, 0.0, dummy.width, dummy.height),
+            0.0,
+            PathStyle::default(),
+        ));
+        group.transform = Transform::translate(dummy.x.unwrap_or(0.0), dummy.y.unwrap_or(0.0));
+        scene.push(group);
+    }
+
     // Paint edges
+    let mut path_bounds: Option<Rect> = None;
     for edge in &data4_layout.edges {
         if edge.is_layout_only == Some(true) {
             continue;
@@ -483,6 +517,9 @@ pub fn dagre_render(
             ..Default::default()
         };
         if let Ok(inserted) = insert_edge_with_type(&edge_data, &diagram_id, &diagram_type) {
+            if let Some(bounds) = svg_path_bounds(&inserted.path) {
+                path_bounds = Some(path_bounds.map_or(bounds, |acc| acc.union(bounds)));
+            }
             scene.push(PathShape {
                 path: inserted.path,
                 ..Default::default()
@@ -516,15 +553,20 @@ pub fn dagre_render(
         }
     }
 
-    for edge in &data4_layout.edges {
-        if let Some(pts) = &edge.points {
-            for p in pts {
-                min_x = min_x.min(p.x);
-                max_x = max_x.max(p.x);
-                min_y = min_y.min(p.y);
-                max_y = max_y.max(p.y);
-            }
+    // The self-loop dummy rects are painted from their node origin, not around it.
+    for node_id in measured.graph.nodes() {
+        if let Some(dummy) = measured.graph.node(&node_id)
+            && dummy.dummy.as_deref() == Some("selfedge")
+            && let (Some(x), Some(y)) = (dummy.x, dummy.y)
+        {
+            min_x = min_x.min(x);
+            max_x = max_x.max(x + dummy.width);
+            min_y = min_y.min(y);
+            max_y = max_y.max(y + dummy.height);
         }
+    }
+
+    for edge in &data4_layout.edges {
         if let (Some(lx), Some(ly), Some(lw), Some(lh)) = (edge.x, edge.y, edge.width, edge.height)
             && lw > 0.0
             && lh > 0.0
@@ -534,6 +576,13 @@ pub fn dagre_render(
             min_y = min_y.min(ly - lh / 2.0);
             max_y = max_y.max(ly + lh / 2.0);
         }
+    }
+
+    if let Some(bounds) = path_bounds {
+        min_x = min_x.min(bounds.x);
+        max_x = max_x.max(bounds.x + bounds.width);
+        min_y = min_y.min(bounds.y);
+        max_y = max_y.max(bounds.y + bounds.height);
     }
 
     let bounds = if min_x <= max_x && min_y <= max_y {
@@ -548,4 +597,35 @@ pub fn dagre_render(
     setup_view_port_for_svg(&mut scene, padding, "flowchart", use_max_width);
 
     Ok(scene)
+}
+
+/// The box `getBBox()` reports for an edge's `d` attribute: the move, line and arc endpoints
+/// are its geometry, while a cubic or quadratic segment contributes only its starting point
+/// (the preceding move or line). This is the box the fitted viewBox is built from.
+fn svg_path_bounds(path: &crate::scene::Path) -> Option<Rect> {
+    use crate::scene::PathCommand;
+
+    let mut min_x = f64::INFINITY;
+    let mut max_x = f64::NEG_INFINITY;
+    let mut min_y = f64::INFINITY;
+    let mut max_y = f64::NEG_INFINITY;
+    let mut include = |x: f64, y: f64| {
+        min_x = min_x.min(x);
+        max_x = max_x.max(x);
+        min_y = min_y.min(y);
+        max_y = max_y.max(y);
+    };
+    for command in &path.commands {
+        match *command {
+            PathCommand::MoveTo { x, y } | PathCommand::LineTo { x, y } => include(x, y),
+            PathCommand::ArcTo { rx, ry, x, y, .. } => {
+                include(x, y);
+                include(x - rx, y - ry);
+                include(x + rx, y + ry);
+            }
+            PathCommand::CubicTo { .. } | PathCommand::QuadTo { .. } | PathCommand::Close => {}
+        }
+    }
+    (min_x <= max_x && min_y <= max_y)
+        .then(|| Rect::new(min_x, min_y, max_x - min_x, max_y - min_y))
 }

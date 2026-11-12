@@ -7,7 +7,8 @@
 //! leaf classes have no scene equivalent (ellipses carry no class); the nesting keeps the
 //! group role.
 use super::{
-    IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, prepare_ignoring_min_width, shape_style,
+    IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, prepare_ignoring_min_width,
+    shape_style,
 };
 use crate::scene::{EllipseShape, Item, Point, Rect, Size, SourceRef};
 
