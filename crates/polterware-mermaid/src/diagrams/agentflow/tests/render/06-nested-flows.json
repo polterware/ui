@@ -1,0 +1,108 @@
+{
+  "name": "06-nested-flows",
+  "source": "agentflow-beta TB\n  flow outer[\"Outer\"]\n    a[\"A\"]\n    flow inner[\"Inner\"]\n      b[\"B\"]\n    end\n    a --> b\n  end\n  b --> c[\"C\"]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 138,
+        "y": 57.2,
+        "width": 150,
+        "height": 48.4
+      },
+      {
+        "id": "b",
+        "x": 138,
+        "y": 180.6,
+        "width": 150,
+        "height": 48.4
+      },
+      {
+        "id": "c",
+        "x": 138,
+        "y": 329,
+        "width": 150,
+        "height": 48.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "outer",
+        "x": 138,
+        "y": 131.4,
+        "width": 260,
+        "height": 246.8
+      },
+      {
+        "id": "inner",
+        "x": 138,
+        "y": 180.60000000000002,
+        "width": 220,
+        "height": 98.4
+      }
+    ],
+    "edges": [
+      {
+        "id": "L_a_b_0",
+        "points": [
+          {
+            "x": 138,
+            "y": 81.4
+          },
+          {
+            "x": 138,
+            "y": 106.4
+          },
+          {
+            "x": 138,
+            "y": 131.4
+          },
+          {
+            "x": 138,
+            "y": 156.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "L_b_c_0",
+        "points": [
+          {
+            "x": 138,
+            "y": 204.79999999999998
+          },
+          {
+            "x": 138,
+            "y": 229.8
+          },
+          {
+            "x": 138,
+            "y": 254.8
+          },
+          {
+            "x": 138,
+            "y": 279.8
+          },
+          {
+            "x": 138,
+            "y": 304.8
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 276,
+      "height": 361.2
+    },
+    "rawViewBox": "0 0 276 361.2"
+  }
+}

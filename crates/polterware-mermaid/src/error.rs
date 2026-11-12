@@ -187,6 +187,15 @@ impl From<crate::diagrams::mindmap::render::MindmapRenderError> for RenderError 
     }
 }
 
+impl From<crate::diagrams::agentflow::AgentflowRenderError> for RenderError {
+    fn from(error: crate::diagrams::agentflow::AgentflowRenderError) -> Self {
+        match error {
+            crate::diagrams::agentflow::AgentflowRenderError::Parse(error) => Self::Parse(error),
+            crate::diagrams::agentflow::AgentflowRenderError::Layout(error) => Self::Layout(error),
+        }
+    }
+}
+
 impl From<crate::diagrams::block::render::BlockRenderError> for RenderError {
     fn from(error: crate::diagrams::block::render::BlockRenderError) -> Self {
         match error {

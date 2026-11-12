@@ -1,0 +1,81 @@
+{
+  "name": "12-class-def",
+  "source": "agentflow-beta LR\n  classDef hot fill:#f96,stroke:#333,stroke-width:2px\n  a[\"Alpha\"]:::hot --> b[\"Beta\"]\n  b --> c[\"Gamma\"]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 83,
+        "y": 32.2,
+        "width": 150,
+        "height": 48.4
+      },
+      {
+        "id": "b",
+        "x": 283,
+        "y": 32.2,
+        "width": 150,
+        "height": 48.4
+      },
+      {
+        "id": "c",
+        "x": 483,
+        "y": 32.2,
+        "width": 150,
+        "height": 48.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "L_a_b_0",
+        "points": [
+          {
+            "x": 158,
+            "y": 32.2
+          },
+          {
+            "x": 183,
+            "y": 32.2
+          },
+          {
+            "x": 208,
+            "y": 32.2
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "L_b_c_0",
+        "points": [
+          {
+            "x": 358,
+            "y": 32.2
+          },
+          {
+            "x": 383,
+            "y": 32.2
+          },
+          {
+            "x": 408,
+            "y": 32.2
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 3.552713678800501e-15,
+      "width": 566,
+      "height": 64.4
+    },
+    "rawViewBox": "0 3.552713678800501e-15 566 64.4"
+  }
+}

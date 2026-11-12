@@ -1,0 +1,93 @@
+{
+  "name": "05-flow-container",
+  "source": "agentflow-beta TB\n  flow intake[\"Intake\"]\n    a[\"Read ticket\"]\n    b[\"Classify\"]\n    a --> b\n  end\n  b --> c[\"Reply\"]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "a",
+        "x": 118,
+        "y": 57.2,
+        "width": 150,
+        "height": 48.4
+      },
+      {
+        "id": "b",
+        "x": 118,
+        "y": 155.6,
+        "width": 150,
+        "height": 48.4
+      },
+      {
+        "id": "c",
+        "x": 118,
+        "y": 279,
+        "width": 150,
+        "height": 48.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "intake",
+        "x": 118,
+        "y": 106.4,
+        "width": 220,
+        "height": 196.8
+      }
+    ],
+    "edges": [
+      {
+        "id": "L_a_b_0",
+        "points": [
+          {
+            "x": 118,
+            "y": 81.4
+          },
+          {
+            "x": 118,
+            "y": 106.4
+          },
+          {
+            "x": 118,
+            "y": 131.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "L_b_c_0",
+        "points": [
+          {
+            "x": 118,
+            "y": 179.79999999999998
+          },
+          {
+            "x": 118,
+            "y": 204.8
+          },
+          {
+            "x": 118,
+            "y": 229.8
+          },
+          {
+            "x": 118,
+            "y": 254.8
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 236,
+      "height": 311.2
+    },
+    "rawViewBox": "0 0 236 311.2"
+  }
+}
