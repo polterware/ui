@@ -4,6 +4,7 @@ pub mod cose_base;
 pub mod dagre;
 pub mod fcose;
 pub mod graphlib;
+pub mod grid;
 pub mod hierarchy;
 pub mod layout_base;
 pub mod sankey;
