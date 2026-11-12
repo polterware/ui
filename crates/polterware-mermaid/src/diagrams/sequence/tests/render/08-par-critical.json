@@ -1,0 +1,175 @@
+{
+  "name": "08-par-critical",
+  "source": "sequenceDiagram\n  par Action 1\n    Alice->>Bob: Task A\n  and Action 2\n    Alice->>John: Task B\n  end\n  critical Protect database\n    Bob->>John: Save state\n  option Backup\n    Bob->>John: Backup state\n  end\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 485
+      },
+      {
+        "id": "Bob",
+        "x": 200,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 485
+      },
+      {
+        "id": "John",
+        "x": 400,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 485
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "1",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 110,
+        "stopy": 146,
+        "height": 36
+      },
+      {
+        "id": "3",
+        "from": "Alice",
+        "to": "John",
+        "type": 0,
+        "startx": 76,
+        "stopx": 471,
+        "starty": 201,
+        "stopy": 237,
+        "height": 36
+      },
+      {
+        "id": "6",
+        "from": "Bob",
+        "to": "John",
+        "type": 0,
+        "startx": 276,
+        "stopx": 471,
+        "starty": 318,
+        "stopy": 354,
+        "height": 36
+      },
+      {
+        "id": "8",
+        "from": "Bob",
+        "to": "John",
+        "type": 0,
+        "startx": 276,
+        "stopx": 471,
+        "starty": 409,
+        "stopy": 445,
+        "height": 36
+      }
+    ],
+    "notes": [],
+    "loops": [
+      {
+        "title": "[Action 1]",
+        "startx": 64,
+        "stopx": 486,
+        "starty": 75,
+        "stopy": 257,
+        "height": 182
+      },
+      {
+        "title": "[Protect<br/>database]",
+        "startx": 264,
+        "stopx": 486,
+        "starty": 267,
+        "stopy": 465,
+        "height": 198
+      }
+    ],
+    "edges": [
+      {
+        "id": "i1",
+        "points": [
+          {
+            "x": 76,
+            "y": 156
+          },
+          {
+            "x": 271,
+            "y": 156
+          }
+        ],
+        "x1": 76,
+        "y1": 156,
+        "x2": 271,
+        "y2": 156
+      },
+      {
+        "id": "i3",
+        "points": [
+          {
+            "x": 76,
+            "y": 247
+          },
+          {
+            "x": 471,
+            "y": 247
+          }
+        ],
+        "x1": 76,
+        "y1": 247,
+        "x2": 471,
+        "y2": 247
+      },
+      {
+        "id": "i6",
+        "points": [
+          {
+            "x": 276,
+            "y": 364
+          },
+          {
+            "x": 471,
+            "y": 364
+          }
+        ],
+        "x1": 276,
+        "y1": 364,
+        "x2": 471,
+        "y2": 364
+      },
+      {
+        "id": "i8",
+        "points": [
+          {
+            "x": 276,
+            "y": 455
+          },
+          {
+            "x": 471,
+            "y": 455
+          }
+        ],
+        "x1": 276,
+        "y1": 455,
+        "x2": 471,
+        "y2": 455
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -10,
+      "width": 650,
+      "height": 571
+    },
+    "rawViewBox": "-50 -10 650 571"
+  }
+}

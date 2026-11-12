@@ -1,0 +1,103 @@
+{
+  "name": "05-notes",
+  "source": "sequenceDiagram\n  participant Alice\n  participant Bob\n  Note left of Alice: Note on left\n  Note right of Bob: Note on right\n  Note over Alice: Note over Alice\n  Note over Alice,Bob: Note over both\n  Alice->>Bob: Hello\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Alice",
+        "x": 0,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 323
+      },
+      {
+        "id": "Bob",
+        "x": 200,
+        "y": 0,
+        "width": 150,
+        "height": 65,
+        "stopy": 323
+      }
+    ],
+    "boxes": [],
+    "messages": [
+      {
+        "id": "4",
+        "from": "Alice",
+        "to": "Bob",
+        "type": 0,
+        "startx": 76,
+        "stopx": 271,
+        "starty": 257,
+        "stopy": 293,
+        "height": 36
+      }
+    ],
+    "notes": [
+      {
+        "message": "Note on left",
+        "startx": -100,
+        "stopx": 50,
+        "starty": 75,
+        "stopy": 113,
+        "width": 150,
+        "height": 48
+      },
+      {
+        "message": "Note on right",
+        "startx": 300,
+        "stopx": 450,
+        "starty": 123,
+        "stopy": 161,
+        "width": 150,
+        "height": 48
+      },
+      {
+        "message": "Note over Alice",
+        "startx": -7,
+        "stopx": 157,
+        "starty": 171,
+        "stopy": 209,
+        "width": 164,
+        "height": 48
+      },
+      {
+        "message": "Note over both",
+        "startx": 50,
+        "stopx": 300,
+        "starty": 219,
+        "stopy": 257,
+        "width": 250,
+        "height": 48
+      }
+    ],
+    "loops": [],
+    "edges": [
+      {
+        "id": "i4",
+        "points": [
+          {
+            "x": 76,
+            "y": 303
+          },
+          {
+            "x": 271,
+            "y": 303
+          }
+        ],
+        "x1": 76,
+        "y1": 303,
+        "x2": 271,
+        "y2": 303
+      }
+    ],
+    "viewBox": {
+      "x": -150,
+      "y": -10,
+      "width": 650,
+      "height": 409
+    },
+    "rawViewBox": "-150 -10 650 409"
+  }
+}

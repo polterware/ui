@@ -103,6 +103,14 @@ impl From<crate::diagrams::state::StateRenderError> for RenderError {
     }
 }
 
+impl From<crate::diagrams::sequence::SequenceRenderError> for RenderError {
+    fn from(error: crate::diagrams::sequence::SequenceRenderError) -> Self {
+        match error {
+            crate::diagrams::sequence::SequenceRenderError::Parse(error) => Self::Parse(error),
+        }
+    }
+}
+
 impl From<crate::diagrams::class::render::ClassRenderError> for RenderError {
     fn from(error: crate::diagrams::class::render::ClassRenderError) -> Self {
         match error {

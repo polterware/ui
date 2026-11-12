@@ -1,0 +1,128 @@
+{
+  "name": "05-long-labels",
+  "source": "mindmap\n  root((long labels))\n    This branch label is long enough to wrap\n      A nested label that also has to wrap at the wrapping width\n    Short\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "0",
+        "x": 126.8606117812287,
+        "y": 295.0270492975313,
+        "width": 127.19104440203948,
+        "height": 127.19104440203948,
+        "domId": "mindmap-diagram-5-node_0",
+        "shape": "mindmapCircle",
+        "classes": "mindmap-node section-root section--1",
+        "level": 0
+      },
+      {
+        "id": "1",
+        "x": 131,
+        "y": 154.99418991086384,
+        "width": 232,
+        "height": 46,
+        "domId": "mindmap-diagram-5-node_1",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-0",
+        "level": 2,
+        "section": 0
+      },
+      {
+        "id": "2",
+        "x": 136.72246547104868,
+        "y": 46.8,
+        "width": 222.4,
+        "height": 63.6,
+        "domId": "mindmap-diagram-5-node_2",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-0",
+        "level": 4,
+        "section": 0
+      },
+      {
+        "id": "3",
+        "x": 120.28452518732911,
+        "y": 426.2230689300839,
+        "width": 88,
+        "height": 28.4,
+        "domId": "mindmap-diagram-5-node_3",
+        "shape": "defaultMindmapNode",
+        "classes": "mindmap-node section-1",
+        "level": 2,
+        "section": 1
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge_0_1",
+        "points": [
+          {
+            "x": 127.3038199954653,
+            "y": 280.03359851131023
+          },
+          {
+            "x": 128.93030589061433,
+            "y": 225.01061960419756
+          },
+          {
+            "x": 130.55679178576338,
+            "y": 169.98764069708488
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_1_2",
+        "points": [
+          {
+            "x": 131.79225300525903,
+            "y": 140.0151266832899
+          },
+          {
+            "x": 133.86123273552434,
+            "y": 100.89709495543192
+          },
+          {
+            "x": 135.93021246578965,
+            "y": 61.77906322757394
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge_0_3",
+        "points": [
+          {
+            "x": 126.10969252635081,
+            "y": 310.0082415155309
+          },
+          {
+            "x": 123.5725684842789,
+            "y": 360.62505911380765
+          },
+          {
+            "x": 121.035444442207,
+            "y": 411.24187671208426
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 5,
+      "y": 4.9999999999999964,
+      "width": 252.92246547104867,
+      "height": 445.4230689300839
+    },
+    "rawViewBox": "5 4.9999999999999964 252.92246547104867 445.4230689300839"
+  }
+}

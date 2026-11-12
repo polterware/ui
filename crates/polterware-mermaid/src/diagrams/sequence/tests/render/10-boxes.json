@@ -1,0 +1,245 @@
+{
+  "name": "10-boxes",
+  "source": "sequenceDiagram\n  box Aqua Service Front\n    actor Client\n    participant Gateway\n  end\n  box LightGreen Backend\n    participant Server\n    participant DB@{ \"type\": \"database\" } as DB\n  end\n  Client->>Gateway: Request\n  Gateway->>Server: Forward\n  Server->>DB: Query\n  DB-->>Server: Result\n  Server-->>Gateway: Return\n  Gateway-->>Client: Response\n",
+  "expected": {
+    "actors": [
+      {
+        "id": "Client",
+        "x": 5,
+        "y": 28,
+        "width": 150,
+        "height": 65,
+        "stopy": 389
+      },
+      {
+        "id": "Gateway",
+        "x": 205,
+        "y": 28,
+        "width": 150,
+        "height": 65,
+        "stopy": 389
+      },
+      {
+        "id": "Server",
+        "x": 425,
+        "y": 28,
+        "width": 150,
+        "height": 65,
+        "stopy": 389
+      },
+      {
+        "id": "DB",
+        "x": 625,
+        "y": 28,
+        "width": 150,
+        "height": 70.00000000000006,
+        "stopy": 389
+      }
+    ],
+    "boxes": [
+      {
+        "name": "Service Front",
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 469.00000000000006,
+        "startx": -20,
+        "starty": -5,
+        "stopx": 380,
+        "stopy": 479.00000000000006
+      },
+      {
+        "name": "Backend",
+        "x": 420,
+        "y": 0,
+        "width": 360,
+        "height": 469.00000000000006,
+        "startx": 400,
+        "starty": -5,
+        "stopx": 800,
+        "stopy": 479.00000000000006
+      }
+    ],
+    "messages": [
+      {
+        "id": "0",
+        "from": "Client",
+        "to": "Gateway",
+        "type": 0,
+        "startx": 81,
+        "stopx": 276,
+        "starty": 93,
+        "stopy": 129,
+        "height": 36
+      },
+      {
+        "id": "1",
+        "from": "Gateway",
+        "to": "Server",
+        "type": 0,
+        "startx": 281,
+        "stopx": 496,
+        "starty": 139,
+        "stopy": 175,
+        "height": 36
+      },
+      {
+        "id": "2",
+        "from": "Server",
+        "to": "DB",
+        "type": 0,
+        "startx": 501,
+        "stopx": 696,
+        "starty": 185,
+        "stopy": 221,
+        "height": 36
+      },
+      {
+        "id": "3",
+        "from": "DB",
+        "to": "Server",
+        "type": 1,
+        "startx": 699,
+        "stopx": 504,
+        "starty": 231,
+        "stopy": 267,
+        "height": 36
+      },
+      {
+        "id": "4",
+        "from": "Server",
+        "to": "Gateway",
+        "type": 1,
+        "startx": 499,
+        "stopx": 284,
+        "starty": 277,
+        "stopy": 313,
+        "height": 36
+      },
+      {
+        "id": "5",
+        "from": "Gateway",
+        "to": "Client",
+        "type": 1,
+        "startx": 279,
+        "stopx": 84,
+        "starty": 323,
+        "stopy": 359,
+        "height": 36
+      }
+    ],
+    "notes": [],
+    "loops": [],
+    "edges": [
+      {
+        "id": "i0",
+        "points": [
+          {
+            "x": 81,
+            "y": 139
+          },
+          {
+            "x": 276,
+            "y": 139
+          }
+        ],
+        "x1": 81,
+        "y1": 139,
+        "x2": 276,
+        "y2": 139
+      },
+      {
+        "id": "i1",
+        "points": [
+          {
+            "x": 281,
+            "y": 185
+          },
+          {
+            "x": 496,
+            "y": 185
+          }
+        ],
+        "x1": 281,
+        "y1": 185,
+        "x2": 496,
+        "y2": 185
+      },
+      {
+        "id": "i2",
+        "points": [
+          {
+            "x": 501,
+            "y": 231
+          },
+          {
+            "x": 696,
+            "y": 231
+          }
+        ],
+        "x1": 501,
+        "y1": 231,
+        "x2": 696,
+        "y2": 231
+      },
+      {
+        "id": "i3",
+        "points": [
+          {
+            "x": 699,
+            "y": 277
+          },
+          {
+            "x": 504,
+            "y": 277
+          }
+        ],
+        "x1": 699,
+        "y1": 277,
+        "x2": 504,
+        "y2": 277
+      },
+      {
+        "id": "i4",
+        "points": [
+          {
+            "x": 499,
+            "y": 323
+          },
+          {
+            "x": 284,
+            "y": 323
+          }
+        ],
+        "x1": 499,
+        "y1": 323,
+        "x2": 284,
+        "y2": 323
+      },
+      {
+        "id": "i5",
+        "points": [
+          {
+            "x": 279,
+            "y": 369
+          },
+          {
+            "x": 84,
+            "y": 369
+          }
+        ],
+        "x1": 279,
+        "y1": 369,
+        "x2": 84,
+        "y2": 369
+      }
+    ],
+    "viewBox": {
+      "x": -50,
+      "y": -10,
+      "width": 880,
+      "height": 490.00000000000006
+    },
+    "rawViewBox": "-50 -10 880 490.00000000000006"
+  }
+}
