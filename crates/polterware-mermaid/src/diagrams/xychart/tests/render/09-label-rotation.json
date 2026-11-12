@@ -1,0 +1,541 @@
+{
+  "name": "09-label-rotation",
+  "source": "%%{init: {\"xyChart\": {\"xAxis\": {\"labelRotation\": -45}}}}%%\nxychart-beta\n  title \"Rotated labels\"\n  x-axis \"Category\" [January, February, March]\n  y-axis \"Count\" 0 --> 40\n  bar [12, 27, 35]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 500
+    },
+    "groups": [
+      {
+        "class": "main",
+        "items": [
+          {
+            "type": "rect",
+            "x": 0,
+            "y": 0,
+            "width": 700,
+            "height": 500,
+            "fill": "white",
+            "stroke": null,
+            "strokeWidth": 0
+          },
+          {
+            "class": "chart-title",
+            "items": [
+              {
+                "type": "text",
+                "text": "Rotated labels",
+                "x": 381.1,
+                "y": 21.5,
+                "rotation": 0,
+                "fontSize": 20,
+                "fill": "#131300",
+                "anchor": "middle",
+                "baseline": "middle"
+              }
+            ]
+          },
+          {
+            "class": "plot",
+            "items": [
+              {
+                "class": "bar-plot-0",
+                "items": [
+                  {
+                    "type": "rect",
+                    "x": 65.5,
+                    "y": 286.66860358901243,
+                    "width": 125.39999999999999,
+                    "height": 109.02940153814819,
+                    "fill": "#ECECFF",
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 0
+                  },
+                  {
+                    "type": "rect",
+                    "x": 318.40000000000003,
+                    "y": 160.44435166632718,
+                    "width": 125.39999999999999,
+                    "height": 235.25365346083345,
+                    "fill": "#ECECFF",
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 0
+                  },
+                  {
+                    "type": "rect",
+                    "x": 571.3,
+                    "y": 93.12475064089507,
+                    "width": 125.39999999999999,
+                    "height": 302.57325448626557,
+                    "fill": "#ECECFF",
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 0
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "bottom-axis",
+            "items": [
+              {
+                "class": "axis-line",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 62.19999999999999,
+                        "y": 396.6980051271606
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 700,
+                        "y": 396.6980051271606
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "January",
+                    "x": 122.50779041144828,
+                    "y": 431.45679297502863,
+                    "rotation": -45,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "February",
+                    "x": 375.40779041144833,
+                    "y": 431.45679297502863,
+                    "rotation": -45,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "March",
+                    "x": 628.3077904114483,
+                    "y": 431.45679297502863,
+                    "rotation": -45,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              },
+              {
+                "class": "ticks",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 128.2,
+                        "y": 397.6980051271606
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 128.2,
+                        "y": 402.6980051271606
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 381.1,
+                        "y": 397.6980051271606
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 381.1,
+                        "y": 402.6980051271606
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 634,
+                        "y": 397.6980051271606
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 634,
+                        "y": 402.6980051271606
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "title",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "Category",
+                    "x": 381.09999999999997,
+                    "y": 476.6,
+                    "rotation": 0,
+                    "fontSize": 16,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "left-axis",
+            "items": [
+              {
+                "class": "axisl-line",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 61.19999999999999,
+                        "y": 43
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 61.19999999999999,
+                        "y": 395.6980051271606
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "40",
+                    "x": 50.19999999999999,
+                    "y": 51.05,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "35",
+                    "x": 50.19999999999999,
+                    "y": 93.12475064089507,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "30",
+                    "x": 50.19999999999999,
+                    "y": 135.19950128179016,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "25",
+                    "x": 50.19999999999999,
+                    "y": 177.27425192268524,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "20",
+                    "x": 50.19999999999999,
+                    "y": 219.3490025635803,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "15",
+                    "x": 50.19999999999999,
+                    "y": 261.42375320447536,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "10",
+                    "x": 50.19999999999999,
+                    "y": 303.49850384537046,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "5",
+                    "x": 50.19999999999999,
+                    "y": 345.57325448626557,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "0",
+                    "x": 50.19999999999999,
+                    "y": 387.6480051271606,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  }
+                ]
+              },
+              {
+                "class": "ticks",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 51.05
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 51.05
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 93.12475064089507
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 93.12475064089507
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 135.19950128179016
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 135.19950128179016
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 177.27425192268524
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 177.27425192268524
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 219.3490025635803
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 219.3490025635803
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 261.42375320447536
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 261.42375320447536
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 303.49850384537046
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 303.49850384537046
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 345.57325448626557
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 345.57325448626557
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 387.6480051271606
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 387.6480051271606
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "title",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "Count",
+                    "x": 5,
+                    "y": 219.3490025635803,
+                    "rotation": 270,
+                    "fontSize": 16,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

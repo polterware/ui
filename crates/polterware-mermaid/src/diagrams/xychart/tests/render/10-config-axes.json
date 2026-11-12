@@ -1,0 +1,252 @@
+{
+  "name": "10-config-axes",
+  "source": "%%{init: {\"xyChart\": {\"xAxis\": {\"showTick\": false, \"showAxisLine\": false, \"labelFontSize\": 12}, \"yAxis\": {\"showTitle\": false, \"showTick\": false, \"showAxisLine\": false, \"labelRotation\": 30}}}}%%\nxychart-beta\n  title \"Minimal axes\"\n  x-axis [one, two, three]\n  y-axis 0 --> 10\n  line [3, 7, 9]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 500
+    },
+    "groups": [
+      {
+        "class": "main",
+        "items": [
+          {
+            "type": "rect",
+            "x": 0,
+            "y": 0,
+            "width": 700,
+            "height": 500,
+            "fill": "white",
+            "stroke": null,
+            "strokeWidth": 0
+          },
+          {
+            "class": "chart-title",
+            "items": [
+              {
+                "type": "text",
+                "text": "Minimal axes",
+                "x": 363.4,
+                "y": 21.5,
+                "rotation": 0,
+                "fontSize": 20,
+                "fill": "#131300",
+                "anchor": "middle",
+                "baseline": "middle"
+              }
+            ]
+          },
+          {
+            "class": "plot",
+            "items": [
+              {
+                "class": "line-plot-0",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 44.8,
+                        "y": 343.02
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 363.4,
+                        "y": 176.18
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 682,
+                        "y": 92.76
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "bottom-axis",
+            "items": [
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "one",
+                    "x": 44.80000000000001,
+                    "y": 481.2,
+                    "rotation": 0,
+                    "fontSize": 12,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "two",
+                    "x": 363.40000000000003,
+                    "y": 481.2,
+                    "rotation": 0,
+                    "fontSize": 12,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "three",
+                    "x": 682,
+                    "y": 481.2,
+                    "rotation": 0,
+                    "fontSize": 12,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "left-axis",
+            "items": [
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "10",
+                    "x": 21.80000000000001,
+                    "y": 51.05,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "9",
+                    "x": 21.80000000000001,
+                    "y": 92.75999999999999,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "8",
+                    "x": 21.80000000000001,
+                    "y": 134.46999999999997,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "7",
+                    "x": 21.80000000000001,
+                    "y": 176.18,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "6",
+                    "x": 21.80000000000001,
+                    "y": 217.89,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "5",
+                    "x": 21.80000000000001,
+                    "y": 259.59999999999997,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "4",
+                    "x": 21.80000000000001,
+                    "y": 301.31,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "3",
+                    "x": 21.80000000000001,
+                    "y": 343.02,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "2",
+                    "x": 21.80000000000001,
+                    "y": 384.72999999999996,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "1",
+                    "x": 21.80000000000001,
+                    "y": 426.44,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "0",
+                    "x": 21.80000000000001,
+                    "y": 468.15,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

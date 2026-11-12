@@ -23,9 +23,9 @@
 //!   title, the axis titles, the band categories, the plot titles, the point labels, and the
 //!   accessibility strings.
 //! * `setTmpSVGG`, `getDrawableElem`, `XYChartBuilder`, and the whole `chartBuilder/` tree plus
-//!   `xychartRenderer.ts` lay out and draw; nothing here does. The `chartBuilder` spec files
+//!   `xychartRenderer.ts` lay out and draw: [`render`] ports them. The `chartBuilder` spec files
 //!   (`chartTitle.spec.ts`, `legend.spec.ts`, `textDimensionCalculator.spec.ts`) are rendering
-//!   and are not ported.
+//!   and are not ported as specs; the renderer's fixtures cover the same geometry.
 //! * `getDrawableElem` throws `No Plot to render, please provide a plot with some data` when
 //!   there is no plot; that is a rendering check, so parsing a chart without plots succeeds.
 //! * The grammar's LALR error text is replaced by this crate's messages; the [`ParseError`]
@@ -44,6 +44,7 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Axis, Orientation, Plot, PlotKind, PlotPoint};
 

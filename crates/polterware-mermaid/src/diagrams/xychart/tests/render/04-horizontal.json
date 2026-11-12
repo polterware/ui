@@ -1,0 +1,599 @@
+{
+  "name": "04-horizontal",
+  "source": "xychart-beta horizontal\n  title \"Ranking\"\n  x-axis \"Team\" [alpha, beta, gamma]\n  y-axis \"Score\" 0 --> 100\n  bar [55, 78, 92]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 500
+    },
+    "groups": [
+      {
+        "class": "main",
+        "items": [
+          {
+            "type": "rect",
+            "x": 0,
+            "y": 0,
+            "width": 700,
+            "height": 500,
+            "fill": "white",
+            "stroke": null,
+            "strokeWidth": 0
+          },
+          {
+            "class": "chart-title",
+            "items": [
+              {
+                "type": "text",
+                "text": "Ranking",
+                "x": 393.7,
+                "y": 21.5,
+                "rotation": 0,
+                "fontSize": 20,
+                "fill": "#131300",
+                "anchor": "middle",
+                "baseline": "middle"
+              }
+            ]
+          },
+          {
+            "class": "plot",
+            "items": [
+              {
+                "class": "bar-plot-0",
+                "items": [
+                  {
+                    "type": "rect",
+                    "x": 87.39999999999998,
+                    "y": 106.7,
+                    "width": 335.67,
+                    "height": 83.6,
+                    "fill": "#ECECFF",
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 0
+                  },
+                  {
+                    "type": "rect",
+                    "x": 87.39999999999998,
+                    "y": 260.45,
+                    "width": 470.77200000000005,
+                    "height": 83.6,
+                    "fill": "#ECECFF",
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 0
+                  },
+                  {
+                    "type": "rect",
+                    "x": 87.39999999999998,
+                    "y": 414.2,
+                    "width": 553.008,
+                    "height": 83.6,
+                    "fill": "#ECECFF",
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 0
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "left-axis",
+            "items": [
+              {
+                "class": "axisl-line",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 86.39999999999998,
+                        "y": 104.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 86.39999999999998,
+                        "y": 500
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "alpha",
+                    "x": 75.39999999999998,
+                    "y": 148.5,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "beta",
+                    "x": 75.39999999999998,
+                    "y": 302.25,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "gamma",
+                    "x": 75.39999999999998,
+                    "y": 456,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  }
+                ]
+              },
+              {
+                "class": "ticks",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 85.39999999999998,
+                        "y": 148.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 80.39999999999998,
+                        "y": 148.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 85.39999999999998,
+                        "y": 302.25
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 80.39999999999998,
+                        "y": 302.25
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 85.39999999999998,
+                        "y": 456
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 80.39999999999998,
+                        "y": 456
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "title",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "Team",
+                    "x": 5,
+                    "y": 302.25,
+                    "rotation": 270,
+                    "fontSize": 16,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "top-axis",
+            "items": [
+              {
+                "class": "axis-line",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 87.39999999999998,
+                        "y": 103.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 700,
+                        "y": 103.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "0",
+                    "x": 99.99999999999997,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "10",
+                    "x": 158.73999999999995,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "20",
+                    "x": 217.47999999999996,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "30",
+                    "x": 276.21999999999997,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "40",
+                    "x": 334.96,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "50",
+                    "x": 393.7,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "60",
+                    "x": 452.44,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "70",
+                    "x": 511.17999999999995,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "80",
+                    "x": 569.92,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "90",
+                    "x": 628.66,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "100",
+                    "x": 687.4,
+                    "y": 76.4,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              },
+              {
+                "class": "ticks",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 99.99999999999997,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 99.99999999999997,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 158.73999999999995,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 158.73999999999995,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 217.47999999999996,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 217.47999999999996,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 276.21999999999997,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 276.21999999999997,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 334.96,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 334.96,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 393.7,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 393.7,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 452.44,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 452.44,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 511.17999999999995,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 511.17999999999995,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 569.92,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 569.92,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 628.66,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 628.66,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 687.4,
+                        "y": 102.5
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 687.4,
+                        "y": 97.5
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "title",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "Score",
+                    "x": 393.7,
+                    "y": 48,
+                    "rotation": 0,
+                    "fontSize": 16,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

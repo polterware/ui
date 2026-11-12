@@ -1,0 +1,512 @@
+{
+  "name": "14-no-legend-no-title",
+  "source": "%%{init: {\"xyChart\": {\"showLegend\": false, \"showTitle\": false}}}%%\nxychart-beta\n  title \"Hidden\"\n  x-axis [plain, plain2]\n  y-axis 0 --> 5\n  bar \"Named\" [2, 4]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 500
+    },
+    "groups": [
+      {
+        "class": "main",
+        "items": [
+          {
+            "type": "rect",
+            "x": 0,
+            "y": 0,
+            "width": 700,
+            "height": 500,
+            "fill": "white",
+            "stroke": null,
+            "strokeWidth": 0
+          },
+          {
+            "class": "plot",
+            "items": [
+              {
+                "class": "bar-plot-0",
+                "items": [
+                  {
+                    "type": "rect",
+                    "x": 47.5,
+                    "y": 278.53,
+                    "width": 201.39999999999998,
+                    "height": 188.37,
+                    "fill": "#ECECFF",
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 0
+                  },
+                  {
+                    "type": "rect",
+                    "x": 493.3,
+                    "y": 98.20999999999997,
+                    "width": 201.39999999999998,
+                    "height": 368.69,
+                    "fill": "#ECECFF",
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 0
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "bottom-axis",
+            "items": [
+              {
+                "class": "axis-line",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 42.19999999999999,
+                        "y": 467.9
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 700,
+                        "y": 467.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "plain",
+                    "x": 148.2,
+                    "y": 478.9,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "plain2",
+                    "x": 594,
+                    "y": 478.9,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              },
+              {
+                "class": "ticks",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 148.2,
+                        "y": 468.9
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 148.2,
+                        "y": 473.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 594,
+                        "y": 468.9
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 594,
+                        "y": 473.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "left-axis",
+            "items": [
+              {
+                "class": "axisl-line",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 41.19999999999999,
+                        "y": 0
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 41.19999999999999,
+                        "y": 466.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "5",
+                    "x": 30.19999999999999,
+                    "y": 8.049999999999999,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "4.5",
+                    "x": 30.19999999999999,
+                    "y": 53.12999999999998,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "4",
+                    "x": 30.19999999999999,
+                    "y": 98.20999999999997,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "3.5",
+                    "x": 30.19999999999999,
+                    "y": 143.29,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "3",
+                    "x": 30.19999999999999,
+                    "y": 188.37,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "2.5",
+                    "x": 30.19999999999999,
+                    "y": 233.45,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "2",
+                    "x": 30.19999999999999,
+                    "y": 278.53,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "1.5",
+                    "x": 30.19999999999999,
+                    "y": 323.60999999999996,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "1",
+                    "x": 30.19999999999999,
+                    "y": 368.69,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "0.5",
+                    "x": 30.19999999999999,
+                    "y": 413.77,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "0",
+                    "x": 30.19999999999999,
+                    "y": 458.84999999999997,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  }
+                ]
+              },
+              {
+                "class": "ticks",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 8.049999999999999
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 8.049999999999999
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 53.12999999999998
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 53.12999999999998
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 98.20999999999997
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 98.20999999999997
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 143.29
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 143.29
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 188.37
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 188.37
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 233.45
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 233.45
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 278.53
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 278.53
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 323.60999999999996
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 323.60999999999996
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 368.69
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 368.69
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 413.77
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 413.77
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 40.19999999999999,
+                        "y": 458.84999999999997
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 35.19999999999999,
+                        "y": 458.84999999999997
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

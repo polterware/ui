@@ -1,0 +1,571 @@
+{
+  "name": "02-line-point-labels",
+  "source": "xychart-beta\n  title \"Temperature\"\n  x-axis [mon, tue, wed]\n  y-axis \"Celsius\" -5 --> 30\n  line \"Morning\" [2 \"cold\", 12 \"mild\", 24 \"warm\"]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 500
+    },
+    "groups": [
+      {
+        "class": "main",
+        "items": [
+          {
+            "type": "rect",
+            "x": 0,
+            "y": 0,
+            "width": 700,
+            "height": 500,
+            "fill": "white",
+            "stroke": null,
+            "strokeWidth": 0
+          },
+          {
+            "class": "chart-title",
+            "items": [
+              {
+                "type": "text",
+                "text": "Temperature",
+                "x": 334,
+                "y": 21.5,
+                "rotation": 0,
+                "fontSize": 20,
+                "fill": "#131300",
+                "anchor": "middle",
+                "baseline": "middle"
+              }
+            ]
+          },
+          {
+            "class": "plot",
+            "items": [
+              {
+                "class": "line-plot-0",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 74.8,
+                        "y": 377.29
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 334,
+                        "y": 260.776
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 593.2,
+                        "y": 120.959
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "class": "labels",
+                    "items": [
+                      {
+                        "type": "text",
+                        "text": "cold",
+                        "x": 74.79999999999998,
+                        "y": 367.28999999999996,
+                        "rotation": 0,
+                        "fontSize": 12,
+                        "fill": "#ECECFF",
+                        "anchor": "middle",
+                        "baseline": "middle"
+                      },
+                      {
+                        "type": "text",
+                        "text": "mild",
+                        "x": 334,
+                        "y": 250.77571428571423,
+                        "rotation": 0,
+                        "fontSize": 12,
+                        "fill": "#ECECFF",
+                        "anchor": "middle",
+                        "baseline": "middle"
+                      },
+                      {
+                        "type": "text",
+                        "text": "warm",
+                        "x": 593.1999999999999,
+                        "y": 110.95857142857139,
+                        "rotation": 0,
+                        "fontSize": 12,
+                        "fill": "#ECECFF",
+                        "anchor": "middle",
+                        "baseline": "middle"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "legend",
+            "items": [
+              {
+                "class": "markers",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 615.8,
+                        "y": 253.2
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 626.3,
+                        "y": 253.2
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#ECECFF",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "Morning",
+                    "x": 631.1999999999999,
+                    "y": 253.2,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "start",
+                    "baseline": "middle"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "bottom-axis",
+            "items": [
+              {
+                "class": "axis-line",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 62.19999999999999,
+                        "y": 467.9
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 605.8,
+                        "y": 467.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "mon",
+                    "x": 74.79999999999998,
+                    "y": 478.9,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "tue",
+                    "x": 334,
+                    "y": 478.9,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  },
+                  {
+                    "type": "text",
+                    "text": "wed",
+                    "x": 593.1999999999999,
+                    "y": 478.9,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              },
+              {
+                "class": "ticks",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 74.79999999999998,
+                        "y": 468.9
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 74.79999999999998,
+                        "y": 473.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 334,
+                        "y": 468.9
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 334,
+                        "y": 473.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 593.1999999999999,
+                        "y": 468.9
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 593.1999999999999,
+                        "y": 473.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "class": "left-axis",
+            "items": [
+              {
+                "class": "axisl-line",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 61.19999999999999,
+                        "y": 43
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 61.19999999999999,
+                        "y": 466.9
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "label",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "30",
+                    "x": 50.19999999999999,
+                    "y": 51.05,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "25",
+                    "x": 50.19999999999999,
+                    "y": 109.30714285714286,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "20",
+                    "x": 50.19999999999999,
+                    "y": 167.56428571428572,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "15",
+                    "x": 50.19999999999999,
+                    "y": 225.82142857142858,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "10",
+                    "x": 50.19999999999999,
+                    "y": 284.0785714285714,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "5",
+                    "x": 50.19999999999999,
+                    "y": 342.3357142857143,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "0",
+                    "x": 50.19999999999999,
+                    "y": 400.59285714285716,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  },
+                  {
+                    "type": "text",
+                    "text": "-5",
+                    "x": 50.19999999999999,
+                    "y": 458.84999999999997,
+                    "rotation": 0,
+                    "fontSize": 14,
+                    "fill": "#131300",
+                    "anchor": "end",
+                    "baseline": "middle"
+                  }
+                ]
+              },
+              {
+                "class": "ticks",
+                "items": [
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 51.05
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 51.05
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 109.30714285714286
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 109.30714285714286
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 167.56428571428572
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 167.56428571428572
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 225.82142857142858
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 225.82142857142858
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 284.0785714285714
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 284.0785714285714
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 342.3357142857143
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 342.3357142857143
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 400.59285714285716
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 400.59285714285716
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  },
+                  {
+                    "type": "path",
+                    "commands": [
+                      {
+                        "op": "moveTo",
+                        "x": 60.19999999999999,
+                        "y": 458.84999999999997
+                      },
+                      {
+                        "op": "lineTo",
+                        "x": 55.19999999999999,
+                        "y": 458.84999999999997
+                      }
+                    ],
+                    "fill": null,
+                    "stroke": "#131300",
+                    "strokeWidth": 2
+                  }
+                ]
+              },
+              {
+                "class": "title",
+                "items": [
+                  {
+                    "type": "text",
+                    "text": "Celsius",
+                    "x": 5,
+                    "y": 254.95,
+                    "rotation": 270,
+                    "fontSize": 16,
+                    "fill": "#131300",
+                    "anchor": "middle",
+                    "baseline": "text-before-edge"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
