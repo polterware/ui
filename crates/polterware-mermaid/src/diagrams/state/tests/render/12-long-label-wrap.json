@@ -1,0 +1,81 @@
+{
+  "name": "12-long-label-wrap",
+  "source": "stateDiagram-v2\n  state \"This is a fairly long state description that has to wrap at the configured width\" as long_state\n  [*] --> long_state\n  long_state --> [*]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "long_state",
+        "x": 76,
+        "y": 150.8,
+        "width": 136,
+        "height": 157.60000000000002
+      },
+      {
+        "id": "root_start",
+        "x": 76,
+        "y": 15,
+        "width": 14,
+        "height": 14
+      },
+      {
+        "id": "root_end",
+        "x": 76,
+        "y": 286.6,
+        "width": 14.01329321611432,
+        "height": 14
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge0",
+        "points": [
+          {
+            "x": 76,
+            "y": 22
+          },
+          {
+            "x": 76,
+            "y": 47
+          },
+          {
+            "x": 76,
+            "y": 72
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge1",
+        "points": [
+          {
+            "x": 76,
+            "y": 229.60000000000002
+          },
+          {
+            "x": 76,
+            "y": 254.60000000000002
+          },
+          {
+            "x": 76,
+            "y": 279.6
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 152,
+      "height": 301.6
+    },
+    "rawViewBox": "0 0 152 301.6"
+  }
+}

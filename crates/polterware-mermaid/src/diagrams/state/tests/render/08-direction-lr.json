@@ -1,0 +1,116 @@
+{
+  "name": "08-direction-lr",
+  "source": "stateDiagram-v2\n  direction LR\n  [*] --> A\n  A --> B\n  state Container {\n    direction TB\n    C --> D\n  }\n  B --> Container\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "root_start",
+        "x": 15,
+        "y": 118.4,
+        "width": 14,
+        "height": 14
+      },
+      {
+        "id": "A",
+        "x": 140,
+        "y": 118.4,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "B",
+        "x": 326,
+        "y": 118.4,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "C"
+      },
+      {
+        "id": "D"
+      }
+    ],
+    "clusters": [
+      {
+        "id": "Container",
+        "x": 547,
+        "y": 118.4,
+        "width": 206,
+        "height": 220.8
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge0",
+        "points": [
+          {
+            "x": 22,
+            "y": 118.4
+          },
+          {
+            "x": 47,
+            "y": 118.4
+          },
+          {
+            "x": 72,
+            "y": 118.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge1",
+        "points": [
+          {
+            "x": 208,
+            "y": 118.4
+          },
+          {
+            "x": 233,
+            "y": 118.4
+          },
+          {
+            "x": 258,
+            "y": 118.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge3",
+        "points": [
+          {
+            "x": 394,
+            "y": 118.4
+          },
+          {
+            "x": 419,
+            "y": 118.4
+          },
+          {
+            "x": 444,
+            "y": 118.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": -2,
+      "width": 658,
+      "height": 236.8
+    },
+    "rawViewBox": "0 -2 658 236.8"
+  }
+}

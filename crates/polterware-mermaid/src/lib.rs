@@ -56,6 +56,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::flowchart::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::State => {
+            let scene = diagrams::state::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         DiagramKind::Class => {
             let scene = diagrams::class::render::render(&preprocessed.body, &config)?;
             Ok(scene)

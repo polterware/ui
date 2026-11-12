@@ -28,6 +28,9 @@ pub struct ClusterIndex {
     pub extracted: HashMap<String, LayeredGraph>,
     pub extracted_parent: HashMap<String, Option<String>>,
     pub edge_cluster_origins: HashMap<Edge, (Option<String>, Option<String>)>,
+    /// The painted shape of each cluster id, used when a cluster's rendered box feeds its
+    /// size back into the layout.
+    pub shapes: HashMap<String, String>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -610,16 +613,35 @@ fn extractor_owned(
         if info.external_connections || g.children(&id).is_empty() {
             continue;
         }
+        // The scratch graph keeps the cluster itself as its compound root; the recursive pass
+        // must not extract that root again.
+        if owner.as_deref() == Some(id.as_str()) {
+            continue;
+        }
         let rankdir = g
             .graph()
             .and_then(|x| x.rankdir.as_deref())
             .map(|d| if d == "TB" { "LR" } else { "TB" })
             .unwrap_or("LR");
+        // Upstream widens the spacing of an extracted cluster by 25 ranks and keeps the
+        // parent's node spacing.
+        let parent = g.graph();
+        let ranksep = parent.and_then(|x| x.ranksep).unwrap_or(50.0) + 25.0;
+        let nodesep = parent.and_then(|x| x.nodesep).unwrap_or(50.0);
         let mut child = copy_subgraph(&id, g);
+        // Keep the cluster itself as the compound root of its scratch graph, as the recursive
+        // renderer does: dagre then sizes it from its border nodes (children plus node and rank
+        // spacing and every edge label dummy), which is the box the composite is painted in.
+        child.set_node_with(id.clone(), info.data.clone());
+        for node in child.nodes() {
+            if node != id && child.parent(&node).is_none() {
+                let _ = child.set_parent(&node, Some(id.as_str()));
+            }
+        }
         let mut label = GraphLabel {
             rankdir: Some(info.data.rankdir.clone().unwrap_or_else(|| rankdir.into())),
-            nodesep: Some(50.0),
-            ranksep: Some(50.0),
+            nodesep: Some(nodesep),
+            ranksep: Some(ranksep),
             marginx: Some(8.0),
             marginy: Some(8.0),
             ..GraphLabel::default()
@@ -824,8 +846,20 @@ fn run_layout_recursive(
             if let Some((x1, y1, x2, y2)) = bounds
                 && let Some(n) = g.node_mut(&id)
             {
-                n.width = x2 - x1 + 16.0;
-                n.height = y2 - y1 + 16.0;
+                // The scratch graph's root node is the cluster itself: dagre sized it from its
+                // border nodes, which is the box the composite is painted in.
+                if let Some(root) = child.node(&id) {
+                    // The painted composite's bounding box: the cluster rect dagre sized, plus
+                    // the two pixels the SVG title sits above it (`y + 1 - 3` in
+                    // `roundedWithTitle`). A concurrency region is a `divider`, which paints no
+                    // title and keeps the bare rect.
+                    n.width = root.width;
+                    let titled = index.shapes.get(&id).map(String::as_str) != Some("divider");
+                    n.height = root.height + if titled { 2.0 } else { 0.0 };
+                } else {
+                    n.width = x2 - x1 + 16.0;
+                    n.height = y2 - y1 + 16.0;
+                }
             }
             index.extracted.insert(id, child);
         }

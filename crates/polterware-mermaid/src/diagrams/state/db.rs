@@ -814,18 +814,15 @@ impl Db {
 }
 
 fn finalize_node(node: NodeData) -> Node {
-    let (label, description) = match node.label {
-        NodeLabel::Text(text) => (text, Vec::new()),
-        NodeLabel::Lines(lines) => (
-            lines.first().cloned().unwrap_or_default(),
-            lines.get(1..).map(<[String]>::to_vec).unwrap_or_default(),
-        ),
+    let label = match node.label {
+        NodeLabel::Text(text) => text,
+        NodeLabel::Lines(lines) => lines.first().cloned().unwrap_or_default(),
     };
     Node {
         id: node.id,
         shape: node.shape,
         label,
-        description,
+        description: node.description,
         css_classes: node.css_classes,
         css_compiled_styles: node.css_compiled_styles,
         css_styles: node.css_styles,

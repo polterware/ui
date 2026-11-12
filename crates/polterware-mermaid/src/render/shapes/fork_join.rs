@@ -25,6 +25,10 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         Point::ZERO,
         Size::new(width + STATE_PADDING / 2.0, height + STATE_PADDING / 2.0),
     );
+    // The painted bar is what the DOM measurement reports; `bounds` is the intersection box
+    // `forkJoin` grows by half the state padding after measuring.
+    node.width = Some(width);
+    node.height = Some(height);
 
     let line = ctx.theme.color("lineColor").unwrap_or("#333333");
     let style = PathStyle {

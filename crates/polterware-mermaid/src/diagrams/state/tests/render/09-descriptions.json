@@ -1,0 +1,109 @@
+{
+  "name": "09-descriptions",
+  "source": "stateDiagram-v2\n  state \"Long state name\" as s1\n  state \"Another state\" as s2\n  [*] --> s1\n  s1 --> s2: move\n  s2 --> [*]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "s1",
+        "x": 76,
+        "y": 98,
+        "width": 136,
+        "height": 52
+      },
+      {
+        "id": "s2",
+        "x": 76,
+        "y": 222.4,
+        "width": 136,
+        "height": 52
+      },
+      {
+        "id": "root_start",
+        "x": 76,
+        "y": 15,
+        "width": 14,
+        "height": 14
+      },
+      {
+        "id": "root_end",
+        "x": 76,
+        "y": 305.4,
+        "width": 14.01329321611432,
+        "height": 14
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge0",
+        "points": [
+          {
+            "x": 76,
+            "y": 22
+          },
+          {
+            "x": 76,
+            "y": 47
+          },
+          {
+            "x": 76,
+            "y": 72
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge1",
+        "points": [
+          {
+            "x": 76,
+            "y": 124
+          },
+          {
+            "x": 76,
+            "y": 160.2
+          },
+          {
+            "x": 76,
+            "y": 196.4
+          }
+        ],
+        "x": 76,
+        "y": 160.2,
+        "width": 42.4,
+        "height": 22.4
+      },
+      {
+        "id": "edge2",
+        "points": [
+          {
+            "x": 76,
+            "y": 248.4
+          },
+          {
+            "x": 76,
+            "y": 273.4
+          },
+          {
+            "x": 76,
+            "y": 298.4
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 152,
+      "height": 320.4
+    },
+    "rawViewBox": "0 0 152 320.4"
+  }
+}

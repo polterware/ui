@@ -54,6 +54,14 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         Some(Item::Text(text)) => text.size,
         _ => Size::ZERO,
     };
+    // `labelHelper`'s `withMinWidth`: a label narrower than the diagram's minimum is
+    // widened (and stays centred), unless the node has an explicit width.
+    let min_width = if node.label.is_empty() || node.width.is_some() {
+        0.0
+    } else {
+        node.min_width.unwrap_or(0.0)
+    };
+    let text_size = Size::new(text_size.width.max(min_width), text_size.height);
     label.class = Some("label noteLabel".to_string());
     label.transform = Transform::translate(-text_size.width / 2.0, -text_size.height / 2.0);
 

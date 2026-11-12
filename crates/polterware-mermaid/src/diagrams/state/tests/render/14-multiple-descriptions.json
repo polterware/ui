@@ -1,0 +1,109 @@
+{
+  "name": "14-multiple-descriptions",
+  "source": "stateDiagram-v2\n  [*] --> A\n  A: first line\n  A: second line\n  A --> B\n  B --> [*]\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "root_start",
+        "x": 76,
+        "y": 15,
+        "width": 14,
+        "height": 14
+      },
+      {
+        "id": "A",
+        "x": 76,
+        "y": 98.9,
+        "width": 113.6,
+        "height": 53.8
+      },
+      {
+        "id": "B",
+        "x": 76,
+        "y": 193,
+        "width": 136,
+        "height": 34.4
+      },
+      {
+        "id": "root_end",
+        "x": 76,
+        "y": 267.20000000000005,
+        "width": 14.01329321611432,
+        "height": 14
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge0",
+        "points": [
+          {
+            "x": 76,
+            "y": 22
+          },
+          {
+            "x": 76,
+            "y": 47
+          },
+          {
+            "x": 76,
+            "y": 72
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge1",
+        "points": [
+          {
+            "x": 76,
+            "y": 125.80000000000001
+          },
+          {
+            "x": 76,
+            "y": 150.8
+          },
+          {
+            "x": 76,
+            "y": 175.8
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge2",
+        "points": [
+          {
+            "x": 76,
+            "y": 210.2
+          },
+          {
+            "x": 76,
+            "y": 235.20000000000002
+          },
+          {
+            "x": 76,
+            "y": 260.20000000000005
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 152,
+      "height": 282.20000000000005
+    },
+    "rawViewBox": "0 0 152 282.20000000000005"
+  }
+}
