@@ -1,6 +1,13 @@
 //! The parts of the upstream `*.spec.ts` suites that exercise the phase modules ported here.
 
 mod anchored_nodes;
+mod direction_endpoint_clip;
+mod direction_geometry;
+mod direction_label_anchoring;
+mod direction_lr_transform;
+mod direction_port_swap;
+mod direction_terminal_leg_alignment;
+mod direction_terminal_stub;
 mod edge_label_nodes;
 mod helpers;
 mod lane_ordering;

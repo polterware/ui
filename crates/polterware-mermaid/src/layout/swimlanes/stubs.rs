@@ -1,63 +1,75 @@
-//! The calls part A makes into the direction, routing, and registration parts. Each function
-//! names the part that fills it, as the port's split asks. Until then a pass leaves the layout
-//! unchanged, and the phases that need geometry report [`super::SwimlaneError`].
+//! The calls part A makes into the direction, routing, and registration parts. Part B's
+//! direction and geometry passes are ported in [`super::direction`] and reached from here;
+//! parts C and D are still stubs, each naming the pass that fills it. Until then a pass leaves
+//! the layout unchanged, and the phases that need geometry report [`super::SwimlaneError`].
 
 use crate::render::pipeline::types::{LayoutData, Node};
 use crate::scene::Point;
 
 use super::SwimlaneError;
+use super::direction;
 use super::helpers::Direction;
 
 // ---- Part B: direction and geometry ----
 
-/// `direction/lrTransform.ts`. Part B fills it; until then the flow axis keeps its unit stretch.
-pub fn flow_axis_stretch(_nodes: &[Node]) -> f64 {
-    1.0
+/// `direction/lrTransform.ts`.
+pub fn flow_axis_stretch(nodes: &[Node]) -> f64 {
+    direction::lr_transform::flow_axis_stretch(nodes)
 }
 
-/// `direction/geometry.ts`. Part B fills it; until then the polyline is returned unchanged.
+/// `direction/geometry.ts`.
 pub fn orthogonalize_polyline(points: &[Point]) -> Vec<Point> {
-    points.to_vec()
+    direction::geometry::orthogonalize_polyline(points)
 }
 
-/// `direction/geometry.ts`. Part B fills it; until then the polyline is returned unchanged.
+/// `direction/geometry.ts`.
 pub fn simplify_polyline(points: &[Point]) -> Vec<Point> {
-    points.to_vec()
+    direction::geometry::simplify_polyline(points)
 }
 
-/// `direction/lrTransform.ts`. Part B fills it; until then the layout is unchanged.
-pub fn apply_lr_direction_transform(_layout: &mut LayoutData, _direction: Direction) -> bool {
-    false
+/// `direction/lrTransform.ts`.
+pub fn apply_lr_direction_transform(layout: &mut LayoutData, direction: Direction) -> bool {
+    direction::lr_transform::apply_lr_direction_transform(layout, direction)
 }
 
-/// `direction/lrTransform.ts`. Part B fills it; until then the layout is unchanged.
-pub fn apply_bt_direction_transform(_layout: &mut LayoutData) -> bool {
-    false
+/// `direction/lrTransform.ts`.
+pub fn apply_bt_direction_transform(layout: &mut LayoutData) -> bool {
+    direction::lr_transform::apply_bt_direction_transform(layout)
 }
 
-/// `direction/portSwap.ts`. Part B fills it; until then the edges are unchanged.
-pub fn port_swap_to_l_shape(_layout: &mut LayoutData) {}
-
-/// `direction/labelAnchoring.ts`. Part B fills it; until then the labels are unchanged.
-pub fn anchor_labels_to_polyline(_layout: &mut LayoutData) {}
-
-/// `direction/endpointClip.ts`. Part B fills it; until then the endpoints are unchanged.
-pub fn clip_edge_endpoints_to_node_boundaries(_layout: &mut LayoutData) {}
-
-/// `direction/endpointClip.ts`. Part B fills it; until then the points are unchanged.
-pub fn prepare_edge_endpoints_for_renderer(_layout: &mut LayoutData) {}
-
-/// `direction/terminalStub.ts`. Part B fills it; until then the edges are unchanged.
-pub fn collapse_short_terminal_stub(_layout: &mut LayoutData) {}
-
-/// `direction/terminalLegAlignment.ts`. Part B fills it; until then no leg moves.
-pub fn align_terminal_legs_to_ports(_layout: &mut LayoutData) -> bool {
-    false
+/// `direction/portSwap.ts`.
+pub fn port_swap_to_l_shape(layout: &mut LayoutData) {
+    direction::port_swap::port_swap_to_l_shape(layout)
 }
 
-/// `direction/validation.ts`. Part B fills it; until then the layout is accepted.
-pub fn validate_swimlanes_layout(_layout: &LayoutData) -> Result<(), SwimlaneError> {
-    Ok(())
+/// `direction/labelAnchoring.ts`.
+pub fn anchor_labels_to_polyline(layout: &mut LayoutData) {
+    direction::label_anchoring::anchor_labels_to_polyline(layout)
+}
+
+/// `direction/endpointClip.ts`.
+pub fn clip_edge_endpoints_to_node_boundaries(layout: &mut LayoutData) {
+    direction::endpoint_clip::clip_edge_endpoints_to_node_boundaries(layout)
+}
+
+/// `direction/endpointClip.ts`.
+pub fn prepare_edge_endpoints_for_renderer(layout: &mut LayoutData) {
+    direction::endpoint_clip::prepare_edge_endpoints_for_renderer(layout)
+}
+
+/// `direction/terminalStub.ts`.
+pub fn collapse_short_terminal_stub(layout: &mut LayoutData) {
+    direction::terminal_stub::collapse_short_terminal_stub(layout)
+}
+
+/// `direction/terminalLegAlignment.ts`.
+pub fn align_terminal_legs_to_ports(layout: &mut LayoutData) -> bool {
+    direction::terminal_leg_alignment::align_terminal_legs_to_ports(layout)
+}
+
+/// `direction/validation.ts`.
+pub fn validate_swimlanes_layout(layout: &LayoutData) -> Result<(), SwimlaneError> {
+    direction::validation::validate_swimlanes_layout(layout)
 }
 
 // ---- Part C: materialized geometry and its routing helpers ----

@@ -14,6 +14,7 @@
 pub mod adjust_layout;
 pub mod anchored_nodes;
 pub mod config;
+pub mod direction;
 pub mod driving_tree;
 pub mod edge_label_nodes;
 pub mod helpers;
