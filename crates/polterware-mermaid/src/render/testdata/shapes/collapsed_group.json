@@ -1,0 +1,159 @@
+{
+  "shape": "collapsed_group",
+  "upstream": "shapes/collapsedGroup.ts",
+  "label_font_size": 12,
+  "cases": [
+    {
+      "label": "A",
+      "label_size": {
+        "width": 7.92,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "basic label-container collapsed-group",
+          "x": -40,
+          "y": -35.9,
+          "width": 80,
+          "height": 71.8,
+          "rx": 8,
+          "ry": 8,
+          "fill": "#ffffde",
+          "stroke": "#aaaa33"
+        },
+        {
+          "tag": "line",
+          "class": "collapsed-separator",
+          "x1": -32,
+          "y1": 0.9000000000000004,
+          "x2": 32,
+          "y2": 0.9000000000000004,
+          "stroke": "#aaaa33"
+        },
+        {
+          "tag": "circle",
+          "class": "collapsed-indicator",
+          "cx": -10,
+          "cy": 10.9,
+          "r": 2.5,
+          "fill": "#aaaa33"
+        },
+        {
+          "tag": "circle",
+          "class": "collapsed-indicator",
+          "cx": 0,
+          "cy": 10.9,
+          "r": 2.5,
+          "fill": "#aaaa33"
+        },
+        {
+          "tag": "circle",
+          "class": "collapsed-indicator",
+          "cx": 10,
+          "cy": 10.9,
+          "r": 2.5,
+          "fill": "#aaaa33"
+        }
+      ],
+      "bbox": {
+        "width": 80,
+        "height": 71.8
+      },
+      "intersects": [
+        {
+          "x": 40,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -35.9
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, -20.9)",
+          "text": "A"
+        }
+      ]
+    },
+    {
+      "label": "AReallyLongLabel",
+      "label_size": {
+        "width": 95.76000000000002,
+        "height": 13.799999999999999,
+        "bold": false
+      },
+      "elements": [
+        {
+          "tag": "rect",
+          "class": "basic label-container collapsed-group",
+          "x": -62.88000000000001,
+          "y": -35.9,
+          "width": 125.76000000000002,
+          "height": 71.8,
+          "rx": 8,
+          "ry": 8,
+          "fill": "#ffffde",
+          "stroke": "#aaaa33"
+        },
+        {
+          "tag": "line",
+          "class": "collapsed-separator",
+          "x1": -54.88000000000001,
+          "y1": 0.9000000000000004,
+          "x2": 54.88000000000001,
+          "y2": 0.9000000000000004,
+          "stroke": "#aaaa33"
+        },
+        {
+          "tag": "circle",
+          "class": "collapsed-indicator",
+          "cx": -10,
+          "cy": 10.9,
+          "r": 2.5,
+          "fill": "#aaaa33"
+        },
+        {
+          "tag": "circle",
+          "class": "collapsed-indicator",
+          "cx": 0,
+          "cy": 10.9,
+          "r": 2.5,
+          "fill": "#aaaa33"
+        },
+        {
+          "tag": "circle",
+          "class": "collapsed-indicator",
+          "cx": 10,
+          "cy": 10.9,
+          "r": 2.5,
+          "fill": "#aaaa33"
+        }
+      ],
+      "bbox": {
+        "width": 125.76000000000002,
+        "height": 71.8
+      },
+      "intersects": [
+        {
+          "x": 62.88000000000001,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": -35.9
+        }
+      ],
+      "labels": [
+        {
+          "class": "label",
+          "transform": "translate(0, -20.9)",
+          "text": "AReallyLongLabel"
+        }
+      ]
+    }
+  ]
+}
