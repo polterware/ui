@@ -44,13 +44,16 @@ fn take_claim(position: Point<Pixels>) -> bool {
 /// Adds window dragging to an element's empty area.
 pub trait WindowDragRegion: InteractiveElement + Sized {
     fn window_drag_region(self) -> Self {
-        self.on_mouse_down(MouseButton::Left, |event, window, _cx| {
+        self.on_mouse_down(MouseButton::Left, |event, window, cx| {
             let on_a_control = take_claim(event.position);
             if event.click_count >= 2 {
                 PENDING.with(|p| p.borrow_mut().origin = None);
                 if !on_a_control {
                     window.titlebar_double_click();
                 }
+                // Regions nest (a titlebar and the empty strip inside it): the innermost one
+                // answers, or each would zoom once and the window would come back at once.
+                cx.stop_propagation();
                 return;
             }
             PENDING.with(|p| p.borrow_mut().origin = Some(event.position));
