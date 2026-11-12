@@ -179,6 +179,9 @@ pub struct Node {
     pub assigned: Option<String>,
     pub priority: Option<String>,
     pub container_type: Option<String>,
+    /// `node.positioned`: a shape drawn a second time after layout (`insertBlockPositioned`)
+    /// takes its size from the block instead of measuring its label again.
+    pub positioned: bool,
 }
 
 impl Node {
@@ -226,6 +229,7 @@ impl Node {
             assigned: None,
             priority: None,
             container_type: None,
+            positioned: false,
         }
     }
 }

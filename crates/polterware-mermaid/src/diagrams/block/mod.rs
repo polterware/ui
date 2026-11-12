@@ -7,7 +7,7 @@
 //! `%%{init}%%` directives are already removed by [`crate::preprocess`]. [`Ast`] holds what
 //! upstream's `BlockDB` getters answer after parsing: `getBlocks`, `getBlocksFlat`,
 //! `getEdges`, `getClasses`, and `getColumns`, with the block object fields of
-//! `blockTypes.ts`. Nothing here lays out or draws.
+//! `blockTypes.ts`. [`render`] lays it out and draws it.
 //!
 //! # Where the port stops short of upstream
 //!
@@ -20,9 +20,10 @@
 //! * `generateId`'s random middle (`id-<random>-<n>`) is replaced by a counter (`id-1`,
 //!   `id-2`, ...) in the order upstream calls it, per parse instead of per module. A test
 //!   pins that order.
-//! * `layout.ts`, `blockRenderer.ts`, `renderHelpers.ts`, and `styles.ts` are out of scope,
-//!   so `layout.spec.ts` and the stylesheet half of `blockColorIndex.spec.ts` are not ported.
-//!   The `colorIndex` half is: it is database data.
+//! * `layout.ts`, `blockRenderer.ts`, `renderHelpers.ts`, and `styles.ts` are rendering, not
+//!   database data; they live in [`render`] (`styles.ts`'s palette rules are not carried by the
+//!   scene yet). `layout.spec.ts` and the stylesheet half of `blockColorIndex.spec.ts` are
+//!   therefore not ported here. The `colorIndex` half is: it is database data.
 //! * `encodeEntities`/`decodeEntities` (applied by `Diagram.fromText`, which also appends a
 //!   newline) are not ported, as in the rest of this crate: a label keeps the entities it was
 //!   written with. The trailing newline the lexer adds only reproduces what `fromText` hands
@@ -43,6 +44,7 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Block, BlockType, ClassDef, Edge};
 

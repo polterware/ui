@@ -32,8 +32,6 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     };
     let (width, height) =
         stadium_dimensions(text_size.width, text_size.height, padding_x, padding_y);
-    let width = width.max(node.width.unwrap_or(0.0));
-    let height = height.max(node.height.unwrap_or(0.0));
     let radius = height / 2.0;
 
     let mut points = vec![

@@ -163,3 +163,17 @@ impl From<crate::diagrams::requirement::render::RequirementRenderError> for Rend
         }
     }
 }
+
+impl From<crate::diagrams::block::render::BlockRenderError> for RenderError {
+    fn from(error: crate::diagrams::block::render::BlockRenderError) -> Self {
+        match error {
+            crate::diagrams::block::render::BlockRenderError::Parse(error) => Self::Parse(error),
+            crate::diagrams::block::render::BlockRenderError::Shape(message) => {
+                Self::Parse(ParseError::new(message, None))
+            }
+            crate::diagrams::block::render::BlockRenderError::Layout(message) => {
+                Self::Parse(ParseError::new(message, None))
+            }
+        }
+    }
+}
