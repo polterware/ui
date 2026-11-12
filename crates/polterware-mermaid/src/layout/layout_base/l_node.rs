@@ -39,6 +39,30 @@ pub enum LabelPos {
     Top,
 }
 
+/// Where a compound node's label sits horizontally, layout-base 2.0.1's
+/// `labelPosHorizontal` read by its `updateBounds`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LabelPosHorizontal {
+    /// The label sits left of the node.
+    Left,
+    /// The label is centered on the node.
+    Center,
+    /// The label sits right of the node.
+    Right,
+}
+
+/// Where a compound node's label sits vertically, layout-base 2.0.1's `labelPosVertical`
+/// read by its `updateBounds`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LabelPosVertical {
+    /// The label sits above the node.
+    Top,
+    /// The label is centered on the node.
+    Center,
+    /// The label sits below the node.
+    Bottom,
+}
+
 /// A node, upstream's `LNode`.
 #[derive(Clone, Debug, PartialEq)]
 pub struct LNode<V> {
@@ -62,6 +86,15 @@ pub struct LNode<V> {
     pub label_height: f64,
     /// Label position, upstream's `labelPos`.
     pub label_pos: Option<LabelPos>,
+    /// Horizontal label position, layout-base 2.0.1's `labelPosHorizontal`. `None`
+    /// behaves as JavaScript's `undefined` and matches no branch.
+    pub label_pos_horizontal: Option<LabelPosHorizontal>,
+    /// Vertical label position, layout-base 2.0.1's `labelPosVertical`.
+    pub label_pos_vertical: Option<LabelPosVertical>,
+    /// Space the label takes left of the node, layout-base 2.0.1's `labelMarginLeft`.
+    pub label_margin_left: f64,
+    /// Space the label takes above the node, layout-base 2.0.1's `labelMarginTop`.
+    pub label_margin_top: f64,
     /// Padding the parent node applies to this node's graph, upstream's v-level
     /// `paddingLeft` read through `getParent()`.
     pub padding_left: Option<f64>,
@@ -90,6 +123,10 @@ impl<V> Default for LNode<V> {
             label_width: 0.0,
             label_height: 0.0,
             label_pos: None,
+            label_pos_horizontal: None,
+            label_pos_vertical: None,
+            label_margin_left: 0.0,
+            label_margin_top: 0.0,
             padding_left: None,
             padding_right: None,
             padding_top: None,
@@ -452,6 +489,85 @@ impl<V> LGraphManager<V> {
                     None => {}
                 }
                 node.set_height(node.label_height);
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Layout-base 2.0.1's `LNode.prototype.updateBounds`: the same wrapping as
+    /// [`LNode::node_update_bounds`], with the label handling of the newer version. A
+    /// horizontally placed label widens the compound (and shifts it left when the label
+    /// is left or a wider center one), a vertically placed one grows it in height, and
+    /// the margins the label adds are recorded on [`LNode::label_margin_left`] and
+    /// [`LNode::label_margin_top`] for cose-base 2.x's tiling.
+    ///
+    /// The v1 method stays for cose-bilkent, whose results must not change.
+    pub fn node_update_bounds_v2(&mut self, node: NodeId) -> Result<(), LayoutError> {
+        let child = self.node(node).child.ok_or(LayoutError("assert failed"))?;
+        if self.graph(child).nodes.is_empty() {
+            return Ok(());
+        }
+
+        self.graph_update_bounds(child, true)?;
+
+        let (left, top, right, bottom) = {
+            let child_graph = self.graph(child);
+            (
+                child_graph.get_left(),
+                child_graph.get_top(),
+                child_graph.get_right(),
+                child_graph.get_bottom(),
+            )
+        };
+
+        let node = self.node_mut(node);
+        node.rect.x = left;
+        node.rect.y = top;
+        node.set_width(right - left);
+        node.set_height(bottom - top);
+
+        // Update the compound bounds considering its label properties.
+        if constants::NODE_DIMENSIONS_INCLUDE_LABELS {
+            let width = right - left;
+            let height = bottom - top;
+
+            if node.label_width > 0.0 {
+                match node.label_pos_horizontal {
+                    Some(LabelPosHorizontal::Left) => {
+                        node.rect.x -= node.label_width;
+                        node.set_width(width + node.label_width);
+                        node.label_margin_left = node.label_width;
+                    }
+                    Some(LabelPosHorizontal::Center) if node.label_width > width => {
+                        node.rect.x -= (node.label_width - width) / 2.0;
+                        node.set_width(node.label_width);
+                        node.label_margin_left = (node.label_width - width) / 2.0;
+                    }
+                    Some(LabelPosHorizontal::Right) => {
+                        node.set_width(width + node.label_width);
+                    }
+                    _ => {}
+                }
+            }
+
+            if node.label_height > 0.0 {
+                match node.label_pos_vertical {
+                    Some(LabelPosVertical::Top) => {
+                        node.rect.y -= node.label_height;
+                        node.set_height(height + node.label_height);
+                        node.label_margin_top = node.label_height;
+                    }
+                    Some(LabelPosVertical::Center) if node.label_height > height => {
+                        node.rect.y -= (node.label_height - height) / 2.0;
+                        node.set_height(node.label_height);
+                        node.label_margin_top = (node.label_height - height) / 2.0;
+                    }
+                    Some(LabelPosVertical::Bottom) => {
+                        node.set_height(height + node.label_height);
+                    }
+                    _ => {}
+                }
             }
         }
 

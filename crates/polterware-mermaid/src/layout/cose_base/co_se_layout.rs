@@ -24,6 +24,13 @@
 //! always false and the body never runs; the port keeps the method and says so instead of
 //! porting dead code.
 //!
+//! Version 2.2.0's additions are gated on [`CoSEVersion`]: [`CoSELayout::new_v2`] runs
+//! the constraint handler ([`super::constraint_handler`]) before the spring embedder,
+//! moves nodes through `calculateDisplacement`/`updateDisplacements`, ends its cooling at
+//! 0.04, reduces trees on incremental runs, and honours `APPLY_LAYOUT` (which
+//! cytoscape-fcose turns off for a constraint-only pass). The default [`CoSELayout::new`]
+//! keeps 1.0.3's computations so cose-bilkent's results do not change.
+//!
 //! The id cose-bilkent attaches to an l-node (`theNode.id = theChild.data("id")`) is
 //! [`super::super::layout_base::fd::FDLayoutNode::id`]. Tiling keys its maps by it, with
 //! JavaScript's object-key coercion: `None` behaves as the string `"undefined"`.
@@ -44,6 +51,30 @@ use super::super::layout_base::util::point_d::PointD;
 use super::super::layout_base::util::random_seed;
 use super::super::layout_base::util::transform::Transform;
 use super::co_se_constants as constants;
+use super::constraint_handler::{self, Constraints};
+
+/// Which cose-base version's algorithm the layout runs.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum CoSEVersion {
+    /// cose-base 1.0.3, the base of cytoscape-cose-bilkent 4.1.0.
+    #[default]
+    V1,
+    /// cose-base 2.2.0, the base of cytoscape-fcose 2.2.0. It adds constraint handling
+    /// (see [`super::constraint_handler`]) and the 2.2.0 tiling and cooling values.
+    V2,
+}
+
+/// One edge of cose-base 2.x's relaxed relative placement maps, upstream's
+/// `{left, right, gap}` / `{top, bottom, gap}` object.
+#[derive(Clone, Debug, PartialEq)]
+pub struct RelativeConstraint {
+    /// The node to the left, on a left entry.
+    pub left: Option<String>,
+    /// The node to the right, on a right entry.
+    pub right: Option<String>,
+    /// The minimum distance between the two centers.
+    pub gap: Option<f64>,
+}
 
 /// The position of one node, upstream's `getPositionsData` entry.
 #[derive(Clone, Debug, PartialEq)]
@@ -137,6 +168,42 @@ pub struct CoSELayout<V = ()> {
     pub tiling_padding_vertical: f64,
     /// Horizontal space between two nodes of a tiled row.
     pub tiling_padding_horizontal: f64,
+    /// Which cose-base version's algorithm to run.
+    pub version: CoSEVersion,
+    /// The constraints of the run, upstream's `constraints`.
+    pub constraints: Constraints,
+    /// The node of each id, upstream's `idToNodeMap` (cose-base 2.x).
+    pub id_to_node_map: Vec<(String, NodeId)>,
+    /// The ids of the fixed nodes, upstream's `fixedNodeSet` (cose-base 2.x).
+    pub fixed_node_set: Vec<String>,
+    /// The nodes of each vertical alignment dummy, upstream's
+    /// `dummyToNodeForVerticalAlignment` (cose-base 2.x).
+    pub dummy_to_node_for_vertical_alignment: Vec<(String, Vec<String>)>,
+    /// The nodes of each horizontal alignment dummy, upstream's
+    /// `dummyToNodeForHorizontalAlignment` (cose-base 2.x).
+    pub dummy_to_node_for_horizontal_alignment: Vec<(String, Vec<String>)>,
+    /// The ids fixed along x, upstream's `fixedNodesOnHorizontal` (cose-base 2.x).
+    pub fixed_nodes_on_horizontal: Vec<String>,
+    /// The ids fixed along y, upstream's `fixedNodesOnVertical` (cose-base 2.x).
+    pub fixed_nodes_on_vertical: Vec<String>,
+    /// The ids the relaxed relative placement walks horizontally, upstream's
+    /// `nodesInRelativeHorizontal` (cose-base 2.x).
+    pub nodes_in_relative_horizontal: Vec<String>,
+    /// The ids the relaxed relative placement walks vertically, upstream's
+    /// `nodesInRelativeVertical` (cose-base 2.x).
+    pub nodes_in_relative_vertical: Vec<String>,
+    /// The relative placements of each id along x, upstream's
+    /// `nodeToRelativeConstraintMapHorizontal` (cose-base 2.x).
+    pub node_to_relative_constraint_map_horizontal: Vec<(String, Vec<RelativeConstraint>)>,
+    /// The relative placements of each id along y, upstream's
+    /// `nodeToRelativeConstraintMapVertical` (cose-base 2.x).
+    pub node_to_relative_constraint_map_vertical: Vec<(String, Vec<RelativeConstraint>)>,
+    /// The last position the relaxed walk used for each id along x, upstream's
+    /// `nodeToTempPositionMapHorizontal` (cose-base 2.x).
+    pub node_to_temp_position_map_horizontal: Vec<(String, f64)>,
+    /// The last position the relaxed walk used for each id along y, upstream's
+    /// `nodeToTempPositionMapVertical` (cose-base 2.x).
+    pub node_to_temp_position_map_vertical: Vec<(String, f64)>,
 }
 
 impl<V> Default for CoSELayout<V> {
@@ -170,7 +237,30 @@ impl<V> CoSELayout<V> {
             tiled_zero_degree_pack: Vec::new(),
             tiling_padding_vertical: constants::TILING_PADDING_VERTICAL,
             tiling_padding_horizontal: constants::TILING_PADDING_HORIZONTAL,
+            version: CoSEVersion::V1,
+            constraints: Constraints::default(),
+            id_to_node_map: Vec::new(),
+            fixed_node_set: Vec::new(),
+            dummy_to_node_for_vertical_alignment: Vec::new(),
+            dummy_to_node_for_horizontal_alignment: Vec::new(),
+            fixed_nodes_on_horizontal: Vec::new(),
+            fixed_nodes_on_vertical: Vec::new(),
+            nodes_in_relative_horizontal: Vec::new(),
+            nodes_in_relative_vertical: Vec::new(),
+            node_to_relative_constraint_map_horizontal: Vec::new(),
+            node_to_relative_constraint_map_vertical: Vec::new(),
+            node_to_temp_position_map_horizontal: Vec::new(),
+            node_to_temp_position_map_vertical: Vec::new(),
         }
+    }
+
+    /// A cose-base 2.2.0 layout, the base of cytoscape-fcose 2.2.0. Its force-directed
+    /// base also runs layout-base 2.0.1's computations.
+    pub fn new_v2() -> Self {
+        let mut layout = Self::new();
+        layout.version = CoSEVersion::V2;
+        layout.fd.version = super::super::layout_base::fd::fd_layout::LayoutVersion::V2;
+        layout
     }
 
     /// Upstream `CoSELayout.prototype.newGraphManager`.
@@ -287,14 +377,25 @@ impl<V> CoSELayout<V> {
                 self.update_nodes_with_gravity()?;
                 self.fd.layout.position_nodes_randomly(None);
             }
-        } else if constants::TREE_REDUCTION_ON_INCREMENTAL {
+        } else if match self.version {
+            CoSEVersion::V1 => constants::TREE_REDUCTION_ON_INCREMENTAL,
+            CoSEVersion::V2 => constants::TREE_REDUCTION_ON_INCREMENTAL_V2,
+        } {
             // Reduce the trees in incremental mode as well.
             self.reduce_trees()?;
             self.update_nodes_with_gravity()?;
         }
 
+        if self.version == CoSEVersion::V2 && !self.constraints.is_empty() {
+            constraint_handler::handle_constraints(self)?;
+            self.init_constraint_variables();
+        }
+
         self.init_spring_embedder();
-        self.run_spring_embedder()?;
+
+        if self.version == CoSEVersion::V1 || constants::APPLY_LAYOUT {
+            self.run_spring_embedder()?;
+        }
 
         Ok(true)
     }
@@ -327,12 +428,569 @@ impl<V> CoSELayout<V> {
         self.fd.init_spring_embedder();
 
         self.fd.repulsion_range = self.calc_repulsion_range();
+
+        // cose-base 2.2.0 moves the cooling variables here and ends at a fixed
+        // temperature; 1.0.3 sets them in the constructor from the convergence period.
+        if self.version == CoSEVersion::V2 {
+            self.cooling_cycle = 0.0;
+            self.max_cooling_cycle =
+                self.fd.max_iterations as f64 / constants::CONVERGENCE_CHECK_PERIOD as f64;
+            self.final_temperature = 0.04;
+            self.cooling_adjuster = 1.0;
+        }
     }
 
     /// Upstream `CoSELayout.prototype.calcRepulsionRange`.
     pub fn calc_repulsion_range(&self) -> f64 {
         // The formula is 2 x (level + 1) x idealEdgeLength.
         2.0 * (self.level + 1.0) * self.fd.ideal_edge_length
+    }
+
+    /// cose-base 2.x's `CoSELayout.prototype.moveNodes`: calculate every node's
+    /// displacement, let the constraints adjust it, then move every node.
+    pub fn move_nodes(&mut self) {
+        let all_nodes = self.fd.layout.get_all_nodes();
+
+        for node in &all_nodes {
+            self.fd.calculate_displacement(*node);
+        }
+
+        if !self.constraints.is_empty() {
+            self.update_displacements();
+        }
+
+        for node in all_nodes {
+            self.fd.node_move_v2(node);
+        }
+    }
+
+    /// cose-base 2.x's `CoSELayout.prototype.initConstraintVariables`: the id map, the
+    /// fixed node set, the compound weights of fixed nodes, the alignment dummies, and
+    /// (with `RELAX_MOVEMENT_ON_CONSTRAINTS`) the relaxed relative placement maps.
+    ///
+    /// The non-relaxed branch of 2.2.0, which averages whole components of the relative
+    /// placement graph, never runs because `RELAX_MOVEMENT_ON_CONSTRAINTS` is `true`; the
+    /// port keeps only the relaxed branch and says so here.
+    pub fn init_constraint_variables(&mut self) {
+        self.id_to_node_map.clear();
+        self.fixed_node_set.clear();
+
+        for node in self.fd.layout.graph_manager.get_all_nodes() {
+            let id = self.node_id(node);
+            self.id_to_node_map.push((id, node));
+        }
+
+        if self.constraints.fixed_node_constraint.is_some() {
+            let fixed = self
+                .constraints
+                .fixed_node_constraint
+                .clone()
+                .unwrap_or_default();
+            for node_data in &fixed {
+                set_add(&mut self.fixed_node_set, &node_data.node_id);
+            }
+
+            // Assign fixed node weights to compounds that contain fixed nodes.
+            let all_nodes = self.fd.layout.graph_manager.get_all_nodes();
+            for node in all_nodes {
+                if self.fd.layout.graph_manager.node(node).child.is_some() {
+                    let fixed_node_weight = self.calculate_compound_weight(node);
+                    if fixed_node_weight > 0.0 {
+                        self.fd.node_mut(node).fixed_node_weight = Some(fixed_node_weight);
+                    }
+                }
+            }
+        }
+
+        let Some(relative) = self.constraints.relative_placement_constraint.clone() else {
+            return;
+        };
+
+        let mut node_to_dummy_for_vertical_alignment: Vec<(String, String)> = Vec::new();
+        let mut node_to_dummy_for_horizontal_alignment: Vec<(String, String)> = Vec::new();
+        self.dummy_to_node_for_vertical_alignment.clear();
+        self.dummy_to_node_for_horizontal_alignment.clear();
+        self.fixed_nodes_on_horizontal = self.fixed_node_set.clone();
+        self.fixed_nodes_on_vertical = self.fixed_node_set.clone();
+
+        if let Some(alignment) = self.constraints.alignment_constraint.clone() {
+            if let Some(vertical) = &alignment.vertical {
+                for (i, alignment_group) in vertical.iter().enumerate() {
+                    let dummy = format!("dummy{i}");
+                    self.dummy_to_node_for_vertical_alignment
+                        .push((dummy.clone(), Vec::new()));
+                    for node_id in alignment_group {
+                        map_set(
+                            &mut node_to_dummy_for_vertical_alignment,
+                            node_id,
+                            dummy.clone(),
+                        );
+                        if let Some(entry) = self
+                            .dummy_to_node_for_vertical_alignment
+                            .iter_mut()
+                            .find(|(key, _)| *key == dummy)
+                        {
+                            entry.1.push(node_id.clone());
+                        }
+                        if self.fixed_node_set.contains(node_id) {
+                            set_add(&mut self.fixed_nodes_on_horizontal, &dummy);
+                        }
+                    }
+                }
+            }
+
+            if let Some(horizontal) = &alignment.horizontal {
+                for (i, alignment_group) in horizontal.iter().enumerate() {
+                    let dummy = format!("dummy{i}");
+                    self.dummy_to_node_for_horizontal_alignment
+                        .push((dummy.clone(), Vec::new()));
+                    for node_id in alignment_group {
+                        map_set(
+                            &mut node_to_dummy_for_horizontal_alignment,
+                            node_id,
+                            dummy.clone(),
+                        );
+                        if let Some(entry) = self
+                            .dummy_to_node_for_horizontal_alignment
+                            .iter_mut()
+                            .find(|(key, _)| *key == dummy)
+                        {
+                            entry.1.push(node_id.clone());
+                        }
+                        if self.fixed_node_set.contains(node_id) {
+                            set_add(&mut self.fixed_nodes_on_vertical, &dummy);
+                        }
+                    }
+                }
+            }
+        }
+
+        if constants::RELAX_MOVEMENT_ON_CONSTRAINTS {
+            self.nodes_in_relative_horizontal.clear();
+            self.nodes_in_relative_vertical.clear();
+            self.node_to_relative_constraint_map_horizontal.clear();
+            self.node_to_relative_constraint_map_vertical.clear();
+            self.node_to_temp_position_map_horizontal.clear();
+            self.node_to_temp_position_map_vertical.clear();
+
+            for constraint in &relative {
+                if let Some(left) = &constraint.left {
+                    let right = match &constraint.right {
+                        Some(right) => right.clone(),
+                        None => continue,
+                    };
+                    let node_id_left = map_get(&node_to_dummy_for_vertical_alignment, left)
+                        .cloned()
+                        .unwrap_or_else(|| left.clone());
+                    let node_id_right = map_get(&node_to_dummy_for_vertical_alignment, &right)
+                        .cloned()
+                        .unwrap_or_else(|| right.clone());
+
+                    for node_id in [&node_id_left, &node_id_right] {
+                        if !self.nodes_in_relative_horizontal.contains(node_id) {
+                            self.nodes_in_relative_horizontal.push(node_id.clone());
+                            map_set(
+                                &mut self.node_to_relative_constraint_map_horizontal,
+                                node_id,
+                                Vec::new(),
+                            );
+                            let center = match map_get(
+                                &self.dummy_to_node_for_vertical_alignment,
+                                node_id,
+                            ) {
+                                Some(nodes) => nodes
+                                    .first()
+                                    .map(|id| self.node_center_x(id))
+                                    .unwrap_or(f64::NAN),
+                                None => self.node_center_x(node_id),
+                            };
+                            map_set(
+                                &mut self.node_to_temp_position_map_horizontal,
+                                node_id,
+                                center,
+                            );
+                        }
+                    }
+
+                    if let Some(entry) = map_get_mut(
+                        &mut self.node_to_relative_constraint_map_horizontal,
+                        &node_id_left,
+                    ) {
+                        entry.push(RelativeConstraint {
+                            left: None,
+                            right: Some(node_id_right.clone()),
+                            gap: constraint.gap,
+                        });
+                    }
+                    if let Some(entry) = map_get_mut(
+                        &mut self.node_to_relative_constraint_map_horizontal,
+                        &node_id_right,
+                    ) {
+                        entry.push(RelativeConstraint {
+                            left: Some(node_id_left.clone()),
+                            right: None,
+                            gap: constraint.gap,
+                        });
+                    }
+                } else {
+                    let top = match &constraint.top {
+                        Some(top) => top.clone(),
+                        None => continue,
+                    };
+                    let bottom = match &constraint.bottom {
+                        Some(bottom) => bottom.clone(),
+                        None => continue,
+                    };
+                    let node_id_top = map_get(&node_to_dummy_for_horizontal_alignment, &top)
+                        .cloned()
+                        .unwrap_or_else(|| top.clone());
+                    let node_id_bottom = map_get(&node_to_dummy_for_horizontal_alignment, &bottom)
+                        .cloned()
+                        .unwrap_or_else(|| bottom.clone());
+
+                    for node_id in [&node_id_top, &node_id_bottom] {
+                        if !self.nodes_in_relative_vertical.contains(node_id) {
+                            self.nodes_in_relative_vertical.push(node_id.clone());
+                            map_set(
+                                &mut self.node_to_relative_constraint_map_vertical,
+                                node_id,
+                                Vec::new(),
+                            );
+                            let center = match map_get(
+                                &self.dummy_to_node_for_horizontal_alignment,
+                                node_id,
+                            ) {
+                                Some(nodes) => nodes
+                                    .first()
+                                    .map(|id| self.node_center_y(id))
+                                    .unwrap_or(f64::NAN),
+                                None => self.node_center_y(node_id),
+                            };
+                            map_set(
+                                &mut self.node_to_temp_position_map_vertical,
+                                node_id,
+                                center,
+                            );
+                        }
+                    }
+
+                    if let Some(entry) = map_get_mut(
+                        &mut self.node_to_relative_constraint_map_vertical,
+                        &node_id_top,
+                    ) {
+                        entry.push(RelativeConstraint {
+                            left: None,
+                            right: Some(node_id_bottom.clone()),
+                            gap: constraint.gap,
+                        });
+                    }
+                    if let Some(entry) = map_get_mut(
+                        &mut self.node_to_relative_constraint_map_vertical,
+                        &node_id_bottom,
+                    ) {
+                        entry.push(RelativeConstraint {
+                            left: Some(node_id_top.clone()),
+                            right: None,
+                            gap: constraint.gap,
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    /// cose-base 2.x's `calculateCompoundWeight`: 100 per fixed leaf descendant of a
+    /// compound, added up through nested compounds.
+    fn calculate_compound_weight(&self, compound_node: NodeId) -> f64 {
+        let Some(child) = self.fd.layout.graph_manager.node(compound_node).child else {
+            return 0.0;
+        };
+
+        let mut fixed_node_weight = 0.0;
+        let nodes = self.fd.layout.graph_manager.graph(child).nodes.clone();
+
+        for node in nodes {
+            if self.fd.layout.graph_manager.node(node).child.is_none() {
+                if self.fixed_node_set.contains(&self.node_id(node)) {
+                    fixed_node_weight += 100.0;
+                }
+            } else {
+                fixed_node_weight += self.calculate_compound_weight(node);
+            }
+        }
+
+        fixed_node_weight
+    }
+
+    /// The x center of the node with this id, upstream's `idToNodeMap.get(id).getCenterX()`.
+    fn node_center_x(&self, id: &str) -> f64 {
+        match map_get(&self.id_to_node_map, id) {
+            Some(node) => self.fd.layout.graph_manager.node(*node).get_center_x(),
+            None => f64::NAN,
+        }
+    }
+
+    /// The y center of the node with this id.
+    fn node_center_y(&self, id: &str) -> f64 {
+        match map_get(&self.id_to_node_map, id) {
+            Some(node) => self.fd.layout.graph_manager.node(*node).get_center_y(),
+            None => f64::NAN,
+        }
+    }
+
+    /// Upstream's `shuffle`: swaps the positions of the last third of `array` at random.
+    fn shuffle(array: &mut [String]) {
+        let length = array.len();
+        let mut i = length.saturating_sub(1);
+        let lower = (2 * length) / 3;
+
+        while i >= lower && length > 0 {
+            let j = (random_seed::next_double() * (i + 1) as f64).floor() as usize;
+            array.swap(i, j.min(length - 1));
+            if i == 0 {
+                break;
+            }
+            i -= 1;
+        }
+    }
+
+    /// cose-base 2.x's `CoSELayout.prototype.updateDisplacements`: zero the fixed nodes,
+    /// give every alignment group its average displacement, and relax the relative
+    /// placement constraints by walking their nodes (upstream compares the relaxed y walk
+    /// against `fixedNodesOnHorizontal` as well, which the port keeps).
+    pub fn update_displacements(&mut self) {
+        if let Some(fixed) = self.constraints.fixed_node_constraint.clone() {
+            for node_data in fixed {
+                if let Some(node) = map_get(&self.id_to_node_map, &node_data.node_id) {
+                    let node = *node;
+                    self.fd.node_mut(node).displacement_x = 0.0;
+                    self.fd.node_mut(node).displacement_y = 0.0;
+                }
+            }
+        }
+
+        if let Some(alignment) = self.constraints.alignment_constraint.clone() {
+            if let Some(vertical) = &alignment.vertical {
+                for alignment_group in vertical {
+                    let mut total_displacement_x = 0.0;
+                    let mut fixed = false;
+
+                    for node_id in alignment_group {
+                        if self.fixed_node_set.contains(node_id) {
+                            total_displacement_x = 0.0;
+                            fixed = true;
+                            break;
+                        }
+                        if let Some(node) = map_get(&self.id_to_node_map, node_id) {
+                            total_displacement_x += self.fd.node(*node).displacement_x;
+                        }
+                    }
+
+                    if fixed {
+                        continue;
+                    }
+
+                    let average_displacement_x =
+                        total_displacement_x / alignment_group.len() as f64;
+
+                    for node_id in alignment_group {
+                        if let Some(node) = map_get(&self.id_to_node_map, node_id) {
+                            self.fd.node_mut(*node).displacement_x = average_displacement_x;
+                        }
+                    }
+                }
+            }
+
+            if let Some(horizontal) = &alignment.horizontal {
+                for alignment_group in horizontal {
+                    let mut total_displacement_y = 0.0;
+                    let mut fixed = false;
+
+                    for node_id in alignment_group {
+                        if self.fixed_node_set.contains(node_id) {
+                            total_displacement_y = 0.0;
+                            fixed = true;
+                            break;
+                        }
+                        if let Some(node) = map_get(&self.id_to_node_map, node_id) {
+                            total_displacement_y += self.fd.node(*node).displacement_y;
+                        }
+                    }
+
+                    if fixed {
+                        continue;
+                    }
+
+                    let average_displacement_y =
+                        total_displacement_y / alignment_group.len() as f64;
+
+                    for node_id in alignment_group {
+                        if let Some(node) = map_get(&self.id_to_node_map, node_id) {
+                            self.fd.node_mut(*node).displacement_y = average_displacement_y;
+                        }
+                    }
+                }
+            }
+        }
+
+        if self.constraints.relative_placement_constraint.is_some()
+            && constants::RELAX_MOVEMENT_ON_CONSTRAINTS
+        {
+            // Shuffle the arrays to randomize the node processing order.
+            if self.fd.total_iterations % 10 == 0 {
+                Self::shuffle(&mut self.nodes_in_relative_horizontal);
+                Self::shuffle(&mut self.nodes_in_relative_vertical);
+            }
+
+            for node_id in self.nodes_in_relative_horizontal.clone() {
+                if self.fixed_nodes_on_horizontal.contains(&node_id) {
+                    continue;
+                }
+
+                let mut displacement =
+                    match map_get(&self.dummy_to_node_for_vertical_alignment, &node_id) {
+                        Some(nodes) => nodes
+                            .first()
+                            .and_then(|id| map_get(&self.id_to_node_map, id))
+                            .map(|node| self.fd.node(*node).displacement_x)
+                            .unwrap_or(f64::NAN),
+                        None => map_get(&self.id_to_node_map, &node_id)
+                            .map(|node| self.fd.node(*node).displacement_x)
+                            .unwrap_or(f64::NAN),
+                    };
+
+                let constraints =
+                    map_get(&self.node_to_relative_constraint_map_horizontal, &node_id)
+                        .cloned()
+                        .unwrap_or_default();
+
+                for constraint in constraints {
+                    let gap = constraint.gap.unwrap_or(f64::NAN);
+                    if let Some(right) = &constraint.right {
+                        let (right_temp, node_temp) = (
+                            map_get(&self.node_to_temp_position_map_horizontal, right)
+                                .copied()
+                                .unwrap_or(f64::NAN),
+                            map_get(&self.node_to_temp_position_map_horizontal, &node_id)
+                                .copied()
+                                .unwrap_or(f64::NAN),
+                        );
+                        let diff = (right_temp - node_temp) - displacement;
+                        if diff < gap {
+                            displacement -= gap - diff;
+                        }
+                    } else if let Some(left) = &constraint.left {
+                        let (node_temp, left_temp) = (
+                            map_get(&self.node_to_temp_position_map_horizontal, &node_id)
+                                .copied()
+                                .unwrap_or(f64::NAN),
+                            map_get(&self.node_to_temp_position_map_horizontal, left)
+                                .copied()
+                                .unwrap_or(f64::NAN),
+                        );
+                        let diff = (node_temp - left_temp) + displacement;
+                        if diff < gap {
+                            displacement += gap - diff;
+                        }
+                    }
+                }
+
+                if let Some(position) =
+                    map_get_mut(&mut self.node_to_temp_position_map_horizontal, &node_id)
+                {
+                    *position += displacement;
+                }
+
+                match map_get(&self.dummy_to_node_for_vertical_alignment, &node_id).cloned() {
+                    Some(nodes) => {
+                        for id in nodes {
+                            if let Some(node) = map_get(&self.id_to_node_map, &id) {
+                                self.fd.node_mut(*node).displacement_x = displacement;
+                            }
+                        }
+                    }
+                    None => {
+                        if let Some(node) = map_get(&self.id_to_node_map, &node_id) {
+                            self.fd.node_mut(*node).displacement_x = displacement;
+                        }
+                    }
+                }
+            }
+
+            for node_id in self.nodes_in_relative_vertical.clone() {
+                if self.fixed_nodes_on_horizontal.contains(&node_id) {
+                    continue;
+                }
+
+                let mut displacement =
+                    match map_get(&self.dummy_to_node_for_horizontal_alignment, &node_id) {
+                        Some(nodes) => nodes
+                            .first()
+                            .and_then(|id| map_get(&self.id_to_node_map, id))
+                            .map(|node| self.fd.node(*node).displacement_y)
+                            .unwrap_or(f64::NAN),
+                        None => map_get(&self.id_to_node_map, &node_id)
+                            .map(|node| self.fd.node(*node).displacement_y)
+                            .unwrap_or(f64::NAN),
+                    };
+
+                let constraints = map_get(&self.node_to_relative_constraint_map_vertical, &node_id)
+                    .cloned()
+                    .unwrap_or_default();
+
+                for constraint in constraints {
+                    let gap = constraint.gap.unwrap_or(f64::NAN);
+                    if let Some(bottom) = &constraint.right {
+                        let (bottom_temp, node_temp) = (
+                            map_get(&self.node_to_temp_position_map_vertical, bottom)
+                                .copied()
+                                .unwrap_or(f64::NAN),
+                            map_get(&self.node_to_temp_position_map_vertical, &node_id)
+                                .copied()
+                                .unwrap_or(f64::NAN),
+                        );
+                        let diff = (bottom_temp - node_temp) - displacement;
+                        if diff < gap {
+                            displacement -= gap - diff;
+                        }
+                    } else if let Some(top) = &constraint.left {
+                        let (node_temp, top_temp) = (
+                            map_get(&self.node_to_temp_position_map_vertical, &node_id)
+                                .copied()
+                                .unwrap_or(f64::NAN),
+                            map_get(&self.node_to_temp_position_map_vertical, top)
+                                .copied()
+                                .unwrap_or(f64::NAN),
+                        );
+                        let diff = (node_temp - top_temp) + displacement;
+                        if diff < gap {
+                            displacement += gap - diff;
+                        }
+                    }
+                }
+
+                if let Some(position) =
+                    map_get_mut(&mut self.node_to_temp_position_map_vertical, &node_id)
+                {
+                    *position += displacement;
+                }
+
+                match map_get(&self.dummy_to_node_for_horizontal_alignment, &node_id).cloned() {
+                    Some(nodes) => {
+                        for id in nodes {
+                            if let Some(node) = map_get(&self.id_to_node_map, &id) {
+                                self.fd.node_mut(*node).displacement_y = displacement;
+                            }
+                        }
+                    }
+                    None => {
+                        if let Some(node) = map_get(&self.id_to_node_map, &node_id) {
+                            self.fd.node_mut(*node).displacement_y = displacement;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /// Upstream `CoSELayout.prototype.tick`: one iteration of the spring embedder. Returns
@@ -435,7 +1093,11 @@ impl<V> CoSELayout<V> {
         self.fd
             .calc_repulsion_forces(grid_update_allowed, force_to_node_surrounding_update);
         self.fd.calc_gravitational_forces()?;
-        self.fd.move_nodes();
+        if self.version == CoSEVersion::V2 {
+            self.move_nodes();
+        } else {
+            self.fd.move_nodes();
+        }
         self.fd.animate();
 
         // The layout is not ended yet.
@@ -1768,6 +2430,32 @@ impl<V> CoSELayout<V> {
         self.fd.layout.is_layout_finished = true;
 
         Ok(is_layout_successful)
+    }
+}
+
+/// An order-preserving lookup, upstream's `Map.get`.
+fn map_get<'a, T>(map: &'a [(String, T)], key: &str) -> Option<&'a T> {
+    map.iter().find(|(k, _)| k == key).map(|(_, value)| value)
+}
+
+fn map_get_mut<'a, T>(map: &'a mut [(String, T)], key: &str) -> Option<&'a mut T> {
+    map.iter_mut()
+        .find(|(k, _)| k == key)
+        .map(|(_, value)| value)
+}
+
+fn map_set<T>(map: &mut Vec<(String, T)>, key: &str, value: T) {
+    if let Some(entry) = map.iter_mut().find(|(k, _)| k == key) {
+        entry.1 = value;
+    } else {
+        map.push((key.to_string(), value));
+    }
+}
+
+/// An order-preserving set, upstream's `Set.add`.
+fn set_add(set: &mut Vec<String>, key: &str) {
+    if !set.iter().any(|k| k == key) {
+        set.push(key.to_string());
     }
 }
 

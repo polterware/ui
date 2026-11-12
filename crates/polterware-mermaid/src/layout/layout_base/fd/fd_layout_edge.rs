@@ -12,12 +12,15 @@ use super::fd_layout_constants as constants;
 pub struct FDLayoutEdge {
     /// The length the spring pulls towards, upstream's `idealLength`.
     pub ideal_length: f64,
+    /// The strength of the spring of this edge, layout-base 2.0.1's `edgeElasticity`.
+    pub edge_elasticity: f64,
 }
 
 impl Default for FDLayoutEdge {
     fn default() -> Self {
         Self {
             ideal_length: constants::DEFAULT_EDGE_LENGTH,
+            edge_elasticity: constants::DEFAULT_SPRING_STRENGTH,
         }
     }
 }

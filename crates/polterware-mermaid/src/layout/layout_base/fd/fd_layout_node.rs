@@ -11,9 +11,10 @@
 //! upstream's plain objects), which is why it is modeled as a string.
 
 use super::super::l_node::NodeId;
+use super::fd_layout_constants as constants;
 
 /// The force-directed half of a node, upstream's `FDLayoutNode`.
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct FDLayoutNode {
     /// The v-level id cose-bilkent attaches, upstream's dynamic `id`. `None` behaves as
     /// JavaScript's `undefined`.
@@ -48,6 +49,35 @@ pub struct FDLayoutNode {
     /// leaves it `undefined`; `calcNoOfChildrenForAllNodes` fills it before the first
     /// force calculation, so the port starts it at zero.
     pub no_of_children: i64,
+    /// Repulsion this node contributes, layout-base 2.0.1's `nodeRepulsion`.
+    pub node_repulsion: f64,
+    /// Weight of a compound that holds fixed nodes, cose-base 2.x's `fixedNodeWeight`.
+    /// `None` behaves as JavaScript's `undefined`.
+    pub fixed_node_weight: Option<f64>,
+}
+
+impl Default for FDLayoutNode {
+    fn default() -> Self {
+        Self {
+            id: None,
+            spring_force_x: 0.0,
+            spring_force_y: 0.0,
+            repulsion_force_x: 0.0,
+            repulsion_force_y: 0.0,
+            gravitation_force_x: 0.0,
+            gravitation_force_y: 0.0,
+            displacement_x: 0.0,
+            displacement_y: 0.0,
+            start_x: 0,
+            finish_x: 0,
+            start_y: 0,
+            finish_y: 0,
+            surrounding: Vec::new(),
+            no_of_children: 0,
+            node_repulsion: constants::DEFAULT_REPULSION_STRENGTH,
+            fixed_node_weight: None,
+        }
+    }
 }
 
 impl FDLayoutNode {

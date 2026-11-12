@@ -31,3 +31,30 @@ pub const TILING_PADDING_HORIZONTAL: f64 = 10.0;
 
 /// Whether tree reduction runs in incremental mode.
 pub const TREE_REDUCTION_ON_INCREMENTAL: bool = false;
+
+// Constants of cose-base 2.2.0 (the base of cytoscape-fcose 2.2.0). The v1 values above
+// stay as they are so cose-bilkent keeps its results.
+
+/// Whether tree reduction runs in incremental mode in 2.2.0. Its value is `DEFAULT_INCREMENTAL`, which is `false`.
+pub const TREE_REDUCTION_ON_INCREMENTAL_V2: bool = true;
+
+/// Whether the constraint handler transforms the draft layout (Procrustes) before
+/// enforcing the constraints.
+pub const TRANSFORM_ON_CONSTRAINT_HANDLING: bool = true;
+
+/// Whether the constraint handler enforces fixed node, alignment, and relative placement
+/// constraints on the draft layout.
+pub const ENFORCE_CONSTRAINTS: bool = true;
+
+/// Whether the layout runs the spring embedder. `false` applies constraints only, which
+/// cytoscape-fcose uses for the incremental layout.
+pub const APPLY_LAYOUT: bool = true;
+
+/// Whether constrained movement is relaxed by shuffling the constrained nodes instead of
+/// averaging the components of the relative placement graph.
+pub const RELAX_MOVEMENT_ON_CONSTRAINTS: bool = true;
+
+/// Whether the layout is a pure incremental layout on top of the previous positions
+/// rather than a randomized one. 2.2.0 sets it to `DEFAULT_INCREMENTAL`, which is
+/// `false`.
+pub const PURE_INCREMENTAL: bool = false;
