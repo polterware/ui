@@ -1,0 +1,211 @@
+{
+  "name": "padding_mermaid",
+  "size": [
+    960,
+    500
+  ],
+  "tile": "squarify",
+  "round": true,
+  "padding": {
+    "inner": 10,
+    "top": {
+      "if_children": [
+        35,
+        0
+      ]
+    },
+    "left": {
+      "if_children": [
+        10,
+        0
+      ]
+    },
+    "right": {
+      "if_children": [
+        10,
+        0
+      ]
+    },
+    "bottom": {
+      "if_children": [
+        10,
+        0
+      ]
+    }
+  },
+  "tree": {
+    "name": "root",
+    "children": [
+      {
+        "name": "alpha",
+        "children": [
+          {
+            "name": "alpha-a",
+            "children": [
+              {
+                "name": "alpha-a-1",
+                "value": 4
+              },
+              {
+                "name": "alpha-a-2",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "name": "alpha-b",
+            "value": 3
+          }
+        ]
+      },
+      {
+        "name": "beta",
+        "children": [
+          {
+            "name": "beta-a",
+            "value": 5
+          },
+          {
+            "name": "beta-b",
+            "children": [
+              {
+                "name": "beta-b-1",
+                "value": 3
+              },
+              {
+                "name": "beta-b-2",
+                "value": 3
+              },
+              {
+                "name": "beta-b-3",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "output": [
+    {
+      "path": "",
+      "name": "root",
+      "depth": 0,
+      "value": 21,
+      "x0": 0,
+      "y0": 0,
+      "x1": 960,
+      "y1": 500
+    },
+    {
+      "path": "0",
+      "name": "beta",
+      "depth": 1,
+      "value": 12,
+      "x0": 10,
+      "y0": 35,
+      "x1": 543,
+      "y1": 490
+    },
+    {
+      "path": "1",
+      "name": "alpha",
+      "depth": 1,
+      "value": 9,
+      "x0": 553,
+      "y0": 35,
+      "x1": 950,
+      "y1": 490
+    },
+    {
+      "path": "0.0",
+      "name": "beta-b",
+      "depth": 2,
+      "value": 7,
+      "x0": 20,
+      "y0": 70,
+      "x1": 533,
+      "y1": 305
+    },
+    {
+      "path": "0.1",
+      "name": "beta-a",
+      "depth": 2,
+      "value": 5,
+      "x0": 20,
+      "y0": 315,
+      "x1": 533,
+      "y1": 480
+    },
+    {
+      "path": "1.0",
+      "name": "alpha-a",
+      "depth": 2,
+      "value": 6,
+      "x0": 563,
+      "y0": 70,
+      "x1": 811,
+      "y1": 480
+    },
+    {
+      "path": "1.1",
+      "name": "alpha-b",
+      "depth": 2,
+      "value": 3,
+      "x0": 821,
+      "y0": 70,
+      "x1": 940,
+      "y1": 480
+    },
+    {
+      "path": "0.0.0",
+      "name": "beta-b-1",
+      "depth": 3,
+      "value": 3,
+      "x0": 30,
+      "y0": 105,
+      "x1": 236,
+      "y1": 295
+    },
+    {
+      "path": "0.0.1",
+      "name": "beta-b-2",
+      "depth": 3,
+      "value": 3,
+      "x0": 246,
+      "y0": 105,
+      "x1": 451,
+      "y1": 295
+    },
+    {
+      "path": "0.0.2",
+      "name": "beta-b-3",
+      "depth": 3,
+      "value": 1,
+      "x0": 461,
+      "y0": 105,
+      "x1": 523,
+      "y1": 295
+    },
+    {
+      "path": "1.0.0",
+      "name": "alpha-a-1",
+      "depth": 3,
+      "value": 4,
+      "x0": 573,
+      "y0": 105,
+      "x1": 801,
+      "y1": 345
+    },
+    {
+      "path": "1.0.1",
+      "name": "alpha-a-2",
+      "depth": 3,
+      "value": 2,
+      "x0": 573,
+      "y0": 355,
+      "x1": 801,
+      "y1": 470
+    }
+  ]
+}

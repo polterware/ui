@@ -1,0 +1,84 @@
+{
+  "name": "zero_total_squarify",
+  "size": [
+    960,
+    500
+  ],
+  "tile": "squarify",
+  "round": false,
+  "padding": {},
+  "tree": {
+    "name": "root",
+    "children": [
+      {
+        "name": "alpha",
+        "children": [
+          {
+            "name": "alpha-1",
+            "value": 0
+          },
+          {
+            "name": "alpha-2",
+            "value": 0
+          }
+        ]
+      },
+      {
+        "name": "beta",
+        "value": 0
+      }
+    ]
+  },
+  "output": [
+    {
+      "path": "",
+      "name": "root",
+      "depth": 0,
+      "value": 0,
+      "x0": 0,
+      "y0": 0,
+      "x1": 960,
+      "y1": 500
+    },
+    {
+      "path": "0",
+      "name": "alpha",
+      "depth": 1,
+      "value": 0,
+      "x0": 0,
+      "y0": 0,
+      "x1": 960,
+      "y1": 0
+    },
+    {
+      "path": "1",
+      "name": "beta",
+      "depth": 1,
+      "value": 0,
+      "x0": 0,
+      "y0": 0,
+      "x1": 960,
+      "y1": 0
+    },
+    {
+      "path": "0.0",
+      "name": "alpha-1",
+      "depth": 2,
+      "value": 0,
+      "x0": 0,
+      "y0": 0,
+      "x1": 960,
+      "y1": 0
+    },
+    {
+      "path": "0.1",
+      "name": "alpha-2",
+      "depth": 2,
+      "value": 0,
+      "x0": 0,
+      "y0": 0,
+      "x1": 960,
+      "y1": 0
+    }
+  ]
+}

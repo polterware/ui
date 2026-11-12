@@ -1,0 +1,137 @@
+{
+  "name": "padding_mermaid_flat",
+  "size": [
+    960,
+    500
+  ],
+  "tile": "squarify",
+  "round": true,
+  "padding": {
+    "inner": 10,
+    "top": {
+      "if_children": [
+        35,
+        0
+      ]
+    },
+    "left": {
+      "if_children": [
+        10,
+        0
+      ]
+    },
+    "right": {
+      "if_children": [
+        10,
+        0
+      ]
+    },
+    "bottom": {
+      "if_children": [
+        10,
+        0
+      ]
+    }
+  },
+  "tree": {
+    "name": "root",
+    "children": [
+      {
+        "name": "leaf-0",
+        "value": 6
+      },
+      {
+        "name": "leaf-1",
+        "value": 6
+      },
+      {
+        "name": "leaf-2",
+        "value": 4
+      },
+      {
+        "name": "leaf-3",
+        "value": 3
+      },
+      {
+        "name": "leaf-4",
+        "value": 2
+      },
+      {
+        "name": "leaf-5",
+        "value": 2
+      }
+    ]
+  },
+  "output": [
+    {
+      "path": "",
+      "name": "root",
+      "depth": 0,
+      "value": 23,
+      "x0": 0,
+      "y0": 0,
+      "x1": 960,
+      "y1": 500
+    },
+    {
+      "path": "0",
+      "name": "leaf-0",
+      "depth": 1,
+      "value": 6,
+      "x0": 10,
+      "y0": 35,
+      "x1": 496,
+      "y1": 258
+    },
+    {
+      "path": "1",
+      "name": "leaf-1",
+      "depth": 1,
+      "value": 6,
+      "x0": 10,
+      "y0": 268,
+      "x1": 496,
+      "y1": 490
+    },
+    {
+      "path": "2",
+      "name": "leaf-2",
+      "depth": 1,
+      "value": 4,
+      "x0": 506,
+      "y0": 35,
+      "x1": 755,
+      "y1": 321
+    },
+    {
+      "path": "3",
+      "name": "leaf-3",
+      "depth": 1,
+      "value": 3,
+      "x0": 765,
+      "y0": 35,
+      "x1": 950,
+      "y1": 321
+    },
+    {
+      "path": "4",
+      "name": "leaf-4",
+      "depth": 1,
+      "value": 2,
+      "x0": 506,
+      "y0": 331,
+      "x1": 723,
+      "y1": 490
+    },
+    {
+      "path": "5",
+      "name": "leaf-5",
+      "depth": 1,
+      "value": 2,
+      "x0": 733,
+      "y0": 331,
+      "x1": 950,
+      "y1": 490
+    }
+  ]
+}
