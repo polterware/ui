@@ -1,0 +1,249 @@
+{
+  "name": "08-margins",
+  "source": "%%{init: {\"radar\": {\"width\": 400, \"height\": 300, \"marginTop\": 20, \"marginRight\": 30, \"marginBottom\": 40, \"marginLeft\": 50, \"useMaxWidth\": false}}}%%\nradar-beta\ntitle Compact\naxis a[\"Alpha\"], b[\"Beta\"], c[\"Gamma\"]\ncurve one{2, 4, 6}\nmax 6\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 480,
+      "height": 360
+    },
+    "rawViewBox": "0 0 480 360",
+    "svg": {
+      "width": "480",
+      "height": "360",
+      "overflow": "visible",
+      "fontFamily": "monospace",
+      "fontSize": 16,
+      "fill": "#333"
+    },
+    "frame": {
+      "transform": {
+        "x": 250,
+        "y": 170
+      }
+    },
+    "graticule": [
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 30,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 60,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 90,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 120,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 150,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      }
+    ],
+    "axes": [
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 9.184850993605149e-15,
+        "y2": -150,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 129.9038105676658,
+        "y2": 74.99999999999997,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": -129.90381056766577,
+        "y2": 75.00000000000006,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "Alpha",
+        "x": 9.889022903114877e-15,
+        "y": -161.5,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "auto",
+        "fill": "#333"
+      },
+      {
+        "text": "Beta",
+        "x": 139.86310271118685,
+        "y": 80.74999999999997,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "start",
+        "baseline": "hanging",
+        "fill": "#333"
+      },
+      {
+        "text": "Gamma",
+        "x": -139.86310271118683,
+        "y": 80.75000000000006,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "end",
+        "baseline": "hanging",
+        "fill": "#333"
+      }
+    ],
+    "curves": [
+      {
+        "index": 0,
+        "kind": "path",
+        "class": "radarCurve-0",
+        "d": "M3.061616997868383e-15,-50 C36.80607966083864,-54.250000000000014 108.68618817494706,28.749999999999975 86.60254037844388,49.999999999999986 C64.51889258194069,71.25 -115.18137870333031,92.00000000000006 -129.90381056766577,75.00000000000006 C-144.62624243200122,58.00000000000006 -36.80607966083864,-45.749999999999986 3.061616997868383e-15,-50 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 3.061616997868383e-15,
+            "y": -50
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 36.80607966083864,
+            "c1y": -54.250000000000014,
+            "c2x": 108.68618817494706,
+            "c2y": 28.749999999999975,
+            "x": 86.60254037844388,
+            "y": 49.999999999999986
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 64.51889258194069,
+            "c1y": 71.25,
+            "c2x": -115.18137870333031,
+            "c2y": 92.00000000000006,
+            "x": -129.90381056766577,
+            "y": 75.00000000000006
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -144.62624243200122,
+            "c1y": 58.00000000000006,
+            "c2x": -36.80607966083864,
+            "c2y": -45.749999999999986,
+            "x": 3.061616997868383e-15,
+            "y": -50
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      }
+    ],
+    "legend": [
+      {
+        "transform": {
+          "x": 172.5,
+          "y": -127.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-0",
+          "style": {
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(240, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "one",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      }
+    ],
+    "title": {
+      "text": "Compact",
+      "x": 0,
+      "y": -170,
+      "class": "radarTitle",
+      "fontSize": 16,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "fill": "#333"
+    }
+  }
+}

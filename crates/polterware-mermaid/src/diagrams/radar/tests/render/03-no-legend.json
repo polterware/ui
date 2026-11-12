@@ -1,0 +1,219 @@
+{
+  "name": "03-no-legend",
+  "source": "radar-beta\ntitle Without legend\naxis east[\"East\"], west[\"West\"], north[\"North\"]\ncurve only{3, 7, 5}\nmax 10\nshowLegend false\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 700
+    },
+    "rawViewBox": "0 0 700 700",
+    "svg": {
+      "width": "700",
+      "height": "700",
+      "overflow": "visible",
+      "fontFamily": "monospace",
+      "fontSize": 16,
+      "fill": "#333"
+    },
+    "frame": {
+      "transform": {
+        "x": 350,
+        "y": 350
+      }
+    },
+    "graticule": [
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 60,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 120,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 180,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 240,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 300,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      }
+    ],
+    "axes": [
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1.8369701987210297e-14,
+        "y2": -300,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 259.8076211353316,
+        "y2": 149.99999999999994,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": -259.80762113533154,
+        "y2": 150.0000000000001,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "East",
+        "x": 1.9533116446400285e-14,
+        "y": -319,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "auto",
+        "fill": "#333"
+      },
+      {
+        "text": "West",
+        "x": 276.2621038072359,
+        "y": 159.49999999999994,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "start",
+        "baseline": "hanging",
+        "fill": "#333"
+      },
+      {
+        "text": "North",
+        "x": -276.26210380723586,
+        "y": 159.5000000000001,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "end",
+        "baseline": "hanging",
+        "fill": "#333"
+      }
+    ],
+    "curves": [
+      {
+        "index": 0,
+        "kind": "path",
+        "class": "radarCurve-0",
+        "d": "M5.5109105961630896e-15,-90 C53.000754711607655,-84.90000000000002 203.9489825912353,76.94999999999996 181.86533479473212,104.99999999999997 C159.78168699822893,133.04999999999998 -98.98670365256132,108.15000000000006 -129.90381056766577,75.00000000000006 C-160.82091748277023,41.85000000000006 -53.00075471160764,-95.09999999999998 5.5109105961630896e-15,-90 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 5.5109105961630896e-15,
+            "y": -90
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 53.000754711607655,
+            "c1y": -84.90000000000002,
+            "c2x": 203.9489825912353,
+            "c2y": 76.94999999999996,
+            "x": 181.86533479473212,
+            "y": 104.99999999999997
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 159.78168699822893,
+            "c1y": 133.04999999999998,
+            "c2x": -98.98670365256132,
+            "c2y": 108.15000000000006,
+            "x": -129.90381056766577,
+            "y": 75.00000000000006
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -160.82091748277023,
+            "c1y": 41.85000000000006,
+            "c2x": -53.00075471160764,
+            "c2y": -95.09999999999998,
+            "x": 5.5109105961630896e-15,
+            "y": -90
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      }
+    ],
+    "legend": [],
+    "title": {
+      "text": "Without legend",
+      "x": 0,
+      "y": -350,
+      "class": "radarTitle",
+      "fontSize": 16,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "fill": "#333"
+    }
+  }
+}

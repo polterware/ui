@@ -29,12 +29,13 @@
 //!   entries` and `Missing entry for axis ...`) have no location upstream; this port attaches
 //!   the curve name's span.
 //! * Nothing here lays out or draws the graticule, axes, curves, legend, or title;
-//!   `renderer.ts` and `styles.ts` are out of scope.
+//!   `renderer.ts` is [`render`], the plain d3 path.
 
 mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, Axis, Curve, Graticule, Options};
 

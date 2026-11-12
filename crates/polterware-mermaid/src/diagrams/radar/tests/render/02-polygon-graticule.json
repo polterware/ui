@@ -1,0 +1,303 @@
+{
+  "name": "02-polygon-graticule",
+  "source": "radar-beta\naxis speed[\"Speed\"], power[\"Power\"], range[\"Range\"], agility[\"Agility\"]\ncurve hero{8, 6, 4, 7}\nmax 10\ngraticule polygon\nticks 4\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 700
+    },
+    "rawViewBox": "0 0 700 700",
+    "svg": {
+      "width": "700",
+      "height": "700",
+      "overflow": "visible",
+      "fontFamily": "monospace",
+      "fontSize": 16,
+      "fill": "#333"
+    },
+    "frame": {
+      "transform": {
+        "x": 350,
+        "y": 350
+      }
+    },
+    "graticule": [
+      {
+        "kind": "polygon",
+        "class": "radarGraticule",
+        "points": [
+          {
+            "x": 4.592425496802574e-15,
+            "y": -75
+          },
+          {
+            "x": 75,
+            "y": 0
+          },
+          {
+            "x": 4.592425496802574e-15,
+            "y": 75
+          },
+          {
+            "x": -75,
+            "y": 9.184850993605149e-15
+          }
+        ],
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "polygon",
+        "class": "radarGraticule",
+        "points": [
+          {
+            "x": 9.184850993605149e-15,
+            "y": -150
+          },
+          {
+            "x": 150,
+            "y": 0
+          },
+          {
+            "x": 9.184850993605149e-15,
+            "y": 150
+          },
+          {
+            "x": -150,
+            "y": 1.8369701987210297e-14
+          }
+        ],
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "polygon",
+        "class": "radarGraticule",
+        "points": [
+          {
+            "x": 1.3777276490407723e-14,
+            "y": -225
+          },
+          {
+            "x": 225,
+            "y": 0
+          },
+          {
+            "x": 1.3777276490407723e-14,
+            "y": 225
+          },
+          {
+            "x": -225,
+            "y": 2.7554552980815446e-14
+          }
+        ],
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "polygon",
+        "class": "radarGraticule",
+        "points": [
+          {
+            "x": 1.8369701987210297e-14,
+            "y": -300
+          },
+          {
+            "x": 300,
+            "y": 0
+          },
+          {
+            "x": 1.8369701987210297e-14,
+            "y": 300
+          },
+          {
+            "x": -300,
+            "y": 3.6739403974420595e-14
+          }
+        ],
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      }
+    ],
+    "axes": [
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1.8369701987210297e-14,
+        "y2": -300,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 300,
+        "y2": 0,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1.8369701987210297e-14,
+        "y2": 300,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": -300,
+        "y2": 3.6739403974420595e-14,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "Speed",
+        "x": 1.9533116446400285e-14,
+        "y": -319,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "auto",
+        "fill": "#333"
+      },
+      {
+        "text": "Power",
+        "x": 319,
+        "y": 0,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "start",
+        "baseline": "central",
+        "fill": "#333"
+      },
+      {
+        "text": "Range",
+        "x": 1.9533116446400285e-14,
+        "y": 319,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "fill": "#333"
+      },
+      {
+        "text": "Agility",
+        "x": -319,
+        "y": 3.906623289280057e-14,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "end",
+        "baseline": "central",
+        "fill": "#333"
+      }
+    ],
+    "curves": [
+      {
+        "index": 0,
+        "kind": "polygon",
+        "class": "radarCurve-0",
+        "points": [
+          {
+            "x": 1.469576158976824e-14,
+            "y": -240
+          },
+          {
+            "x": 180,
+            "y": 0
+          },
+          {
+            "x": 7.34788079488412e-15,
+            "y": 120
+          },
+          {
+            "x": -210,
+            "y": 2.5717582782094416e-14
+          }
+        ],
+        "style": {
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      }
+    ],
+    "legend": [
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -262.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-0",
+          "style": {
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(240, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "hero",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      }
+    ],
+    "title": {
+      "text": "",
+      "x": 0,
+      "y": -350,
+      "class": "radarTitle",
+      "fontSize": 16,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "fill": "#333"
+    }
+  }
+}
