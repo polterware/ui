@@ -84,7 +84,7 @@ pub use hover_card::{HoverBuilder, HoverCard};
 pub use icon_button::icon_button;
 pub use icon_tile::{IconTile, TileTone};
 pub use icons::{Icon, IconAssets, icon, icon_colored, icon_rotated, icon_stroked};
-pub use image::{ImageAction, ImageData, ImageThumb, ImageViewer, THUMB_SIZE, fit_size};
+pub use image::{ImageAction, ImageCard, ImageData, ImageThumb, ImageViewer, THUMB_SIZE, fit_size};
 pub use kbd::kbd;
 pub use list_popover::{ListPopover, ListRow, RowLeading};
 pub use markdown::{MarkdownEditor, MarkdownEditorEvent, markdown_view};
@@ -107,6 +107,7 @@ pub use patterns::{
     packed_rows, rail_card, rail_group, rail_page_body, rail_page_body_flush, rail_page_body_under,
     rail_page_end_pad, rail_page_header, rail_properties, rail_property, rail_section,
     rail_toggle_label, readings, settings_group, settings_row, toolbar, toolbar_center,
+    trailing_toolbar,
 };
 pub use patterns::{
     DOCUMENT_COLUMN, DocumentPage, RAIL_BUTTON_RADIUS, TagPicker, TagPickerEvent, document_footer,

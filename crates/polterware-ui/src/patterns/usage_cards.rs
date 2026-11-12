@@ -404,13 +404,16 @@ impl RenderOnce for UsageCard {
     }
 }
 
+#[derive(Clone, Copy)]
 struct GridWidth {
-    width: Option<f32>,
+    width: f32,
+    viewport_width: f32,
 }
 
-/// The cards in as many equal columns of at least `min_width` as the width allows, `gap`
-/// apart both ways; the cards of a row stretch to the tallest. The width comes from the frame
-/// before, so a new width draws once more; the first frame guesses `guess` columns.
+/// The cards in as many equal columns of at least `min_width` as the available width allows,
+/// `gap` apart both ways; tiles fill their column evenly.
+/// Layout determines the column count from the available width in the current frame without
+/// lagging behind window resizing, avoiding jumps and stutter during window edge drag.
 pub fn card_grid(
     id: impl Into<ElementId>,
     min_width: f32,
@@ -420,22 +423,36 @@ pub fn card_grid(
     window: &mut Window,
     cx: &mut App,
 ) -> AnyElement {
-    let state = window.use_keyed_state(id, cx, |_, _: &mut Context<GridWidth>| GridWidth {
-        width: None,
-    });
-    let cols = match state.read(cx).width {
-        Some(width) => grid_columns(width, min_width, gap),
-        None => guess.max(1),
+    let state = window.use_keyed_state(id, cx, |_, _: &mut Context<Option<GridWidth>>| None);
+    let current_viewport = f32::from(window.viewport_size().width);
+    let width = match state.read(cx) {
+        Some(gw) => (gw.width + (current_viewport - gw.viewport_width)).max(min_width),
+        None => {
+            let sidebar = Theme::global(cx).sidebar_width;
+            if sidebar > 0.0 && current_viewport > sidebar + 26.0 {
+                current_viewport - sidebar - 26.0
+            } else if current_viewport > 32.0 {
+                current_viewport - 32.0
+            } else {
+                min_width * f32::from(guess.max(1)) + gap * f32::from(guess.saturating_sub(1))
+            }
+        }
     };
+    let cols = grid_columns(width, min_width, gap);
     let probe = canvas(
         move |bounds, window, cx| {
-            let width = f32::from(bounds.size.width);
-            let changed = state
+            let seen = f32::from(bounds.size.width);
+            let prev_cols = state
                 .read(cx)
-                .width
-                .is_none_or(|seen| (seen - width).abs() > 0.5);
-            if changed {
-                state.update(cx, |state, _| state.width = Some(width));
+                .map(|gw| grid_columns(gw.width, min_width, gap));
+            let new_cols = grid_columns(seen, min_width, gap);
+            state.update(cx, |slot, _| {
+                *slot = Some(GridWidth {
+                    width: seen,
+                    viewport_width: current_viewport,
+                });
+            });
+            if prev_cols.is_some_and(|p| p != new_cols) {
                 window.refresh();
             }
         },

@@ -3,15 +3,17 @@
 //!
 //! [`ImageThumb`] is a square thumbnail on a raised face with a quiet edge, the picture
 //! cropped to fill it (`object-fit: cover`), an optional caption under it in 11px muted ink,
-//! and a click that asks the host to open it. [`ImageViewer`] is the modal that shows it
-//! whole: a floating card over a [`modal_layer`](super::modal_layer), the file's name as its
-//! title, the picture fitted inside 86% of the window's width and 72% of its height at the
-//! size the host says it has, a caption under it, and the host's actions (Reveal, Copy) at the
-//! end of the footer, with Close at the header's end.
+//! and a click that asks the host to open it. [`ImageCard`] is a full gallery tile: the picture
+//! thumbnail sitting 1px inside the card's border and clipped to its inner radius, over a
+//! calm footer with generous padding holding a title and meta line. [`ImageViewer`] is the modal
+//! that shows it whole: a floating card over a [`modal_layer`](super::modal_layer), the file's
+//! name as its title, the picture fitted inside 86% of the window's width and 72% of its height
+//! at the size the host says it has, a caption under it, and the host's actions (Reveal, Copy)
+//! at the end of the footer, with Close at the header's end.
 //!
-//! The web has no Polterware counterpart for either; the viewer behaves like gpui-kit's
-//! `ImageView` dialog: the app owns whether it is open, what Close does, and what the actions
-//! do, and the viewer only draws and reports clicks. GPUI clips to rectangles, so a picture
+//! The web has no Polterware counterpart for these; the card and viewer behave like gpui-kit's
+//! counterparts: the app owns whether they are displayed, what clicks do, and what the actions
+//! do, and the components only draw and report clicks. GPUI clips to rectangles, so a picture
 //! in a rounded frame keeps its own square corners; the frame insets it 1px, which keeps
 //! them inside the edge at the sizes these controls draw.
 //!
@@ -180,6 +182,167 @@ impl RenderOnce for ImageThumb {
             .flex_col()
             .child(frame)
             .children(caption)
+    }
+}
+
+/// An image card: a picture thumbnail filling the top of a card inside its border,
+/// clipped to the card's inner radius (`radius_card - 1.0`), over a calm footer holding
+/// a title line and optional meta line.
+///
+/// The look is the design system's `Card` (`.card-panel`, [`card`](crate::card)) with a picture
+/// thumbnail cropped to fill it (`object-fit: cover`) and generous padding (`12px-14px`) in its
+/// footer. The thumbnail sits 1px inside the card's top and side borders, clipped to
+/// `radius_card - 1.0`, ensuring the card's 1px border reads all the way round without cut
+/// corners. It behaves like gpui-kit's `Card`: the host supplies the image, title, meta slot,
+/// and click handler.
+#[derive(IntoElement)]
+pub struct ImageCard {
+    id: ElementId,
+    image: ImageData,
+    thumb_height: f32,
+    title: SharedString,
+    meta: Option<AnyElement>,
+    on_click: Option<Handler>,
+    hover_progress: f32,
+}
+
+impl ImageCard {
+    pub fn new(id: impl Into<ElementId>, image: ImageData, title: impl Into<SharedString>) -> Self {
+        Self {
+            id: id.into(),
+            image,
+            thumb_height: 150.0,
+            title: title.into(),
+            meta: None,
+            on_click: None,
+            hover_progress: 0.0,
+        }
+    }
+
+    /// The thumbnail's height in pixels; the picture fills it cropped to cover.
+    pub fn thumb_height(mut self, height: f32) -> Self {
+        self.thumb_height = height.max(1.0);
+        self
+    }
+
+    /// The footer's secondary line: small bot avatar, model name, relative date, etc.
+    pub fn meta(mut self, meta: impl IntoElement) -> Self {
+        self.meta = Some(meta.into_any_element());
+        self
+    }
+
+    /// A click on the card.
+    pub fn on_click(mut self, handler: impl Fn(&mut Window, &mut App) + 'static) -> Self {
+        self.on_click = Some(Rc::new(handler));
+        self
+    }
+
+    /// Progress of the card's hover animation (0.0 at rest, 1.0 fully hovered), driving a subtle
+    /// lift and border tint.
+    pub fn hover_progress(mut self, progress: f32) -> Self {
+        self.hover_progress = progress;
+        self
+    }
+}
+
+impl RenderOnce for ImageCard {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let theme = *Theme::global(cx);
+        let inner_radius = (theme.radius_card - 1.0).max(0.0);
+        let pointer = crate::pointer::use_pointer(self.id.clone(), window, cx);
+        let hover = pointer.read(cx).hover();
+        let t = if self.hover_progress > 0.0 {
+            self.hover_progress
+        } else {
+            hover
+        }
+        .clamp(0.0, 1.0);
+
+        let border_color = if t > 0.001 {
+            blend_color(theme.color_border_subtle, theme.color_border_strong, t)
+        } else {
+            theme.color_border_subtle
+        };
+
+        let lift_shadow = (t > 0.001).then(|| {
+            vec![gpui::BoxShadow {
+                color: gpui::Rgba {
+                    r: theme.color_shadow_subtle.r,
+                    g: theme.color_shadow_subtle.g,
+                    b: theme.color_shadow_subtle.b,
+                    a: theme.color_shadow_subtle.a * t * 0.8,
+                }
+                .into(),
+                offset: gpui::point(px(0.0), px(2.0 * t)),
+                blur_radius: px(8.0 * t),
+                spread_radius: px(0.0),
+            }]
+        });
+
+        let mut card = div()
+            .id(self.id.clone())
+            .relative()
+            .flex()
+            .flex_col()
+            .rounded(px(theme.radius_card))
+            .border_1()
+            .border_color(border_color)
+            .bg(theme.color_surface_subtle)
+            .top(px(-2.0 * t))
+            .when_some(lift_shadow, |card, shadows| card.shadow(shadows));
+
+        if let Some(on_click) = self.on_click {
+            card = card
+                .cursor_pointer()
+                .hover(|style| style.border_color(theme.color_border_strong))
+                .on_click(move |_, window, cx| on_click(window, cx));
+        }
+
+        let card = crate::pointer::track(card, &pointer, true);
+
+        let thumb = div()
+            .w_full()
+            .h(px(self.thumb_height))
+            .flex_none()
+            .bg(theme.color_surface)
+            .mt(px(1.0))
+            .mx(px(1.0))
+            .rounded_tl(px(inner_radius))
+            .rounded_tr(px(inner_radius))
+            .overflow_hidden()
+            .child(
+                img(self.image.source())
+                    .size_full()
+                    .object_fit(ObjectFit::Cover),
+            );
+
+        let title_line = div()
+            .text_size(px(theme.font_size_sm))
+            .font_weight(gpui::FontWeight::MEDIUM)
+            .text_color(theme.color_text_primary)
+            .child(ellipsis(self.title));
+
+        let footer = div()
+            .flex()
+            .flex_none()
+            .flex_col()
+            .gap(px(4.0))
+            .px(px(13.0))
+            .py(px(12.0))
+            .child(title_line)
+            .children(self.meta);
+
+        card.child(thumb).child(footer)
+    }
+}
+
+fn blend_color(a: gpui::Rgba, b: gpui::Rgba, t: f32) -> gpui::Rgba {
+    let t = t.clamp(0.0, 1.0);
+    gpui::Rgba {
+        r: a.r + (b.r - a.r) * t,
+        g: a.g + (b.g - a.g) * t,
+        b: a.b + (b.b - a.b) * t,
+        a: a.a + (b.a - a.a) * t,
     }
 }
 
@@ -470,5 +633,27 @@ mod tests {
         }
         assert_eq!(revealed.get(), 1);
         assert_eq!(closed.get(), 1);
+    }
+
+    #[gpui::test]
+    fn a_card_reports_its_click(cx: &mut TestAppContext) {
+        let clicked = Rc::new(Cell::new(0));
+        let count = clicked.clone();
+        let mut cx = open(cx, size(400.0, 300.0), move |_, _| {
+            let count = count.clone();
+            div()
+                .debug_selector(|| "card".to_string())
+                .child(
+                    ImageCard::new("card", ImageData::from_path("/tmp/chart.png"), "My Chart")
+                        .thumb_height(100.0)
+                        .meta(div().child("Grok · 2h ago"))
+                        .on_click(move |_, _| count.set(count.get() + 1)),
+                )
+                .into_any_element()
+        });
+        assert!(cx.debug_bounds("card").is_some(), "the card is on screen");
+        cx.simulate_click(gpui::point(px(40.0), px(40.0)), gpui::Modifiers::none());
+        draw(&mut cx);
+        assert_eq!(clicked.get(), 1);
     }
 }
