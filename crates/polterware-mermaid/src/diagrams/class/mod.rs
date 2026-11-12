@@ -4,16 +4,17 @@
 //! fill, `classDb.ts`, with the shapes `classTypes.ts` declares.
 //!
 //! [`ast`] holds what the database's getters answer, [`lexer`] the `%lex` section,
-//! [`parser`] the grammar and the database's mutators, and `tests` the ported upstream
-//! parser and database specs.
-//!
-//! No layout or rendering: the scene work belongs to a later stage.
+//! [`parser`] the grammar and the database's mutators, [`layout_data`] the `getData()`
+//! projection into the shared layout pipeline, [`render`] the `draw` entry, and [`tests`] the
+//! ported upstream parser, database and renderer specs.
 
 use crate::error::ParseError;
 
 mod ast;
+pub mod layout_data;
 mod lexer;
 mod parser;
+pub mod render;
 #[cfg(test)]
 mod tests;
 

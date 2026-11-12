@@ -1,0 +1,104 @@
+{
+  "name": "09-nested-subgraphs",
+  "source": "erDiagram\n  subgraph OUTER\n    subgraph INNER\n      CUSTOMER\n      ORDER\n    end\n    ORDER\n  end\n  CUSTOMER ||--o{ ORDER : places\n  ORDER ||--o{ SHIPMENT : ships\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-CUSTOMER-0",
+        "x": 166.4,
+        "y": 127.2,
+        "width": 116.8,
+        "height": 78.4
+      },
+      {
+        "id": "entity-ORDER-1",
+        "x": 166.4,
+        "y": 308,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-SHIPMENT-2",
+        "x": 166.4,
+        "y": 568.8000000000001,
+        "width": 116.8,
+        "height": 78.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "OUTER",
+        "x": 166.4,
+        "y": 217.60000000000002,
+        "width": 316.8,
+        "height": 419.20000000000005
+      },
+      {
+        "id": "INNER",
+        "x": 166.4,
+        "y": 217.60000000000002,
+        "width": 276.8,
+        "height": 339.20000000000005
+      }
+    ],
+    "edges": [
+      {
+        "id": "id_entity-CUSTOMER-0_entity-ORDER-1_0",
+        "points": [
+          {
+            "x": 166.4,
+            "y": 166.4
+          },
+          {
+            "x": 166.4,
+            "y": 217.6
+          },
+          {
+            "x": 166.4,
+            "y": 268.8
+          }
+        ],
+        "x": 166.4,
+        "y": 217.6,
+        "width": 61.599999999999994,
+        "height": 22.4
+      },
+      {
+        "id": "id_entity-ORDER-1_entity-SHIPMENT-2_1",
+        "points": [
+          {
+            "x": 166.4,
+            "y": 347.2
+          },
+          {
+            "x": 166.4,
+            "y": 387.20000000000005
+          },
+          {
+            "x": 166.4,
+            "y": 427.20000000000005
+          },
+          {
+            "x": 166.4,
+            "y": 478.40000000000003
+          },
+          {
+            "x": 166.4,
+            "y": 529.6
+          }
+        ],
+        "x": 166.4,
+        "y": 478.40000000000003,
+        "width": 52,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 332.8,
+      "height": 616
+    },
+    "rawViewBox": "0 0 332.8 616"
+  }
+}

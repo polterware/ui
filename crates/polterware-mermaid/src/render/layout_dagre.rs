@@ -138,12 +138,18 @@ pub fn get_edges_to_render(
         } else {
             "top"
         };
-        let span = ordered[1]
-            .edge
-            .label
-            .width()
-            .max(node.width * 0.35)
-            .clamp(36.0, node.width.mul_add(0.8, 0.0).clamp(36.0, 100.0));
+        let span = {
+            // `getEdgesToRender` reads the middle segment's measured graph edge, not the copy
+            // `addSelfLoop` made before labels were measured.
+            let middle = g
+                .edge_object(&ordered[1].edge.edge)
+                .cloned()
+                .unwrap_or_else(|| ordered[1].edge.label.clone());
+            middle
+                .width()
+                .max(node.width * 0.35)
+                .clamp(36.0, node.width.mul_add(0.8, 0.0).clamp(36.0, 100.0))
+        };
         let depth = (node.width.min(node.height) * 0.45).clamp(24.0, 48.0);
         let hw = node.width / 2.0;
         let hh = node.height / 2.0;
@@ -175,7 +181,10 @@ pub fn get_edges_to_render(
         };
         let mut merged = ordered[1].edge.clone();
         merged.edge = Edge::new(&ordered[0].edge.edge.v, &ordered[2].edge.edge.w);
-        merged.label = ordered[1].edge.label.clone();
+        merged.label = g
+            .edge_object(&ordered[1].edge.edge)
+            .cloned()
+            .unwrap_or_else(|| ordered[1].edge.label.clone());
         merged.label.points = Some(
             pts.iter()
                 .map(|p| Point::new(p.x, p.y + y_offset))

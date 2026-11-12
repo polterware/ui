@@ -1,0 +1,53 @@
+{
+  "name": "01-simple-relation",
+  "source": "classDiagram\n  Animal <|-- Duck\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Animal",
+        "x": 48.8,
+        "y": 47.2,
+        "width": 81.6,
+        "height": 78.4
+      },
+      {
+        "id": "Duck",
+        "x": 48.8,
+        "y": 175.60000000000002,
+        "width": 62.4,
+        "height": 78.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_Animal_Duck_1",
+        "points": [
+          {
+            "x": 48.8,
+            "y": 86.4
+          },
+          {
+            "x": 48.8,
+            "y": 111.4
+          },
+          {
+            "x": 48.8,
+            "y": 136.40000000000003
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 97.6,
+      "height": 222.80000000000004
+    },
+    "rawViewBox": "0 0 97.6 222.80000000000004"
+  }
+}

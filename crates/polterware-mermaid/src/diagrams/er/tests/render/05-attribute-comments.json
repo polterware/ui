@@ -1,0 +1,24 @@
+{
+  "name": "05-attribute-comments",
+  "source": "erDiagram\n  CUSTOMER {\n    string id PK \"the primary key\"\n    string display_name \"shown in the list\"\n    int age \"years\"\n  }\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-CUSTOMER-0",
+        "x": 235.6,
+        "y": 82.3,
+        "width": 455.2,
+        "height": 148.6
+      }
+    ],
+    "clusters": [],
+    "edges": [],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 471.2,
+      "height": 164.6
+    },
+    "rawViewBox": "0 0 471.2 164.6"
+  }
+}

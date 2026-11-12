@@ -643,7 +643,9 @@ impl Db {
                 parent_id: Some(parent_id.clone()),
                 position: note.position,
                 label_style: Some(String::new()),
-                label_type: Some("markdown".to_string()),
+                // `noteData` leaves `labelType` unset, so `note.ts` measures the note as
+                // plain text even though the annotated state is markdown.
+                label_type: None,
                 description: Vec::new(),
             };
             let group_data = NodeData {

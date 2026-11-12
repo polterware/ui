@@ -74,6 +74,17 @@ pub fn to_shape_node(node: &Node) -> shapes::Node {
     s.width = node.width;
     s.height = node.height;
     s.description = node.description.clone();
+    s.alias = node.alias.clone();
+    s.attributes = node
+        .attributes
+        .iter()
+        .map(|attribute| shapes::Attribute {
+            type_name: attribute.type_name.clone(),
+            name: attribute.name.clone(),
+            keys: attribute.keys.clone(),
+            comment: attribute.comment.clone(),
+        })
+        .collect();
     s.padding = node.padding.unwrap_or(0.0);
     s.rx = node.rx.unwrap_or(0.0);
     s.ry = node.ry.unwrap_or(0.0);
@@ -87,6 +98,14 @@ pub fn to_shape_node(node: &Node) -> shapes::Node {
     s.asset_height = node.asset_height;
     s.pos = node.pos.clone();
     s.constraint = node.constraint.clone();
+    s.text = node.text.clone();
+    s.label_type = node.label_type.clone();
+    s.class_members = node.members.clone();
+    s.class_methods = node.methods.clone();
+    s.class_styles = node.styles.clone();
+    s.annotations = node.annotations.clone();
+    s.class_padding = node.class_padding;
+    s.hide_empty_members_box = node.hide_empty_members_box.unwrap_or(false);
     s
 }
 

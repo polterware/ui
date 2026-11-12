@@ -1,0 +1,158 @@
+{
+  "name": "02-all-cardinality-pairs",
+  "source": "erDiagram\n  A |o--o| B : alpha\n  C ||--|| D : beta\n  E }o--o{ F : gamma\n  G }|--|{ H : delta\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-A-0",
+        "x": 58,
+        "y": 47.2,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-B-1",
+        "x": 58,
+        "y": 228,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-C-2",
+        "x": 298,
+        "y": 47.2,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-D-3",
+        "x": 298,
+        "y": 228,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-E-4",
+        "x": 538,
+        "y": 47.2,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-F-5",
+        "x": 538,
+        "y": 228,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-G-6",
+        "x": 778,
+        "y": 47.2,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-H-7",
+        "x": 778,
+        "y": 228,
+        "width": 100,
+        "height": 78.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_entity-A-0_entity-B-1_0",
+        "points": [
+          {
+            "x": 58,
+            "y": 86.4
+          },
+          {
+            "x": 58,
+            "y": 137.6
+          },
+          {
+            "x": 58,
+            "y": 188.8
+          }
+        ],
+        "x": 58,
+        "y": 137.6,
+        "width": 52,
+        "height": 22.4
+      },
+      {
+        "id": "id_entity-C-2_entity-D-3_1",
+        "points": [
+          {
+            "x": 298,
+            "y": 86.4
+          },
+          {
+            "x": 298,
+            "y": 137.6
+          },
+          {
+            "x": 298,
+            "y": 188.8
+          }
+        ],
+        "x": 298,
+        "y": 137.6,
+        "width": 42.4,
+        "height": 22.4
+      },
+      {
+        "id": "id_entity-E-4_entity-F-5_2",
+        "points": [
+          {
+            "x": 538,
+            "y": 86.4
+          },
+          {
+            "x": 538,
+            "y": 137.6
+          },
+          {
+            "x": 538,
+            "y": 188.8
+          }
+        ],
+        "x": 538,
+        "y": 137.6,
+        "width": 52,
+        "height": 22.4
+      },
+      {
+        "id": "id_entity-G-6_entity-H-7_3",
+        "points": [
+          {
+            "x": 778,
+            "y": 86.4
+          },
+          {
+            "x": 778,
+            "y": 137.6
+          },
+          {
+            "x": 778,
+            "y": 188.8
+          }
+        ],
+        "x": 778,
+        "y": 137.6,
+        "width": 52,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 836,
+      "height": 275.20000000000005
+    },
+    "rawViewBox": "0 0 836 275.20000000000005"
+  }
+}
