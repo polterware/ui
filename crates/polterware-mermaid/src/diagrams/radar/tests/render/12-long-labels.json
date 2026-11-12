@@ -1,0 +1,249 @@
+{
+  "name": "12-long-labels",
+  "source": "radar-beta\ntitle A radar chart with a fairly long title\naxis first[\"An extraordinarily long first axis label\"], second[\"Another long second axis label\"], third[\"Third\"]\ncurve described[\"A curve with a long legend label\"]{1, 2, 3}\nmax 3\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 700
+    },
+    "rawViewBox": "0 0 700 700",
+    "svg": {
+      "width": "700",
+      "height": "700",
+      "overflow": "visible",
+      "fontFamily": "monospace",
+      "fontSize": 16,
+      "fill": "#333"
+    },
+    "frame": {
+      "transform": {
+        "x": 350,
+        "y": 350
+      }
+    },
+    "graticule": [
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 60,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 120,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 180,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 240,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 300,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      }
+    ],
+    "axes": [
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1.8369701987210297e-14,
+        "y2": -300,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 259.8076211353316,
+        "y2": 149.99999999999994,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": -259.80762113533154,
+        "y2": 150.0000000000001,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "An extraordinarily long first axis label",
+        "x": 1.9533116446400285e-14,
+        "y": -319,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "auto",
+        "fill": "#333"
+      },
+      {
+        "text": "Another long second axis label",
+        "x": 276.2621038072359,
+        "y": 159.49999999999994,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "start",
+        "baseline": "hanging",
+        "fill": "#333"
+      },
+      {
+        "text": "Third",
+        "x": -276.26210380723586,
+        "y": 159.5000000000001,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "end",
+        "baseline": "hanging",
+        "fill": "#333"
+      }
+    ],
+    "curves": [
+      {
+        "index": 0,
+        "kind": "path",
+        "class": "radarCurve-0",
+        "d": "M6.123233995736766e-15,-100 C73.61215932167728,-108.50000000000003 217.37237634989413,57.49999999999995 173.20508075688775,99.99999999999997 C129.03778516388138,142.5 -230.36275740666062,184.0000000000001 -259.80762113533154,150.0000000000001 C-289.25248486400244,116.00000000000011 -73.61215932167728,-91.49999999999997 6.123233995736766e-15,-100 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 6.123233995736766e-15,
+            "y": -100
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 73.61215932167728,
+            "c1y": -108.50000000000003,
+            "c2x": 217.37237634989413,
+            "c2y": 57.49999999999995,
+            "x": 173.20508075688775,
+            "y": 99.99999999999997
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 129.03778516388138,
+            "c1y": 142.5,
+            "c2x": -230.36275740666062,
+            "c2y": 184.0000000000001,
+            "x": -259.80762113533154,
+            "y": 150.0000000000001
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -289.25248486400244,
+            "c1y": 116.00000000000011,
+            "c2x": -73.61215932167728,
+            "c2y": -91.49999999999997,
+            "x": 6.123233995736766e-15,
+            "y": -100
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      }
+    ],
+    "legend": [
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -262.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-0",
+          "style": {
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(240, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "A curve with a long legend label",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      }
+    ],
+    "title": {
+      "text": "A radar chart with a fairly long title",
+      "x": 0,
+      "y": -350,
+      "class": "radarTitle",
+      "fontSize": 16,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "fill": "#333"
+    }
+  }
+}

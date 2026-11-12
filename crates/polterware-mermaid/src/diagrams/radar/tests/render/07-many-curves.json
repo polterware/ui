@@ -1,0 +1,811 @@
+{
+  "name": "07-many-curves",
+  "source": "radar-beta\naxis a[\"A\"], b[\"B\"], c[\"C\"], d[\"D\"]\ncurve c0{1, 2, 3, 4}\ncurve c1{2, 3, 4, 5}\ncurve c2{3, 4, 5, 6}\ncurve c3{4, 5, 6, 7}\ncurve c4{5, 6, 7, 8}\ncurve c5{6, 7, 8, 9}\ncurve c6{7, 8, 9, 10}\nmax 10\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 700
+    },
+    "rawViewBox": "0 0 700 700",
+    "svg": {
+      "width": "700",
+      "height": "700",
+      "overflow": "visible",
+      "fontFamily": "monospace",
+      "fontSize": 16,
+      "fill": "#333"
+    },
+    "frame": {
+      "transform": {
+        "x": 350,
+        "y": 350
+      }
+    },
+    "graticule": [
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 60,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 120,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 180,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 240,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 300,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      }
+    ],
+    "axes": [
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1.8369701987210297e-14,
+        "y2": -300,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 300,
+        "y2": 0,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1.8369701987210297e-14,
+        "y2": 300,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": -300,
+        "y2": 3.6739403974420595e-14,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "A",
+        "x": 1.9533116446400285e-14,
+        "y": -319,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "auto",
+        "fill": "#333"
+      },
+      {
+        "text": "B",
+        "x": 319,
+        "y": 0,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "start",
+        "baseline": "central",
+        "fill": "#333"
+      },
+      {
+        "text": "C",
+        "x": 1.9533116446400285e-14,
+        "y": 319,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "hanging",
+        "fill": "#333"
+      },
+      {
+        "text": "D",
+        "x": -319,
+        "y": 3.906623289280057e-14,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "end",
+        "baseline": "central",
+        "fill": "#333"
+      }
+    ],
+    "curves": [
+      {
+        "index": 0,
+        "kind": "path",
+        "class": "radarCurve-0",
+        "d": "M1.83697019872103e-15,-30 C30.600000000000005,-30.000000000000004 60,-20.400000000000002 60,0 C60,20.400000000000002 30.60000000000001,90 5.5109105961630896e-15,90 C-30.599999999999994,90 -120,20.400000000000016 -120,1.469576158976824e-14 C-120,-20.399999999999988 -30.599999999999998,-29.999999999999996 1.83697019872103e-15,-30 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 1.83697019872103e-15,
+            "y": -30
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 30.600000000000005,
+            "c1y": -30.000000000000004,
+            "c2x": 60,
+            "c2y": -20.400000000000002,
+            "x": 60,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 60,
+            "c1y": 20.400000000000002,
+            "c2x": 30.60000000000001,
+            "c2y": 90,
+            "x": 5.5109105961630896e-15,
+            "y": 90
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -30.599999999999994,
+            "c1y": 90,
+            "c2x": -120,
+            "c2y": 20.400000000000016,
+            "x": -120,
+            "y": 1.469576158976824e-14
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -120,
+            "c1y": -20.399999999999988,
+            "c2x": -30.599999999999998,
+            "c2y": -29.999999999999996,
+            "x": 1.83697019872103e-15,
+            "y": -30
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      },
+      {
+        "index": 1,
+        "kind": "path",
+        "class": "radarCurve-1",
+        "d": "M3.67394039744206e-15,-60 C40.80000000000001,-60 90,-30.6 90,0 C90,30.6 40.80000000000001,120 7.34788079488412e-15,120 C-40.8,120 -150,30.60000000000002 -150,1.8369701987210297e-14 C-150,-30.599999999999984 -40.8,-60 3.67394039744206e-15,-60 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 3.67394039744206e-15,
+            "y": -60
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 40.80000000000001,
+            "c1y": -60,
+            "c2x": 90,
+            "c2y": -30.6,
+            "x": 90,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 90,
+            "c1y": 30.6,
+            "c2x": 40.80000000000001,
+            "c2y": 120,
+            "x": 7.34788079488412e-15,
+            "y": 120
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -40.8,
+            "c1y": 120,
+            "c2x": -150,
+            "c2y": 30.60000000000002,
+            "x": -150,
+            "y": 1.8369701987210297e-14
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -150,
+            "c1y": -30.599999999999984,
+            "c2x": -40.8,
+            "c2y": -60,
+            "x": 3.67394039744206e-15,
+            "y": -60
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(60, 100%, 73.5294117647%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(60, 100%, 73.5294117647%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      },
+      {
+        "index": 2,
+        "kind": "path",
+        "class": "radarCurve-2",
+        "d": "M5.5109105961630896e-15,-90 C51.000000000000014,-90 120,-40.800000000000004 120,0 C120,40.800000000000004 51.000000000000014,150 9.184850993605149e-15,150 C-51,150 -180,40.800000000000026 -180,2.2043642384652358e-14 C-180,-40.79999999999998 -51,-90 5.5109105961630896e-15,-90 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 5.5109105961630896e-15,
+            "y": -90
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 51.000000000000014,
+            "c1y": -90,
+            "c2x": 120,
+            "c2y": -40.800000000000004,
+            "x": 120,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 120,
+            "c1y": 40.800000000000004,
+            "c2x": 51.000000000000014,
+            "c2y": 150,
+            "x": 9.184850993605149e-15,
+            "y": 150
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -51,
+            "c1y": 150,
+            "c2x": -180,
+            "c2y": 40.800000000000026,
+            "x": -180,
+            "y": 2.2043642384652358e-14
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -180,
+            "c1y": -40.79999999999998,
+            "c2x": -51,
+            "c2y": -90,
+            "x": 5.5109105961630896e-15,
+            "y": -90
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(80, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(80, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      },
+      {
+        "index": 3,
+        "kind": "path",
+        "class": "radarCurve-3",
+        "d": "M7.34788079488412e-15,-120 C61.20000000000001,-120 150,-51.00000000000001 150,0 C150,51.00000000000001 61.20000000000002,180 1.1021821192326179e-14,180 C-61.19999999999999,180 -210,51.000000000000036 -210,2.5717582782094416e-14 C-210,-50.99999999999998 -61.199999999999996,-120 7.34788079488412e-15,-120 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.34788079488412e-15,
+            "y": -120
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 61.20000000000001,
+            "c1y": -120,
+            "c2x": 150,
+            "c2y": -51.00000000000001,
+            "x": 150,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 150,
+            "c1y": 51.00000000000001,
+            "c2x": 61.20000000000002,
+            "c2y": 180,
+            "x": 1.1021821192326179e-14,
+            "y": 180
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -61.19999999999999,
+            "c1y": 180,
+            "c2x": -210,
+            "c2y": 51.000000000000036,
+            "x": -210,
+            "y": 2.5717582782094416e-14
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -210,
+            "c1y": -50.99999999999998,
+            "c2x": -61.199999999999996,
+            "c2y": -120,
+            "x": 7.34788079488412e-15,
+            "y": -120
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(270, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(270, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      },
+      {
+        "index": 4,
+        "kind": "path",
+        "class": "radarCurve-4",
+        "d": "M9.184850993605149e-15,-150 C71.40000000000002,-150 180,-61.2 180,0 C180,61.2 71.40000000000002,210 1.2858791391047208e-14,210 C-71.39999999999999,210 -240,61.20000000000003 -240,2.939152317953648e-14 C-240,-61.199999999999974 -71.39999999999999,-150 9.184850993605149e-15,-150 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 9.184850993605149e-15,
+            "y": -150
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 71.40000000000002,
+            "c1y": -150,
+            "c2x": 180,
+            "c2y": -61.2,
+            "x": 180,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 180,
+            "c1y": 61.2,
+            "c2x": 71.40000000000002,
+            "c2y": 210,
+            "x": 1.2858791391047208e-14,
+            "y": 210
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -71.39999999999999,
+            "c1y": 210,
+            "c2x": -240,
+            "c2y": 61.20000000000003,
+            "x": -240,
+            "y": 2.939152317953648e-14
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -240,
+            "c1y": -61.199999999999974,
+            "c2x": -71.39999999999999,
+            "c2y": -150,
+            "x": 9.184850993605149e-15,
+            "y": -150
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(300, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(300, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      },
+      {
+        "index": 5,
+        "kind": "path",
+        "class": "radarCurve-5",
+        "d": "M1.1021821192326179e-14,-180 C81.60000000000002,-180 210,-71.4 210,0 C210,71.4 81.60000000000002,240 1.469576158976824e-14,240 C-81.6,240 -270,71.40000000000003 -270,3.3065463576978534e-14 C-270,-71.39999999999998 -81.6,-180 1.1021821192326179e-14,-180 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 1.1021821192326179e-14,
+            "y": -180
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 81.60000000000002,
+            "c1y": -180,
+            "c2x": 210,
+            "c2y": -71.4,
+            "x": 210,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 210,
+            "c1y": 71.4,
+            "c2x": 81.60000000000002,
+            "c2y": 240,
+            "x": 1.469576158976824e-14,
+            "y": 240
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -81.6,
+            "c1y": 240,
+            "c2x": -270,
+            "c2y": 71.40000000000003,
+            "x": -270,
+            "y": 3.3065463576978534e-14
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -270,
+            "c1y": -71.39999999999998,
+            "c2x": -81.6,
+            "c2y": -180,
+            "x": 1.1021821192326179e-14,
+            "y": -180
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(330, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(330, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      },
+      {
+        "index": 6,
+        "kind": "path",
+        "class": "radarCurve-6",
+        "d": "M1.2858791391047208e-14,-210 C91.80000000000003,-210 240,-81.60000000000001 240,0 C240,81.60000000000001 91.80000000000003,270 1.6532731788489267e-14,270 C-91.8,270 -300,81.60000000000005 -300,3.6739403974420595e-14 C-300,-81.59999999999997 -91.8,-210 1.2858791391047208e-14,-210 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 1.2858791391047208e-14,
+            "y": -210
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 91.80000000000003,
+            "c1y": -210,
+            "c2x": 240,
+            "c2y": -81.60000000000001,
+            "x": 240,
+            "y": 0
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 240,
+            "c1y": 81.60000000000001,
+            "c2x": 91.80000000000003,
+            "c2y": 270,
+            "x": 1.6532731788489267e-14,
+            "y": 270
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -91.8,
+            "c1y": 270,
+            "c2x": -300,
+            "c2y": 81.60000000000005,
+            "x": -300,
+            "y": 3.6739403974420595e-14
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -300,
+            "c1y": -81.59999999999997,
+            "c2x": -91.8,
+            "c2y": -210,
+            "x": 1.2858791391047208e-14,
+            "y": -210
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(0, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(0, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      }
+    ],
+    "legend": [
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -262.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-0",
+          "style": {
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(240, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "c0",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -242.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-1",
+          "style": {
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(60, 100%, 73.5294117647%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "c1",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -222.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-2",
+          "style": {
+            "fill": "hsl(80, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(80, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "c2",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -202.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-3",
+          "style": {
+            "fill": "hsl(270, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(270, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "c3",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -182.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-4",
+          "style": {
+            "fill": "hsl(300, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(300, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "c4",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -162.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-5",
+          "style": {
+            "fill": "hsl(330, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(330, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "c5",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -142.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-6",
+          "style": {
+            "fill": "hsl(0, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(0, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "c6",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      }
+    ],
+    "title": {
+      "text": "",
+      "x": 0,
+      "y": -350,
+      "class": "radarTitle",
+      "fontSize": 16,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "fill": "#333"
+    }
+  }
+}

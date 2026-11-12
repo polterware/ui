@@ -1,0 +1,403 @@
+{
+  "name": "01-basic",
+  "source": "radar-beta\ntitle Skills\naxis a[\"Axis A\"], b[\"Axis B\"], c[\"Axis C\"], d[\"Axis D\"], e[\"Axis E\"]\ncurve one[\"Series One\"]{4, 3, 2, 5, 3}\ncurve two[\"Series Two\"]{1, 5, 3, 2, 4}\nmax 5\nmin 0\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 700
+    },
+    "rawViewBox": "0 0 700 700",
+    "svg": {
+      "width": "700",
+      "height": "700",
+      "overflow": "visible",
+      "fontFamily": "monospace",
+      "fontSize": 16,
+      "fill": "#333"
+    },
+    "frame": {
+      "transform": {
+        "x": 350,
+        "y": 350
+      }
+    },
+    "graticule": [
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 60,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 120,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 180,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 240,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 300,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      }
+    ],
+    "axes": [
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1.8369701987210297e-14,
+        "y2": -300,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 285.31695488854604,
+        "y2": -92.70509831248422,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 176.33557568774194,
+        "y2": 242.70509831248424,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": -176.3355756877419,
+        "y2": 242.70509831248424,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": -285.3169548885461,
+        "y2": -92.70509831248418,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "Axis A",
+        "x": 1.9533116446400285e-14,
+        "y": -319,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "auto",
+        "fill": "#333"
+      },
+      {
+        "text": "Axis B",
+        "x": 303.387028698154,
+        "y": -98.57642120560821,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "start",
+        "baseline": "auto",
+        "fill": "#333"
+      },
+      {
+        "text": "Axis C",
+        "x": 187.50349548129893,
+        "y": 258.07642120560826,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "start",
+        "baseline": "hanging",
+        "fill": "#333"
+      },
+      {
+        "text": "Axis D",
+        "x": -187.50349548129887,
+        "y": 258.07642120560826,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "end",
+        "baseline": "hanging",
+        "fill": "#333"
+      },
+      {
+        "text": "Axis E",
+        "x": -303.38702869815404,
+        "y": -98.57642120560818,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "end",
+        "baseline": "auto",
+        "fill": "#333"
+      }
+    ],
+    "curves": [
+      {
+        "index": 0,
+        "kind": "path",
+        "class": "radarCurve-0",
+        "d": "M1.469576158976824e-14,-240 C58.20465879726342,-240 159.19935378636117,-112.92700567273947 171.19017293312763,-55.62305898749053 C183.18099207989408,1.6808876977584077 129.6136075406446,46.36625258399799 70.53423027509677,97.0820393249937 C11.454853009548948,147.7978260659894 -135.24242714234376,268.66496502560653 -176.3355756877419,242.70509831248424 C-217.42872423314006,216.74523159936192 -201.1672208000438,26.43680772563181 -171.19017293312766,-55.62305898749051 C-141.21312506621152,-137.68292570061283 -58.20465879726339,-240 1.469576158976824e-14,-240 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 1.469576158976824e-14,
+            "y": -240
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 58.20465879726342,
+            "c1y": -240,
+            "c2x": 159.19935378636117,
+            "c2y": -112.92700567273947,
+            "x": 171.19017293312763,
+            "y": -55.62305898749053
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 183.18099207989408,
+            "c1y": 1.6808876977584077,
+            "c2x": 129.6136075406446,
+            "c2y": 46.36625258399799,
+            "x": 70.53423027509677,
+            "y": 97.0820393249937
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 11.454853009548948,
+            "c1y": 147.7978260659894,
+            "c2x": -135.24242714234376,
+            "c2y": 268.66496502560653,
+            "x": -176.3355756877419,
+            "y": 242.70509831248424
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -217.42872423314006,
+            "c1y": 216.74523159936192,
+            "c2x": -201.1672208000438,
+            "c2y": 26.43680772563181,
+            "x": -171.19017293312766,
+            "y": -55.62305898749051
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -141.21312506621152,
+            "c1y": -137.68292570061283,
+            "c2x": -58.20465879726339,
+            "c2y": -240,
+            "x": 1.469576158976824e-14,
+            "y": -240
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      },
+      {
+        "index": 1,
+        "kind": "path",
+        "class": "radarCurve-1",
+        "d": "M3.67394039744206e-15,-60 C87.30698819589509,-63.15197334262447 267.3307261683964,-127.66101834035763 285.31695488854604,-92.70509831248422 C303.3031836086957,-57.74917828461083 166.29604689046445,113.35924558911928 105.80134541264516,145.62305898749054 C45.30664393482588,177.8868723858618 -13.744895690104812,134.44585272336494 -70.53423027509676,97.0820393249937 C-127.32356486008871,59.71822592662246 -240.24438305760333,-47.460131964738416 -228.25356391083687,-74.16407864998735 C-216.26274476407042,-100.86802533523627 -87.30698819589509,-56.84802665737553 3.67394039744206e-15,-60 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 3.67394039744206e-15,
+            "y": -60
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 87.30698819589509,
+            "c1y": -63.15197334262447,
+            "c2x": 267.3307261683964,
+            "c2y": -127.66101834035763,
+            "x": 285.31695488854604,
+            "y": -92.70509831248422
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 303.3031836086957,
+            "c1y": -57.74917828461083,
+            "c2x": 166.29604689046445,
+            "c2y": 113.35924558911928,
+            "x": 105.80134541264516,
+            "y": 145.62305898749054
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 45.30664393482588,
+            "c1y": 177.8868723858618,
+            "c2x": -13.744895690104812,
+            "c2y": 134.44585272336494,
+            "x": -70.53423027509676,
+            "y": 97.0820393249937
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -127.32356486008871,
+            "c1y": 59.71822592662246,
+            "c2x": -240.24438305760333,
+            "c2y": -47.460131964738416,
+            "x": -228.25356391083687,
+            "y": -74.16407864998735
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -216.26274476407042,
+            "c1y": -100.86802533523627,
+            "c2x": -87.30698819589509,
+            "c2y": -56.84802665737553,
+            "x": 3.67394039744206e-15,
+            "y": -60
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(60, 100%, 73.5294117647%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(60, 100%, 73.5294117647%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      }
+    ],
+    "legend": [
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -262.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-0",
+          "style": {
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(240, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "Series One",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      },
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -242.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-1",
+          "style": {
+            "fill": "hsl(60, 100%, 73.5294117647%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(60, 100%, 73.5294117647%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "Series Two",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      }
+    ],
+    "title": {
+      "text": "Skills",
+      "x": 0,
+      "y": -350,
+      "class": "radarTitle",
+      "fontSize": 16,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "fill": "#333"
+    }
+  }
+}

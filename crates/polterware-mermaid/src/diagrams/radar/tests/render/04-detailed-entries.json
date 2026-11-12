@@ -1,0 +1,249 @@
+{
+  "name": "04-detailed-entries",
+  "source": "radar-beta\naxis quality[\"Quality\"], price[\"Price\"], delivery[\"Delivery\"]\ncurve product[\"Product\"]{price: 8, quality: 6, delivery: 4}\nmax 10\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "height": 700
+    },
+    "rawViewBox": "0 0 700 700",
+    "svg": {
+      "width": "700",
+      "height": "700",
+      "overflow": "visible",
+      "fontFamily": "monospace",
+      "fontSize": 16,
+      "fill": "#333"
+    },
+    "frame": {
+      "transform": {
+        "x": 350,
+        "y": 350
+      }
+    },
+    "graticule": [
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 60,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 120,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 180,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 240,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      },
+      {
+        "kind": "circle",
+        "class": "radarGraticule",
+        "r": 300,
+        "style": {
+          "fill": "#DEDEDE",
+          "fillOpacity": 0.3,
+          "stroke": "#DEDEDE",
+          "strokeOpacity": 1,
+          "strokeWidth": 1,
+          "opacity": 1
+        }
+      }
+    ],
+    "axes": [
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1.8369701987210297e-14,
+        "y2": -300,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 259.8076211353316,
+        "y2": 149.99999999999994,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": -259.80762113533154,
+        "y2": 150.0000000000001,
+        "class": "radarAxisLine",
+        "stroke": "#333333",
+        "strokeWidth": 2
+      }
+    ],
+    "axisLabels": [
+      {
+        "text": "Quality",
+        "x": 1.9533116446400285e-14,
+        "y": -319,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "middle",
+        "baseline": "auto",
+        "fill": "#333"
+      },
+      {
+        "text": "Price",
+        "x": 276.2621038072359,
+        "y": 159.49999999999994,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "start",
+        "baseline": "hanging",
+        "fill": "#333"
+      },
+      {
+        "text": "Delivery",
+        "x": -276.26210380723586,
+        "y": 159.5000000000001,
+        "class": "radarAxisLabel",
+        "fontSize": 12,
+        "anchor": "end",
+        "baseline": "hanging",
+        "fill": "#333"
+      }
+    ],
+    "curves": [
+      {
+        "index": 0,
+        "kind": "path",
+        "class": "radarCurve-0",
+        "d": "M1.1021821192326179e-14,-180 C53.00075471160766,-169.8 225.51301514546782,79.19999999999995 207.84609690826528,119.99999999999996 C190.17917867106274,160.79999999999995 -68.58921197972751,111.00000000000003 -103.92304845413261,60.00000000000004 C-139.25688492853772,9.00000000000005 -53.000754711607634,-190.2 1.1021821192326179e-14,-180 Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 1.1021821192326179e-14,
+            "y": -180
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 53.00075471160766,
+            "c1y": -169.8,
+            "c2x": 225.51301514546782,
+            "c2y": 79.19999999999995,
+            "x": 207.84609690826528,
+            "y": 119.99999999999996
+          },
+          {
+            "op": "cubicTo",
+            "c1x": 190.17917867106274,
+            "c1y": 160.79999999999995,
+            "c2x": -68.58921197972751,
+            "c2y": 111.00000000000003,
+            "x": -103.92304845413261,
+            "y": 60.00000000000004
+          },
+          {
+            "op": "cubicTo",
+            "c1x": -139.25688492853772,
+            "c1y": 9.00000000000005,
+            "c2x": -53.000754711607634,
+            "c2y": -190.2,
+            "x": 1.1021821192326179e-14,
+            "y": -180
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "style": {
+          "fill": "hsl(240, 100%, 76.2745098039%)",
+          "fillOpacity": 0.5,
+          "stroke": "hsl(240, 100%, 76.2745098039%)",
+          "strokeOpacity": 1,
+          "strokeWidth": 2,
+          "opacity": 1
+        }
+      }
+    ],
+    "legend": [
+      {
+        "transform": {
+          "x": 262.5,
+          "y": -262.5
+        },
+        "rect": {
+          "width": 12,
+          "height": 12,
+          "class": "radarLegendBox-0",
+          "style": {
+            "fill": "hsl(240, 100%, 76.2745098039%)",
+            "fillOpacity": 0.5,
+            "stroke": "hsl(240, 100%, 76.2745098039%)",
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "opacity": 1
+          }
+        },
+        "text": {
+          "text": "Product",
+          "x": 16,
+          "y": 0,
+          "class": "radarLegendText",
+          "fontSize": 12,
+          "anchor": "start",
+          "baseline": "hanging",
+          "fill": "#333"
+        }
+      }
+    ],
+    "title": {
+      "text": "",
+      "x": 0,
+      "y": -350,
+      "class": "radarTitle",
+      "fontSize": 16,
+      "anchor": "middle",
+      "baseline": "hanging",
+      "fill": "#333"
+    }
+  }
+}
