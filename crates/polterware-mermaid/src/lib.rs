@@ -148,6 +148,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::treemap::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::TreeView => {
+            let scene = diagrams::tree_view::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }

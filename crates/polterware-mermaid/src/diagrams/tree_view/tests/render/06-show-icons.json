@@ -1,0 +1,1899 @@
+{
+  "name": "06-show-icons",
+  "source": "%%{init: {\"treeView\": {\"showIcons\": true, \"extensionIcons\": {\".rs\": \"mermaid-treeview:folder\"}, \"filenameIcons\": {\"index.ts\": \"mermaid-treeview:folder\"}}}}%%\ntreeView-beta\n  src/\n    index.ts\n    main.rs\n    unknown.xyz\n  README.md\n",
+  "expected": {
+    "styles": {
+      "labelColor": "black",
+      "labelFontSize": 16,
+      "lineColor": "black",
+      "iconColor": "#546e7a",
+      "descriptionColor": "#6a9955",
+      "highlightBg": "rgba(255, 193, 7, 0.15)",
+      "highlightStroke": "#ffc107",
+      "highlightStrokeWidth": 1
+    },
+    "viewBox": {
+      "x": -0.5,
+      "y": 0,
+      "width": 163.6,
+      "height": 170.4
+    },
+    "rawViewBox": "-0.5 0 163.6 170.4",
+    "rows": [
+      {
+        "label": {
+          "text": "/",
+          "x": 23,
+          "y": 14.2,
+          "className": "treeView-node-label treeView-node-dir",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": true,
+          "bbox": {
+            "width": 9.6,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 5,
+            "f": 5
+          },
+          "origin": {
+            "x": 5,
+            "y": 5
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 10.59,
+                  "y": 4.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 9.17,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 2,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 2,
+                  "y": 18
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 22,
+                  "y": 18
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 8
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 12.83,
+                  "y": 6
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "nonzero"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "label": {
+          "text": "src",
+          "x": 38,
+          "y": 42.599999999999994,
+          "className": "treeView-node-label treeView-node-dir",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": true,
+          "bbox": {
+            "width": 28.799999999999997,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 20,
+            "f": 33.4
+          },
+          "origin": {
+            "x": 20,
+            "y": 33.4
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 10.59,
+                  "y": 4.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 9.17,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 2,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 2,
+                  "y": 18
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 22,
+                  "y": 18
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 8
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 12.83,
+                  "y": 6
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "nonzero"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "label": {
+          "text": "index.ts",
+          "x": 53,
+          "y": 71,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 76.8,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 35,
+            "f": 61.8
+          },
+          "origin": {
+            "x": 35,
+            "y": 61.8
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 10.59,
+                  "y": 4.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 9.17,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 2,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 2,
+                  "y": 18
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 22,
+                  "y": 18
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 8
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 12.83,
+                  "y": 6
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "nonzero"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "label": {
+          "text": "main.rs",
+          "x": 53,
+          "y": 99.39999999999999,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 67.2,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 35,
+            "f": 90.19999999999999
+          },
+          "origin": {
+            "x": 35,
+            "y": 90.19999999999999
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 10.59,
+                  "y": 4.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 9.17,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 2,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 2,
+                  "y": 18
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 22,
+                  "y": 18
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 8
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 12.83,
+                  "y": 6
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "nonzero"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "label": {
+          "text": "unknown.xyz",
+          "x": 53,
+          "y": 127.8,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 105.6,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 35,
+            "f": 118.6
+          },
+          "origin": {
+            "x": 35,
+            "y": 118.6
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 6,
+                  "y": 2
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 6,
+                  "y": 22
+                },
+                {
+                  "op": "lineTo",
+                  "x": 18,
+                  "y": 22
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 8.83
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 19.41,
+                  "y": 7.41
+                },
+                {
+                  "op": "lineTo",
+                  "x": 14.59,
+                  "y": 2.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 13.17,
+                  "y": 2
+                },
+                {
+                  "op": "lineTo",
+                  "x": 6,
+                  "y": 2
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": 13.5,
+                  "y": 3.9
+                },
+                {
+                  "op": "lineTo",
+                  "x": 18.1,
+                  "y": 8.5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 14.500000000000002,
+                  "y": 8.5
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 1,
+                  "ry": 1,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": true,
+                  "x": 13.500000000000002,
+                  "y": 7.5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 13.500000000000002,
+                  "y": 3.9
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "evenodd"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "label": {
+          "text": "README.md",
+          "x": 38,
+          "y": 156.2,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 86.39999999999999,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 20,
+            "f": 147
+          },
+          "origin": {
+            "x": 20,
+            "y": 147
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 6,
+                  "y": 2
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 6,
+                  "y": 22
+                },
+                {
+                  "op": "lineTo",
+                  "x": 18,
+                  "y": 22
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 8.83
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 19.41,
+                  "y": 7.41
+                },
+                {
+                  "op": "lineTo",
+                  "x": 14.59,
+                  "y": 2.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 13.17,
+                  "y": 2
+                },
+                {
+                  "op": "lineTo",
+                  "x": 6,
+                  "y": 2
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": 13.5,
+                  "y": 3.9
+                },
+                {
+                  "op": "lineTo",
+                  "x": 18.1,
+                  "y": 8.5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 14.500000000000002,
+                  "y": 8.5
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 1,
+                  "ry": 1,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": true,
+                  "x": 13.500000000000002,
+                  "y": 7.5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 13.500000000000002,
+                  "y": 3.9
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "evenodd"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      }
+    ],
+    "lines": [
+      {
+        "x1": -10,
+        "y1": 14.2,
+        "x2": 0,
+        "y2": 14.2,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 5,
+        "y1": 42.599999999999994,
+        "x2": 15,
+        "y2": 42.599999999999994,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 20,
+        "y1": 71,
+        "x2": 30,
+        "y2": 71,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 20,
+        "y1": 99.39999999999999,
+        "x2": 30,
+        "y2": 99.39999999999999,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 20,
+        "y1": 127.8,
+        "x2": 30,
+        "y2": 127.8,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 20,
+        "y1": 56.8,
+        "x2": 20,
+        "y2": 128.3,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 5,
+        "y1": 156.2,
+        "x2": 15,
+        "y2": 156.2,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 5,
+        "y1": 28.4,
+        "x2": 5,
+        "y2": 156.7,
+        "strokeWidth": 1,
+        "stroke": "black"
+      }
+    ],
+    "ordered": [
+      {
+        "kind": "row",
+        "label": {
+          "text": "/",
+          "x": 23,
+          "y": 14.2,
+          "className": "treeView-node-label treeView-node-dir",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": true,
+          "bbox": {
+            "width": 9.6,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 5,
+            "f": 5
+          },
+          "origin": {
+            "x": 5,
+            "y": 5
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 10.59,
+                  "y": 4.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 9.17,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 2,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 2,
+                  "y": 18
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 22,
+                  "y": 18
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 8
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 12.83,
+                  "y": 6
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "nonzero"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "kind": "line",
+        "x1": -10,
+        "y1": 14.2,
+        "x2": 0,
+        "y2": 14.2,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "src",
+          "x": 38,
+          "y": 42.599999999999994,
+          "className": "treeView-node-label treeView-node-dir",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": true,
+          "bbox": {
+            "width": 28.799999999999997,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 20,
+            "f": 33.4
+          },
+          "origin": {
+            "x": 20,
+            "y": 33.4
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 10.59,
+                  "y": 4.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 9.17,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 2,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 2,
+                  "y": 18
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 22,
+                  "y": 18
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 8
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 12.83,
+                  "y": 6
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "nonzero"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "kind": "line",
+        "x1": 5,
+        "y1": 42.599999999999994,
+        "x2": 15,
+        "y2": 42.599999999999994,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "index.ts",
+          "x": 53,
+          "y": 71,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 76.8,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 35,
+            "f": 61.8
+          },
+          "origin": {
+            "x": 35,
+            "y": 61.8
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 10.59,
+                  "y": 4.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 9.17,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 2,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 2,
+                  "y": 18
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 22,
+                  "y": 18
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 8
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 12.83,
+                  "y": 6
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "nonzero"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "kind": "line",
+        "x1": 20,
+        "y1": 71,
+        "x2": 30,
+        "y2": 71,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "main.rs",
+          "x": 53,
+          "y": 99.39999999999999,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 67.2,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 35,
+            "f": 90.19999999999999
+          },
+          "origin": {
+            "x": 35,
+            "y": 90.19999999999999
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 10.59,
+                  "y": 4.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 9.17,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 2,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 2,
+                  "y": 18
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 22,
+                  "y": 18
+                },
+                {
+                  "op": "lineTo",
+                  "x": 22,
+                  "y": 8
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 6
+                },
+                {
+                  "op": "lineTo",
+                  "x": 12.83,
+                  "y": 6
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "nonzero"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "kind": "line",
+        "x1": 20,
+        "y1": 99.39999999999999,
+        "x2": 30,
+        "y2": 99.39999999999999,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "unknown.xyz",
+          "x": 53,
+          "y": 127.8,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 105.6,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 35,
+            "f": 118.6
+          },
+          "origin": {
+            "x": 35,
+            "y": 118.6
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 6,
+                  "y": 2
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 6,
+                  "y": 22
+                },
+                {
+                  "op": "lineTo",
+                  "x": 18,
+                  "y": 22
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 8.83
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 19.41,
+                  "y": 7.41
+                },
+                {
+                  "op": "lineTo",
+                  "x": 14.59,
+                  "y": 2.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 13.17,
+                  "y": 2
+                },
+                {
+                  "op": "lineTo",
+                  "x": 6,
+                  "y": 2
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": 13.5,
+                  "y": 3.9
+                },
+                {
+                  "op": "lineTo",
+                  "x": 18.1,
+                  "y": 8.5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 14.500000000000002,
+                  "y": 8.5
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 1,
+                  "ry": 1,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": true,
+                  "x": 13.500000000000002,
+                  "y": 7.5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 13.500000000000002,
+                  "y": 3.9
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "evenodd"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "kind": "line",
+        "x1": 20,
+        "y1": 127.8,
+        "x2": 30,
+        "y2": 127.8,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "line",
+        "x1": 20,
+        "y1": 56.8,
+        "x2": 20,
+        "y2": 128.3,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "README.md",
+          "x": 38,
+          "y": 156.2,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 86.39999999999999,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": {
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": 20,
+            "f": 147
+          },
+          "origin": {
+            "x": 20,
+            "y": 147
+          },
+          "viewBox": {
+            "width": 24,
+            "height": 24
+          },
+          "width": 14,
+          "height": 14,
+          "paths": [
+            {
+              "commands": [
+                {
+                  "op": "moveTo",
+                  "x": 6,
+                  "y": 2
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 4,
+                  "y": 4
+                },
+                {
+                  "op": "lineTo",
+                  "x": 4,
+                  "y": 20
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 6,
+                  "y": 22
+                },
+                {
+                  "op": "lineTo",
+                  "x": 18,
+                  "y": 22
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 20,
+                  "y": 20
+                },
+                {
+                  "op": "lineTo",
+                  "x": 20,
+                  "y": 8.83
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 19.41,
+                  "y": 7.41
+                },
+                {
+                  "op": "lineTo",
+                  "x": 14.59,
+                  "y": 2.59
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 2,
+                  "ry": 2,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": false,
+                  "x": 13.17,
+                  "y": 2
+                },
+                {
+                  "op": "lineTo",
+                  "x": 6,
+                  "y": 2
+                },
+                {
+                  "op": "close"
+                },
+                {
+                  "op": "moveTo",
+                  "x": 13.5,
+                  "y": 3.9
+                },
+                {
+                  "op": "lineTo",
+                  "x": 18.1,
+                  "y": 8.5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 14.500000000000002,
+                  "y": 8.5
+                },
+                {
+                  "op": "arcTo",
+                  "rx": 1,
+                  "ry": 1,
+                  "rotation": 0,
+                  "large_arc": false,
+                  "sweep": true,
+                  "x": 13.500000000000002,
+                  "y": 7.5
+                },
+                {
+                  "op": "lineTo",
+                  "x": 13.500000000000002,
+                  "y": 3.9
+                },
+                {
+                  "op": "close"
+                }
+              ],
+              "fill": "#546e7a",
+              "fillRule": "evenodd"
+            }
+          ],
+          "rects": [],
+          "texts": []
+        }
+      },
+      {
+        "kind": "line",
+        "x1": 5,
+        "y1": 156.2,
+        "x2": 15,
+        "y2": 156.2,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "line",
+        "x1": 5,
+        "y1": 28.4,
+        "x2": 5,
+        "y2": 156.7,
+        "strokeWidth": 1,
+        "stroke": "black"
+      }
+    ]
+  }
+}

@@ -1,0 +1,483 @@
+{
+  "name": "03-descriptions",
+  "source": "treeView-beta\n  src/ ## Source files\n    index.ts ## Entry point\n    app.rs ## The application\n  README.md ## How to build\n",
+  "expected": {
+    "styles": {
+      "labelColor": "black",
+      "labelFontSize": 16,
+      "lineColor": "black",
+      "iconColor": "#546e7a",
+      "descriptionColor": "#6a9955",
+      "highlightBg": "rgba(255, 193, 7, 0.15)",
+      "highlightStroke": "#ffc107",
+      "highlightStrokeWidth": 1
+    },
+    "viewBox": {
+      "x": -0.5,
+      "y": 0,
+      "width": 276.8,
+      "height": 142
+    },
+    "rawViewBox": "-0.5 0 276.8 142",
+    "rows": [
+      {
+        "label": {
+          "text": "/",
+          "x": 5,
+          "y": 14.2,
+          "className": "treeView-node-label treeView-node-dir",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": true,
+          "bbox": {
+            "width": 9.6,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "label": {
+          "text": "src",
+          "x": 20,
+          "y": 42.599999999999994,
+          "className": "treeView-node-label treeView-node-dir",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": true,
+          "bbox": {
+            "width": 28.799999999999997,
+            "height": 18.4
+          }
+        },
+        "description": {
+          "text": "Source files",
+          "x": 127.8,
+          "y": 42.599999999999994,
+          "className": "treeView-node-description",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "#6a9955",
+          "italic": true,
+          "bbox": {
+            "width": 115.19999999999999,
+            "height": 18.4
+          }
+        },
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "label": {
+          "text": "index.ts",
+          "x": 35,
+          "y": 71,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 76.8,
+            "height": 18.4
+          }
+        },
+        "description": {
+          "text": "Entry point",
+          "x": 127.8,
+          "y": 71,
+          "className": "treeView-node-description",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "#6a9955",
+          "italic": true,
+          "bbox": {
+            "width": 105.6,
+            "height": 18.4
+          }
+        },
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "label": {
+          "text": "app.rs",
+          "x": 35,
+          "y": 99.39999999999999,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 57.599999999999994,
+            "height": 18.4
+          }
+        },
+        "description": {
+          "text": "The application",
+          "x": 127.8,
+          "y": 99.39999999999999,
+          "className": "treeView-node-description",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "#6a9955",
+          "italic": true,
+          "bbox": {
+            "width": 144,
+            "height": 18.4
+          }
+        },
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "label": {
+          "text": "README.md",
+          "x": 20,
+          "y": 127.8,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 86.39999999999999,
+            "height": 18.4
+          }
+        },
+        "description": {
+          "text": "How to build",
+          "x": 127.8,
+          "y": 127.8,
+          "className": "treeView-node-description",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "#6a9955",
+          "italic": true,
+          "bbox": {
+            "width": 115.19999999999999,
+            "height": 18.4
+          }
+        },
+        "highlight": null,
+        "icon": null
+      }
+    ],
+    "lines": [
+      {
+        "x1": -10,
+        "y1": 14.2,
+        "x2": 0,
+        "y2": 14.2,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 5,
+        "y1": 42.599999999999994,
+        "x2": 15,
+        "y2": 42.599999999999994,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 20,
+        "y1": 71,
+        "x2": 30,
+        "y2": 71,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 20,
+        "y1": 99.39999999999999,
+        "x2": 30,
+        "y2": 99.39999999999999,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 20,
+        "y1": 56.8,
+        "x2": 20,
+        "y2": 99.89999999999999,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 5,
+        "y1": 127.8,
+        "x2": 15,
+        "y2": 127.8,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "x1": 5,
+        "y1": 28.4,
+        "x2": 5,
+        "y2": 128.3,
+        "strokeWidth": 1,
+        "stroke": "black"
+      }
+    ],
+    "ordered": [
+      {
+        "kind": "row",
+        "label": {
+          "text": "/",
+          "x": 5,
+          "y": 14.2,
+          "className": "treeView-node-label treeView-node-dir",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": true,
+          "bbox": {
+            "width": 9.6,
+            "height": 18.4
+          }
+        },
+        "description": null,
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "kind": "line",
+        "x1": -10,
+        "y1": 14.2,
+        "x2": 0,
+        "y2": 14.2,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "src",
+          "x": 20,
+          "y": 42.599999999999994,
+          "className": "treeView-node-label treeView-node-dir",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": true,
+          "bbox": {
+            "width": 28.799999999999997,
+            "height": 18.4
+          }
+        },
+        "description": {
+          "text": "Source files",
+          "x": 127.8,
+          "y": 42.599999999999994,
+          "className": "treeView-node-description",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "#6a9955",
+          "italic": true,
+          "bbox": {
+            "width": 115.19999999999999,
+            "height": 18.4
+          }
+        },
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "kind": "line",
+        "x1": 5,
+        "y1": 42.599999999999994,
+        "x2": 15,
+        "y2": 42.599999999999994,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "index.ts",
+          "x": 35,
+          "y": 71,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 76.8,
+            "height": 18.4
+          }
+        },
+        "description": {
+          "text": "Entry point",
+          "x": 127.8,
+          "y": 71,
+          "className": "treeView-node-description",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "#6a9955",
+          "italic": true,
+          "bbox": {
+            "width": 105.6,
+            "height": 18.4
+          }
+        },
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "kind": "line",
+        "x1": 20,
+        "y1": 71,
+        "x2": 30,
+        "y2": 71,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "app.rs",
+          "x": 35,
+          "y": 99.39999999999999,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 57.599999999999994,
+            "height": 18.4
+          }
+        },
+        "description": {
+          "text": "The application",
+          "x": 127.8,
+          "y": 99.39999999999999,
+          "className": "treeView-node-description",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "#6a9955",
+          "italic": true,
+          "bbox": {
+            "width": 144,
+            "height": 18.4
+          }
+        },
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "kind": "line",
+        "x1": 20,
+        "y1": 99.39999999999999,
+        "x2": 30,
+        "y2": 99.39999999999999,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "line",
+        "x1": 20,
+        "y1": 56.8,
+        "x2": 20,
+        "y2": 99.89999999999999,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "row",
+        "label": {
+          "text": "README.md",
+          "x": 20,
+          "y": 127.8,
+          "className": "treeView-node-label",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "black",
+          "bold": false,
+          "bbox": {
+            "width": 86.39999999999999,
+            "height": 18.4
+          }
+        },
+        "description": {
+          "text": "How to build",
+          "x": 127.8,
+          "y": 127.8,
+          "className": "treeView-node-description",
+          "fontWeight": null,
+          "fontFamily": null,
+          "fontSize": 16,
+          "baseline": "middle",
+          "fill": "#6a9955",
+          "italic": true,
+          "bbox": {
+            "width": 115.19999999999999,
+            "height": 18.4
+          }
+        },
+        "highlight": null,
+        "icon": null
+      },
+      {
+        "kind": "line",
+        "x1": 5,
+        "y1": 127.8,
+        "x2": 15,
+        "y2": 127.8,
+        "strokeWidth": 1,
+        "stroke": "black"
+      },
+      {
+        "kind": "line",
+        "x1": 5,
+        "y1": 28.4,
+        "x2": 5,
+        "y2": 128.3,
+        "strokeWidth": 1,
+        "stroke": "black"
+      }
+    ]
+  }
+}
