@@ -24,8 +24,8 @@
 //!   because upstream's lexer fails a diagram whose last token is a zero-width accessibility
 //!   value (`accTitle:` with nothing after it). That failure is preserved.
 //! * Leading blank lines are skipped before the header. Upstream's preprocessing deletes the
-//!   frontmatter and directive lines, while [`crate::preprocess`] keeps them as empty lines so
-//!   spans keep their line numbers; skipping them is what makes a frontmatter diagram parse.
+//!   frontmatter and directive lines; [`crate::preprocess`] removes the frontmatter and keeps
+//!   a directive's line breaks, and skipping them is what makes a frontmatter diagram parse.
 //!
 //! The renderer is [`render`], ported from `timelineRenderer.ts` and
 //! `timelineRendererVertical.ts` (with `svgDraw.js` and `styles.js`) and drawing directly with

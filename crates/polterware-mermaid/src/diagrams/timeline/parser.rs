@@ -48,9 +48,9 @@ pub(super) fn parse(body: &str) -> Result<Ast, ParseError> {
     let mut lexer = Lexer::new(body);
     let mut db = Db::new();
 
-    // Upstream's grammar wants the header first; this crate's preprocess keeps the lines it
-    // removes (frontmatter, directives) as blank lines so spans keep their line numbers, so
-    // leading newlines are skipped here, as the gantt, sequence, and state parsers do.
+    // Upstream's grammar wants the header first; this crate's preprocess keeps a directive's
+    // line breaks as blank lines, so leading newlines are skipped here, as the gantt,
+    // sequence, and state parsers do.
     let mut header = lexer.next_token();
     while header.kind == Kind::Newline {
         header = lexer.next_token();

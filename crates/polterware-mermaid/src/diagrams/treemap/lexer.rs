@@ -20,9 +20,10 @@
 //! [`super::parser`]).
 //!
 //! `ML_COMMENT` is a hidden token here, but mermaid removes whole `%%` comment lines before
-//! Langium ever sees them (`diagram-api/comments.ts` `cleanupComments`). Since this crate's
-//! body keeps comments, the lexer removes those lines itself, leading indentation included,
-//! which keeps an indented comment from leaving an `INDENTATION` token behind.
+//! Langium ever sees them (`diagram-api/comments.ts` `cleanupComments`), and
+//! [`crate::preprocess`] does the same. A body handed to this lexer directly may still keep
+//! comments, so it removes those lines itself, leading indentation included, which keeps an
+//! indented comment from leaving an `INDENTATION` token behind.
 //!
 //! Every JavaScript regex is matched by hand, including the backtracking the patterns allow.
 

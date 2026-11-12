@@ -29,9 +29,9 @@
 //! * The jison lexer's empty-match loop in the `string` and `acc_descr_multiline`
 //!   conditions at end of input terminates upstream only through the `done` flag; here it is
 //!   an error, with the same parse result.
-//! * Blank lines, and the line breaks comments leave behind, are skipped before the header.
-//!   Upstream deletes the frontmatter block and comment lines before parsing, while
-//!   [`crate::preprocess`] blanks their lines so spans and editor lines agree; the skip makes
+//! * Blank lines, and the line breaks directives leave behind, are skipped before the header.
+//!   Upstream deletes the frontmatter block and comment lines before parsing, and
+//!   [`crate::preprocess`] does the same (directives keep their line breaks); the skip makes
 //!   the two agree.
 //!
 //! The renderer is [`render`], ported from `requirementRenderer.ts` over the shared layout

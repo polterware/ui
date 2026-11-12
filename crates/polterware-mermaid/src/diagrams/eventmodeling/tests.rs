@@ -138,7 +138,9 @@ fn reports_the_original_line_number_when_comments_precede_a_duplicate_frame() {
     let source = crate::preprocess::preprocess(
         "eventmodeling\n        tf 01 ui UI\n        %% This comment occupies a source line.\n        rf 01 evt Event",
     );
-    let error = error(&source.body);
+    // The event modeling database sets `preserveCommentsWhenParsing`, so the pipeline hands
+    // its parser `withComments`, not the comment-stripped `body`.
+    let error = error(&source.with_comments);
     assert_eq!(
         error.message,
         "Duplicate event modeling frame ID \"01\" on line 4"

@@ -114,9 +114,9 @@ impl<'a> Parser<'a> {
     fn parse_document(mut self) -> Result<super::ast::Ast, ParseError> {
         let mut db = Db::new();
 
-        // Upstream's `cleanupComments` deletes comment lines and then `trimStart`s the text;
-        // this crate's preprocess keeps comments and line numbers, so comments and blank
-        // lines before the header arrive as NEWLINE tokens. The `start` rule accepts
+        // Upstream's `cleanupComments` deletes comment lines and then `trimStart`s the text,
+        // as this crate's preprocess does; directives keep their line breaks, so blank lines
+        // before the header can still arrive as NEWLINE tokens. The `start` rule accepts
         // directives before the header, each optionally followed by one NEWLINE.
         loop {
             while self.peek()? == TokenKind::Newline {

@@ -124,9 +124,9 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_document(mut self) -> Result<ParsedDocument, ParseError> {
-        // `preprocess` blanks removed frontmatter and directive lines instead of deleting
-        // them, and keeps `%%` comment lines; upstream hands its parser the cleaned text.
-        // Leading blank and comment lines are therefore skipped before the header.
+        // `preprocess` removes frontmatter and `%%` comment lines and keeps a directive's
+        // line breaks; upstream hands its parser the cleaned text. Leading blank and comment
+        // lines are therefore skipped before the header.
         loop {
             match self.peek() {
                 TokenKind::Newline => {

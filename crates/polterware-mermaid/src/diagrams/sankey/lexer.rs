@@ -349,7 +349,8 @@ fn is_text_data(ch: char) -> bool {
 
 /// The content ranges of the lines `cleanupComments` removes: a line whose first
 /// non-whitespace characters are `%%` (but not `%%{`) followed by at least one character.
-/// The range stops before the line break, which stays so the body keeps its line numbers.
+/// The range stops before the line break, which stays so the text the lexer reads keeps its
+/// line numbers.
 pub(crate) fn comment_ranges(source: &str) -> Vec<Range<usize>> {
     let mut ranges = Vec::new();
     let mut start = 0;
