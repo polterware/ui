@@ -1,0 +1,203 @@
+{
+  "name": "03-explicit-sizes",
+  "source": "%%{init: {\"venn\": {\"theme\": \"default\", \"height\": 451}}}%%\nvenn-beta\n  title Sized sets\n  set Large: 40\n  set Small: 12\n  union Large, Small[\"Shared\"]: 4\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 451
+    },
+    "rawViewBox": "0 0 800 451",
+    "title": {
+      "text": "Sized sets",
+      "x": 400,
+      "y": 16,
+      "fontSize": 16,
+      "fill": "#333",
+      "anchor": "middle",
+      "baseline": "middle"
+    },
+    "rootTransform": {
+      "x": 0,
+      "y": 24
+    },
+    "areas": [
+      {
+        "sets": [
+          "Large"
+        ],
+        "className": "venn-area venn-circle venn-set-0",
+        "path": {
+          "d": "M 335.7762330202337 213.5 \nm -198.5 0 \na 198.5 198.5 0 1 0 397 0 \na 198.5 198.5 0 1 0 -397 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 335.7762330202337,
+              "y": 213.5
+            },
+            {
+              "op": "moveTo",
+              "x": 137.2762330202337,
+              "y": 213.5
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.5,
+              "ry": 198.5,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 534.2762330202337,
+              "y": 213.5
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.5,
+              "ry": 198.5,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 137.2762330202337,
+              "y": 213.5
+            }
+          ],
+          "fill": "hsl(240, 100%, 66.2745098039%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(240, 100%, 66.2745098039%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "Large",
+          "x": 291,
+          "y": 213,
+          "fontSize": 24,
+          "fill": "hsl(240, 100%, 36.2745098039%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Large",
+              "baseline": 221.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Small"
+        ],
+        "className": "venn-area venn-circle venn-set-1",
+        "path": {
+          "d": "M 554.0008393149908 213.50000000000003 \nm -108.72292766477547 0 \na 108.72292766477547 108.72292766477547 0 1 0 217.44585532955094 0 \na 108.72292766477547 108.72292766477547 0 1 0 -217.44585532955094 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 554.0008393149908,
+              "y": 213.50000000000003
+            },
+            {
+              "op": "moveTo",
+              "x": 445.27791165021534,
+              "y": 213.50000000000003
+            },
+            {
+              "op": "arcTo",
+              "rx": 108.72292766477547,
+              "ry": 108.72292766477547,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 662.7237669797663,
+              "y": 213.50000000000003
+            },
+            {
+              "op": "arcTo",
+              "rx": 108.72292766477547,
+              "ry": 108.72292766477547,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 445.2779116502154,
+              "y": 213.50000000000003
+            }
+          ],
+          "fill": "hsl(60, 100%, 63.5294117647%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(60, 100%, 63.5294117647%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "Small",
+          "x": 598,
+          "y": 213,
+          "fontSize": 24,
+          "fill": "hsl(60, 100%, 33.5294117647%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Small",
+              "baseline": 221.4
+            }
+          ]
+        }
+      },
+      {
+        "sets": [
+          "Large",
+          "Small"
+        ],
+        "className": "venn-area venn-intersection",
+        "path": {
+          "d": "M 508.08391882474814 312.0510599267849 \nA 108.72292766477547 108.72292766477547 0 0 1 508.08391882474814 114.94894007321517 \nA 198.5 198.5 0 0 1 508.08391882474814 312.0510599267849",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 508.08391882474814,
+              "y": 312.0510599267849
+            },
+            {
+              "op": "arcTo",
+              "rx": 108.72292766477547,
+              "ry": 108.72292766477547,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 508.08391882474814,
+              "y": 114.94894007321517
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.5,
+              "ry": 198.5,
+              "rotation": 0,
+              "large_arc": false,
+              "sweep": true,
+              "x": 508.08391882474814,
+              "y": 312.0510599267849
+            }
+          ],
+          "fill": "transparent",
+          "fillOpacity": 0,
+          "stroke": null,
+          "strokeWidth": null
+        },
+        "text": {
+          "content": "Shared",
+          "x": 489,
+          "y": 213,
+          "fontSize": 24,
+          "fill": "#333",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "Shared",
+              "baseline": 221.4
+            }
+          ]
+        }
+      }
+    ],
+    "textNodes": [],
+    "debug": null
+  }
+}

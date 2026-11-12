@@ -12,9 +12,10 @@
 //! # Where the port stops short of upstream
 //!
 //! * Configuration is not owned by this crate, so `vennDB.ts`'s `getConfig` and
-//!   `DEFAULT_CONFIG.venn` defaults are absent. The renderer's `styles.ts` and
-//!   `vennRenderer.ts` are out of scope, and so are their specs (`vennRenderer.spec.ts` and
-//!   `vennPalette.spec.ts`).
+//!   `DEFAULT_CONFIG.venn` defaults are absent from the database; the renderer reads
+//!   [`crate::config::VennConfig`] instead. `vennRenderer.ts` and `styles.ts` are ported in
+//!   [`render`]; the renderer's and palette's specs are covered by the render fixtures under
+//!   `tests/render/`.
 //! * `sanitizeText` is approximated: `script`/`style` elements are dropped, a `<` that opens no
 //!   tag is escaped, and `<br/>`/`<br />` serialize as `<br>`, but there is no DOMPurify (a DOM
 //!   library). The diagram title is the only string this database sanitizes.
@@ -33,6 +34,7 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{Ast, StyleEntry, Subset, TextNode};
 

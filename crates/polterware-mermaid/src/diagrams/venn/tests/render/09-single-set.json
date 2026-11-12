@@ -1,0 +1,107 @@
+{
+  "name": "09-single-set",
+  "source": "%%{init: {\"venn\": {\"theme\": \"default\", \"height\": 451}}}%%\nvenn-beta\n  title One set only\n  set Only[\"The only set\"]\n    text n1[\"item\"]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 451
+    },
+    "rawViewBox": "0 0 800 451",
+    "title": {
+      "text": "One set only",
+      "x": 400,
+      "y": 16,
+      "fontSize": 16,
+      "fill": "#333",
+      "anchor": "middle",
+      "baseline": "middle"
+    },
+    "rootTransform": {
+      "x": 0,
+      "y": 24
+    },
+    "areas": [
+      {
+        "sets": [
+          "Only"
+        ],
+        "className": "venn-area venn-circle venn-set-0",
+        "path": {
+          "d": "M 400 213.5 \nm -198.5 0 \na 198.5 198.5 0 1 0 397 0 \na 198.5 198.5 0 1 0 -397 0",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 400,
+              "y": 213.5
+            },
+            {
+              "op": "moveTo",
+              "x": 201.5,
+              "y": 213.5
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.5,
+              "ry": 198.5,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 598.5,
+              "y": 213.5
+            },
+            {
+              "op": "arcTo",
+              "rx": 198.5,
+              "ry": 198.5,
+              "rotation": 0,
+              "large_arc": true,
+              "sweep": false,
+              "x": 201.5,
+              "y": 213.5
+            }
+          ],
+          "fill": "hsl(240, 100%, 66.2745098039%)",
+          "fillOpacity": 0.1,
+          "stroke": "hsl(240, 100%, 66.2745098039%)",
+          "strokeWidth": 2.5
+        },
+        "text": {
+          "content": "The\nonly\nset",
+          "x": 400,
+          "y": 213,
+          "fontSize": 24,
+          "fill": "hsl(240, 100%, 36.2745098039%)",
+          "anchor": "middle",
+          "lines": [
+            {
+              "text": "The",
+              "baseline": 195
+            },
+            {
+              "text": "only",
+              "baseline": 221.4
+            },
+            {
+              "text": "set",
+              "baseline": 247.8
+            }
+          ]
+        }
+      }
+    ],
+    "textNodes": [
+      {
+        "text": "item",
+        "x": 400,
+        "y": 244.5,
+        "width": 351.405,
+        "height": 351.405,
+        "fontSize": 20,
+        "color": null
+      }
+    ],
+    "debug": null
+  }
+}
