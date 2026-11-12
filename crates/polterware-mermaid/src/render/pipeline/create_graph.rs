@@ -103,6 +103,7 @@ pub fn to_shape_node(node: &Node) -> shapes::Node {
     s.constraint = node.constraint.clone();
     s.text = node.text.clone();
     s.label_type = node.label_type.clone();
+    s.center_label = node.center_label.unwrap_or(false);
     s.class_members = node.members.clone();
     s.class_methods = node.methods.clone();
     s.class_styles = node.styles.clone();

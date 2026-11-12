@@ -156,6 +156,8 @@ pub struct Node {
     pub text: Option<String>,
     /// `node.labelType`, which selects markdown measurement in `labelHelper` and `note.ts`.
     pub label_type: Option<String>,
+    /// `node.centerLabel`, which `labelHelper` uses to centre an SVG label under the node.
+    pub center_label: bool,
     /// `ClassNode.members` and `ClassNode.methods`, each with its `parseClassifier()` style.
     pub class_members: Vec<crate::render::pipeline::types::ClassMemberData>,
     pub class_methods: Vec<crate::render::pipeline::types::ClassMemberData>,
@@ -217,6 +219,7 @@ impl Node {
             css_styles: Vec::new(),
             text: None,
             label_type: None,
+            center_label: false,
             class_members: Vec::new(),
             class_methods: Vec::new(),
             class_styles: Vec::new(),
@@ -1935,13 +1938,16 @@ fn prepare_with(
     // `labelHelper`: an explicit width wins over the wrapping width, and a label wraps at
     // the diagram's `wrappingWidth` when the node names none.
     let width = node.width.or(node.wrapping_width).unwrap_or(f64::INFINITY);
+    // `labelHelper` marks a `markdown` label as markdown, which changes how `<br>` and
+    // emphasis are measured; it centres the label under the node when `centerLabel` is set.
+    let markdown = node.label_type.as_deref() == Some("markdown");
     let label = create_label(
         &LabelOptions {
             text: node.label.clone(),
             font,
-            markdown: false,
+            markdown,
             width,
-            centered: false,
+            centered: node.center_label,
             class: "label".into(),
             source: Some(SourceRef::node(node.id.clone())),
         },
