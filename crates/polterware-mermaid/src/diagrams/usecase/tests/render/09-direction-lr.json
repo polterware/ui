@@ -1,0 +1,81 @@
+{
+  "name": "09-direction-lr",
+  "source": "usecase-beta\ndirection LR\nactor Reviewer\nApprove\nReject\nReviewer --> Approve\nReviewer --> Reject\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Reviewer",
+        "x": 51.6,
+        "y": 91.4,
+        "width": 87.2,
+        "height": 116.1
+      },
+      {
+        "id": "Approve",
+        "x": 225.2,
+        "y": 37.2,
+        "width": 160,
+        "height": 58.4
+      },
+      {
+        "id": "Reject",
+        "x": 225.2,
+        "y": 145.60000000000002,
+        "width": 160,
+        "height": 58.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 95.2,
+            "y": 56.95218658892128
+          },
+          {
+            "x": 120.2,
+            "y": 37.2
+          },
+          {
+            "x": 145.2,
+            "y": 37.2
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge-1",
+        "points": [
+          {
+            "x": 95.2,
+            "y": 125.84781341107873
+          },
+          {
+            "x": 120.2,
+            "y": 145.60000000000002
+          },
+          {
+            "x": 145.2,
+            "y": 145.60000000000002
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -11.999999999999996,
+      "width": 337.2,
+      "height": 206.8
+    },
+    "rawViewBox": "-12 -11.999999999999996 337.2 206.8"
+  }
+}

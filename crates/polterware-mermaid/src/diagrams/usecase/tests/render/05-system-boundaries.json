@@ -1,0 +1,111 @@
+{
+  "name": "05-system-boundaries",
+  "source": "usecase-beta\nactor Member\nsystemBoundary \"Authentication System\":::system\n  Login(Sign in)\n  Logout\nend\nsystemBoundary sb1[\"Payment service\"]@{ type: package }:::billing\n  Checkout[Take payment]\nend\nMember --> Login\nMember --> Checkout\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Member",
+        "x": 46,
+        "y": 195.60000000000002,
+        "width": 76,
+        "height": 116.1
+      },
+      {
+        "id": "Login",
+        "x": 239,
+        "y": 72.19999999999999,
+        "width": 160,
+        "height": 58.4
+      },
+      {
+        "id": "Logout",
+        "x": 239,
+        "y": 180.59999999999997,
+        "width": 160,
+        "height": 58.4
+      },
+      {
+        "id": "Checkout",
+        "x": 239,
+        "y": 319,
+        "width": 160,
+        "height": 38.4
+      }
+    ],
+    "clusters": [
+      {
+        "id": "Authentication_System",
+        "x": 239,
+        "y": 126.39999999999999,
+        "width": 210,
+        "height": 236.79999999999998
+      },
+      {
+        "id": "sb1",
+        "x": 239,
+        "y": 319,
+        "width": 210,
+        "height": 108.40000000000003
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 75.63654781199351,
+            "y": 137.55
+          },
+          {
+            "x": 109,
+            "y": 72.19999999999999
+          },
+          {
+            "x": 134,
+            "y": 72.19999999999999
+          },
+          {
+            "x": 159,
+            "y": 72.19999999999999
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge-1",
+        "points": [
+          {
+            "x": 75.63654781199352,
+            "y": 253.65000000000003
+          },
+          {
+            "x": 109,
+            "y": 319
+          },
+          {
+            "x": 134,
+            "y": 319
+          },
+          {
+            "x": 159,
+            "y": 319
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12,
+      "width": 376,
+      "height": 405.19999999999993
+    },
+    "rawViewBox": "-12 -12 376 405.19999999999993"
+  }
+}

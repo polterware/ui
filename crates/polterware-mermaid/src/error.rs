@@ -132,6 +132,19 @@ impl From<crate::diagrams::er::render::ErRenderError> for RenderError {
     }
 }
 
+impl From<crate::diagrams::usecase::render::UsecaseRenderError> for RenderError {
+    fn from(error: crate::diagrams::usecase::render::UsecaseRenderError) -> Self {
+        match error {
+            crate::diagrams::usecase::render::UsecaseRenderError::Parse(error) => {
+                Self::Parse(error)
+            }
+            crate::diagrams::usecase::render::UsecaseRenderError::Layout(error) => {
+                Self::Layout(error)
+            }
+        }
+    }
+}
+
 impl From<crate::diagrams::sankey::render::SankeyRenderError> for RenderError {
     fn from(error: crate::diagrams::sankey::render::SankeyRenderError) -> Self {
         match error {

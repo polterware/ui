@@ -1,0 +1,116 @@
+{
+  "name": "06-notes",
+  "source": "usecase-beta\nactor User\nLogin(Sign in)\nReport[Generate report]\nnote for Login \"Requires an active session\"\nnote for Report \"`Runs **nightly**`\"\nUser --> Login\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "User",
+        "x": 78,
+        "y": 66.05,
+        "width": 76,
+        "height": 116.1
+      },
+      {
+        "id": "Login",
+        "x": 278,
+        "y": 138.475,
+        "width": 160,
+        "height": 58.4
+      },
+      {
+        "id": "Report",
+        "x": 278,
+        "y": 317.5,
+        "width": 160,
+        "height": 56
+      },
+      {
+        "id": "note-0",
+        "x": 78,
+        "y": 210.89999999999998,
+        "width": 140,
+        "height": 73.6
+      },
+      {
+        "id": "note-1",
+        "x": 78,
+        "y": 317.5,
+        "width": 140,
+        "height": 38.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 116,
+            "y": 66.05
+          },
+          {
+            "x": 173,
+            "y": 66.05
+          },
+          {
+            "x": 235.66655160510874,
+            "y": 109.27499999999999
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "note-0-edge",
+        "points": [
+          {
+            "x": 148,
+            "y": 210.89999999999998
+          },
+          {
+            "x": 173,
+            "y": 210.89999999999998
+          },
+          {
+            "x": 235.66655160510874,
+            "y": 167.67499999999998
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "note-1-edge",
+        "points": [
+          {
+            "x": 148,
+            "y": 317.5
+          },
+          {
+            "x": 173,
+            "y": 317.5
+          },
+          {
+            "x": 198,
+            "y": 317.5
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12,
+      "width": 390,
+      "height": 377.5
+    },
+    "rawViewBox": "-12 -12 390 377.5"
+  }
+}

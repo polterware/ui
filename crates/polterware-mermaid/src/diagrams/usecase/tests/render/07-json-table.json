@@ -1,0 +1,53 @@
+{
+  "name": "07-json-table",
+  "source": "usecase-beta\nactor Client\njson Payload@{\n  \"fruit\": \"Apple\",\n  \"details\": { \"size\": \"large\", \"tags\": [\"fresh\", \"local\"] },\n  \"count\": 3\n}:::data\nClient --> Payload\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Client",
+        "x": 46,
+        "y": 88.2,
+        "width": 76,
+        "height": 116.1
+      },
+      {
+        "id": "Payload",
+        "x": 232.6,
+        "y": 88.2,
+        "width": 197.2,
+        "height": 160.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 84,
+            "y": 88.2
+          },
+          {
+            "x": 109,
+            "y": 88.2
+          },
+          {
+            "x": 134,
+            "y": 88.2
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12,
+      "width": 363.2,
+      "height": 200.4
+    },
+    "rawViewBox": "-12 -12 363.2 200.4"
+  }
+}

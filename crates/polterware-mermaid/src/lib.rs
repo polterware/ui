@@ -76,6 +76,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::railroad::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Usecase => {
+            let scene = diagrams::usecase::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         DiagramKind::Pie => {
             let scene = diagrams::pie::render::render(&preprocessed.body, &config)?;
             Ok(scene)

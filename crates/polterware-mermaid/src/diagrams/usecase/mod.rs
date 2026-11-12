@@ -27,9 +27,11 @@
 //!   location.
 //! * The graph AST is held as Rust data; upstream's `JSON.parse(JSON.stringify(ast))`
 //!   round-trip assertion is not ported because the structs are not serialized.
-//! * `usecaseRenderer.ts`, `usecase-colorIndex.spec.ts`, `usecaseRoleColors.spec.ts`, and
-//!   `usecase.docs.spec.ts` cover rendering, colours, and documentation, so they are out of
-//!   scope.
+//! * `usecaseRenderer.ts`'s accessible names, DOM attributes, font custom properties,
+//!   title insertion and annotations are the renderer's; [`render`] ports the geometry and
+//!   the stylesheet's edge and label styling. `usecase-colorIndex.spec.ts`,
+//!   `usecaseRoleColors.spec.ts`, and `usecase.docs.spec.ts` cover colours and
+//!   documentation, so they are out of scope.
 //! * The Chevrotain lexer has three modes; this port keeps them. A lexer error names the
 //!   offending character rather than Chevrotain's `Unable to tokenize` diagnostic.
 //! * `preprocess` blanks removed frontmatter, directive, and `%%` comment lines, while
@@ -38,8 +40,10 @@
 
 mod ast;
 mod db;
+pub mod layout_data;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{
     Actor, ActorType, Animation, ArrowType, Ast, BoundaryType, ClassDef, Direction, EdgeOccurrence,

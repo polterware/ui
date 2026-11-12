@@ -1,0 +1,60 @@
+{
+  "name": "11-long-labels",
+  "source": "usecase-beta\nactor \"A very long actor label that wraps\"\n\"An extraordinarily long use case label used to widen the node\"\n\"Another fairly long use case label\"\n\"A very long actor label that wraps\" --> \"An extraordinarily long use case label used to widen the node\"\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "A_very_long_actor_label_that_wraps",
+        "x": 88,
+        "y": 90,
+        "width": 112.39999999999999,
+        "height": 146.9
+      },
+      {
+        "id": "An_extraordinarily_long_use_case_label_used_to_widen_the_node",
+        "x": 298,
+        "y": 90,
+        "width": 160,
+        "height": 164
+      },
+      {
+        "id": "Another_fairly_long_use_case_label",
+        "x": 88,
+        "y": 269.05,
+        "width": 160,
+        "height": 111.2
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 144.2,
+            "y": 90
+          },
+          {
+            "x": 193,
+            "y": 90
+          },
+          {
+            "x": 218,
+            "y": 90
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12,
+      "width": 410,
+      "height": 356.65000000000003
+    },
+    "rawViewBox": "-12 -12 410 356.65000000000003"
+  }
+}

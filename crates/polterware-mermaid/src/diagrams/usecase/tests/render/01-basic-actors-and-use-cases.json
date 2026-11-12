@@ -1,0 +1,88 @@
+{
+  "name": "01-basic-actors-and-use-cases",
+  "source": "usecase-beta\nactor Customer\nactor Admin\nLogin(Sign in)\nLogout\nCustomer --> Login\nAdmin --> Logout\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Customer",
+        "x": 51.6,
+        "y": 66.05,
+        "width": 87.2,
+        "height": 116.1
+      },
+      {
+        "id": "Admin",
+        "x": 51.6,
+        "y": 232.14999999999998,
+        "width": 76,
+        "height": 116.1
+      },
+      {
+        "id": "Login",
+        "x": 225.2,
+        "y": 66.05,
+        "width": 160,
+        "height": 58.4
+      },
+      {
+        "id": "Logout",
+        "x": 225.2,
+        "y": 232.14999999999998,
+        "width": 160,
+        "height": 58.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 95.2,
+            "y": 66.05
+          },
+          {
+            "x": 120.2,
+            "y": 66.05
+          },
+          {
+            "x": 145.2,
+            "y": 66.05
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge-1",
+        "points": [
+          {
+            "x": 89.6,
+            "y": 232.14999999999998
+          },
+          {
+            "x": 120.2,
+            "y": 232.14999999999998
+          },
+          {
+            "x": 145.2,
+            "y": 232.14999999999998
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12,
+      "width": 337.2,
+      "height": 322.19999999999993
+    },
+    "rawViewBox": "-12 -12 337.2 322.19999999999993"
+  }
+}

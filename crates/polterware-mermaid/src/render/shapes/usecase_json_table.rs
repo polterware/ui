@@ -47,12 +47,13 @@ fn measure_label(
     text: &str,
     class: &str,
     node_id: &str,
+    font: Font,
     ctx: &ShapeContext<'_>,
 ) -> Result<(Group, Size), ShapeError> {
     let label = create_label(
         &LabelOptions {
             text: text.to_string(),
-            font: Font::default(),
+            font,
             markdown: false,
             width: f64::INFINITY,
             centered: true,
@@ -100,10 +101,20 @@ pub fn draw_with_rows(
 
     let mut measured_rows = Vec::with_capacity(rows.len());
     for row in rows {
-        let (key_label, key_size) =
-            measure_label(&row.key, "label usecase-json-key", &node.id, ctx)?;
-        let (value_label, value_size) =
-            measure_label(&row.value, "label usecase-json-value", &node.id, ctx)?;
+        let (key_label, key_size) = measure_label(
+            &row.key,
+            "label usecase-json-key",
+            &node.id,
+            super::base_label_font(ctx),
+            ctx,
+        )?;
+        let (value_label, value_size) = measure_label(
+            &row.value,
+            "label usecase-json-value",
+            &node.id,
+            super::base_label_font(ctx),
+            ctx,
+        )?;
         measured_rows.push((key_label, key_size, value_label, value_size));
     }
 

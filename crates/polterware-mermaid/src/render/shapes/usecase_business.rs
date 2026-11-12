@@ -33,12 +33,13 @@ fn measure_label(
     text: &str,
     class: &str,
     node_id: &str,
+    font: Font,
     ctx: &ShapeContext<'_>,
 ) -> Result<(Group, Size), ShapeError> {
     let label = create_label(
         &LabelOptions {
             text: text.to_string(),
-            font: Font::default(),
+            font,
             markdown: false,
             width: f64::INFINITY,
             centered: true,
@@ -85,6 +86,7 @@ pub fn draw_with(
             &stereotype_text(stereotype),
             "label usecase-stereotype",
             &node.id,
+            super::base_label_font(ctx),
             ctx,
         )?;
         stereotype_label = Some((label_group, label_size));

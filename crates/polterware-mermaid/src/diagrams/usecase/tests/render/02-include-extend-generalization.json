@@ -1,0 +1,130 @@
+{
+  "name": "02-include-extend-generalization",
+  "source": "usecase-beta\nactor User\nLogin\nVerifyCredentials(\"Verify credentials\")\nResetPassword(\"Reset password\")\nLogin ..> : include VerifyCredentials\nResetPassword ..> : extend Login\nLogin --|> VerifyCredentials\nUser --> Login\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "User",
+        "x": 88,
+        "y": 192.05,
+        "width": 76,
+        "height": 116.1
+      },
+      {
+        "id": "Login",
+        "x": 378.8,
+        "y": 119.025,
+        "width": 160,
+        "height": 58.4
+      },
+      {
+        "id": "VerifyCredentials",
+        "x": 679.2,
+        "y": 119.025,
+        "width": 160,
+        "height": 76
+      },
+      {
+        "id": "ResetPassword",
+        "x": 88,
+        "y": 46,
+        "width": 160,
+        "height": 76
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 458.8,
+            "y": 110.71607856191746
+          },
+          {
+            "x": 529,
+            "y": 103.42500000000001
+          },
+          {
+            "x": 599.2,
+            "y": 110.71607856191746
+          }
+        ],
+        "x": 529,
+        "y": 103.42500000000001,
+        "width": 90.39999999999999,
+        "height": 22.4
+      },
+      {
+        "id": "edge-1",
+        "points": [
+          {
+            "x": 168,
+            "y": 46
+          },
+          {
+            "x": 233.4,
+            "y": 46
+          },
+          {
+            "x": 320.6599109893872,
+            "y": 89.825
+          }
+        ],
+        "x": 233.4,
+        "y": 46,
+        "width": 80.8,
+        "height": 22.4
+      },
+      {
+        "id": "edge-2",
+        "points": [
+          {
+            "x": 458.8,
+            "y": 127.33392143808256
+          },
+          {
+            "x": 529,
+            "y": 134.625
+          },
+          {
+            "x": 599.2,
+            "y": 127.33392143808256
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge-3",
+        "points": [
+          {
+            "x": 126,
+            "y": 192.05
+          },
+          {
+            "x": 233.4,
+            "y": 192.05
+          },
+          {
+            "x": 320.6599109893872,
+            "y": 148.225
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12,
+      "width": 791.2,
+      "height": 282.1
+    },
+    "rawViewBox": "-12 -12 791.2 282.1"
+  }
+}

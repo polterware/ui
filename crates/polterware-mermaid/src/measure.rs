@@ -268,7 +268,8 @@ impl FallbackMeasure {
 
 impl TextMeasure for FallbackMeasure {
     fn width(&self, text: &str, font: &Font) -> f64 {
-        let per_em = if is_monospace(&font.family) {
+        let monospace = is_monospace(&font.family);
+        let per_em = if monospace {
             MONOSPACE_ADVANCE * split_text_to_chars(text).len() as f64
         } else {
             split_text_to_chars(text)
@@ -276,7 +277,13 @@ impl TextMeasure for FallbackMeasure {
                 .map(|grapheme| grapheme_advance(grapheme))
                 .sum()
         };
-        let weight = if font.is_bold() { 1.02 } else { 1.0 };
+        // A monospace bold face keeps the same advance, which is the rule the shared
+        // jsdom measurement uses too; only a proportional face widens.
+        let weight = if font.is_bold() && !monospace {
+            1.02
+        } else {
+            1.0
+        };
         per_em * font.size * weight
     }
 

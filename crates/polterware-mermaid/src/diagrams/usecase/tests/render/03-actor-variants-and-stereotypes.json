@@ -1,0 +1,109 @@
+{
+  "name": "03-actor-variants-and-stereotypes",
+  "source": "usecase-beta\nactor Admin(\"Main Administrator\")@{ type: hollow, business: true } <<Human>>\nactor Operator(\"`**Shift operator**`\")@{ type: awesome }\nactor Robot(\"Service robot\")\nLogin(Sign in)\nAdmin --> Login\nOperator --> Login\nRobot --> Login\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "Admin",
+        "x": 76.80000000000001,
+        "y": 83.94999999999999,
+        "width": 129.2,
+        "height": 151.9
+      },
+      {
+        "id": "Operator",
+        "x": 76.80000000000001,
+        "y": 267.95,
+        "width": 137.60000000000002,
+        "height": 116.1
+      },
+      {
+        "id": "Robot",
+        "x": 76.80000000000001,
+        "y": 434.05,
+        "width": 129.2,
+        "height": 116.1
+      },
+      {
+        "id": "Login",
+        "x": 275.6,
+        "y": 267.95,
+        "width": 160,
+        "height": 58.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "edge-0",
+        "points": [
+          {
+            "x": 141.4,
+            "y": 83.94999999999999
+          },
+          {
+            "x": 170.60000000000002,
+            "y": 83.94999999999999
+          },
+          {
+            "x": 258.93695652173915,
+            "y": 238.75
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge-1",
+        "points": [
+          {
+            "x": 145.60000000000002,
+            "y": 267.95
+          },
+          {
+            "x": 170.60000000000002,
+            "y": 267.95
+          },
+          {
+            "x": 195.60000000000002,
+            "y": 267.95
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "edge-2",
+        "points": [
+          {
+            "x": 141.4,
+            "y": 434.05
+          },
+          {
+            "x": 170.60000000000002,
+            "y": 434.05
+          },
+          {
+            "x": 257.14124021673695,
+            "y": 297.15
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": -12,
+      "y": -12.000000000000014,
+      "width": 387.6,
+      "height": 524.1
+    },
+    "rawViewBox": "-12 -12.000000000000014 387.6 524.1"
+  }
+}
