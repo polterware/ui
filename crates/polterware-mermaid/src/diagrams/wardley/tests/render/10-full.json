@@ -1,0 +1,1029 @@
+{
+  "name": "10-full",
+  "source": "wardley-beta\ntitle Full Wardley Map\nsize [1000, 700]\nevolution Genesis -> Custom Built / Bespoke -> Product @0.75 -> Commodity\nanchor Customer [0.95, 0.63]\nanchor Regulator [0.9, 0.9]\ncomponent Cup of Tea [0.79, 0.61] (build)\ncomponent Tea [0.63, 0.81]\ncomponent Hot Water [0.52, 0.59] (buy)\ncomponent Water [0.38, 0.82] (market)\ncomponent Electricity [0.72, 0.35] (outsource)\ncomponent Kettle [0.45, 0.57] (buy) inertia\npipeline Kettle {\n  component Campfire Kettle [0.3]\n  component Electric Kettle [0.65]\n}\nCustomer -> Cup of Tea\nRegulator -> Cup of Tea\nCup of Tea -> Tea\nCup of Tea -> Hot Water\nHot Water -> Water\nElectric Kettle -> Electricity\nevolve Tea 0.78\nevolve Water 0.63\nnote \"Prices fall over time\" [0.3, 0.9]\nannotations [0.02, 0.05]\nannotation 1,[0.45, 0.57] \"Kettle is bought\"\nannotation 2,[0.72, 0.35] \"Electricity is outsourced\"\naccelerator \"Regulation\" [0.2, 0.15]\ndeaccelerator \"Legacy wiring\" [0.55, 0.1]\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1000,
+      "height": 700
+    },
+    "background": {
+      "width": 1000,
+      "height": 700,
+      "fill": "white"
+    },
+    "title": {
+      "text": "Full Wardley Map",
+      "x": 500,
+      "y": 24,
+      "fill": "#131300",
+      "fontSize": 12.600000000000001,
+      "fontWeight": "bold",
+      "anchor": "middle",
+      "baseline": "middle",
+      "rotate": null
+    },
+    "axes": {
+      "lines": [
+        {
+          "kind": "line",
+          "x1": 48,
+          "y1": 652,
+          "x2": 952,
+          "y2": 652,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": null,
+          "opacity": null,
+          "markerStart": null,
+          "markerEnd": null
+        },
+        {
+          "kind": "line",
+          "x1": 48,
+          "y1": 48,
+          "x2": 48,
+          "y2": 652,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": null,
+          "opacity": null,
+          "markerStart": null,
+          "markerEnd": null
+        }
+      ],
+      "labels": [
+        {
+          "text": "Evolution",
+          "x": 500,
+          "y": 688,
+          "fill": "#131300",
+          "fontSize": 12,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        },
+        {
+          "text": "Visibility",
+          "x": 16,
+          "y": 350,
+          "fill": "#131300",
+          "fontSize": 12,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": {
+            "angle": -90,
+            "x": 16,
+            "y": 350
+          }
+        }
+      ]
+    },
+    "stages": {
+      "labels": [
+        {
+          "text": "Genesis",
+          "x": 161,
+          "y": 668,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        },
+        {
+          "text": "Custom Built / Bespoke",
+          "x": 387,
+          "y": 668,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        },
+        {
+          "text": "Product",
+          "x": 613,
+          "y": 668,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        },
+        {
+          "text": "Commodity",
+          "x": 839,
+          "y": 668,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        }
+      ],
+      "dividers": [
+        {
+          "kind": "line",
+          "x1": 274,
+          "y1": 48,
+          "x2": 274,
+          "y2": 652,
+          "stroke": "#000",
+          "strokeWidth": 1,
+          "dash": "5 5",
+          "opacity": 0.8,
+          "markerStart": null,
+          "markerEnd": null
+        },
+        {
+          "kind": "line",
+          "x1": 500,
+          "y1": 48,
+          "x2": 500,
+          "y2": 652,
+          "stroke": "#000",
+          "strokeWidth": 1,
+          "dash": "5 5",
+          "opacity": 0.8,
+          "markerStart": null,
+          "markerEnd": null
+        },
+        {
+          "kind": "line",
+          "x1": 726,
+          "y1": 48,
+          "x2": 726,
+          "y2": 652,
+          "stroke": "#000",
+          "strokeWidth": 1,
+          "dash": "5 5",
+          "opacity": 0.8,
+          "markerStart": null,
+          "markerEnd": null
+        }
+      ]
+    },
+    "grid": [],
+    "pipelines": {
+      "boxes": [
+        {
+          "kind": "rect",
+          "x": 304.2,
+          "y": 368.2,
+          "width": 346.40000000000003,
+          "height": 24,
+          "rx": 4,
+          "ry": 4,
+          "fill": "none",
+          "stroke": "#333333",
+          "strokeWidth": 1.5
+        }
+      ],
+      "links": [
+        {
+          "kind": "line",
+          "x1": 319.2,
+          "y1": 380.2,
+          "x2": 635.6,
+          "y2": 380.2,
+          "stroke": "#333333",
+          "strokeWidth": 1,
+          "dash": "4 4",
+          "opacity": null,
+          "markerStart": null,
+          "markerEnd": null
+        }
+      ]
+    },
+    "links": [
+      {
+        "kind": "line",
+        "x1": 616.4166270637087,
+        "y1": 84.09767480991114,
+        "x2": 600.5433729362912,
+        "y2": 168.94232519008887,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "line",
+        "x1": 855.7838734207061,
+        "y1": 109.87399851208532,
+        "x2": 605.2561265792939,
+        "y2": 173.36600148791464,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "line",
+        "x1": 604.7315228819122,
+        "y1": 177.66838922183624,
+        "x2": 774.9484771180878,
+        "y2": 268.6516107781638,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "line",
+        "x1": 598.7788557336446,
+        "y1": 180.8034627741829,
+        "x2": 582.0211442663553,
+        "y2": 331.9565372258171,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "line",
+        "x1": 586.917936849747,
+        "y1": 340.1803844748682,
+        "x2": 783.722063150253,
+        "y2": 420.2196155251318,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": null
+      },
+      {
+        "kind": "line",
+        "x1": 630.4580561829339,
+        "y1": 377.1080081206226,
+        "x2": 369.5419438170661,
+        "y2": 220.21199187937736,
+        "stroke": "#333333",
+        "strokeWidth": 1,
+        "dash": null,
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": null
+      }
+    ],
+    "linkLabels": [],
+    "trends": [
+      {
+        "kind": "line",
+        "x1": 780.24,
+        "y1": 271.48,
+        "x2": 761.12,
+        "y2": 271.48,
+        "stroke": "#dc3545",
+        "strokeWidth": 1,
+        "dash": "4 4",
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": "arrow"
+      },
+      {
+        "kind": "line",
+        "x1": 789.28,
+        "y1": 422.48,
+        "x2": 625.52,
+        "y2": 422.48,
+        "stroke": "#dc3545",
+        "strokeWidth": 1,
+        "dash": "4 4",
+        "opacity": null,
+        "markerStart": null,
+        "markerEnd": "arrow"
+      }
+    ],
+    "nodes": [
+      {
+        "className": "wardley-node wardley-node--anchor",
+        "shapes": [],
+        "label": {
+          "text": "Customer",
+          "x": 617.52,
+          "y": 75.20000000000005,
+          "fill": "#000",
+          "fontSize": 10,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "middle",
+          "rotate": null,
+          "order": 0
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--anchor",
+        "shapes": [],
+        "label": {
+          "text": "Regulator",
+          "x": 861.6,
+          "y": 105.39999999999998,
+          "fill": "#000",
+          "fontSize": 10,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "middle",
+          "rotate": null,
+          "order": 0
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 599.4399999999999,
+            "cy": 174.83999999999997,
+            "r": 12,
+            "fill": "#eee",
+            "stroke": "#000",
+            "strokeWidth": 1
+          },
+          {
+            "kind": "circle",
+            "cx": 599.4399999999999,
+            "cy": 174.83999999999997,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Cup of Tea",
+          "x": 617.4399999999999,
+          "y": 156.83999999999997,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 2
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 780.24,
+            "cy": 271.48,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Tea",
+          "x": 788.24,
+          "y": 263.48,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 1
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 581.36,
+            "cy": 337.92,
+            "r": 12,
+            "fill": "#ccc",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          },
+          {
+            "kind": "circle",
+            "cx": 581.36,
+            "cy": 337.92,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Hot Water",
+          "x": 599.36,
+          "y": 319.92,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 2
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 789.28,
+            "cy": 422.48,
+            "r": 12,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          },
+          {
+            "kind": "line",
+            "x1": 789.28,
+            "y1": 415.28000000000003,
+            "x2": 783.044617092752,
+            "y2": 426.08000000000004,
+            "stroke": "#333333",
+            "strokeWidth": 1,
+            "dash": null,
+            "opacity": null,
+            "markerStart": null,
+            "markerEnd": null
+          },
+          {
+            "kind": "line",
+            "x1": 783.044617092752,
+            "y1": 426.08000000000004,
+            "x2": 795.515382907248,
+            "y2": 426.08000000000004,
+            "stroke": "#333333",
+            "strokeWidth": 1,
+            "dash": null,
+            "opacity": null,
+            "markerStart": null,
+            "markerEnd": null
+          },
+          {
+            "kind": "line",
+            "x1": 795.515382907248,
+            "y1": 426.08000000000004,
+            "x2": 789.28,
+            "y2": 415.28000000000003,
+            "stroke": "#333333",
+            "strokeWidth": 1,
+            "dash": null,
+            "opacity": null,
+            "markerStart": null,
+            "markerEnd": null
+          },
+          {
+            "kind": "circle",
+            "cx": 789.28,
+            "cy": 415.28000000000003,
+            "r": 4.199999999999999,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 2
+          },
+          {
+            "kind": "circle",
+            "cx": 783.044617092752,
+            "cy": 426.08000000000004,
+            "r": 4.199999999999999,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 2
+          },
+          {
+            "kind": "circle",
+            "cx": 795.515382907248,
+            "cy": 426.08000000000004,
+            "r": 4.199999999999999,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 2
+          }
+        ],
+        "label": {
+          "text": "Water",
+          "x": 807.28,
+          "y": 404.48,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 7
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 364.4,
+            "cy": 217.12,
+            "r": 12,
+            "fill": "#666",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          },
+          {
+            "kind": "circle",
+            "cx": 364.4,
+            "cy": 217.12,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Electricity",
+          "x": 382.4,
+          "y": 199.12,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 2
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 477.4,
+            "cy": 366.59999999999997,
+            "r": 12,
+            "fill": "#ccc",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          },
+          {
+            "kind": "rect",
+            "x": 472.59999999999997,
+            "y": 361.79999999999995,
+            "width": 9.600000000000001,
+            "height": 9.600000000000001,
+            "rx": 0,
+            "ry": 0,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          },
+          {
+            "kind": "line",
+            "x1": 513.1999999999999,
+            "y1": 361.79999999999995,
+            "x2": 513.1999999999999,
+            "y2": 371.4,
+            "stroke": "#333333",
+            "strokeWidth": 6,
+            "dash": null,
+            "opacity": null,
+            "markerStart": null,
+            "markerEnd": null
+          }
+        ],
+        "label": {
+          "text": "Kettle",
+          "x": 495.4,
+          "y": 348.59999999999997,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 3
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--pipeline-component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 319.2,
+            "cy": 380.2,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Campfire Kettle",
+          "x": 327.2,
+          "y": 372.2,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 1
+        }
+      },
+      {
+        "className": "wardley-node wardley-node--pipeline-component",
+        "shapes": [
+          {
+            "kind": "circle",
+            "cx": 635.6,
+            "cy": 380.2,
+            "r": 6,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1
+          }
+        ],
+        "label": {
+          "text": "Electric Kettle",
+          "x": 643.6,
+          "y": 372.2,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "anchor": "start",
+          "baseline": "auto",
+          "rotate": null,
+          "order": 1
+        }
+      }
+    ],
+    "annotations": {
+      "lines": [],
+      "marks": [
+        {
+          "circle": {
+            "kind": "circle",
+            "cx": 563.28,
+            "cy": 380.2,
+            "r": 10,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1.5
+          },
+          "text": {
+            "text": "1",
+            "x": 563.28,
+            "y": 380.2,
+            "fill": "#131300",
+            "fontSize": 10,
+            "fontWeight": "bold",
+            "anchor": "middle",
+            "baseline": "central",
+            "rotate": null
+          }
+        },
+        {
+          "circle": {
+            "kind": "circle",
+            "cx": 364.4,
+            "cy": 217.12,
+            "r": 10,
+            "fill": "white",
+            "stroke": "#333333",
+            "strokeWidth": 1.5
+          },
+          "text": {
+            "text": "2",
+            "x": 364.4,
+            "y": 217.12,
+            "fill": "#131300",
+            "fontSize": 10,
+            "fontWeight": "bold",
+            "anchor": "middle",
+            "baseline": "central",
+            "rotate": null
+          }
+        }
+      ],
+      "box": {
+        "rect": {
+          "kind": "rect",
+          "x": 93.2,
+          "y": 593.675,
+          "width": 309.8,
+          "height": 58.325,
+          "rx": 4,
+          "ry": 4,
+          "fill": "white",
+          "stroke": "#333333",
+          "strokeWidth": 1.5
+        },
+        "texts": [
+          {
+            "text": "1. Kettle is bought",
+            "x": 103.2,
+            "y": 619.675,
+            "fill": "#131300",
+            "fontSize": 11,
+            "fontWeight": "normal",
+            "anchor": "start",
+            "baseline": "middle",
+            "rotate": null
+          },
+          {
+            "text": "2. Electricity is outsourced",
+            "x": 103.2,
+            "y": 635.675,
+            "fill": "#131300",
+            "fontSize": 11,
+            "fontWeight": "normal",
+            "anchor": "start",
+            "baseline": "middle",
+            "rotate": null
+          }
+        ]
+      }
+    },
+    "notes": [
+      {
+        "text": "Prices fall over time",
+        "x": 861.6,
+        "y": 470.8,
+        "fill": "#131300",
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "anchor": "start",
+        "baseline": "auto",
+        "rotate": null
+      }
+    ],
+    "accelerators": {
+      "paths": [
+        {
+          "kind": "path",
+          "d": "M 183.6 516.2\n        L 223.6 516.2\n        L 223.6 508.20000000000005\n        L 243.6 531.2\n        L 223.6 554.2\n        L 223.6 546.2\n        L 183.6 546.2\n        Z",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 183.6,
+              "y": 516.2
+            },
+            {
+              "op": "lineTo",
+              "x": 223.6,
+              "y": 516.2
+            },
+            {
+              "op": "lineTo",
+              "x": 223.6,
+              "y": 508.20000000000005
+            },
+            {
+              "op": "lineTo",
+              "x": 243.6,
+              "y": 531.2
+            },
+            {
+              "op": "lineTo",
+              "x": 223.6,
+              "y": 554.2
+            },
+            {
+              "op": "lineTo",
+              "x": 223.6,
+              "y": 546.2
+            },
+            {
+              "op": "lineTo",
+              "x": 183.6,
+              "y": 546.2
+            },
+            {
+              "op": "close"
+            }
+          ],
+          "fill": "white",
+          "stroke": "#333333",
+          "strokeWidth": 1
+        }
+      ],
+      "labels": [
+        {
+          "text": "Regulation",
+          "x": 213.6,
+          "y": 561.2,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        }
+      ]
+    },
+    "deaccelerators": {
+      "paths": [
+        {
+          "kind": "path",
+          "d": "M 198.4 304.79999999999995\n        L 158.4 304.79999999999995\n        L 158.4 296.79999999999995\n        L 138.4 319.79999999999995\n        L 158.4 342.79999999999995\n        L 158.4 334.79999999999995\n        L 198.4 334.79999999999995\n        Z",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 198.4,
+              "y": 304.79999999999995
+            },
+            {
+              "op": "lineTo",
+              "x": 158.4,
+              "y": 304.79999999999995
+            },
+            {
+              "op": "lineTo",
+              "x": 158.4,
+              "y": 296.79999999999995
+            },
+            {
+              "op": "lineTo",
+              "x": 138.4,
+              "y": 319.79999999999995
+            },
+            {
+              "op": "lineTo",
+              "x": 158.4,
+              "y": 342.79999999999995
+            },
+            {
+              "op": "lineTo",
+              "x": 158.4,
+              "y": 334.79999999999995
+            },
+            {
+              "op": "lineTo",
+              "x": 198.4,
+              "y": 334.79999999999995
+            },
+            {
+              "op": "close"
+            }
+          ],
+          "fill": "white",
+          "stroke": "#333333",
+          "strokeWidth": 1
+        }
+      ],
+      "labels": [
+        {
+          "text": "Legacy wiring",
+          "x": 168.4,
+          "y": 349.79999999999995,
+          "fill": "#131300",
+          "fontSize": 10,
+          "fontWeight": "bold",
+          "anchor": "middle",
+          "baseline": "auto",
+          "rotate": null
+        }
+      ]
+    },
+    "markers": [
+      {
+        "kind": "arrow",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "refX": 9,
+        "refY": 5,
+        "markerWidth": 6,
+        "markerHeight": 6,
+        "orient": "auto-start-reverse",
+        "path": {
+          "kind": "path",
+          "d": "M 0 0 L 10 5 L 0 10 z",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "op": "lineTo",
+              "x": 10,
+              "y": 5
+            },
+            {
+              "op": "lineTo",
+              "x": 0,
+              "y": 10
+            },
+            {
+              "op": "close"
+            }
+          ],
+          "fill": "#dc3545",
+          "stroke": "none",
+          "strokeWidth": 0
+        }
+      },
+      {
+        "kind": "link-arrow-end",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "refX": 9,
+        "refY": 5,
+        "markerWidth": 5,
+        "markerHeight": 5,
+        "orient": "auto",
+        "path": {
+          "kind": "path",
+          "d": "M 0 0 L 10 5 L 0 10 z",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "op": "lineTo",
+              "x": 10,
+              "y": 5
+            },
+            {
+              "op": "lineTo",
+              "x": 0,
+              "y": 10
+            },
+            {
+              "op": "close"
+            }
+          ],
+          "fill": "#333333",
+          "stroke": "none",
+          "strokeWidth": 0
+        }
+      },
+      {
+        "kind": "link-arrow-start",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "height": 10
+        },
+        "refX": 1,
+        "refY": 5,
+        "markerWidth": 5,
+        "markerHeight": 5,
+        "orient": "auto",
+        "path": {
+          "kind": "path",
+          "d": "M 10 0 L 0 5 L 10 10 z",
+          "commands": [
+            {
+              "op": "moveTo",
+              "x": 10,
+              "y": 0
+            },
+            {
+              "op": "lineTo",
+              "x": 0,
+              "y": 5
+            },
+            {
+              "op": "lineTo",
+              "x": 10,
+              "y": 10
+            },
+            {
+              "op": "close"
+            }
+          ],
+          "fill": "#333333",
+          "stroke": "none",
+          "strokeWidth": 0
+        }
+      }
+    ]
+  }
+}

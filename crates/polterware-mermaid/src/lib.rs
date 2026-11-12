@@ -156,6 +156,10 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
             let scene = diagrams::venn::render::render(&preprocessed.body, &config)?;
             Ok(scene)
         }
+        DiagramKind::Wardley => {
+            let scene = diagrams::wardley::render::render(&preprocessed.body, &config)?;
+            Ok(scene)
+        }
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }

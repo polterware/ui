@@ -19,8 +19,8 @@
 //!   database per parse.
 //! * `sanitizeText` is approximated in `common::sanitize` (no DOMPurify, a DOM library), exactly as
 //!   the pie database approximates it. It touches only the title and accessibility strings.
-//! * Nothing here lays out or draws the map; `wardleyRenderer.ts` and `styles.ts` are out of
-//!   scope.
+//! * `styles.ts`'s CSS is not emitted: the renderer resolves the paints `draw` sets as
+//!   attributes. See [`render`] for what that leaves out.
 //! * Langium reports parser errors with Chevrotain's recovery and without a crate position;
 //!   this port is strict and stops at the first syntax error, with a [`ParseError::span`].
 //!   The database errors keep upstream's exact message text.
@@ -32,6 +32,7 @@ mod ast;
 mod db;
 mod lexer;
 mod parser;
+pub mod render;
 
 pub use ast::{
     Accelerator, Annotation, Ast, Axes, Deaccelerator, Flow, Link, Node, Note, Pipeline, Point,
