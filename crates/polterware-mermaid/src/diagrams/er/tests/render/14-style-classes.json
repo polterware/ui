@@ -1,0 +1,53 @@
+{
+  "name": "14-style-classes",
+  "source": "erDiagram\n  CUSTOMER {\n    string id PK\n  }\n  ORDER {\n    int id PK\n  }\n  CUSTOMER ||--o{ ORDER : places\n  classDef important fill:#f96,stroke:#333,stroke-width:2px\n  class CUSTOMER important\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-CUSTOMER-0",
+        "x": 93.5,
+        "y": 45.15,
+        "width": 171,
+        "height": 74.3
+      },
+      {
+        "id": "entity-ORDER-1",
+        "x": 93.5,
+        "y": 221.85,
+        "width": 142.2,
+        "height": 74.3
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_entity-CUSTOMER-0_entity-ORDER-1_0",
+        "points": [
+          {
+            "x": 93.5,
+            "y": 82.3
+          },
+          {
+            "x": 93.5,
+            "y": 133.5
+          },
+          {
+            "x": 93.5,
+            "y": 184.7
+          }
+        ],
+        "x": 93.5,
+        "y": 133.5,
+        "width": 61.599999999999994,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 187,
+      "height": 267
+    },
+    "rawViewBox": "0 0 187 267"
+  }
+}

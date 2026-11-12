@@ -250,6 +250,42 @@ pub fn measure_dagre_graph(
         }
     }
 
+    // Upstream measures the middle self-loop segment's label with the original edge id, so the
+    // segment the renderer reads for its width carries the real label box.
+    let mut loop_updates = Vec::new();
+    for segment in &prepared.self_loops {
+        if segment.order == 1
+            && let Some(logical) = data4_layout
+                .edges
+                .iter()
+                .find(|edge| edge.id == segment.logical_id)
+        {
+            loop_updates.push((
+                segment.edge.edge.clone(),
+                logical.width,
+                logical.height,
+                logical.labelpos.clone(),
+            ));
+        }
+    }
+    for (key, width, height, labelpos) in &loop_updates {
+        if let Some(e) = prepared.graph.edge_object_mut(key) {
+            e.width = *width;
+            e.height = *height;
+            e.labelpos = labelpos.clone();
+        }
+    }
+    for segment in &mut prepared.self_loops {
+        if segment.order == 1
+            && let Some((_, width, height, _)) = loop_updates
+                .iter()
+                .find(|(key, _, _, _)| *key == segment.edge.edge)
+        {
+            segment.edge.label.width = *width;
+            segment.edge.label.height = *height;
+        }
+    }
+
     // Upstream's measurement pass visits every node in the prepared graph. The self-loop
     // dummies are `labelRect` nodes with an empty label, and `labelRect`'s `updateNodeBounds`
     // sizes them from its 0.1 × 0.1 rect; the 10 × 10 `prepareLayoutForDagre` sets is only a

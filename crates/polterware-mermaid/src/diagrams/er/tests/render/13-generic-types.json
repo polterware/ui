@@ -1,0 +1,24 @@
+{
+  "name": "13-generic-types",
+  "source": "erDiagram\n  COLLECTION {\n    List~int~ ids PK\n    Map~string,int~ lookup\n  }\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-COLLECTION-0",
+        "x": 155.9,
+        "y": 63.724999999999994,
+        "width": 295.8,
+        "height": 111.44999999999999
+      }
+    ],
+    "clusters": [],
+    "edges": [],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 311.8,
+      "height": 127.44999999999999
+    },
+    "rawViewBox": "0 0 311.8 127.44999999999999"
+  }
+}

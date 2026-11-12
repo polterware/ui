@@ -1,0 +1,137 @@
+{
+  "name": "03-identifying-and-non-identifying",
+  "source": "erDiagram\n  PERSON ||--o{ ACCOUNT : owns\n  ACCOUNT ||--|{ TRANSACTION : records\n  TRANSACTION }o..o{ NOTE : carries\n  PERSON |o..|| PROFILE : has\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-PERSON-0",
+        "x": 204.39999999999998,
+        "y": 47.2,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-ACCOUNT-1",
+        "x": 80.8,
+        "y": 228,
+        "width": 107.2,
+        "height": 78.4
+      },
+      {
+        "id": "entity-TRANSACTION-2",
+        "x": 80.8,
+        "y": 408.8,
+        "width": 145.6,
+        "height": 78.4
+      },
+      {
+        "id": "entity-NOTE-3",
+        "x": 80.8,
+        "y": 589.6,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-PROFILE-4",
+        "x": 328,
+        "y": 228,
+        "width": 107.2,
+        "height": 78.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_entity-PERSON-0_entity-ACCOUNT-1_0",
+        "points": [
+          {
+            "x": 154.39999999999998,
+            "y": 83.76957928802591
+          },
+          {
+            "x": 80.8,
+            "y": 137.6
+          },
+          {
+            "x": 80.8,
+            "y": 188.8
+          }
+        ],
+        "x": 80.8,
+        "y": 137.6,
+        "width": 42.4,
+        "height": 22.4
+      },
+      {
+        "id": "id_entity-ACCOUNT-1_entity-TRANSACTION-2_1",
+        "points": [
+          {
+            "x": 80.8,
+            "y": 267.2
+          },
+          {
+            "x": 80.8,
+            "y": 318.40000000000003
+          },
+          {
+            "x": 80.8,
+            "y": 369.6
+          }
+        ],
+        "x": 80.8,
+        "y": 318.40000000000003,
+        "width": 71.2,
+        "height": 22.4
+      },
+      {
+        "id": "id_entity-TRANSACTION-2_entity-NOTE-3_2",
+        "points": [
+          {
+            "x": 80.8,
+            "y": 448
+          },
+          {
+            "x": 80.8,
+            "y": 499.2
+          },
+          {
+            "x": 80.8,
+            "y": 550.4
+          }
+        ],
+        "x": 80.8,
+        "y": 499.2,
+        "width": 71.2,
+        "height": 22.4
+      },
+      {
+        "id": "id_entity-PERSON-0_entity-PROFILE-4_3",
+        "points": [
+          {
+            "x": 254.39999999999998,
+            "y": 83.76957928802588
+          },
+          {
+            "x": 328,
+            "y": 137.6
+          },
+          {
+            "x": 328,
+            "y": 188.8
+          }
+        ],
+        "x": 328,
+        "y": 137.6,
+        "width": 32.8,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 389.59999999999997,
+      "height": 636.8
+    },
+    "rawViewBox": "0 0 389.59999999999997 636.8"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "name": "07-direction-lr",
+  "source": "erDiagram\n  direction LR\n  CUSTOMER ||--o{ ORDER : places\n  ORDER ||--|{ LINE_ITEM : contains\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-CUSTOMER-0",
+        "x": 66.4,
+        "y": 47.2,
+        "width": 116.8,
+        "height": 78.4
+      },
+      {
+        "id": "entity-ORDER-1",
+        "x": 316.4,
+        "y": 47.2,
+        "width": 100,
+        "height": 78.4
+      },
+      {
+        "id": "entity-LINE_ITEM-2",
+        "x": 590.4,
+        "y": 47.2,
+        "width": 126.39999999999999,
+        "height": 78.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "id_entity-CUSTOMER-0_entity-ORDER-1_0",
+        "points": [
+          {
+            "x": 124.80000000000001,
+            "y": 47.2
+          },
+          {
+            "x": 195.60000000000002,
+            "y": 47.2
+          },
+          {
+            "x": 266.4,
+            "y": 47.2
+          }
+        ],
+        "x": 195.60000000000002,
+        "y": 47.2,
+        "width": 61.599999999999994,
+        "height": 22.4
+      },
+      {
+        "id": "id_entity-ORDER-1_entity-LINE_ITEM-2_1",
+        "points": [
+          {
+            "x": 366.4,
+            "y": 47.2
+          },
+          {
+            "x": 446.79999999999995,
+            "y": 47.2
+          },
+          {
+            "x": 527.1999999999999,
+            "y": 47.2
+          }
+        ],
+        "x": 446.79999999999995,
+        "y": 47.2,
+        "width": 80.8,
+        "height": 22.4
+      }
+    ],
+    "viewBox": {
+      "x": 7.105427357601002e-15,
+      "y": 0,
+      "width": 661.5999999999999,
+      "height": 94.4
+    },
+    "rawViewBox": "7.105427357601002e-15 0 661.5999999999999 94.4"
+  }
+}

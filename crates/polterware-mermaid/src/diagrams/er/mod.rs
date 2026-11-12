@@ -15,8 +15,9 @@
 //! * `sanitizeText` (DOMPurify) is not applied to accessibility text or subgraph titles:
 //!   sanitizing belongs to the painter, which knows its security level. The newline
 //!   cleanup `setAccDescription` performs is kept.
-//! * Configuration is not read here (`getConfig().look`, `getConfig().er`), so entities
-//!   carry no `look` and `getData` has no `config` field.
+//! * Configuration is not read by the parser (`getConfig().look`, `getConfig().er`), so
+//!   entities carry no `look` and `getData` has no `config` field; `layout_data.rs` fills
+//!   those in for the renderer.
 //! * Renderer-only state is left out: `cssCompiledStyles` and `colorIndex` are derived by
 //!   [`Ast::data`] rather than stored on each entity, and `other: {}` is not modelled.
 //! * `addSubGraph`'s `subCount`-based fallback id is kept but unreachable: the grammar
@@ -26,13 +27,16 @@
 //! * A parse or lexical error carries a [`Span`](crate::error::Span) (line and column);
 //!   upstream reports a jison line and a token name instead.
 //!
-//! No app consumes this yet: it replaces the placeholder `Ast`/`parse`, and
-//! `Diagram::Er(Ast)` keeps its shape, so no app breaks.
+//! The renderer is [`render`], ported from `erRenderer-unified.ts` over the shared layout
+//! pipeline; `layout_data.rs` is the `getData` projection the renderer consumes. No app
+//! consumes it yet, so the public `Diagram::Er(Ast)` shape is unchanged.
 
 mod ast;
 mod db;
+mod layout_data;
 mod lexer;
 mod parser;
+pub mod render;
 #[cfg(test)]
 mod tests;
 

@@ -1,0 +1,24 @@
+{
+  "name": "11-single-entity",
+  "source": "erDiagram\n  STANDALONE {\n    uuid id PK\n  }\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "entity-STANDALONE-0",
+        "x": 83.9,
+        "y": 45.15,
+        "width": 151.8,
+        "height": 74.3
+      }
+    ],
+    "clusters": [],
+    "edges": [],
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 167.8,
+      "height": 90.3
+    },
+    "rawViewBox": "0 0 167.8 90.3"
+  }
+}

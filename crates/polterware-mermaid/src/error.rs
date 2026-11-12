@@ -102,3 +102,12 @@ impl From<crate::diagrams::class::render::ClassRenderError> for RenderError {
         }
     }
 }
+
+impl From<crate::diagrams::er::render::ErRenderError> for RenderError {
+    fn from(error: crate::diagrams::er::render::ErRenderError) -> Self {
+        match error {
+            crate::diagrams::er::render::ErRenderError::Parse(error) => Self::Parse(error),
+            crate::diagrams::er::render::ErRenderError::Layout(error) => Self::Layout(error),
+        }
+    }
+}

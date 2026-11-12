@@ -73,6 +73,17 @@ pub fn to_shape_node(node: &Node) -> shapes::Node {
     );
     s.width = node.width;
     s.height = node.height;
+    s.alias = node.alias.clone();
+    s.attributes = node
+        .attributes
+        .iter()
+        .map(|attribute| shapes::Attribute {
+            type_name: attribute.type_name.clone(),
+            name: attribute.name.clone(),
+            keys: attribute.keys.clone(),
+            comment: attribute.comment.clone(),
+        })
+        .collect();
     s.padding = node.padding.unwrap_or(0.0);
     s.rx = node.rx.unwrap_or(0.0);
     s.ry = node.ry.unwrap_or(0.0);
