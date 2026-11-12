@@ -39,9 +39,11 @@ use std::time::Duration;
 use gpui::{
     AnyElement, App, BoxShadow, Context, CursorStyle, DispatchPhase, ElementId, Entity,
     FocusHandle, IntoElement, KeyDownEvent, MouseButton, MouseDownEvent, MouseMoveEvent,
-    MouseUpEvent, Pixels, Point, ScrollHandle, SharedString, Window, canvas, deferred, div, point,
+    MouseUpEvent, Pixels, Point, ScrollHandle, SharedString, Window, canvas, div, point,
     prelude::*, px, svg,
 };
+
+use crate::overlay::deferred;
 
 use crate::icons::Icon;
 use crate::material::drop;

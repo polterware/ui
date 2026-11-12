@@ -14,6 +14,7 @@ pub mod aim;
 #[cfg(feature = "bots")]
 pub mod bots;
 pub mod filter;
+pub mod overlay;
 pub mod patterns;
 pub mod sort;
 

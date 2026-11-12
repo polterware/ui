@@ -49,8 +49,10 @@ use gpui::{
     AnyElement, App, Bounds, ClipboardItem, Context, CursorStyle, Div, ElementId, Entity,
     EventEmitter, Focusable, FontStyle, FontWeight, IntoElement, MouseButton, MouseDownEvent,
     Pixels, Point, Render, RenderOnce, ScrollHandle, SharedString, StrikethroughStyle,
-    Subscription, Task, Window, anchored, canvas, deferred, div, point, prelude::*, px, svg,
+    Subscription, Task, Window, anchored, canvas, div, point, prelude::*, px, svg,
 };
+
+use crate::overlay::deferred;
 use pulldown_cmark::{CodeBlockKind, Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 
 use crate::checkbox::checkbox_mark;

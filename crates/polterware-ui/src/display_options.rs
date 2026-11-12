@@ -11,8 +11,10 @@ use crate::{
 };
 use gpui::{
     AnyElement, App, Bounds, Context, Entity, EventEmitter, IntoElement, Pixels, Point, Render,
-    SharedString, Window, canvas, deferred, div, prelude::*, px,
+    SharedString, Window, canvas, div, prelude::*, px,
 };
+
+use crate::overlay::deferred;
 use std::{cell::Cell, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]

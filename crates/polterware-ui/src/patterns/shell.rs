@@ -6,9 +6,11 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, Bounds, Div, Element, ElementId, GlobalElementId, InspectorElementId,
-    IntoElement, LayoutId, MouseButton, Pixels, Position, Style, Window, canvas, deferred, div,
-    point, prelude::*, px,
+    IntoElement, LayoutId, MouseButton, Pixels, Position, Style, Window, canvas, div, point,
+    prelude::*, px,
 };
+
+use crate::overlay::deferred;
 
 use crate::Handler;
 use crate::material::{Edge, edge, raised_drop};

@@ -18,8 +18,10 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, AppContext as _, Bounds, Context, Entity, EventEmitter, FontWeight,
-    IntoElement, Pixels, Render, SharedString, Window, canvas, deferred, div, prelude::*, px,
+    IntoElement, Pixels, Render, SharedString, Window, canvas, div, prelude::*, px,
 };
+
+use crate::overlay::deferred;
 
 use super::context_menu::ContextMenu;
 use crate::button::{Button, ButtonKind, ButtonSize};

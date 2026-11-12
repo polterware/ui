@@ -35,8 +35,10 @@ use std::time::Duration;
 use gpui::{
     AnyElement, App, Bounds, Context, Corner, DispatchPhase, Entity, EventEmitter, Focusable,
     FontWeight, IntoElement, MouseButton, MouseDownEvent, MouseMoveEvent, Pixels, Point, Render,
-    SharedString, Window, anchored, canvas, deferred, div, point, prelude::*, px,
+    SharedString, Window, anchored, canvas, div, point, prelude::*, px,
 };
+
+use crate::overlay::deferred;
 
 use super::aim::{AIM_DELAY, MenuAim};
 use super::button::{Button, ButtonKind, ButtonSize};

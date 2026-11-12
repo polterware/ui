@@ -21,8 +21,10 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, Bounds, Context, ElementId, FocusHandle, FontWeight, IntoElement,
-    KeyDownEvent, MouseButton, Pixels, SharedString, Window, canvas, deferred, div, prelude::*, px,
+    KeyDownEvent, MouseButton, Pixels, SharedString, Window, canvas, div, prelude::*, px,
 };
+
+use crate::overlay::deferred;
 
 use crate::button::{Button, ButtonKind, ButtonSize};
 use crate::material::{Edge, drop, edge, float_drop};

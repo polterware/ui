@@ -4,7 +4,9 @@
 
 use std::time::Duration;
 
-use gpui::{App, IntoElement, SharedString, deferred, div, prelude::*, px};
+use gpui::{App, IntoElement, SharedString, div, prelude::*, px};
+
+use crate::overlay::deferred;
 
 use crate::theme::Theme;
 use crate::{Handler, ValueHandler};

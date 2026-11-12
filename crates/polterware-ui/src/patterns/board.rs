@@ -38,8 +38,10 @@ use gpui::{
     AnyElement, App, Bounds, Context, DispatchPhase, ElementId, Entity, FocusHandle, FontWeight,
     GlobalElementId, InspectorElementId, IntoElement, KeyDownEvent, LayoutId, MouseButton,
     MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point, ScrollHandle, SharedString,
-    Window, canvas, deferred, div, point, prelude::*, px,
+    Window, canvas, div, point, prelude::*, px,
 };
+
+use crate::overlay::deferred;
 
 use crate::Handler;
 use crate::icon_tile::IconTile;

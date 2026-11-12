@@ -17,9 +17,11 @@ use std::rc::Rc;
 
 use gpui::{
     App, Bounds, Context, Corner, Entity, EventEmitter, Focusable, IntoElement, MouseButton,
-    Pixels, Render, SharedString, Subscription, Window, anchored, canvas, deferred, div, point,
-    prelude::*, px,
+    Pixels, Render, SharedString, Subscription, Window, anchored, canvas, div, point, prelude::*,
+    px,
 };
+
+use crate::overlay::deferred;
 
 use crate::icons::{Icon, icon_colored};
 use crate::material::{Edge, edge, face, floating_panel};
