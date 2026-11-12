@@ -1,6 +1,6 @@
 //! Port of `postProcessing.ts`: applies the direction transforms and the routing cleanup passes
-//! in order. The passes themselves live in parts B and C; here they are [`super::stubs`] until
-//! those parts land, so this module pins the order they run in.
+//! in order. The passes themselves are the ported modules [`super::direction`] exposes; the
+//! call site goes through [`super::stubs`], so this module pins the order they run in.
 
 use crate::render::pipeline::types::LayoutData;
 

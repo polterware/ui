@@ -93,6 +93,21 @@ pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
         rank_spacing: Some(flowchart.rank_spacing),
         // Flowcharts have no root: only mindmap-like diagrams laid out by cose-bilkent set one.
         root_node: None,
+        other: Some(if ast.dropped_sub_graph_members.is_empty() {
+            serde_json::json!({})
+        } else {
+            serde_json::json!({
+                "droppedSubGraphMembers": ast
+                    .dropped_sub_graph_members
+                    .iter()
+                    .map(|member| serde_json::json!({
+                        "node": member.node,
+                        "keptBy": member.kept_by,
+                        "droppedFrom": member.dropped_from,
+                    }))
+                    .collect::<Vec<_>>(),
+            })
+        }),
     }
 }
 
@@ -218,5 +233,26 @@ mod tests {
         let dotted = &data.edges[1];
         assert_eq!(dotted.thickness.as_deref(), Some("dotted"));
         assert_eq!(dotted.pattern.as_deref(), Some("dotted"));
+    }
+
+    #[test]
+    fn carries_the_members_a_lane_dropped_in_other() {
+        // `flowDb.ts` `getData` returns `other.droppedSubGraphMembers`, which the swimlanes
+        // layout reads back to drop a lane a shared node emptied.
+        let config = Config::default();
+        let data = layout_data(
+            &ast(
+                "swimlane-beta LR\n  subgraph lane1\n    a\n  end\n  subgraph lane2\n    a\n  end\n",
+            ),
+            &config,
+            "d",
+        );
+        let members = data.other.as_ref().expect("other bag")["droppedSubGraphMembers"]
+            .as_array()
+            .expect("dropped members");
+        assert_eq!(members.len(), 1);
+        assert_eq!(members[0]["node"], "a");
+        assert_eq!(members[0]["keptBy"], "lane1");
+        assert_eq!(members[0]["droppedFrom"], "lane2");
     }
 }

@@ -1,13 +1,9 @@
-//! The calls part A makes into the direction, routing, and registration parts. Parts A through
-//! C are ported: the direction and geometry passes live in [`super::direction`], and the routing
-//! cleanup passes of part C live in [`super::direction::materialized_geometry`] and its
-//! sibling modules. Part D is still a stub, naming the pass that fills it.
-//! The calls part A makes into the direction, routing, and registration parts. Part B's
-//! direction and geometry passes are ported in [`super::direction`] and reached from here, and
-//! part D's router is ported in [`super::orthogonal_router`]. Part C (the materialized-geometry
-//! and routing helpers) is still stubs, each naming the pass that fills it: until then a pass
-//! leaves the layout unchanged, and the phases that need its geometry report
-//! [`super::SwimlaneError`].
+//! The calls the swimlanes index, layout core, and post-processing make into the direction,
+//! routing, and registration parts. Every call is ported: the direction and geometry passes
+//! live in [`super::direction`], the materialized-geometry and routing cleanup passes in the
+//! siblings named on each function, and the orthogonal router in
+//! [`super::orthogonal_router`]. The module exists so the call site stays one place, as the
+//! TypeScript barrel is.
 
 use crate::render::pipeline::types::{LayoutData, Node};
 use crate::scene::Point;
@@ -201,6 +197,9 @@ pub fn route_edges_orthogonal(
 
 /// `rendering-elements/lineJump.ts`, run from `adjustLayout.ts`: the hop geometry every routed
 /// crossing produces, computed from the layout polylines the renderer paints.
-pub fn apply_line_jumps_to_svg(layout: &LayoutData, style: &str) -> Result<(), SwimlaneError> {
+pub fn apply_line_jumps_to_svg(
+    layout: &LayoutData,
+    style: &str,
+) -> Result<Vec<(String, crate::scene::Path)>, SwimlaneError> {
     super::orthogonal_router::line_jumps::apply_line_jumps_to_svg(layout, style)
 }

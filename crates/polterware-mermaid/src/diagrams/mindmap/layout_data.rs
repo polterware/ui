@@ -88,6 +88,7 @@ pub fn layout_data_from(data: &Data, config: &Config, diagram_id: &str) -> Layou
         node_spacing: Some(NODE_SPACING),
         rank_spacing: Some(RANK_SPACING),
         root_node,
+        other: None,
     }
 }
 

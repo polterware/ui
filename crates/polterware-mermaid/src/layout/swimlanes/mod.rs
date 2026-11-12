@@ -5,8 +5,9 @@
 //! Sugiyama layout: the top-level [`index`] hooks, the [`pipeline`] phases, and every phase's
 //! state model live here. The modules follow the TypeScript files one for one; where a phase
 //! calls into direction/geometry, the routing, or the rendering registration, the call goes
-//! through [`stubs`], which names the part that fills it. The orthogonal edge router is ported
-//! in [`orthogonal_router`].
+//! through [`stubs`], which keeps the call site in one place. The orthogonal edge router is
+//! ported in [`orthogonal_router`], and [`index::render`] is the swimlanes arm of the common
+//! renderer.
 //!
 //! The arithmetic keeps upstream's `f64` order: helper [`helpers::js_round`] is `Math.round`
 //! and [`helpers::locale_compare`] is `String.prototype.localeCompare` for the identifiers a

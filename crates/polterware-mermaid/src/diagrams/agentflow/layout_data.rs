@@ -101,6 +101,7 @@ pub fn layout_data(ast: &Ast, config: &Config, diagram_id: &str) -> LayoutData {
         node_spacing: Some(agentflow.node_spacing),
         rank_spacing: Some(agentflow.rank_spacing),
         root_node: None,
+        other: None,
     }
 }
 

@@ -209,6 +209,19 @@ impl From<crate::diagrams::agentflow::AgentflowRenderError> for RenderError {
     }
 }
 
+impl From<crate::diagrams::swimlanes::render::SwimlaneRenderError> for RenderError {
+    fn from(error: crate::diagrams::swimlanes::render::SwimlaneRenderError) -> Self {
+        match error {
+            crate::diagrams::swimlanes::render::SwimlaneRenderError::Parse(error) => {
+                Self::Parse(error)
+            }
+            crate::diagrams::swimlanes::render::SwimlaneRenderError::Layout(error) => {
+                Self::Layout(error)
+            }
+        }
+    }
+}
+
 impl From<crate::diagrams::architecture::render::ArchitectureRenderError> for RenderError {
     fn from(error: crate::diagrams::architecture::render::ArchitectureRenderError) -> Self {
         match error {
