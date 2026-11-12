@@ -17,8 +17,11 @@
 //! rectangles, which is what a scene's group clip already is.
 //!
 //! The view itself adds pan (drag on empty space, scroll), zoom (secondary-modifier scroll, the
-//! pinch form GPUI 0.2.2 exposes), fit to the view box, and hit testing that returns the
-//! [`SourceRef`](polterware_mermaid::scene::SourceRef) of the topmost node or edge.
+//! pinch form GPUI 0.2.2 exposes), fit to the view box, hit testing that returns the
+//! [`SourceRef`](polterware_mermaid::scene::SourceRef) of the topmost node or edge, and node
+//! dragging: a press on a node and a move past a small threshold emits
+//! [`MermaidEvent::NodeDragged`], and the release emits [`MermaidEvent::NodeDropped`] with the
+//! node's new place so the app can pin it.
 
 mod color;
 mod geometry;
