@@ -77,6 +77,7 @@ pub fn to_shape_node(node: &Node) -> shapes::Node {
     s.rx = node.rx.unwrap_or(0.0);
     s.ry = node.ry.unwrap_or(0.0);
     s.min_width = node.min_width;
+    s.wrapping_width = node.wrapping_width;
     s.css_classes = node.css_classes.clone().unwrap_or_default();
     s.look = node.look.clone().unwrap_or_else(|| "classic".to_string());
     s.icon = node.icon.clone();
@@ -229,6 +230,7 @@ pub fn create_graph_with_elements(
         let el = EdgeLabel {
             width: Some(label_w),
             height: Some(label_h),
+            labelpos: edge.labelpos.clone(),
             ..Default::default()
         };
         if let (Some(start), Some(end)) = (&edge.start, &edge.end) {

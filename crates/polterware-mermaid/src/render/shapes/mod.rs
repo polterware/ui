@@ -119,6 +119,9 @@ pub struct Node {
     pub rx: f64,
     pub ry: f64,
     pub min_width: Option<f64>,
+    /// `flowchart.wrappingWidth`: the width a label wraps at when the node has no explicit
+    /// width (`labelHelper`'s `node.width || node.wrappingWidth || config`).
+    pub wrapping_width: Option<f64>,
     pub css_classes: String,
     pub look: String,
     pub bounds: Rect,
@@ -159,6 +162,7 @@ impl Node {
             rx: 0.0,
             ry: 0.0,
             min_width: None,
+            wrapping_width: None,
             css_classes: String::new(),
             look: "neo".into(),
             bounds: Rect::ZERO,
@@ -1856,6 +1860,23 @@ fn prepare(
     node: &Node,
     ctx: &ShapeContext<'_>,
 ) -> Result<(Group, Group, crate::scene::Size), ShapeError> {
+    prepare_with(node, ctx, false)
+}
+
+/// `prepare` for the shapes that opt out of the diagram's minimum node width, as upstream's
+/// `labelHelper` callers pass `ignoreMinWidth` (circles).
+fn prepare_ignoring_min_width(
+    node: &Node,
+    ctx: &ShapeContext<'_>,
+) -> Result<(Group, Group, crate::scene::Size), ShapeError> {
+    prepare_with(node, ctx, true)
+}
+
+fn prepare_with(
+    node: &Node,
+    ctx: &ShapeContext<'_>,
+    ignore_min_width: bool,
+) -> Result<(Group, Group, crate::scene::Size), ShapeError> {
     let group = Group::new()
         .with_class(get_node_classes(node, None))
         .with_source(SourceRef::node(node.id.clone()));
@@ -1872,12 +1893,18 @@ fn prepare(
         weight: crate::scene::NORMAL_WEIGHT,
         italic: false,
     };
+    // `labelHelper`: an explicit width wins over the wrapping width, and a label wraps at
+    // the diagram's `wrappingWidth` when the node names none.
+    let width = node
+        .width
+        .or(node.wrapping_width)
+        .unwrap_or(f64::INFINITY);
     let label = create_label(
         &LabelOptions {
             text: node.label.clone(),
             font,
             markdown: false,
-            width: f64::INFINITY,
+            width,
             centered: false,
             class: "label".into(),
             source: Some(SourceRef::node(node.id.clone())),
@@ -1891,6 +1918,14 @@ fn prepare(
         Some(Item::Text(text)) => text.size,
         _ => crate::scene::Size::ZERO,
     };
+    // `labelHelper`'s `withMinWidth`: a label narrower than the diagram's minimum is widened
+    // (and stays centred), unless the node has an explicit width or the shape opted out.
+    let min_width = if ignore_min_width || node.label.is_empty() || node.width.is_some() {
+        0.0
+    } else {
+        node.min_width.unwrap_or(0.0)
+    };
+    let text_size = crate::scene::Size::new(text_size.width.max(min_width), text_size.height);
     Ok((group, label, text_size))
 }
 

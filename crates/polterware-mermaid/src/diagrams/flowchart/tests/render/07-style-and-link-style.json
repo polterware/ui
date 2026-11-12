@@ -1,0 +1,81 @@
+{
+  "name": "07-style-and-link-style",
+  "source": "flowchart TD\n  A --> B\n  B --> C\n  style A fill:#bbf,stroke:#333\n  linkStyle 0 stroke:#f00,stroke-width:2px\n",
+  "expected": {
+    "nodes": [
+      {
+        "id": "A",
+        "x": 98,
+        "y": 32.2,
+        "width": 180,
+        "height": 48.4
+      },
+      {
+        "id": "B",
+        "x": 98,
+        "y": 130.60000000000002,
+        "width": 180,
+        "height": 48.4
+      },
+      {
+        "id": "C",
+        "x": 98,
+        "y": 229,
+        "width": 180,
+        "height": 48.4
+      }
+    ],
+    "clusters": [],
+    "edges": [
+      {
+        "id": "L_A_B_0",
+        "points": [
+          {
+            "x": 98,
+            "y": 56.400000000000006
+          },
+          {
+            "x": 98,
+            "y": 81.4
+          },
+          {
+            "x": 98,
+            "y": 106.40000000000002
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "L_B_C_0",
+        "points": [
+          {
+            "x": 98,
+            "y": 154.8
+          },
+          {
+            "x": 98,
+            "y": 179.8
+          },
+          {
+            "x": 98,
+            "y": 204.8
+          }
+        ],
+        "x": null,
+        "y": null,
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "viewBox": {
+      "x": 0,
+      "y": 3.552713678800501e-15,
+      "width": 196,
+      "height": 261.20000000000005
+    },
+    "rawViewBox": "0 3.552713678800501e-15 196 261.20000000000005"
+  }
+}

@@ -42,3 +42,54 @@ impl std::fmt::Display for ParseError {
 }
 
 impl std::error::Error for ParseError {}
+
+/// What can stop [`crate::render_diagram`]: the source, the configuration, the diagram type,
+/// or the layout pipeline.
+#[derive(Clone, Debug, PartialEq)]
+pub enum RenderError {
+    Parse(ParseError),
+    Config(crate::config::ConfigError),
+    Layout(crate::render::layout_dagre::LayoutError),
+    /// A diagram type the renderer does not draw yet (the detector's kind name).
+    Unsupported(String),
+}
+
+impl std::fmt::Display for RenderError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Parse(error) => error.fmt(f),
+            Self::Config(error) => error.fmt(f),
+            Self::Layout(error) => error.fmt(f),
+            Self::Unsupported(kind) => write!(f, "{kind} diagrams are not supported yet"),
+        }
+    }
+}
+
+impl std::error::Error for RenderError {}
+
+impl From<ParseError> for RenderError {
+    fn from(error: ParseError) -> Self {
+        Self::Parse(error)
+    }
+}
+
+impl From<crate::config::ConfigError> for RenderError {
+    fn from(error: crate::config::ConfigError) -> Self {
+        Self::Config(error)
+    }
+}
+
+impl From<crate::render::layout_dagre::LayoutError> for RenderError {
+    fn from(error: crate::render::layout_dagre::LayoutError) -> Self {
+        Self::Layout(error)
+    }
+}
+
+impl From<crate::diagrams::flowchart::FlowchartRenderError> for RenderError {
+    fn from(error: crate::diagrams::flowchart::FlowchartRenderError) -> Self {
+        match error {
+            crate::diagrams::flowchart::FlowchartRenderError::Parse(error) => Self::Parse(error),
+            crate::diagrams::flowchart::FlowchartRenderError::Layout(error) => Self::Layout(error),
+        }
+    }
+}

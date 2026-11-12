@@ -1,10 +1,12 @@
 //! Upstream `shapes/circle.ts`.
-use super::{IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, prepare, shape_style};
+use super::{
+    IntersectKind, Node, RenderedNode, ShapeContext, ShapeError, prepare_ignoring_min_width, shape_style,
+};
 use crate::scene::{EllipseShape, Item, Point, Rect, Size, SourceRef};
 
 pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeError> {
     let mut node = node.clone();
-    let (mut group, label, text_size) = prepare(&node, ctx)?;
+    let (mut group, label, text_size) = prepare_ignoring_min_width(&node, ctx)?;
     let r = (text_size.width.powi(2) + text_size.height.powi(2)).sqrt() / 2.0
         + if node.look == "neo" {
             16.0

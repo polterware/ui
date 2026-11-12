@@ -187,6 +187,7 @@ pub fn prepare_layout_for_dagre(data4_layout: &LayoutData) -> DagrePreparedLayou
             let label = EdgeLabel {
                 width: edge.width,
                 height: edge.height,
+                labelpos: edge.labelpos.clone(),
                 ..Default::default()
             };
             let _ = graph.set_edge_full(start, end, Some(label), Some(&edge.id));
@@ -243,6 +244,7 @@ pub fn measure_dagre_graph(
         {
             e.width = edge.width;
             e.height = edge.height;
+            e.labelpos = edge.labelpos.clone();
         }
     }
 
