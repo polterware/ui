@@ -1,0 +1,165 @@
+{
+  "name": "03-single-bits",
+  "source": "packet\n  0: \"a\"\n  1: \"b\"\n  2-3: \"pair\"\n  4: \"c\"\n  5-14: \"ten\"\n  15: \"d\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1026,
+      "height": 62
+    },
+    "rawViewBox": "0 0 1026 62",
+    "rows": [
+      {
+        "y": 15,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 15,
+            "width": 27,
+            "height": 32,
+            "label": {
+              "text": "a",
+              "x": 14.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "0",
+              "x": 14.5,
+              "y": 13,
+              "anchor": "middle",
+              "baseline": "auto"
+            },
+            "endBit": null
+          },
+          {
+            "x": 33,
+            "y": 15,
+            "width": 27,
+            "height": 32,
+            "label": {
+              "text": "b",
+              "x": 46.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "1",
+              "x": 46.5,
+              "y": 13,
+              "anchor": "middle",
+              "baseline": "auto"
+            },
+            "endBit": null
+          },
+          {
+            "x": 65,
+            "y": 15,
+            "width": 59,
+            "height": 32,
+            "label": {
+              "text": "pair",
+              "x": 94.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "2",
+              "x": 65,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "3",
+              "x": 124,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 129,
+            "y": 15,
+            "width": 27,
+            "height": 32,
+            "label": {
+              "text": "c",
+              "x": 142.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "4",
+              "x": 142.5,
+              "y": 13,
+              "anchor": "middle",
+              "baseline": "auto"
+            },
+            "endBit": null
+          },
+          {
+            "x": 161,
+            "y": 15,
+            "width": 315,
+            "height": 32,
+            "label": {
+              "text": "ten",
+              "x": 318.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "5",
+              "x": 161,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "14",
+              "x": 476,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          },
+          {
+            "x": 481,
+            "y": 15,
+            "width": 27,
+            "height": 32,
+            "label": {
+              "text": "d",
+              "x": 494.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "15",
+              "x": 494.5,
+              "y": 13,
+              "anchor": "middle",
+              "baseline": "auto"
+            },
+            "endBit": null
+          }
+        ]
+      }
+    ],
+    "title": {
+      "text": "",
+      "x": 513,
+      "y": 38.5,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}

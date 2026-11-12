@@ -8,9 +8,10 @@
 //!   console.
 //! - `result.value.$type` is Langium's generated AST type marker, not database data.
 //! - `packetRenderer.spec.ts` renders: it reads the drawn SVG back (each block's `x` and
-//!   `width`, each bit number's position and text, `bitOrder`, and `showBits`). Nothing here
-//!   renders, and `bitOrder`, `showBits`, and a configured `bitsPerRow` are configuration,
-//!   which this crate does not own.
+//!   `width`, each bit number's position and text, `bitOrder`, and `showBits`). The parser and
+//!   database tests here stay on the AST; `render.rs` ports the renderer, and its fixture test
+//!   covers `bitOrder` and `showBits`. A configured `bitsPerRow` is still not read by the
+//!   parser, which this crate documents in `mod.rs`.
 
 use pretty_assertions::assert_eq;
 

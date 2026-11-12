@@ -1,0 +1,54 @@
+{
+  "name": "08-no-title",
+  "source": "packet\n  0-31: \"only row\"\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1026,
+      "height": 62
+    },
+    "rawViewBox": "0 0 1026 62",
+    "rows": [
+      {
+        "y": 15,
+        "blocks": [
+          {
+            "x": 1,
+            "y": 15,
+            "width": 1019,
+            "height": 32,
+            "label": {
+              "text": "only row",
+              "x": 510.5,
+              "y": 31,
+              "anchor": "middle",
+              "baseline": "middle"
+            },
+            "startBit": {
+              "text": "0",
+              "x": 1,
+              "y": 13,
+              "anchor": "start",
+              "baseline": "auto"
+            },
+            "endBit": {
+              "text": "31",
+              "x": 1020,
+              "y": 13,
+              "anchor": "end",
+              "baseline": "auto"
+            }
+          }
+        ]
+      }
+    ],
+    "title": {
+      "text": "",
+      "x": 513,
+      "y": 38.5,
+      "anchor": "middle",
+      "baseline": "middle"
+    }
+  }
+}

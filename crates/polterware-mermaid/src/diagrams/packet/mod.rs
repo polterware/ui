@@ -24,8 +24,9 @@
 //! * `sanitizeText` is approximated as `common::sanitize` approximates it: `script`/`style`
 //!   elements are dropped and a stray `<` is escaped, but there is no DOMPurify (a DOM
 //!   library). This affects only the title and the two accessibility strings.
-//! * Nothing here lays out or draws the rows, blocks, labels, or bit numbers;
-//!   `packet/renderer.ts` is out of scope.
+//! * The rows are laid out and drawn by [`render`], the port of `packet/renderer.ts`.
+
+pub mod render;
 
 mod ast;
 mod db;
