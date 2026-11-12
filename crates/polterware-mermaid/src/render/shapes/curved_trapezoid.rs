@@ -57,11 +57,17 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     ];
     for i in 0..50 {
         let a = (270.0 - 180.0 * i as f64 / 49.0).to_radians();
-        pts.push(Point::new(-rw + r * a.cos(), -h / 2.0 + r * a.sin()));
+        pts.push(Point::new(rw - r * a.cos(), h / 2.0 - r * a.sin()));
     }
     let pts: Vec<_> = pts
         .into_iter()
         .map(|p| Point::new(p.x - w / 2.0, p.y - h / 2.0))
         .collect(); // handDrawn: rough.js (later)
-    finish(node, group, label, pts, Point::ZERO)
+    finish(
+        node,
+        group,
+        label,
+        pts,
+        Point::new(-b.width / 2.0, -b.height / 2.0),
+    )
 }

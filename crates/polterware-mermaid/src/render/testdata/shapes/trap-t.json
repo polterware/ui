@@ -1,0 +1,80 @@
+{
+  "shape": "trap-t",
+  "look": "classic",
+  "cases": [
+    {
+      "label": "Hi",
+      "width": 69.60000000000001,
+      "height": 34.4,
+      "labelTransform": "translate(0, -9.2)",
+      "pathData": null,
+      "polygonPoints": "0,0 35.2,0 52.400000000000006,-34.4 -17.2,-34.4",
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 26.2,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 17.2
+        },
+        {
+          "x": -28.666666666666668,
+          "y": -17.2
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "width": 232.79999999999998,
+      "height": 34.4,
+      "labelTransform": "translate(0, -9.2)",
+      "pathData": null,
+      "polygonPoints": "0,0 198.4,0 215.6,-34.4 -17.2,-34.4",
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 107.8,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 17.2
+        },
+        {
+          "x": -28.666666666666668,
+          "y": -17.2
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    }
+  ]
+}

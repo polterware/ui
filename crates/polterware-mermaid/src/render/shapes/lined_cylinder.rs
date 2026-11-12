@@ -53,7 +53,6 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     group.push(shape);
     label.transform = Transform::translate(-text.width / 2.0, -text.height / 2.0 + ry);
     group.push(Item::Group(label));
-    let points = super::cylinder::cylinder_outline(w, h, ry, 128);
-    node.intersect = IntersectKind::Polygon(points);
+    node.intersect = IntersectKind::Cylinder { rx, ry };
     Ok(RenderedNode { node, group })
 }

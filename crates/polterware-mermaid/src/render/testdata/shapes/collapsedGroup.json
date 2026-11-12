@@ -1,0 +1,94 @@
+{
+  "shape": "collapsedGroup",
+  "look": "classic",
+  "cases": [
+    {
+      "label": "Hi",
+      "width": 80,
+      "height": 62.4,
+      "labelTransform": "translate(0, -23.2)",
+      "pathData": null,
+      "polygonPoints": null,
+      "rectData": {
+        "x": -40,
+        "y": -31.2,
+        "width": 80,
+        "height": 62.4,
+        "rx": 8,
+        "ry": 8
+      },
+      "intersects": [
+        {
+          "x": 40,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 31.2
+        },
+        {
+          "x": -40,
+          "y": -24
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "width": 198.4,
+      "height": 62.4,
+      "labelTransform": "translate(0, -23.2)",
+      "pathData": null,
+      "polygonPoints": null,
+      "rectData": {
+        "x": -99.2,
+        "y": -31.2,
+        "width": 198.4,
+        "height": 62.4,
+        "rx": 8,
+        "ry": 8
+      },
+      "intersects": [
+        {
+          "x": 99.2,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 31.2
+        },
+        {
+          "x": -52,
+          "y": -31.2
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    }
+  ]
+}

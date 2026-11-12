@@ -142,7 +142,11 @@ pub fn draw_with_extras(
     // `reserveBounds` inserts the rect first; keep the scene order equal to the SVG order.
     group.items.rotate_right(1);
 
-    node.intersect = IntersectKind::Rect;
+    node.intersect = IntersectKind::FaceProject {
+        width: DATA_WIDTH,
+        height: DATA_HEIGHT,
+        face: None,
+    };
     Ok(RenderedNode { node, group })
 }
 

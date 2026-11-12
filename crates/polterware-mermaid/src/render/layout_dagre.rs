@@ -410,10 +410,10 @@ fn safe_anchor(
         {
             continue;
         }
-        if let Some(candidate) = find_non_cluster_child(g, &child, cluster) {
-            if !is_in_extractable(g, index, &candidate, cluster) {
-                return Some(candidate);
-            }
+        if let Some(candidate) = find_non_cluster_child(g, &child, cluster)
+            && !is_in_extractable(g, index, &candidate, cluster)
+        {
+            return Some(candidate);
         }
     }
     None
@@ -468,21 +468,18 @@ pub fn adjust_clusters_and_edges(g: &mut LayeredGraph) -> ClusterIndex {
                     .get(p)
                     .is_some_and(|c| !c.external_connections)
             })
+            && let Some(c) = index.clusters.get_mut(&id)
         {
-            if let Some(c) = index.clusters.get_mut(&id) {
-                c.anchor = parent.map(str::to_string)
-            }
+            c.anchor = parent.map(str::to_string)
         }
-        if g.edges().iter().any(|e| e.v == id) && index.clusters[&id].external_connections {
-            if let Some(a) = anchor.as_deref() {
-                if is_in_extractable(g, &index, a, &id) {
-                    if let Some(candidate) = safe_anchor(g, &index, &id, g.parent(a)) {
-                        if let Some(c) = index.clusters.get_mut(&id) {
-                            c.anchor = Some(candidate)
-                        }
-                    }
-                }
-            }
+        if g.edges().iter().any(|e| e.v == id)
+            && index.clusters[&id].external_connections
+            && let Some(a) = anchor.as_deref()
+            && is_in_extractable(g, &index, a, &id)
+            && let Some(candidate) = safe_anchor(g, &index, &id, g.parent(a))
+            && let Some(c) = index.clusters.get_mut(&id)
+        {
+            c.anchor = Some(candidate)
         }
     }
     let edges = g.edges();
@@ -499,31 +496,31 @@ pub fn adjust_clusters_and_edges(g: &mut LayeredGraph) -> ClusterIndex {
             .filter(|c| c.external_connections)
             .and_then(|c| c.anchor.clone())
             .unwrap_or_else(|| e.w.clone());
-        if v != e.v || w != e.w {
-            if let Some(label) = g.edge_object(&e).cloned() {
-                g.remove_edge_object(&e);
-                let rewritten = Edge {
-                    v,
-                    w,
-                    name: e.name.clone(),
-                };
-                index.edge_cluster_origins.insert(
-                    rewritten.clone(),
-                    (
-                        if rewritten.v != e.v {
-                            Some(e.v.clone())
-                        } else {
-                            None
-                        },
-                        if rewritten.w != e.w {
-                            Some(e.w.clone())
-                        } else {
-                            None
-                        },
-                    ),
-                );
-                let _ = g.set_edge_object_with(&rewritten, label);
-            }
+        if (v != e.v || w != e.w)
+            && let Some(label) = g.edge_object(&e).cloned()
+        {
+            g.remove_edge_object(&e);
+            let rewritten = Edge {
+                v,
+                w,
+                name: e.name.clone(),
+            };
+            index.edge_cluster_origins.insert(
+                rewritten.clone(),
+                (
+                    if rewritten.v != e.v {
+                        Some(e.v.clone())
+                    } else {
+                        None
+                    },
+                    if rewritten.w != e.w {
+                        Some(e.w.clone())
+                    } else {
+                        None
+                    },
+                ),
+            );
+            let _ = g.set_edge_object_with(&rewritten, label);
         }
     }
     let _ = extractor(g, &mut index, 0);
@@ -550,10 +547,10 @@ pub fn copy_subgraph(root: &str, g: &mut LayeredGraph) -> LayeredGraph {
             if let Some(n) = g.node(&child).cloned() {
                 out.set_node_with(child.clone(), n);
             }
-            if let Some(parent) = g.parent(&child) {
-                if parent != root {
-                    let _ = out.set_parent(&child, Some(parent));
-                }
+            if let Some(parent) = g.parent(&child)
+                && parent != root
+            {
+                let _ = out.set_parent(&child, Some(parent));
             }
             let descendant_set = {
                 let mut ds = Vec::new();
@@ -564,10 +561,9 @@ pub fn copy_subgraph(root: &str, g: &mut LayeredGraph) -> LayeredGraph {
                 if e.v != root
                     && e.w != root
                     && (descendant_set.contains(&e.v) || descendant_set.contains(&e.w))
+                    && let Some(l) = g.edge_object(&e).cloned()
                 {
-                    if let Some(l) = g.edge_object(&e).cloned() {
-                        let _ = out.set_edge_object_with(&e, l);
-                    }
+                    let _ = out.set_edge_object_with(&e, l);
                 }
             }
             g.remove_node(&child);
@@ -802,25 +798,25 @@ fn run_layout_recursive(
             run_layout_recursive(&mut child, index, depth + 1, Some(id.clone()))?;
             let mut bounds: Option<(f64, f64, f64, f64)> = None;
             for n in child.nodes() {
-                if let Some(n) = child.node(&n) {
-                    if let (Some(x), Some(y)) = (n.x, n.y) {
-                        let b = (
-                            x - n.width / 2.0,
-                            y - n.height / 2.0,
-                            x + n.width / 2.0,
-                            y + n.height / 2.0,
-                        );
-                        bounds = Some(bounds.map_or(b, |(x0, y0, x1, y1)| {
-                            (x0.min(b.0), y0.min(b.1), x1.max(b.2), y1.max(b.3))
-                        }));
-                    }
+                if let Some(n) = child.node(&n)
+                    && let (Some(x), Some(y)) = (n.x, n.y)
+                {
+                    let b = (
+                        x - n.width / 2.0,
+                        y - n.height / 2.0,
+                        x + n.width / 2.0,
+                        y + n.height / 2.0,
+                    );
+                    bounds = Some(bounds.map_or(b, |(x0, y0, x1, y1)| {
+                        (x0.min(b.0), y0.min(b.1), x1.max(b.2), y1.max(b.3))
+                    }));
                 }
             }
-            if let Some((x1, y1, x2, y2)) = bounds {
-                if let Some(n) = g.node_mut(&id) {
-                    n.width = x2 - x1 + 16.0;
-                    n.height = y2 - y1 + 16.0;
-                }
+            if let Some((x1, y1, x2, y2)) = bounds
+                && let Some(n) = g.node_mut(&id)
+            {
+                n.width = x2 - x1 + 16.0;
+                n.height = y2 - y1 + 16.0;
             }
             index.extracted.insert(id, child);
         }

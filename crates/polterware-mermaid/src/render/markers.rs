@@ -120,7 +120,7 @@ pub fn marker_definitions(
     registered
         .iter()
         .flat_map(|name| {
-            let source = fixture(*name);
+            let source = fixture(name);
             source
                 .definitions
                 .into_iter()
@@ -439,16 +439,16 @@ fn numbers(value: &str) -> Vec<f64> {
     for (index, character) in value.char_indices() {
         if character.is_ascii_digit() || matches!(character, '.' | '-' | '+') {
             start.get_or_insert(index);
-        } else if let Some(begin) = start.take() {
-            if let Ok(number) = value[begin..index].parse() {
-                output.push(number);
-            }
-        }
-    }
-    if let Some(begin) = start {
-        if let Ok(number) = value[begin..].parse() {
+        } else if let Some(begin) = start.take()
+            && let Ok(number) = value[begin..index].parse()
+        {
             output.push(number);
         }
+    }
+    if let Some(begin) = start
+        && let Ok(number) = value[begin..].parse()
+    {
+        output.push(number);
     }
     output
 }

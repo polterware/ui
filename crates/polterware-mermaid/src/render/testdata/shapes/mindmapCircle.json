@@ -1,0 +1,80 @@
+{
+  "shape": "mindmapCircle",
+  "look": "classic",
+  "cases": [
+    {
+      "label": "Hi",
+      "width": 42.59323222175146,
+      "height": 42.59323222175146,
+      "labelTransform": "translate(0, -9.2)",
+      "pathData": null,
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 21.296616110875725,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 21.296616110875725
+        },
+        {
+          "x": -18.261697656691734,
+          "y": -10.95701859401504
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "width": 199.3257210540845,
+      "height": 199.3257210540845,
+      "labelTransform": "translate(0, -9.2)",
+      "pathData": null,
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 99.66286052704226,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 99.66286052704226
+        },
+        {
+          "x": -85.46019785821468,
+          "y": -51.27611871492882
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    }
+  ]
+}

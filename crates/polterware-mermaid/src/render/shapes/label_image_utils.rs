@@ -250,6 +250,10 @@ pub(crate) mod fixtures {
         let mut node = Node::new("fixture", case.label.clone(), "fixture");
         node.padding = case.padding;
         node.look = case.look.clone();
+        node.icon = Some("fixture".into());
+        node.img = Some("fixture.png".into());
+        node.asset_width = Some(48.0);
+        node.asset_height = Some(48.0);
         let ctx = ShapeContext {
             measure: &measure,
             theme: &theme,

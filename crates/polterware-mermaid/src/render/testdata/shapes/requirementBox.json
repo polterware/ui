@@ -1,0 +1,80 @@
+{
+  "shape": "requirementBox",
+  "look": "classic",
+  "cases": [
+    {
+      "label": "Hi",
+      "width": 125.6,
+      "height": 62.8,
+      "labelTransform": "translate(-52.8, -23.599999999999994)",
+      "pathData": "M-62.8 -31.4 L62.8 -31.4 L62.8 31.4 L-62.8 31.4",
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 62.8,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 31.4
+        },
+        {
+          "x": -52.333333333333336,
+          "y": -31.4
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "width": 202.4,
+      "height": 62.8,
+      "labelTransform": "translate(-52.8, -23.599999999999994)",
+      "pathData": "M-101.2 -31.4 L101.2 -31.4 L101.2 31.4 L-101.2 31.4",
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 101.2,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 31.4
+        },
+        {
+          "x": -52.333333333333336,
+          "y": -31.4
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    }
+  ]
+}

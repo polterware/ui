@@ -1,0 +1,80 @@
+{
+  "shape": "bpmnDataObject",
+  "look": "classic",
+  "cases": [
+    {
+      "label": "Hi",
+      "width": 36,
+      "height": 98.8,
+      "labelTransform": "translate(-9.6,31.000000000000004)",
+      "pathData": "M-18,-25 H8 L18,-15 V25 H-18 Z",
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 18,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 25
+        },
+        {
+          "x": -18,
+          "y": -17
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "width": 115.19999999999999,
+      "height": 134,
+      "labelTransform": "translate(-57.599999999999994,31)",
+      "pathData": "M-18,-25 H8 L18,-15 V25 H-18 Z",
+      "polygonPoints": null,
+      "rectData": null,
+      "intersects": [
+        {
+          "x": 18,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 25
+        },
+        {
+          "x": -18,
+          "y": -17
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    }
+  ]
+}

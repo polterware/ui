@@ -57,12 +57,25 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
             .with_source(SourceRef::node(node.id.clone())),
     );
     shape.transform = Transform::translate(0.0, -amp / 2.0);
-    node.bounds = Rect::centered(Point::ZERO, Size::new(w * 1.1, final_h + 2.0 * amp));
-    group.push(shape);
-    label.transform = Transform::translate(
-        -text.width / 2.0 + pad,
-        -text.height / 2.0 + pad - amp / 2.0,
+    let (min_x, max_x, min_y, max_y) = points.iter().fold(
+        (
+            f64::INFINITY,
+            f64::NEG_INFINITY,
+            f64::INFINITY,
+            f64::NEG_INFINITY,
+        ),
+        |(min_x, max_x, min_y, max_y), pt| {
+            (
+                min_x.min(pt.x),
+                max_x.max(pt.x),
+                min_y.min(pt.y),
+                max_y.max(pt.y),
+            )
+        },
     );
+    node.bounds = Rect::centered(Point::ZERO, Size::new(max_x - min_x, max_y - min_y));
+    group.push(shape);
+    label.transform = Transform::translate(-w / 2.0 + pad, -h / 2.0 + pad - amp / 2.0);
     group.push(Item::Group(label));
     node.intersect = IntersectKind::Polygon(points);
     Ok(RenderedNode { node, group })

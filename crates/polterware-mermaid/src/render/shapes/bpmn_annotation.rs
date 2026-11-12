@@ -30,15 +30,11 @@ pub fn draw_with_face(
 ) -> Result<RenderedNode, ShapeError> {
     let mut node = node.clone();
 
-    let wrap_width = node
-        .width
-        .filter(|width| *width != 0.0)
-        .unwrap_or(WRAPPING_WIDTH);
     let BpmnLabel {
         group: label,
         width: label_width,
         height: label_height,
-    } = bpmn_label(&node, ctx, wrap_width)?;
+    } = bpmn_label(&node, ctx, WRAPPING_WIDTH)?;
 
     let height = 28.0_f64.max(label_height + PADDING * 2.0);
     let width = label_width + PADDING * 2.0 + 6.0;
@@ -79,7 +75,11 @@ pub fn draw_with_face(
     group.push(reserve_bounds(&mut node, width, height));
     group.items.rotate_right(1);
 
-    node.intersect = IntersectKind::Rect;
+    node.intersect = IntersectKind::FaceProject {
+        width,
+        height,
+        face: Some(face),
+    };
     Ok(RenderedNode { node, group })
 }
 

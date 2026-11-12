@@ -22,10 +22,21 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     let mut node = node.clone();
     let (mut group, label, text) = prepare(&node, ctx)?;
     group.class = Some("icon-shape default".into());
-    let width = ICON_SIZE;
-    let height = ICON_SIZE;
-    let bbox_width = text.width + LABEL_BACKGROUND_PADDING * 2.0;
-    let bbox_height = text.height + LABEL_BACKGROUND_PADDING * 2.0;
+    let (width, height) = if node.icon.is_some() {
+        let asset_width = node.asset_width.unwrap_or(ICON_SIZE);
+        let asset_height = node.asset_height.unwrap_or(ICON_SIZE);
+        let icon_size = asset_width.max(asset_height);
+        (icon_size, icon_size)
+    } else {
+        (0.0, 0.0)
+    };
+    let bg_pad = if node.icon.is_some() || node.img.is_some() {
+        LABEL_BACKGROUND_PADDING
+    } else {
+        0.0
+    };
+    let bbox_width = text.width + bg_pad * 2.0;
+    let bbox_height = text.height + bg_pad * 2.0;
     let label_padding = if node.label.is_empty() {
         0.0
     } else {
@@ -39,7 +50,12 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
         });
     }
 
-    let icon_offset_y = -bbox_height / 2.0 - label_padding / 2.0;
+    let top_label = node.pos.as_deref() == Some("t");
+    let icon_offset_y = if top_label {
+        bbox_height / 2.0 + label_padding / 2.0
+    } else {
+        -bbox_height / 2.0 - label_padding / 2.0
+    };
     // handDrawn: rough.js (later)
     let mut icon = Group::new().with_transform(Transform::translate(0.0, icon_offset_y));
     icon.push(
@@ -61,30 +77,76 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     );
 
     let mut label = label;
-    label.transform = Transform::translate(-bbox_width / 2.0, outer_height / 2.0 - bbox_height);
+    let label_y = if top_label {
+        -outer_height / 2.0
+    } else {
+        outer_height / 2.0 - bbox_height
+    };
+    label.transform = Transform::translate(-bbox_width / 2.0, label_y);
     group.items.push(Item::Group(label));
 
     node.bounds = Rect::centered(Point::ZERO, Size::new(outer_width, outer_height));
     node.intersect = if node.label.is_empty() {
         IntersectKind::Rect
     } else {
-        IntersectKind::Polygon(attachment_polygon(width, height, outer_height, bbox_width))
+        IntersectKind::Polygon(attachment_polygon(
+            width,
+            height,
+            outer_height,
+            bbox_width,
+            top_label,
+            label_padding,
+            bbox_height,
+        ))
     };
     Ok(RenderedNode { node, group })
 }
 
 /// Upstream's labeled attachment polygon, including its `bbox.width / 2 / 2` inner step.
-fn attachment_polygon(width: f64, height: f64, node_height: f64, bbox_width: f64) -> Vec<Point> {
-    vec![
-        Point::new(-width / 2.0, -node_height / 2.0),
-        Point::new(width / 2.0, -node_height / 2.0),
-        Point::new(width / 2.0, -node_height / 2.0 + height),
-        Point::new(bbox_width / 2.0, -node_height / 2.0 + height),
-        Point::new(bbox_width / 2.0 / 2.0, node_height / 2.0),
-        Point::new(-bbox_width / 2.0, node_height / 2.0),
-        Point::new(-bbox_width / 2.0, -node_height / 2.0 + height),
-        Point::new(-width / 2.0, -node_height / 2.0 + height),
-    ]
+fn attachment_polygon(
+    width: f64,
+    height: f64,
+    node_height: f64,
+    bbox_width: f64,
+    top_label: bool,
+    label_padding: f64,
+    bbox_height: f64,
+) -> Vec<Point> {
+    if top_label {
+        vec![
+            Point::new(-bbox_width / 2.0, -node_height / 2.0),
+            Point::new(bbox_width / 2.0, -node_height / 2.0),
+            Point::new(
+                bbox_width / 2.0,
+                -node_height / 2.0 + bbox_height + label_padding,
+            ),
+            Point::new(
+                width / 2.0,
+                -node_height / 2.0 + bbox_height + label_padding,
+            ),
+            Point::new(width / 2.0, node_height / 2.0),
+            Point::new(-width / 2.0, node_height / 2.0),
+            Point::new(
+                -width / 2.0,
+                -node_height / 2.0 + bbox_height + label_padding,
+            ),
+            Point::new(
+                -bbox_width / 2.0,
+                -node_height / 2.0 + bbox_height + label_padding,
+            ),
+        ]
+    } else {
+        vec![
+            Point::new(-width / 2.0, -node_height / 2.0),
+            Point::new(width / 2.0, -node_height / 2.0),
+            Point::new(width / 2.0, -node_height / 2.0 + height),
+            Point::new(bbox_width / 2.0, -node_height / 2.0 + height),
+            Point::new(bbox_width / 2.0 / 2.0, node_height / 2.0),
+            Point::new(-bbox_width / 2.0, node_height / 2.0),
+            Point::new(-bbox_width / 2.0, -node_height / 2.0 + height),
+            Point::new(-width / 2.0, -node_height / 2.0 + height),
+        ]
+    }
 }
 
 /// Both container boxes are `stroke: none` and unfilled/transparent in the classic options.

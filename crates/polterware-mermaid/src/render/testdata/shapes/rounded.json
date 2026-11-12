@@ -1,0 +1,94 @@
+{
+  "shape": "rounded",
+  "look": "classic",
+  "cases": [
+    {
+      "label": "Hi",
+      "width": 35.2,
+      "height": 34.4,
+      "labelTransform": "translate(0, -9.2)",
+      "pathData": null,
+      "polygonPoints": null,
+      "rectData": {
+        "x": -17.6,
+        "y": -17.2,
+        "width": 35.2,
+        "height": 34.4,
+        "rx": 5,
+        "ry": 5
+      },
+      "intersects": [
+        {
+          "x": 17.6,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 17.2
+        },
+        {
+          "x": -17.6,
+          "y": -10.560000000000002
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    },
+    {
+      "label": "A much longer label",
+      "width": 198.4,
+      "height": 34.4,
+      "labelTransform": "translate(0, -9.2)",
+      "pathData": null,
+      "polygonPoints": null,
+      "rectData": {
+        "x": -99.2,
+        "y": -17.2,
+        "width": 198.4,
+        "height": 34.4,
+        "rx": 5,
+        "ry": 5
+      },
+      "intersects": [
+        {
+          "x": 99.2,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 17.2
+        },
+        {
+          "x": -28.666666666666668,
+          "y": -17.2
+        }
+      ],
+      "probes": [
+        {
+          "x": 200,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 200
+        },
+        {
+          "x": -150,
+          "y": -90
+        }
+      ]
+    }
+  ]
+}

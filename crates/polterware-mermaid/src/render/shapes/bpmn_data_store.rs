@@ -83,7 +83,11 @@ pub fn draw(node: &Node, ctx: &ShapeContext<'_>) -> Result<RenderedNode, ShapeEr
     group.push(reserve_bounds(&mut node, total_width, total_height));
     group.items.rotate_right(1);
 
-    node.intersect = IntersectKind::Rect;
+    node.intersect = IntersectKind::FaceProject {
+        width: STORE_SIZE,
+        height: STORE_SIZE,
+        face: None,
+    };
     Ok(RenderedNode { node, group })
 }
 
