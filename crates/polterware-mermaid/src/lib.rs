@@ -175,3 +175,12 @@ pub fn render_diagram(source: &str, config: &config::Config) -> Result<Scene, Re
         other => Err(RenderError::Unsupported(format!("{other:?}"))),
     }
 }
+
+/// Renders the error diagram upstream draws when a diagram source fails to parse: the bomb
+/// icon, `Syntax error in text`, the Mermaid version, and `message` wrapped into up to four
+/// centred lines. `message` is the failure text a [`RenderError`] carries, and `config` is the
+/// diagram configuration whose theme colors the drawing (upstream's `errorBkgColor` and
+/// `errorTextColor`).
+pub fn render_error(message: &str, config: &config::Config) -> Scene {
+    diagrams::error::render::render(message, config)
+}
