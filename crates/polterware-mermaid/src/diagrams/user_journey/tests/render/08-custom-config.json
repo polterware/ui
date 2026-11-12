@@ -1,0 +1,604 @@
+{
+  "name": "08-custom-config",
+  "source": "%%{init: {\"journey\": {\"maxLabelWidth\": 90, \"leftMargin\": 40, \"titleColor\": \"#ff0000\", \"titleFontSize\": \"10px\", \"taskFontSize\": 20}}}%%\njourney\n  title Custom config\n  section One\n    A step with a long label: 5: Actor one\n    Another step: 1: Actor two\n  section Two\n    Third: 3: Actor one, Actor two\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -25,
+      "width": 852.8,
+      "height": 540
+    },
+    "rawViewBox": "0 -25 852.8 540",
+    "width": "852.8",
+    "height": "565",
+    "preserveAspectRatio": "xMinYMin meet",
+    "marker": {
+      "id": "journey-diagram-8-arrowhead",
+      "refX": 5,
+      "refY": 2,
+      "markerWidth": 6,
+      "markerHeight": 4,
+      "orient": "auto",
+      "viewBox": null,
+      "d": "M 0,0 V 4 L6,2 Z",
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "op": "lineTo",
+          "x": 0,
+          "y": 4
+        },
+        {
+          "op": "lineTo",
+          "x": 6,
+          "y": 2
+        },
+        {
+          "op": "close"
+        }
+      ]
+    },
+    "shapes": [
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 60,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Actor one",
+        "lines": [
+          "Actor one"
+        ],
+        "x": 50,
+        "y": 67,
+        "elementX": 40,
+        "elementY": 67,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 86.39999999999999,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Actor one"
+          }
+        ]
+      },
+      {
+        "kind": "circle",
+        "cx": 20,
+        "cy": 80,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": null
+      },
+      {
+        "kind": "text",
+        "text": "Actor two",
+        "lines": [
+          "Actor two"
+        ],
+        "x": 50,
+        "y": 87,
+        "elementX": 40,
+        "elementY": 87,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 16,
+        "width": 86.39999999999999,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 50,
+            "dy": null,
+            "text": "Actor two"
+          }
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 126.39999999999999,
+        "y": 50,
+        "width": 350,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "journey-section section-type-0"
+      },
+      {
+        "kind": "text",
+        "text": "One",
+        "lines": [
+          "One"
+        ],
+        "x": 301.4,
+        "y": 75,
+        "elementX": 301.4,
+        "elementY": 75,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 28.799999999999997,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 301.4,
+            "dy": "0",
+            "text": "One"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 201.39999999999998,
+        "y1": 110,
+        "x2": 201.39999999999998,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 201.39999999999998,
+        "cy": 300,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 196.39999999999998,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 206.39999999999998,
+        "cy": 295,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M7.5,0A7.5,7.5,0,1,1,-7.5,0L-6.818,0A6.818,6.818,0,1,0,6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 201.39999999999998,
+          "y": 302
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 126.39999999999999,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 140.39999999999998,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": "Actor one"
+      },
+      {
+        "kind": "text",
+        "text": "A step with a long label",
+        "lines": [
+          "A step with a long label"
+        ],
+        "x": 201.39999999999998,
+        "y": 135,
+        "elementX": 201.39999999999998,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 230.39999999999998,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 201.39999999999998,
+            "dy": "0",
+            "text": "A step with a long label"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 401.4,
+        "y1": 110,
+        "x2": 401.4,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 401.4,
+        "cy": 420,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 396.4,
+        "cy": 415,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 406.4,
+        "cy": 415,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "path",
+        "d": "M-7.5,0A7.5,7.5,0,1,1,7.5,0L6.818,0A6.818,6.818,0,1,0,-6.818,0Z",
+        "commands": [
+          {
+            "op": "moveTo",
+            "x": -7.5,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 7.5,
+            "ry": 7.5,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": true,
+            "x": 7.5,
+            "y": 0
+          },
+          {
+            "op": "lineTo",
+            "x": 6.818,
+            "y": 0
+          },
+          {
+            "op": "arcTo",
+            "rx": 6.818,
+            "ry": 6.818,
+            "rotation": 0,
+            "large_arc": true,
+            "sweep": false,
+            "x": -6.818,
+            "y": 0
+          },
+          {
+            "op": "close"
+          }
+        ],
+        "translate": {
+          "x": 401.4,
+          "y": 427
+        },
+        "fill": null,
+        "stroke": null,
+        "strokeWidth": 0,
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 326.4,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#191970",
+        "stroke": "#666",
+        "class": "task task-type-0"
+      },
+      {
+        "kind": "circle",
+        "cx": 340.4,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Actor two"
+      },
+      {
+        "kind": "text",
+        "text": "Another step",
+        "lines": [
+          "Another step"
+        ],
+        "x": 401.4,
+        "y": 135,
+        "elementX": 401.4,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 115.19999999999999,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 401.4,
+            "dy": "0",
+            "text": "Another step"
+          }
+        ]
+      },
+      {
+        "kind": "rect",
+        "x": 526.4,
+        "y": 50,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#8B008B",
+        "stroke": "#666",
+        "class": "journey-section section-type-1"
+      },
+      {
+        "kind": "text",
+        "text": "Two",
+        "lines": [
+          "Two"
+        ],
+        "x": 601.4,
+        "y": 75,
+        "elementX": 601.4,
+        "elementY": 75,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 28.799999999999997,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 601.4,
+            "dy": "0",
+            "text": "Two"
+          }
+        ]
+      },
+      {
+        "kind": "line",
+        "x1": 601.4,
+        "y1": 110,
+        "x2": 601.4,
+        "y2": 450,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [
+          4,
+          2
+        ],
+        "class": "task-line",
+        "markerEnd": null
+      },
+      {
+        "kind": "circle",
+        "cx": 601.4,
+        "cy": 360,
+        "r": 15,
+        "fill": null,
+        "stroke": null,
+        "class": "face",
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 596.4,
+        "cy": 355,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "circle",
+        "cx": 606.4,
+        "cy": 355,
+        "r": 1.5,
+        "fill": "#666",
+        "stroke": "#666",
+        "class": null,
+        "title": null
+      },
+      {
+        "kind": "line",
+        "x1": 596.4,
+        "y1": 367,
+        "x2": 606.4,
+        "y2": 367,
+        "stroke": "#666",
+        "strokeWidth": 1,
+        "dash": [],
+        "class": "mouth",
+        "markerEnd": null
+      },
+      {
+        "kind": "rect",
+        "x": 526.4,
+        "y": 110,
+        "width": 150,
+        "height": 50,
+        "rx": 3,
+        "fill": "#8B008B",
+        "stroke": "#666",
+        "class": "task task-type-1"
+      },
+      {
+        "kind": "circle",
+        "cx": 540.4,
+        "cy": 110,
+        "r": 7,
+        "fill": "#8FBC8F",
+        "stroke": "#000",
+        "class": "actor-0",
+        "title": "Actor one"
+      },
+      {
+        "kind": "circle",
+        "cx": 550.4,
+        "cy": 110,
+        "r": 7,
+        "fill": "#7CFC00",
+        "stroke": "#000",
+        "class": "actor-1",
+        "title": "Actor two"
+      },
+      {
+        "kind": "text",
+        "text": "Third",
+        "lines": [
+          "Third"
+        ],
+        "x": 601.4,
+        "y": 135,
+        "elementX": 601.4,
+        "elementY": 135,
+        "anchor": "middle",
+        "baseline": "central",
+        "fontSize": 16,
+        "width": 48,
+        "height": 18.4,
+        "fill": null,
+        "tspans": [
+          {
+            "x": 601.4,
+            "dy": "0",
+            "text": "Third"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "text": "Custom config",
+        "lines": [
+          "Custom config"
+        ],
+        "x": 126.39999999999999,
+        "y": 25,
+        "elementX": 126.39999999999999,
+        "elementY": 25,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 10,
+        "width": 78,
+        "height": 11.5,
+        "fill": "#ff0000",
+        "tspans": []
+      },
+      {
+        "kind": "line",
+        "x1": 126.39999999999999,
+        "y1": 200,
+        "x2": 722.4,
+        "y2": 200,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": [],
+        "class": null,
+        "markerEnd": "url(#journey-diagram-8-arrowhead)"
+      }
+    ]
+  }
+}

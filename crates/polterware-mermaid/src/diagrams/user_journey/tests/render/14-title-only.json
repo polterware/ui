@@ -1,0 +1,78 @@
+{
+  "name": "14-title-only",
+  "source": "journey\n  title Just a title\n",
+  "expected": {
+    "viewBox": {
+      "x": 0,
+      "y": -25,
+      "width": 400,
+      "height": 90
+    },
+    "rawViewBox": "0 -25 400 90",
+    "width": "400",
+    "height": "115",
+    "preserveAspectRatio": "xMinYMin meet",
+    "marker": {
+      "id": "journey-diagram-14-arrowhead",
+      "refX": 5,
+      "refY": 2,
+      "markerWidth": 6,
+      "markerHeight": 4,
+      "orient": "auto",
+      "viewBox": null,
+      "d": "M 0,0 V 4 L6,2 Z",
+      "commands": [
+        {
+          "op": "moveTo",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "op": "lineTo",
+          "x": 0,
+          "y": 4
+        },
+        {
+          "op": "lineTo",
+          "x": 6,
+          "y": 2
+        },
+        {
+          "op": "close"
+        }
+      ]
+    },
+    "shapes": [
+      {
+        "kind": "text",
+        "text": "Just a title",
+        "lines": [
+          "Just a title"
+        ],
+        "x": 150,
+        "y": 25,
+        "elementX": 150,
+        "elementY": 25,
+        "anchor": "start",
+        "baseline": "alphabetic",
+        "fontSize": 32,
+        "width": 230.39999999999998,
+        "height": 36.8,
+        "fill": "",
+        "tspans": []
+      },
+      {
+        "kind": "line",
+        "x1": 150,
+        "y1": 200,
+        "x2": 246,
+        "y2": 200,
+        "stroke": "black",
+        "strokeWidth": 4,
+        "dash": [],
+        "class": null,
+        "markerEnd": "url(#journey-diagram-14-arrowhead)"
+      }
+    ]
+  }
+}
