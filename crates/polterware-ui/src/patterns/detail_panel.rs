@@ -236,8 +236,10 @@ impl RenderOnce for DetailPanel {
                     .justify_center()
                     .child(div().flex_none().child(leading))
             }))
+            // A zero basis keeps a long title on the icon's row, wrapping beside it.
             .child(
                 div()
+                    .flex_1()
                     .min_w(px(0.0))
                     .text_size(px(14.0))
                     .line_height(if inline {
