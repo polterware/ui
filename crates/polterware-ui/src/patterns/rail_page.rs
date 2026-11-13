@@ -136,6 +136,15 @@ impl PageWidth {
         self.0.get()
     }
 
+    /// Takes `width` as the page's until a frame measures it, so the first frame already
+    /// knows whether the page is narrow: a guess from the window, not a flash of the wrong
+    /// layout.
+    pub fn seed(&self, width: f32) {
+        if self.0.get() <= 0.0 {
+            self.0.set(width.max(0.0));
+        }
+    }
+
     /// A probe filling the page that records its width and redraws when it crosses
     /// [`NARROW_WIDTH`]. Add it to a `relative()` page.
     pub fn probe(&self) -> impl IntoElement {
