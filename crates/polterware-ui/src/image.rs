@@ -27,10 +27,10 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, App, Bounds, Context, CursorStyle, ElementId, Entity, Image, ImageFormat,
-    ImageSource, IntoElement, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, ObjectFit,
-    Pixels, Point, Render, RenderImage, RenderOnce, ScrollDelta, ScrollWheelEvent, SharedString,
-    Window, canvas, div, img, point, prelude::*, px,
+    AnyElement, App, Bounds, Context, CursorStyle, DispatchPhase, ElementId, Entity, Image,
+    ImageFormat, ImageSource, IntoElement, MouseButton, MouseDownEvent, MouseMoveEvent,
+    MouseUpEvent, ObjectFit, Pixels, Point, Render, RenderImage, RenderOnce, ScrollDelta,
+    ScrollWheelEvent, SharedString, Window, canvas, div, img, point, prelude::*, px,
 };
 
 use crate::Handler;
@@ -631,6 +631,11 @@ pub struct ZoomableImage {
     image: ImageData,
     natural: Option<(f32, f32)>,
     fit_padding: f32,
+    /// Room the page covers over the view (header, floating rail), as top, right, bottom,
+    /// left: the fit centers the image in what is left, yet the image may pan under it.
+    insets: [f32; 4],
+    /// The person zoomed or panned: a resize keeps their view instead of fitting again.
+    moved: bool,
     viewport: Option<ImageViewport>,
     bounds: Option<Bounds<Pixels>>,
     fit_pending: bool,
@@ -652,6 +657,8 @@ impl ZoomableImage {
             image,
             natural: None,
             fit_padding: 24.0,
+            insets: [0.0; 4],
+            moved: false,
             viewport: None,
             bounds: None,
             fit_pending: true,
@@ -672,6 +679,60 @@ impl ZoomableImage {
     pub fn fit_padding(mut self, padding: f32) -> Self {
         self.fit_padding = padding.max(0.0);
         self
+    }
+
+    /// Sets the room the page covers over the view; until the person moves the image, it
+    /// fits again into what is left.
+    pub fn set_insets(
+        &mut self,
+        top: f32,
+        right: f32,
+        bottom: f32,
+        left: f32,
+        cx: &mut Context<Self>,
+    ) {
+        let insets = [top, right, bottom, left].map(|v| v.max(0.0));
+        if insets == self.insets {
+            return;
+        }
+        self.insets = insets;
+        if !self.moved {
+            self.fit_pending = true;
+            if let Some(bounds) = self.bounds {
+                self.ensure_viewport(bounds);
+            }
+        }
+        cx.notify();
+    }
+
+    /// The part of the view left after the insets, as x, y, width, height in local pixels.
+    fn fit_area(&self, bounds: Bounds<Pixels>) -> (f32, f32, f32, f32) {
+        let [top, right, bottom, left] = self.insets;
+        let w = (f32::from(bounds.size.width) - left - right).max(1.0);
+        let h = (f32::from(bounds.size.height) - top - bottom).max(1.0);
+        (left, top, w, h)
+    }
+
+    fn area_center(&self) -> Point<Pixels> {
+        match self.bounds {
+            Some(b) => {
+                let (x, y, w, h) = self.fit_area(b);
+                point(px(x + w / 2.0), px(y + h / 2.0))
+            }
+            None => point(px(250.0), px(250.0)),
+        }
+    }
+
+    fn fitted(&self, bounds: Bounds<Pixels>) -> ImageViewport {
+        let (nat_w, nat_h) = self.resolved_natural();
+        let (ax, ay, aw, ah) = self.fit_area(bounds);
+        let zoom = calculate_fit_zoom(nat_w, nat_h, aw, ah, self.fit_padding);
+        let (x, y) = calculate_fit_position(nat_w, nat_h, aw, ah, zoom);
+        ImageViewport {
+            x: ax + x,
+            y: ay + y,
+            zoom,
+        }
     }
 
     pub fn debug_selector(mut self, selector: impl Into<SharedString>) -> Self {
@@ -701,63 +762,45 @@ impl ZoomableImage {
     }
 
     fn calculate_fit_zoom(&self) -> f32 {
-        let (nat_w, nat_h) = self.resolved_natural();
-        let (vw, vh) = match self.bounds {
-            Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
-            None => (nat_w, nat_h),
-        };
-        calculate_fit_zoom(nat_w, nat_h, vw, vh, self.fit_padding)
+        match self.bounds {
+            Some(b) => self.fitted(b).zoom,
+            None => 1.0,
+        }
     }
 
     pub fn fit(&mut self, cx: &mut Context<Self>) {
-        let (nat_w, nat_h) = self.resolved_natural();
+        self.moved = false;
         let Some(bounds) = self.bounds else {
             self.fit_pending = true;
             cx.notify();
             return;
         };
-        let vw = f32::from(bounds.size.width);
-        let vh = f32::from(bounds.size.height);
-        let zoom = calculate_fit_zoom(nat_w, nat_h, vw, vh, self.fit_padding);
-        let (x, y) = calculate_fit_position(nat_w, nat_h, vw, vh, zoom);
-        self.viewport = Some(ImageViewport { x, y, zoom });
+        self.viewport = Some(self.fitted(bounds));
         self.fit_pending = false;
         cx.notify();
     }
 
     pub fn zoom_to_100(&mut self, cx: &mut Context<Self>) {
-        let (nat_w, nat_h) = self.resolved_natural();
-        let (vw, vh) = match self.bounds {
-            Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
-            None => (nat_w, nat_h),
-        };
-        let center = point(px(vw / 2.0), px(vh / 2.0));
+        let center = self.area_center();
         self.zoom_at(center, 1.0, cx);
     }
 
     pub fn zoom_at(&mut self, focus: Point<Pixels>, zoom: f32, cx: &mut Context<Self>) {
         let vp = self.viewport.unwrap_or_default();
         self.viewport = Some(vp.zoom_at(focus, zoom));
+        self.moved = true;
         cx.notify();
     }
 
     pub fn zoom_in(&mut self, cx: &mut Context<Self>) {
         let vp = self.viewport.unwrap_or_default();
-        let (vw, vh) = match self.bounds {
-            Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
-            None => (500.0, 500.0),
-        };
-        let center = point(px(vw / 2.0), px(vh / 2.0));
+        let center = self.area_center();
         self.zoom_at(center, vp.zoom * 1.25, cx);
     }
 
     pub fn zoom_out(&mut self, cx: &mut Context<Self>) {
         let vp = self.viewport.unwrap_or_default();
-        let (vw, vh) = match self.bounds {
-            Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
-            None => (500.0, 500.0),
-        };
-        let center = point(px(vw / 2.0), px(vh / 2.0));
+        let center = self.area_center();
         self.zoom_at(center, vp.zoom / 1.25, cx);
     }
 
@@ -770,11 +813,7 @@ impl ZoomableImage {
             } else {
                 1.0
             };
-            let (vw, vh) = match self.bounds {
-                Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
-                None => (500.0, 500.0),
-            };
-            let focus = local_focus.unwrap_or_else(|| point(px(vw / 2.0), px(vh / 2.0)));
+            let focus = local_focus.unwrap_or_else(|| self.area_center());
             self.zoom_at(focus, target, cx);
         } else {
             self.fit(cx);
@@ -782,13 +821,8 @@ impl ZoomableImage {
     }
 
     fn ensure_viewport(&mut self, bounds: Bounds<Pixels>) {
-        if self.viewport.is_none() || self.fit_pending {
-            let (nat_w, nat_h) = self.resolved_natural();
-            let vw = f32::from(bounds.size.width);
-            let vh = f32::from(bounds.size.height);
-            let zoom = calculate_fit_zoom(nat_w, nat_h, vw, vh, self.fit_padding);
-            let (x, y) = calculate_fit_position(nat_w, nat_h, vw, vh, zoom);
-            self.viewport = Some(ImageViewport { x, y, zoom });
+        if self.viewport.is_none() || self.fit_pending || !self.moved {
+            self.viewport = Some(self.fitted(bounds));
             self.fit_pending = false;
         }
     }
@@ -815,6 +849,8 @@ impl ZoomableImage {
             viewport: vp,
         });
         self.dragging = false;
+        // The next paint listens to the whole window, so the drag follows the pointer out.
+        cx.notify();
     }
 
     fn mouse_move(&mut self, event: &MouseMoveEvent, cx: &mut Context<Self>) {
@@ -831,13 +867,13 @@ impl ZoomableImage {
         }
         if self.dragging {
             self.viewport = Some(press.viewport.pan_by(dx, dy));
+            self.moved = true;
             cx.notify();
         }
     }
 
-    fn mouse_up(&mut self, _: &MouseUpEvent, cx: &mut Context<Self>) {
-        self.press = None;
-        if self.dragging {
+    fn mouse_up(&mut self, cx: &mut Context<Self>) {
+        if self.press.take().is_some() || self.dragging {
             self.dragging = false;
             cx.notify();
         }
@@ -860,8 +896,10 @@ impl ZoomableImage {
         {
             let zoom = vp.zoom * (-dy * 0.0025).exp();
             self.viewport = Some(vp.zoom_at(local, zoom));
+            self.moved = true;
         } else if dx != 0.0 || dy != 0.0 {
             self.viewport = Some(vp.pan_by(-dx, -dy));
+            self.moved = true;
         }
         cx.stop_propagation();
         cx.notify();
@@ -948,9 +986,26 @@ impl Render for ZoomableImage {
                     .object_fit(ObjectFit::Fill),
             );
 
+        let pressed = self.press.is_some();
         let probe = canvas(
             |_, _, _| (),
             move |bounds, _, window, cx| {
+                // While a press is held, the whole window moves the image and ends the drag,
+                // so leaving the view neither stops it nor leaves it stuck.
+                if pressed {
+                    let moving = entity.clone();
+                    window.on_mouse_event(move |event: &MouseMoveEvent, phase, _, cx| {
+                        if phase == DispatchPhase::Bubble {
+                            moving.update(cx, |view, cx| view.mouse_move(event, cx));
+                        }
+                    });
+                    let ending = entity.clone();
+                    window.on_mouse_event(move |_: &MouseUpEvent, phase, _, cx| {
+                        if phase == DispatchPhase::Bubble {
+                            ending.update(cx, |view, cx| view.mouse_up(cx));
+                        }
+                    });
+                }
                 let changed = entity.update(cx, |view, _| {
                     let changed = view.bounds.is_none_or(|b| b.size != bounds.size);
                     view.bounds = Some(bounds);
@@ -978,21 +1033,14 @@ impl Render for ZoomableImage {
                 MouseButton::Left,
                 cx.listener(|view, event: &MouseDownEvent, _, cx| view.mouse_down(event, cx)),
             )
-            .on_mouse_move(
-                cx.listener(|view, event: &MouseMoveEvent, _, cx| view.mouse_move(event, cx)),
-            )
-            .on_mouse_up(
-                MouseButton::Left,
-                cx.listener(|view, event: &MouseUpEvent, _, cx| view.mouse_up(event, cx)),
-            )
             .on_scroll_wheel(cx.listener(Self::scroll))
             .child(probe)
             .child(image_element)
             .child(
                 div()
                     .absolute()
-                    .bottom(px(16.0))
-                    .right(px(16.0))
+                    .bottom(px(16.0 + self.insets[2]))
+                    .right(px(16.0 + self.insets[1]))
                     .child(dock),
             );
 

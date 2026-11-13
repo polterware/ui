@@ -274,6 +274,16 @@ pub fn rail_page_end_pad(presence: &RailPresence, page: &PageWidth) -> f32 {
     PAGE_PADDING + (RAIL_GAP - PAGE_PADDING) * progress
 }
 
+/// How far from the right edge the floating rail reaches while it sits beside the column,
+/// with its gap: what content filling the whole page keeps clear. 0 for the narrow drawer.
+pub fn rail_page_cover(presence: &RailPresence, page: &PageWidth) -> f32 {
+    if !presence.is_present() || page.is_narrow() {
+        return 0.0;
+    }
+    let width = (RAIL_WIDTH * presence.value()).clamp(0.0, RAIL_WIDTH);
+    width + RAIL_INSET + RAIL_INSET * presence.value().clamp(0.0, 1.0)
+}
+
 #[allow(clippy::too_many_arguments)]
 fn body_under(
     column: impl IntoElement,
@@ -363,8 +373,11 @@ fn body_under(
     } else {
         RAIL_INSET - PAGE_PADDING
     };
+    // It floats over whatever runs under the page, such as an image viewer that fills it:
+    // the pointer and the wheel stop here.
     let card = div()
         .relative()
+        .occlude()
         .flex_none()
         .w(px(width))
         .ml(px(gap_close))

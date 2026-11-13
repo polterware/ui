@@ -111,9 +111,9 @@ pub use patterns::{
     WIDE_MEASURE, card_grid, card_width, dashboard_columns, dashboard_grid, dashboard_grip,
     dashboard_measure, dialog, field, form_stack, grid_columns, headline, meters, pack_cards,
     packed_rows, rail_card, rail_group, rail_page_body, rail_page_body_flush, rail_page_body_under,
-    rail_page_end_pad, rail_page_header, rail_properties, rail_property, rail_section,
-    rail_toggle_label, readings, settings_group, settings_row, toolbar, toolbar_center,
-    trailing_toolbar,
+    rail_page_cover, rail_page_end_pad, rail_page_header, rail_properties, rail_property,
+    rail_section, rail_toggle_label, readings, settings_group, settings_row, toolbar,
+    toolbar_center, trailing_toolbar,
 };
 pub use patterns::{
     DOCUMENT_COLUMN, DocumentPage, RAIL_BUTTON_RADIUS, TagPicker, TagPickerEvent, document_footer,
