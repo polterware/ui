@@ -1,8 +1,10 @@
 //! `DetailPanel` (`detail-panel.css`, `side-panel.tsx`): the floating panel a list opens its
 //! active record in, beside the list rather than over a scrim. The frame is
 //! `surface-panel-float` (`--card-fill`, the quiet edge, the float drop and a 0 20px 56px
-//! `--color-shadow-float` shadow, `--radius-surface`), 400px wide, 8px in from the page's
-//! right, top (below a toolbar over the page), and bottom. It takes the presses and the
+//! `--color-shadow-float` shadow, `--radius-surface`), 360px wide, 8px in from the page's
+//! right, top (below a toolbar over the page), and bottom. Its optional 12px invisible handle
+//! on the left edge resizes it with the column-resize cursor and follows the pointer directly.
+//! It takes the presses and the
 //! wheel over its face, so the list under it keeps neither.
 //!
 //! Its header (`data-expandable="false"`) pads 12px 12px 8px 20px: the title in 14px/600 on a
@@ -13,7 +15,7 @@
 //! 20px 24px; its sections ([`detail_section`]) stand 24px apart, each a 24px icon tile and a
 //! 13px title 8px after it, then its content 10px under them. The rail's sections
 //! ([`DetailPanel::rail`], `DetailPanel.Rail`) follow the main ones 12px under them, the
-//! record's gap, since the 400px panel stacks the two. [`detail_properties`] lists label and value rows: a
+//! record's gap, since the panel stacks the two. [`detail_properties`] lists label and value rows: a
 //! 110px muted 12px label, 12px apart from a 12.5px primary value at the end, 28px tall and
 //! 8px apart. The footer, when there is one, pads 12px 20px 20px and holds its actions 6px
 //! apart.
@@ -22,9 +24,12 @@
 //! ([`DetailPanel::on_outside_click`]) after it has done what it does there, so the host can
 //! close the panel unless that click opened a record in it, as a row (an opener) does.
 
+use std::{cell::Cell, rc::Rc};
+
 use gpui::{
-    AnyElement, App, ElementId, FontWeight, IntoElement, MouseButton, Pixels, Point, SharedString,
-    Window, div, prelude::*, px, relative,
+    AnyElement, App, CursorStyle, DispatchPhase, ElementId, FontWeight, IntoElement, MouseButton,
+    MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString, Window, canvas, div,
+    prelude::*, px, relative,
 };
 
 use crate::Handler;
@@ -37,7 +42,11 @@ use crate::scroll::scroll_area;
 use crate::theme::Theme;
 
 /// `--detail-panel-width`.
-pub const DETAIL_PANEL_WIDTH: f32 = 400.0;
+pub const DETAIL_PANEL_WIDTH: f32 = 360.0;
+/// The narrowest width of a resizable detail panel.
+pub const DETAIL_PANEL_MIN_WIDTH: f32 = 320.0;
+/// The widest width of a resizable detail panel.
+pub const DETAIL_PANEL_MAX_WIDTH: f32 = 720.0;
 /// The frame's inset from the page's edges.
 pub const DETAIL_PANEL_INSET: f32 = 8.0;
 const SECTION_GAP: f32 = 24.0;
@@ -48,6 +57,66 @@ const HEADER_ICON: f32 = 16.0;
 /// The header's row without chips: Close details' 28px.
 const HEADER_ROW: f32 = 28.0;
 const PROPERTY_LABEL_WIDTH: f32 = 110.0;
+const DETAIL_HANDLE: f32 = 12.0;
+
+/// A cheap, cloneable width shared by a page and its [`DetailPanel`].
+///
+/// Create it once per page and pass a clone to [`DetailPanel::width`]. The page can reserve
+/// `get() + DETAIL_PANEL_INSET` beside its table. The effective value is limited to 320–720px
+/// and to the viewport width minus 360px.
+#[derive(Clone)]
+pub struct DetailPanelWidth(Rc<DetailPanelWidthState>);
+
+struct DetailPanelWidthState {
+    width: Cell<f32>,
+    drag: Cell<Option<DetailDrag>>,
+}
+
+impl Default for DetailPanelWidth {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl DetailPanelWidth {
+    pub fn new() -> Self {
+        Self(Rc::new(DetailPanelWidthState {
+            width: Cell::new(DETAIL_PANEL_WIDTH),
+            drag: Cell::new(None),
+        }))
+    }
+
+    /// The current panel width in pixels.
+    pub fn get(&self) -> f32 {
+        self.0.width.get()
+    }
+
+    fn set(&self, width: f32) {
+        self.0.width.set(width);
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct DetailDrag {
+    from_x: f32,
+    from_width: f32,
+}
+
+fn clamp_detail_width(width: f32, viewport_width: f32) -> f32 {
+    let max = (viewport_width - 360.0).clamp(0.0, DETAIL_PANEL_MAX_WIDTH);
+    width.clamp(
+        if max >= DETAIL_PANEL_MIN_WIDTH {
+            DETAIL_PANEL_MIN_WIDTH
+        } else {
+            0.0
+        },
+        max,
+    )
+}
+
+fn dragged_detail_width(drag: DetailDrag, x: f32, viewport_width: f32) -> f32 {
+    clamp_detail_width(drag.from_width - (x - drag.from_x), viewport_width)
+}
 
 #[derive(IntoElement)]
 pub struct DetailPanel {
@@ -61,6 +130,7 @@ pub struct DetailPanel {
     on_close: Option<Handler>,
     on_outside: Option<Handler>,
     top: f32,
+    width: Option<DetailPanelWidth>,
 }
 
 impl DetailPanel {
@@ -76,6 +146,7 @@ impl DetailPanel {
             on_close: None,
             on_outside: None,
             top: 0.0,
+            width: None,
         }
     }
 
@@ -129,11 +200,23 @@ impl DetailPanel {
         self.top = top;
         self
     }
+
+    /// Uses a page-shared width, which the host can also read to reserve space beside its table.
+    pub fn width(mut self, width: DetailPanelWidth) -> Self {
+        self.width = Some(width);
+        self
+    }
 }
 
 impl RenderOnce for DetailPanel {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
+        let viewport_width = f32::from(window.viewport_size().width);
+        let panel_width = self.width.as_ref().map_or(DETAIL_PANEL_WIDTH, |width| {
+            let clamped = clamp_detail_width(width.get(), viewport_width);
+            width.set(clamped);
+            clamped
+        });
         // Chips make the title `--inline`, on a 30px line; alone it keeps its 1.35 line.
         let inline = !self.aside.is_empty();
         let title = div()
@@ -280,13 +363,81 @@ impl RenderOnce for DetailPanel {
         let mut shadows = crate::material::float_drop(&theme);
         shadows.push(drop(20.0, 56.0, theme.color_shadow_float));
         frame = frame.shadow(shadows);
-        div()
+        let mut panel = div()
             .absolute()
             .top(px(DETAIL_PANEL_INSET + self.top))
             .right(px(DETAIL_PANEL_INSET))
             .bottom(px(DETAIL_PANEL_INSET))
-            .w(px(DETAIL_PANEL_WIDTH))
-            .child(frame)
+            .w(px(panel_width))
+            .child(frame);
+        if let Some(width) = self.width {
+            let handle_width = width.clone();
+            let handle_drag = width.clone();
+            let handle = div()
+                .id((self.id, "resize-handle"))
+                .absolute()
+                .top_0()
+                .bottom_0()
+                .left_0()
+                .ml(px(-DETAIL_HANDLE / 2.0))
+                .w(px(DETAIL_HANDLE))
+                .cursor(CursorStyle::ResizeLeftRight)
+                .on_mouse_down(
+                    MouseButton::Left,
+                    move |event: &MouseDownEvent, window, cx| {
+                        cx.stop_propagation();
+                        handle_drag.0.drag.set(Some(DetailDrag {
+                            from_x: f32::from(event.position.x),
+                            from_width: handle_width.get(),
+                        }));
+                        window.refresh();
+                    },
+                );
+            let move_width = width.clone();
+            let move_drag = width.clone();
+            let up_drag = width.clone();
+            let tracker = canvas(
+                |_, _, _| {},
+                move |_, _, window, _| {
+                    if move_drag.0.drag.get().is_none() {
+                        return;
+                    }
+                    window.on_mouse_event({
+                        let width = move_width.clone();
+                        let drag = move_drag.clone();
+                        move |event: &MouseMoveEvent, phase, window, _| {
+                            if phase != DispatchPhase::Bubble
+                                || event.pressed_button != Some(MouseButton::Left)
+                            {
+                                return;
+                            }
+                            let Some(drag) = drag.0.drag.get() else {
+                                return;
+                            };
+                            width.set(dragged_detail_width(
+                                drag,
+                                f32::from(event.position.x),
+                                f32::from(window.viewport_size().width),
+                            ));
+                            window.refresh();
+                        }
+                    });
+                    window.on_mouse_event({
+                        let drag = up_drag.clone();
+                        move |event: &MouseUpEvent, phase, window, _| {
+                            if phase == DispatchPhase::Bubble && event.button == MouseButton::Left {
+                                drag.0.drag.set(None);
+                                window.refresh();
+                            }
+                        }
+                    });
+                },
+            )
+            .absolute()
+            .size_0();
+            panel = panel.child(handle).child(tracker);
+        }
+        panel
     }
 }
 
@@ -460,8 +611,34 @@ mod tests {
 
     use gpui::{Modifiers, TestAppContext, prelude::*, size};
 
-    use super::DetailPanel;
+    use super::{
+        DETAIL_PANEL_MAX_WIDTH, DETAIL_PANEL_MIN_WIDTH, DETAIL_PANEL_WIDTH, DetailDrag,
+        DetailPanel, DetailPanelWidth, clamp_detail_width, dragged_detail_width,
+    };
     use crate::test_support::{draw, open};
+
+    #[test]
+    fn width_clamps_to_limits_and_available_viewport() {
+        assert_eq!(DetailPanelWidth::default().get(), DETAIL_PANEL_WIDTH);
+        assert_eq!(clamp_detail_width(100.0, 1200.0), DETAIL_PANEL_MIN_WIDTH);
+        assert_eq!(clamp_detail_width(900.0, 1200.0), DETAIL_PANEL_MAX_WIDTH);
+        assert_eq!(clamp_detail_width(700.0, 900.0), 540.0);
+        assert_eq!(clamp_detail_width(500.0, 600.0), 240.0);
+    }
+
+    #[test]
+    fn dragging_the_left_edge_tracks_pointer_and_clamps() {
+        let drag = DetailDrag {
+            from_x: 600.0,
+            from_width: 360.0,
+        };
+        assert_eq!(dragged_detail_width(drag, 560.0, 1200.0), 400.0);
+        assert_eq!(
+            dragged_detail_width(drag, 660.0, 1200.0),
+            DETAIL_PANEL_MIN_WIDTH
+        );
+        assert_eq!(dragged_detail_width(drag, 0.0, 900.0), 540.0);
+    }
 
     #[gpui::test]
     fn the_panel_floats_8px_in_from_the_right_and_closes(cx: &mut TestAppContext) {

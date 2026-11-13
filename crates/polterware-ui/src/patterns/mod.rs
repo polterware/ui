@@ -75,8 +75,9 @@ pub use dashboard_grid::{
     dashboard_measure, drop_side, free_cells, free_spot, pack_cards, packed_rows, place_with_push,
 };
 pub use detail_panel::{
-    DETAIL_PANEL_INSET, DETAIL_PANEL_WIDTH, DetailPanel, detail_numbered_list, detail_properties,
-    detail_property, detail_section, detail_section_with_aside, detail_text,
+    DETAIL_PANEL_INSET, DETAIL_PANEL_MAX_WIDTH, DETAIL_PANEL_MIN_WIDTH, DETAIL_PANEL_WIDTH,
+    DetailPanel, DetailPanelWidth, detail_numbered_list, detail_properties, detail_property,
+    detail_section, detail_section_with_aside, detail_text,
 };
 pub use dialog::{
     DIALOG_SCALE_FROM, Dialog, DialogPose, DialogPresence, DialogSize, Field, dialog, field,
