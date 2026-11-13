@@ -91,6 +91,85 @@ impl ImageData {
     }
 }
 
+impl ImageData {
+    /// The decoded frame, once loaded; asks for a redraw when it lands.
+    fn render_image(&self, window: &mut Window, cx: &mut App) -> Option<Arc<RenderImage>> {
+        match self {
+            ImageData::Path(path) => window
+                .use_asset::<gpui::ImgResourceLoader>(
+                    &gpui::Resource::Path(path.clone().into()),
+                    cx,
+                )
+                .and_then(Result::ok),
+            ImageData::Bytes { format, bytes } => {
+                Arc::new(Image::from_bytes(*format, (**bytes).clone())).use_render_image(window, cx)
+            }
+            ImageData::Render(image) => Some(image.clone()),
+        }
+    }
+}
+
+/// Paints `data` at `image`, clipped to `clip` with corners of `radius`. GPUI clips only to
+/// rectangles, so the rounded corners are traced by thin bands, each its own rectangle.
+fn paint_clipped(
+    window: &mut Window,
+    data: Arc<RenderImage>,
+    image: Bounds<Pixels>,
+    clip: Bounds<Pixels>,
+    radius: f32,
+) {
+    let width = f32::from(clip.size.width);
+    let height = f32::from(clip.size.height);
+    let radius = radius.clamp(0.0, width.min(height) / 2.0);
+    let paint = |window: &mut Window, rect: Bounds<Pixels>| {
+        window.with_content_mask(Some(gpui::ContentMask { bounds: rect }), |window| {
+            let _ = window.paint_image(image, gpui::Corners::default(), data.clone(), 0, false);
+        });
+    };
+    if radius <= 0.0 {
+        paint(window, clip);
+        return;
+    }
+    let (x, y) = (f32::from(clip.origin.x), f32::from(clip.origin.y));
+    paint(
+        window,
+        Bounds::new(
+            point(px(x), px(y + radius)),
+            gpui::size(px(width), px(height - 2.0 * radius)),
+        ),
+    );
+    const BAND: f32 = 0.5;
+    let mut offset = 0.0;
+    while offset < radius {
+        let band = BAND.min(radius - offset);
+        let dy = radius - (offset + band / 2.0);
+        let dx = radius - (radius * radius - dy * dy).max(0.0).sqrt();
+        let w = (width - 2.0 * dx).max(0.0);
+        for top in [y + offset, y + height - offset - band] {
+            paint(
+                window,
+                Bounds::new(point(px(x + dx), px(top)), gpui::size(px(w), px(band))),
+            );
+        }
+        offset += band;
+    }
+}
+
+/// A picture fitted into its box by `fit` and clipped to the box with corners of `radius`.
+fn rounded_picture(data: ImageData, fit: ObjectFit, radius: f32) -> impl IntoElement {
+    canvas(
+        |_, _, _| (),
+        move |bounds, _, window, cx| {
+            let Some(frame) = data.render_image(window, cx) else {
+                return;
+            };
+            let image = fit.get_bounds(bounds, frame.size(0));
+            paint_clipped(window, frame, image, bounds, radius);
+        },
+    )
+    .size_full()
+}
+
 /// The size a picture of `natural` takes inside `max`, keeping its shape and never growing
 /// past its own pixels.
 pub fn fit_size(natural: (f32, f32), max: (f32, f32)) -> (f32, f32) {
@@ -207,7 +286,6 @@ pub struct ImageCard {
     meta: Option<AnyElement>,
     on_click: Option<Handler>,
     hover_progress: f32,
-    backdrop: Option<gpui::Rgba>,
 }
 
 impl ImageCard {
@@ -220,14 +298,7 @@ impl ImageCard {
             meta: None,
             on_click: None,
             hover_progress: 0.0,
-            backdrop: None,
         }
-    }
-
-    /// The color the card sits on, which its rounded corners show: `color_surface` unless set.
-    pub fn backdrop(mut self, color: gpui::Rgba) -> Self {
-        self.backdrop = Some(color);
-        self
     }
 
     /// The thumbnail's height in pixels; the picture fills it cropped to cover.
@@ -288,22 +359,12 @@ impl RenderOnce for ImageCard {
 
         // The picture fills the card 1px inside its border, its own corners rounded to the
         // inner radius, so it never runs over the edge.
-        // GPUI paints a covering image past its box and clips only to rectangles, so the
-        // picture is clipped square and each corner outside the inner radius is masked
-        // with the page's color.
-        let picture = div().absolute().inset(px(1.0)).overflow_hidden().child(
-            img(self.image.source())
-                .size_full()
-                .object_fit(ObjectFit::Cover),
-        );
-        let backdrop = self.backdrop.unwrap_or(theme.color_surface);
-        let masks = [
-            Corner::TopLeft,
-            Corner::TopRight,
-            Corner::BottomLeft,
-            Corner::BottomRight,
-        ]
-        .map(|corner| corner_mask(corner, inner_radius, backdrop));
+        // The picture covers the card 1px inside its border, clipped to the inner radius.
+        let picture = div().absolute().inset(px(1.0)).child(rounded_picture(
+            self.image.clone(),
+            ObjectFit::Cover,
+            inner_radius,
+        ));
 
         // The text sits on the picture over a fade into dark, not on a solid footer; it is
         // light in either theme, as the fade is.
@@ -346,51 +407,7 @@ impl RenderOnce for ImageCard {
                 style.border_color(theme.color_border_strong)
             });
 
-        card.child(picture)
-            .children(masks)
-            .child(footer)
-            .child(border)
-    }
-}
-
-#[derive(Clone, Copy)]
-enum Corner {
-    TopLeft,
-    TopRight,
-    BottomLeft,
-    BottomRight,
-}
-
-/// Covers what lies outside a `radius` arc in one corner of a box inset 1px, with `color`:
-/// a ring whose inner edge is that arc, clipped to the corner's square.
-fn corner_mask(corner: Corner, radius: f32, color: gpui::Rgba) -> gpui::Div {
-    // The ring's outer arc must reach the square's far corner, radius·√2 from its center.
-    let width = (radius * (std::f32::consts::SQRT_2 - 1.0)).ceil() + 1.0;
-    let span = 2.0 * (radius + width);
-    let ring = div()
-        .absolute()
-        .w(px(span))
-        .h(px(span))
-        .rounded(px(radius + width))
-        .border(px(width))
-        .border_color(color);
-    let ring = match corner {
-        Corner::TopLeft => ring.top(px(-width)).left(px(-width)),
-        Corner::TopRight => ring.top(px(-width)).right(px(-width)),
-        Corner::BottomLeft => ring.bottom(px(-width)).left(px(-width)),
-        Corner::BottomRight => ring.bottom(px(-width)).right(px(-width)),
-    };
-    let square = div()
-        .absolute()
-        .w(px(radius))
-        .h(px(radius))
-        .overflow_hidden()
-        .child(ring);
-    match corner {
-        Corner::TopLeft => square.top(px(1.0)).left(px(1.0)),
-        Corner::TopRight => square.top(px(1.0)).right(px(1.0)),
-        Corner::BottomLeft => square.bottom(px(1.0)).left(px(1.0)),
-        Corner::BottomRight => square.bottom(px(1.0)).right(px(1.0)),
+        card.child(picture).child(footer).child(border)
     }
 }
 
@@ -714,6 +731,8 @@ pub struct ZoomableImage {
     /// Room the page covers over the view (header, floating rail), as top, right, bottom,
     /// left: the fit centers the image in what is left, yet the image may pan under it.
     insets: [f32; 4],
+    /// The radius of the corners the picture is clipped to, as the view's own frame rounds.
+    corner_radius: f32,
     /// The person zoomed or panned: a resize keeps their view instead of fitting again.
     moved: bool,
     viewport: Option<ImageViewport>,
@@ -738,6 +757,7 @@ impl ZoomableImage {
             natural: None,
             fit_padding: 24.0,
             insets: [0.0; 4],
+            corner_radius: 0.0,
             moved: false,
             viewport: None,
             bounds: None,
@@ -753,6 +773,12 @@ impl ZoomableImage {
         if width > 0.0 && height > 0.0 {
             self.natural = Some((width, height));
         }
+        self
+    }
+
+    /// Clips the picture to corners of `radius`, matching a rounded frame around the view.
+    pub fn corner_radius(mut self, radius: f32) -> Self {
+        self.corner_radius = radius.max(0.0);
         self
     }
 
@@ -1054,17 +1080,23 @@ impl Render for ZoomableImage {
         let img_w = (nat_w * vp.zoom).max(1.0);
         let img_h = (nat_h * vp.zoom).max(1.0);
 
-        let image_element = div()
-            .absolute()
-            .left(px(vp.x))
-            .top(px(vp.y))
-            .w(px(img_w))
-            .h(px(img_h))
-            .child(
-                img(self.image.source())
-                    .size_full()
-                    .object_fit(ObjectFit::Fill),
-            );
+        let data = self.image.clone();
+        let radius = self.corner_radius;
+        let image_element = canvas(
+            |_, _, _| (),
+            move |bounds, _, window, cx| {
+                let Some(frame) = data.render_image(window, cx) else {
+                    return;
+                };
+                let image = Bounds::new(
+                    point(bounds.origin.x + px(vp.x), bounds.origin.y + px(vp.y)),
+                    gpui::size(px(img_w), px(img_h)),
+                );
+                paint_clipped(window, frame, image, bounds, radius);
+            },
+        )
+        .absolute()
+        .size_full();
 
         let pressed = self.press.is_some();
         let probe = canvas(
