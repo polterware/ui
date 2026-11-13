@@ -16,10 +16,11 @@
 //! `offsetWidth` rounds and capped at 320; the spare room shares out in proportion among the
 //! resizable columns with no explicit width (the flex column, the last resizable one, weighs
 //! double), each held to its minimum and maximum; and the flex column takes what the others leave,
-//! at least 96, on every frame. When the columns would not fit, the [`Column::shrinks`] ones,
-//! whose text fades, give up the difference in proportion to their room above 96 (or their
-//! minimum), also on every frame, so the table follows the window; it runs wider than the
-//! scroll and scrolls sideways only once they are all that narrow.
+//! at least 96, on every frame. When the scroll narrows, grown columns first return to their
+//! natural widths; only then do the [`Column::shrinks`] ones, whose text fades, give up the
+//! difference in proportion to their room above 96 (or their minimum), so the table follows the
+//! window; it runs wider than the scroll and scrolls sideways only once they are all that narrow.
+//! Hand-resized columns keep their width.
 //! Both ways overflowing, the classic scrollbars take 12px gutters at the right and the bottom. The
 //! header is the list's first item, so it scrolls away with the rows.
 //!
@@ -865,6 +866,34 @@ pub fn fit_widths(
     widths
 }
 
+/// Re-distribute from natural widths as the scroll changes, while preserving hand-resized widths.
+fn refit_widths(
+    natural: &[f32],
+    previous: &[f32],
+    columns: &[Column],
+    pinned: &[bool],
+    growing: bool,
+    available: f32,
+    gutter: f32,
+) -> Vec<f32> {
+    let mut widths = if growing {
+        column_widths(natural, columns, available, gutter)
+    } else {
+        natural.to_vec()
+    };
+    if !growing {
+        fill_flex(&mut widths, columns, available, gutter);
+    }
+    for (index, width) in widths.iter_mut().enumerate() {
+        if pinned.get(index).copied().unwrap_or(false)
+            && let Some(previous) = previous.get(index)
+        {
+            *width = *previous;
+        }
+    }
+    fit_widths(&widths, columns, pinned, available, gutter)
+}
+
 /// The width of one line of `text`.
 pub fn text_width(text: &str, font: Font, size: f32, window: &Window) -> f32 {
     if text.is_empty() {
@@ -1143,59 +1172,93 @@ impl RenderOnce for DataTable {
         let available = outer_width - if tall { reserved_gutter() } else { 0.0 };
         let frozen = {
             let state = state.read(cx);
-            let by_hand = state.pinned.iter().any(|pinned| *pinned);
             state
                 .frozen
                 .clone()
                 .filter(|widths| widths.len() == self.columns.len())
-                .filter(|_| {
-                    by_hand || self.freeze_once || (state.frozen_at - available).abs() <= 0.5
-                })
+                .filter(|_| self.freeze_once || (state.frozen_at - available).abs() <= 0.5)
         };
         let widths = match frozen {
             Some(widths) => widths,
             None => {
-                // Measured at content width over the rows the virtualizer renders, or all.
-                let shown = if self.measure_all {
-                    self.rows
+                let saved = {
+                    let state = state.read(cx);
+                    state
+                        .frozen
+                        .as_ref()
+                        .filter(|widths| widths.len() == self.columns.len())
+                        .and_then(|previous| {
+                            (state.natural.len() == self.columns.len()).then(|| {
+                                (
+                                    previous.clone(),
+                                    state.natural.clone(),
+                                    state.pinned.clone(),
+                                    state.frozen_at,
+                                )
+                            })
+                        })
+                };
+                if let Some((previous, natural, pinned, frozen_at)) = saved {
+                    let widths = refit_widths(
+                        &natural,
+                        &previous,
+                        &self.columns,
+                        &pinned,
+                        available > frozen_at + 0.5,
+                        available - selection_width,
+                        self.gutter,
+                    );
+                    if outer_width > 0.0 {
+                        state.update(cx, |state, _| {
+                            state.frozen = Some(widths.clone());
+                            state.frozen_at = available;
+                        });
+                    }
+                    widths
                 } else {
-                    ((outer_height / pitch).ceil() as usize + OVERSCAN).min(self.rows)
-                };
-                let content: Vec<f32> = match &self.measure {
-                    Some(measure) => measure(0..shown.max(1), window, cx),
-                    None => self.columns.iter().map(|column| column.content).collect(),
-                };
-                let label_font = sans(&theme, FontWeight::MEDIUM);
-                let natural: Vec<f32> = self
-                    .columns
-                    .iter()
-                    .enumerate()
-                    .map(|(index, column)| {
-                        let sorted = self.sort.is_some_and(|(active, _)| active == index);
-                        let header =
-                            header_natural(column, sorted, &label_font, label_size, window);
-                        let cell = content.get(index).copied().unwrap_or(0.0) + 2.0 * CELL_PAD_X;
-                        header
-                            .max(cell)
-                            .max(column.width.unwrap_or(0.0))
-                            .round()
-                            .min(MAX_NATURAL_WIDTH)
-                    })
-                    .collect();
-                let widths = column_widths(
-                    &natural,
-                    &self.columns,
-                    available - selection_width,
-                    self.gutter,
-                );
-                if outer_width > 0.0 {
-                    state.update(cx, |state, _| {
-                        state.frozen = Some(widths.clone());
-                        state.frozen_at = available;
-                        state.natural = natural;
-                    });
+                    // Measured at content width over the rows the virtualizer renders, or all.
+                    let shown = if self.measure_all {
+                        self.rows
+                    } else {
+                        ((outer_height / pitch).ceil() as usize + OVERSCAN).min(self.rows)
+                    };
+                    let content: Vec<f32> = match &self.measure {
+                        Some(measure) => measure(0..shown.max(1), window, cx),
+                        None => self.columns.iter().map(|column| column.content).collect(),
+                    };
+                    let label_font = sans(&theme, FontWeight::MEDIUM);
+                    let natural: Vec<f32> = self
+                        .columns
+                        .iter()
+                        .enumerate()
+                        .map(|(index, column)| {
+                            let sorted = self.sort.is_some_and(|(active, _)| active == index);
+                            let header =
+                                header_natural(column, sorted, &label_font, label_size, window);
+                            let cell =
+                                content.get(index).copied().unwrap_or(0.0) + 2.0 * CELL_PAD_X;
+                            header
+                                .max(cell)
+                                .max(column.width.unwrap_or(0.0))
+                                .round()
+                                .min(MAX_NATURAL_WIDTH)
+                        })
+                        .collect();
+                    let widths = column_widths(
+                        &natural,
+                        &self.columns,
+                        available - selection_width,
+                        self.gutter,
+                    );
+                    if outer_width > 0.0 {
+                        state.update(cx, |state, _| {
+                            state.frozen = Some(widths.clone());
+                            state.frozen_at = available;
+                            state.natural = natural;
+                        });
+                    }
+                    widths
                 }
-                widths
             }
         };
         // Frozen once, every column keeps its width as a hand-sized one does.
@@ -2230,7 +2293,7 @@ mod tests {
     use super::{
         CELL_PAD_X, Column, DataTable, GUTTER, HEADER_PITCH, Item, SELECTION_WIDTH,
         SelectionChange, TableGroup, chrome_lead, column_widths, fit_widths, group_lifts,
-        layout_items, resized_width, reveal, stack_items, stacked_range,
+        layout_items, refit_widths, resized_width, reveal, stack_items, stacked_range,
     };
     use crate::test_support::{draw, open};
 
@@ -2269,6 +2332,27 @@ mod tests {
         // Room to spare: nothing shrinks.
         let roomy = fit_widths(&frozen, &columns, &[], 1200.0, GUTTER);
         assert_eq!(&roomy[..3], &frozen[..3]);
+    }
+
+    #[test]
+    fn narrowing_returns_growth_before_shrinking_the_primary_column() {
+        let columns = vec![
+            Column::new("Selection").width(44.0).resizable(false),
+            Column::new("Item").shrinks(),
+            Column::new("Type"),
+            Column::new("Where"),
+            Column::new("Status").width(112.0),
+        ];
+        let natural = [44.0, 320.0, 110.0, 200.0, 112.0];
+        let wide = column_widths(&natural, &columns, 1500.0, 12.0);
+        assert!(wide[3] > natural[3]);
+
+        let narrow = refit_widths(&natural, &wide, &columns, &[], false, 1130.0, 12.0);
+        assert!(narrow[1] >= 300.0, "{narrow:?}");
+        assert!(narrow[3] <= natural[3], "{narrow:?}");
+
+        let wider_again = refit_widths(&natural, &narrow, &columns, &[], true, 1500.0, 12.0);
+        assert!(wider_again[3] > natural[3]);
     }
 
     #[test]
