@@ -758,6 +758,8 @@ pub struct ZoomableImage {
     insets: [f32; 4],
     /// The radius of the corners the picture is clipped to, as the view's own frame rounds.
     corner_radius: f32,
+    /// The picture's entrance once it has loaded: 0 hidden behind the loading bone, 1 shown.
+    reveal: crate::motion::Tween,
     /// Where the pointer is over the view, in local pixels, while it is: a pinch zooms there.
     hover: Option<Point<Pixels>>,
     /// The person zoomed or panned: a resize keeps their view instead of fitting again.
@@ -788,6 +790,7 @@ impl ZoomableImage {
             fit_padding: 24.0,
             insets: [0.0; 4],
             corner_radius: 0.0,
+            reveal: crate::motion::Tween::new(0.0),
             hover: None,
             moved: false,
             viewport: None,
@@ -1115,6 +1118,18 @@ impl Render for ZoomableImage {
         // holds its place at the size it will take.
         let fitted = self.viewport.is_some() && !self.fit_pending;
         let loaded = fitted && self.image.render_image(window, cx).is_some();
+        // Loaded, the picture fades in over the bone as the bone fades out.
+        if loaded && self.reveal.target() < 1.0 {
+            self.reveal.animate_to(
+                1.0,
+                crate::motion::SpringTier::Moderate.duration(),
+                crate::motion::SpringTier::Moderate.curve(),
+            );
+        }
+        let reveal = if loaded { self.reveal.value() } else { 0.0 };
+        if self.reveal.is_animating() {
+            window.request_animation_frame();
+        }
 
         let cursor = if self.dragging {
             CursorStyle::ClosedHand
@@ -1177,7 +1192,7 @@ impl Render for ZoomableImage {
 
         let data = self.image.clone();
         let radius = self.corner_radius;
-        let placeholder = (fitted && !loaded).then(|| {
+        let placeholder = (fitted && reveal < 1.0).then(|| {
             let tone = crate::skeleton::skeleton_tone(window, cx);
             div()
                 .absolute()
@@ -1187,6 +1202,7 @@ impl Render for ZoomableImage {
                 .h(px(img_h))
                 .rounded(px(8.0))
                 .bg(tone)
+                .opacity(1.0 - reveal)
         });
         let image_element = canvas(
             |_, _, _| (),
@@ -1274,7 +1290,13 @@ impl Render for ZoomableImage {
             }))
             .child(probe)
             .children(placeholder)
-            .child(image_element)
+            .child(
+                div()
+                    .absolute()
+                    .size_full()
+                    .opacity(reveal)
+                    .child(image_element),
+            )
             .when(fitted, |root| {
                 root.child(
                     div()
