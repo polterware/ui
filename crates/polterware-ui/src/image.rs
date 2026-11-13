@@ -950,14 +950,19 @@ impl Render for ZoomableImage {
 
         let probe = canvas(
             |_, _, _| (),
-            move |bounds, _, _, cx| {
-                entity.update(cx, |view, _| {
+            move |bounds, _, window, cx| {
+                let changed = entity.update(cx, |view, _| {
                     let changed = view.bounds.is_none_or(|b| b.size != bounds.size);
                     view.bounds = Some(bounds);
                     if changed {
                         view.ensure_viewport(bounds);
                     }
+                    changed
                 });
+                // The fit is known only once the view is measured: draw again with it.
+                if changed {
+                    window.refresh();
+                }
             },
         )
         .absolute()
