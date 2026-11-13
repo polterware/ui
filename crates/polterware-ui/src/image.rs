@@ -774,6 +774,9 @@ pub struct ZoomableImage {
 struct ImagePress {
     origin: Point<Pixels>,
     viewport: ImageViewport,
+    /// The press's click count: the second of a quick pair toggles the zoom on release,
+    /// unless it turned into a drag.
+    clicks: usize,
 }
 
 impl ZoomableImage {
@@ -973,14 +976,11 @@ impl ZoomableImage {
         let Some(local) = self.local_point(event.position) else {
             return;
         };
-        if event.click_count == 2 {
-            self.toggle_fit_100(Some(local), cx);
-            return;
-        }
         let vp = self.viewport.unwrap_or_default();
         self.press = Some(ImagePress {
             origin: local,
             viewport: vp,
+            clicks: event.click_count,
         });
         self.dragging = false;
         // The next paint listens to the whole window, so the drag follows the pointer out.
@@ -991,6 +991,12 @@ impl ZoomableImage {
         let Some(press) = self.press else {
             return;
         };
+        // A release this view never heard ends the press here: the picture never follows
+        // a pointer with no button held.
+        if event.pressed_button != Some(MouseButton::Left) {
+            self.end_press(None, cx);
+            return;
+        }
         let Some(local) = self.local_point(event.position) else {
             return;
         };
@@ -1006,11 +1012,22 @@ impl ZoomableImage {
         }
     }
 
-    fn mouse_up(&mut self, cx: &mut Context<Self>) {
-        if self.press.take().is_some() || self.dragging {
-            self.dragging = false;
-            cx.notify();
+    fn mouse_up(&mut self, event: &MouseUpEvent, cx: &mut Context<Self>) {
+        let at = self.local_point(event.position);
+        self.end_press(at, cx);
+    }
+
+    /// Ends a press; a double click that never moved toggles the zoom at `at`.
+    fn end_press(&mut self, at: Option<Point<Pixels>>, cx: &mut Context<Self>) {
+        let press = self.press.take();
+        let dragged = std::mem::take(&mut self.dragging);
+        if let (Some(press), Some(at)) = (press, at)
+            && press.clicks == 2
+            && !dragged
+        {
+            self.toggle_fit_100(Some(at), cx);
         }
+        cx.notify();
     }
 
     /// One trackpad pinch step: zooms by `step` (0.1 is 10% larger) around the pointer.
@@ -1093,14 +1110,11 @@ impl Render for ZoomableImage {
         let (nat_w, nat_h) = self.resolved_natural();
         let entity: Entity<Self> = cx.entity();
         let vp = self.viewport.unwrap_or_default();
-        let fit_zoom = self.calculate_fit_zoom();
 
         let cursor = if self.dragging {
             CursorStyle::ClosedHand
-        } else if vp.zoom > fit_zoom + 0.02 {
-            CursorStyle::OpenHand
         } else {
-            CursorStyle::Arrow
+            CursorStyle::OpenHand
         };
 
         let entity_zoom_out = entity.clone();
@@ -1188,9 +1202,9 @@ impl Render for ZoomableImage {
                         }
                     });
                     let ending = entity.clone();
-                    window.on_mouse_event(move |_: &MouseUpEvent, phase, _, cx| {
+                    window.on_mouse_event(move |event: &MouseUpEvent, phase, _, cx| {
                         if phase == DispatchPhase::Bubble {
-                            ending.update(cx, |view, cx| view.mouse_up(cx));
+                            ending.update(cx, |view, cx| view.mouse_up(event, cx));
                         }
                     });
                 }
@@ -1222,6 +1236,15 @@ impl Render for ZoomableImage {
                 cx.listener(|view, event: &MouseDownEvent, _, cx| view.mouse_down(event, cx)),
             )
             .on_scroll_wheel(cx.listener(Self::scroll))
+            // A release before the next frame registers the window-wide listener.
+            .on_mouse_up(
+                MouseButton::Left,
+                cx.listener(|view, event: &MouseUpEvent, _, cx| {
+                    if view.press.is_some() {
+                        view.mouse_up(event, cx);
+                    }
+                }),
+            )
             .on_mouse_move(
                 cx.listener(|view, event: &MouseMoveEvent, _, cx| view.hover_moved(event, cx)),
             )
@@ -1319,6 +1342,100 @@ mod tests {
         assert!(
             (pinched.zoom - after.zoom * 1.5).abs() < 1e-4,
             "a pinch zooms by its step"
+        );
+    }
+
+    /// A viewer filling a 600×400 window, fitted and drawn.
+    fn viewer_window(cx: &mut TestAppContext) -> (gpui::VisualTestContext, Entity<ZoomableImage>) {
+        let viewer: Rc<std::cell::RefCell<Option<Entity<ZoomableImage>>>> = Rc::default();
+        let slot = viewer.clone();
+        let mut cx = open(cx, size(600.0, 400.0), move |_, cx| {
+            let entity = slot
+                .borrow_mut()
+                .get_or_insert_with(|| {
+                    cx.new(|_| {
+                        ZoomableImage::new("viewer", ImageData::from_path("/nonexistent.png"))
+                            .natural(1000.0, 500.0)
+                    })
+                })
+                .clone();
+            div().size_full().child(entity).into_any_element()
+        });
+        draw(&mut cx);
+        let entity = viewer.borrow().clone().unwrap();
+        (cx, entity)
+    }
+
+    fn press(cx: &mut gpui::VisualTestContext, x: f32, y: f32, clicks: usize) {
+        cx.simulate_event(gpui::MouseDownEvent {
+            position: point(px(x), px(y)),
+            button: gpui::MouseButton::Left,
+            modifiers: gpui::Modifiers::default(),
+            click_count: clicks,
+            first_mouse: false,
+        });
+    }
+
+    fn release(cx: &mut gpui::VisualTestContext, x: f32, y: f32, clicks: usize) {
+        cx.simulate_event(gpui::MouseUpEvent {
+            position: point(px(x), px(y)),
+            button: gpui::MouseButton::Left,
+            modifiers: gpui::Modifiers::default(),
+            click_count: clicks,
+        });
+    }
+
+    fn hover(cx: &mut gpui::VisualTestContext, x: f32, y: f32, held: bool) {
+        cx.simulate_event(gpui::MouseMoveEvent {
+            position: point(px(x), px(y)),
+            pressed_button: held.then_some(gpui::MouseButton::Left),
+            modifiers: gpui::Modifiers::default(),
+        });
+    }
+
+    #[gpui::test]
+    fn a_quick_click_never_leaves_the_picture_stuck_to_the_pointer(cx: &mut TestAppContext) {
+        let (mut cx, entity) = viewer_window(cx);
+        let before = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        // Down and up before any frame is drawn between them.
+        press(&mut cx, 300.0, 200.0, 1);
+        release(&mut cx, 300.0, 200.0, 1);
+        draw(&mut cx);
+        for (x, y) in [(340.0, 230.0), (420.0, 260.0)] {
+            hover(&mut cx, x, y, false);
+            draw(&mut cx);
+        }
+        let after = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        assert_eq!(after, before, "moving with no button held must not pan");
+    }
+
+    #[gpui::test]
+    fn grabbing_again_right_away_pans_instead_of_zooming(cx: &mut TestAppContext) {
+        let (mut cx, entity) = viewer_window(cx);
+        let before = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        // The second press of a quick pair arrives as a double click.
+        press(&mut cx, 300.0, 200.0, 2);
+        draw(&mut cx);
+        hover(&mut cx, 340.0, 220.0, true);
+        draw(&mut cx);
+        release(&mut cx, 340.0, 220.0, 2);
+        draw(&mut cx);
+        let after = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        assert_eq!(after.zoom, before.zoom, "a drag must not toggle the zoom");
+        assert_eq!((after.x - before.x, after.y - before.y), (40.0, 20.0));
+    }
+
+    #[gpui::test]
+    fn a_double_click_in_place_still_toggles_the_zoom(cx: &mut TestAppContext) {
+        let (mut cx, entity) = viewer_window(cx);
+        let before = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        press(&mut cx, 300.0, 200.0, 2);
+        release(&mut cx, 300.0, 200.0, 2);
+        draw(&mut cx);
+        let after = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        assert!(
+            (after.zoom - before.zoom).abs() > 0.01,
+            "a double click zooms"
         );
     }
 
