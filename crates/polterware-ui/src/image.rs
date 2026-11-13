@@ -4,8 +4,8 @@
 //! [`ImageThumb`] is a square thumbnail on a raised face with a quiet edge, the picture
 //! cropped to fill it (`object-fit: cover`), an optional caption under it in 11px muted ink,
 //! and a click that asks the host to open it. [`ImageCard`] is a full gallery tile: the picture
-//! thumbnail sitting 1px inside the card's border and clipped to its inner radius, over a
-//! calm footer with generous padding holding a title and meta line. [`ImageViewer`] is the modal
+//! picture filling the card 1px inside its border, rounded to its inner radius, with a title
+//! and meta line over a fade into dark along its bottom. [`ImageViewer`] is the modal
 //! that shows it whole: a floating card over a [`modal_layer`](super::modal_layer), the file's
 //! name as its title, the picture fitted inside 86% of the window's width and 72% of its height
 //! at the size the host says it has, a caption under it, and the host's actions (Reveal, Copy)
@@ -188,9 +188,9 @@ impl RenderOnce for ImageThumb {
     }
 }
 
-/// An image card: a picture thumbnail filling the top of a card inside its border,
-/// clipped to the card's inner radius (`radius_card - 1.0`), over a calm footer holding
-/// a title line and optional meta line.
+/// An image card: the picture filling the whole card 1px inside its border, rounded to the
+/// card's inner radius (`radius_card - 1.0`), with its title and meta line over a fade into
+/// dark along the bottom. `thumb_height` is the card's height.
 ///
 /// The look is the design system's `Card` (`.card-panel`, [`card`](crate::card)) with a picture
 /// thumbnail cropped to fill it (`object-fit: cover`) and generous padding (`12px-14px`) in its
@@ -265,52 +265,70 @@ impl RenderOnce for ImageCard {
 
         let mut card = div()
             .id(self.id.clone())
+            .group("image-card")
             .relative()
-            .flex()
-            .flex_col()
+            .w_full()
+            .h(px(self.thumb_height))
             .rounded(px(theme.radius_card))
-            .border_1()
-            .border_color(border_color)
             .bg(theme.color_surface_subtle);
 
         if let Some(on_click) = self.on_click {
             card = card
                 .cursor_pointer()
-                .hover(|style| style.border_color(theme.color_border_strong))
                 .on_click(move |_, window, cx| on_click(window, cx));
         }
 
-        let thumb = div()
-            .w_full()
-            .h(px(self.thumb_height))
-            .flex_none()
-            .bg(theme.color_surface)
-            .rounded_tl(px(inner_radius))
-            .rounded_tr(px(inner_radius))
-            .overflow_hidden()
-            .child(
-                img(self.image.source())
-                    .size_full()
-                    .object_fit(ObjectFit::Cover),
-            );
+        // The picture fills the card 1px inside its border, its own corners rounded to the
+        // inner radius, so it never runs over the edge.
+        let picture = div().absolute().inset(px(1.0)).child(
+            img(self.image.source())
+                .size_full()
+                .rounded(px(inner_radius))
+                .object_fit(ObjectFit::Cover),
+        );
 
+        // The text sits on the picture over a fade into dark, not on a solid footer; it is
+        // light in either theme, as the fade is.
+        let ink = gpui::rgba(0xffffffff);
         let title_line = div()
             .text_size(px(theme.font_size_sm))
             .font_weight(gpui::FontWeight::MEDIUM)
-            .text_color(theme.color_text_primary)
+            .text_color(ink)
             .child(ellipsis(self.title));
-
         let footer = div()
+            .absolute()
+            .left(px(1.0))
+            .right(px(1.0))
+            .bottom(px(1.0))
+            .rounded_bl(px(inner_radius))
+            .rounded_br(px(inner_radius))
+            .bg(gpui::linear_gradient(
+                180.0,
+                gpui::linear_color_stop(gpui::rgba(0x00000000), 0.0),
+                gpui::linear_color_stop(gpui::rgba(0x000000c0), 1.0),
+            ))
             .flex()
-            .flex_none()
             .flex_col()
             .gap(px(4.0))
             .px(px(13.0))
-            .py(px(12.0))
+            .pt(px(40.0))
+            .pb(px(12.0))
+            .text_color(gpui::rgba(0xffffffb8))
             .child(title_line)
             .children(self.meta);
 
-        card.child(thumb).child(footer)
+        // The border draws last, over the picture.
+        let border = div()
+            .absolute()
+            .inset_0()
+            .rounded(px(theme.radius_card))
+            .border_1()
+            .border_color(border_color)
+            .group_hover("image-card", |style| {
+                style.border_color(theme.color_border_strong)
+            });
+
+        card.child(picture).child(footer).child(border)
     }
 }
 
