@@ -373,12 +373,10 @@ impl RenderOnce for ImageCard {
             .left_0()
             .right_0()
             .bottom_0()
-            .child(scrim(theme.radius_card))
             .flex()
             .flex_col()
             .gap(px(4.0))
             .px(px(13.0))
-            .pt(px(64.0))
             .pb(px(12.0))
             .text_color(gpui::rgba(0xffffffb8))
             .child(title_line)
@@ -393,25 +391,39 @@ impl RenderOnce for ImageCard {
             .border_color(border_color)
             .group_hover("image-card", move |style| style.border_color(lit));
 
-        card.child(picture).child(footer).child(border)
+        card.child(picture)
+            .child(scrim(theme.radius_card))
+            .child(footer)
+            .child(border)
     }
 }
 
-/// A fade from clear into near black down a card's foot. GPUI gradients take two stops, so
-/// it is several bands, each a two-stop gradient, following an ease-in curve: no seam where
-/// the fade starts and the darkest part under the text.
+/// A fade from clear into near black down a card's foot, `SCRIM_HEIGHT` tall. GPUI gradients
+/// take two stops, so it is several bands, each a two-stop gradient, following an ease-in
+/// curve: no seam where it starts and the darkest part under the text. The last band carries
+/// the card's bottom corners and is twice their radius tall, as GPUI shrinks a radius to half
+/// a box's height and a short band would round less than the card and show past its edge.
 fn scrim(radius: f32) -> gpui::Div {
     const BANDS: usize = 8;
     const DARKEST: f32 = 0.78;
-    let alpha = |t: f32| DARKEST * t.powf(1.8);
-    let mut column = div().absolute().inset_0().flex().flex_col();
+    let alpha = |depth: f32| DARKEST * (depth / SCRIM_HEIGHT).clamp(0.0, 1.0).powf(1.8);
+    let last = (2.0 * radius).min(SCRIM_HEIGHT);
+    let step = (SCRIM_HEIGHT - last) / (BANDS - 1) as f32;
+    let mut column = div()
+        .absolute()
+        .left_0()
+        .right_0()
+        .bottom_0()
+        .h(px(SCRIM_HEIGHT))
+        .flex()
+        .flex_col();
     for band in 0..BANDS {
-        let top = alpha(band as f32 / BANDS as f32);
-        let bottom = alpha((band + 1) as f32 / BANDS as f32);
-        let mut part = div().flex_1().bg(gpui::linear_gradient(
+        let top = step * band as f32;
+        let height = if band + 1 == BANDS { last } else { step };
+        let mut part = div().h(px(height)).bg(gpui::linear_gradient(
             180.0,
-            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, top), 0.0),
-            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, bottom), 1.0),
+            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, alpha(top)), 0.0),
+            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, alpha(top + height)), 1.0),
         ));
         if band + 1 == BANDS {
             part = part.rounded_bl(px(radius)).rounded_br(px(radius));
@@ -420,6 +432,9 @@ fn scrim(radius: f32) -> gpui::Div {
     }
     column
 }
+
+/// How tall a card's fade is, from clear to its darkest at the bottom edge.
+const SCRIM_HEIGHT: f32 = 128.0;
 
 fn blend_color(a: gpui::Rgba, b: gpui::Rgba, t: f32) -> gpui::Rgba {
     let t = t.clamp(0.0, 1.0);
