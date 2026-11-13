@@ -28,9 +28,9 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, App, Bounds, Context, CursorStyle, ElementId, Entity, Image, ImageFormat,
-    ImageSource, IntoElement, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent,
-    ObjectFit, Pixels, Point, Render, RenderImage, RenderOnce, ScrollDelta, ScrollWheelEvent,
-    SharedString, Window, canvas, div, img, point, prelude::*, px,
+    ImageSource, IntoElement, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, ObjectFit,
+    Pixels, Point, Render, RenderImage, RenderOnce, ScrollDelta, ScrollWheelEvent, SharedString,
+    Window, canvas, div, img, point, prelude::*, px,
 };
 
 use crate::Handler;
@@ -684,10 +684,11 @@ impl ZoomableImage {
     }
 
     fn resolved_natural(&self) -> (f32, f32) {
-        if let Some((w, h)) = self.natural {
-            if w > 0.0 && h > 0.0 {
-                return (w, h);
-            }
+        if let Some((w, h)) = self.natural
+            && w > 0.0
+            && h > 0.0
+        {
+            return (w, h);
         }
         if let Some(bounds) = self.bounds {
             let bw = f32::from(bounds.size.width);
@@ -764,7 +765,11 @@ impl ZoomableImage {
         let fit_zoom = self.calculate_fit_zoom();
         let current_zoom = self.viewport.map_or(fit_zoom, |v| v.zoom);
         if (current_zoom - fit_zoom).abs() < 0.02 {
-            let target = if (fit_zoom - 1.0).abs() < 0.02 { 2.0 } else { 1.0 };
+            let target = if (fit_zoom - 1.0).abs() < 0.02 {
+                2.0
+            } else {
+                1.0
+            };
             let (vw, vh) = match self.bounds {
                 Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
                 None => (500.0, 500.0),
@@ -790,7 +795,10 @@ impl ZoomableImage {
 
     fn local_point(&self, window_point: Point<Pixels>) -> Option<Point<Pixels>> {
         let bounds = self.bounds?;
-        Some(point(window_point.x - bounds.origin.x, window_point.y - bounds.origin.y))
+        Some(point(
+            window_point.x - bounds.origin.x,
+            window_point.y - bounds.origin.y,
+        ))
     }
 
     fn mouse_down(&mut self, event: &MouseDownEvent, cx: &mut Context<Self>) {
@@ -944,7 +952,7 @@ impl Render for ZoomableImage {
             |_, _, _| (),
             move |bounds, _, _, cx| {
                 entity.update(cx, |view, _| {
-                    let changed = view.bounds.map_or(true, |b| b.size != bounds.size);
+                    let changed = view.bounds.is_none_or(|b| b.size != bounds.size);
                     view.bounds = Some(bounds);
                     if changed {
                         view.ensure_viewport(bounds);
