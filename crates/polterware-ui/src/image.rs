@@ -3,8 +3,8 @@
 //!
 //! [`ImageThumb`] is a square thumbnail on a raised face with a quiet edge, the picture
 //! cropped to fill it (`object-fit: cover`), an optional caption under it in 11px muted ink,
-//! and a click that asks the host to open it. [`ImageCard`] is a full gallery tile: the picture
-//! picture filling the card 1px inside its border, rounded to its inner radius, with a title
+//! and a click that asks the host to open it. [`ImageCard`] is a full gallery tile: the
+//! picture filling the card under its border, clipped inside its radius, with a title
 //! and meta line over a fade into dark along its bottom. [`ImageViewer`] is the modal
 //! that shows it whole: a floating card over a [`modal_layer`](super::modal_layer), the file's
 //! name as its title, the picture fitted inside 86% of the window's width and 72% of its height
@@ -273,11 +273,9 @@ impl RenderOnce for ImageThumb {
 /// card's radius, with its title and meta line over a fade into
 /// dark along the bottom. `thumb_height` is the card's height.
 ///
-/// The look is the design system's `Card` (`.card-panel`, [`card`](crate::card)) with a picture
-/// thumbnail cropped to fill it (`object-fit: cover`) and generous padding (`12px-14px`) in its
-/// footer. The thumbnail sits 1px inside the card's top and side borders, clipped to
-/// `radius_card - 1.0`, ensuring the card's 1px border reads all the way round without cut
-/// corners. It behaves like gpui-kit's `Card`: the host supplies the image, title, meta slot,
+/// The picture is cropped to fill it (`object-fit: cover`) and clipped just inside the card's
+/// radius; the 1px border draws over its edge, so the border reads all the way round. It
+/// behaves like gpui-kit's `Card`: the host supplies the image, title, meta slot,
 /// and click handler.
 #[derive(IntoElement)]
 pub struct ImageCard {
@@ -358,8 +356,6 @@ impl RenderOnce for ImageCard {
                 .on_click(move |_, window, cx| on_click(window, cx));
         }
 
-        // The picture fills the card 1px inside its border, its own corners rounded to the
-        // inner radius, so it never runs over the edge.
         // The picture runs to the card's outer edge, clipped inside its radius; the border
         // draws over it, so the clip's steps never show.
         let picture = div().absolute().inset_0().child(rounded_picture(
