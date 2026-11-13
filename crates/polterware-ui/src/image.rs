@@ -27,12 +27,15 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, App, ElementId, Image, ImageFormat, ImageSource, IntoElement, ObjectFit,
-    RenderImage, RenderOnce, SharedString, Window, div, img, prelude::*, px,
+    AnyElement, App, Bounds, Context, CursorStyle, ElementId, Entity, Image, ImageFormat,
+    ImageSource, IntoElement, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent,
+    ObjectFit, Pixels, Point, Render, RenderImage, RenderOnce, ScrollDelta, ScrollWheelEvent,
+    SharedString, Window, canvas, div, img, point, prelude::*, px,
 };
 
 use crate::Handler;
 use crate::button::{Button, ButtonKind, ButtonSize};
+use crate::canvas::{canvas_dock, dock_group, dock_separator, zoom_level};
 use crate::ellipsis::ellipsis;
 use crate::icons::Icon;
 use crate::material::floating_panel;
@@ -246,38 +249,19 @@ impl ImageCard {
 }
 
 impl RenderOnce for ImageCard {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
         let inner_radius = (theme.radius_card - 1.0).max(0.0);
-        let pointer = crate::pointer::use_pointer(self.id.clone(), window, cx);
-        let hover = pointer.read(cx).hover();
-        let t = if self.hover_progress > 0.0 {
-            self.hover_progress
-        } else {
-            hover
-        }
-        .clamp(0.0, 1.0);
 
-        let border_color = if t > 0.001 {
-            blend_color(theme.color_border_subtle, theme.color_border_strong, t)
+        let border_color = if self.hover_progress > 0.001 {
+            blend_color(
+                theme.color_border_subtle,
+                theme.color_border_strong,
+                self.hover_progress,
+            )
         } else {
             theme.color_border_subtle
         };
-
-        let lift_shadow = (t > 0.001).then(|| {
-            vec![gpui::BoxShadow {
-                color: gpui::Rgba {
-                    r: theme.color_shadow_subtle.r,
-                    g: theme.color_shadow_subtle.g,
-                    b: theme.color_shadow_subtle.b,
-                    a: theme.color_shadow_subtle.a * t * 0.8,
-                }
-                .into(),
-                offset: gpui::point(px(0.0), px(2.0 * t)),
-                blur_radius: px(8.0 * t),
-                spread_radius: px(0.0),
-            }]
-        });
 
         let mut card = div()
             .id(self.id.clone())
@@ -287,9 +271,7 @@ impl RenderOnce for ImageCard {
             .rounded(px(theme.radius_card))
             .border_1()
             .border_color(border_color)
-            .bg(theme.color_surface_subtle)
-            .top(px(-2.0 * t))
-            .when_some(lift_shadow, |card, shadows| card.shadow(shadows));
+            .bg(theme.color_surface_subtle);
 
         if let Some(on_click) = self.on_click {
             card = card
@@ -298,15 +280,11 @@ impl RenderOnce for ImageCard {
                 .on_click(move |_, window, cx| on_click(window, cx));
         }
 
-        let card = crate::pointer::track(card, &pointer, true);
-
         let thumb = div()
             .w_full()
             .h(px(self.thumb_height))
             .flex_none()
             .bg(theme.color_surface)
-            .mt(px(1.0))
-            .mx(px(1.0))
             .rounded_tl(px(inner_radius))
             .rounded_tr(px(inner_radius))
             .overflow_hidden()
@@ -550,6 +528,469 @@ impl RenderOnce for ImageViewer {
     }
 }
 
+/// The smallest zoom an image can be scaled to (10%).
+pub const MIN_ZOOM: f32 = 0.10;
+/// The largest zoom an image can be scaled to (800%).
+pub const MAX_ZOOM: f32 = 8.0;
+
+/// Clamps zoom between 10% and 800%, falling back to 1.0 for NaN values.
+pub fn clamp_zoom(zoom: f32) -> f32 {
+    if zoom.is_nan() {
+        1.0
+    } else {
+        zoom.clamp(MIN_ZOOM, MAX_ZOOM)
+    }
+}
+
+/// Fits a picture of `(natural_w, natural_h)` inside a `(viewport_w, viewport_h)` container,
+/// leaving `padding` on each side, capped at 1.0 (never upscaled by default).
+pub fn calculate_fit_zoom(
+    natural_w: f32,
+    natural_h: f32,
+    viewport_w: f32,
+    viewport_h: f32,
+    padding: f32,
+) -> f32 {
+    if natural_w <= 0.0 || natural_h <= 0.0 || viewport_w <= 0.0 || viewport_h <= 0.0 {
+        return 1.0;
+    }
+    let room_w = (viewport_w - padding * 2.0).max(1.0);
+    let room_h = (viewport_h - padding * 2.0).max(1.0);
+    clamp_zoom((room_w / natural_w).min(room_h / natural_h).min(1.0))
+}
+
+/// Calculates the `(x, y)` top-left position to center an image of `(natural_w, natural_h)`
+/// at `zoom` within a `(viewport_w, viewport_h)` container.
+pub fn calculate_fit_position(
+    natural_w: f32,
+    natural_h: f32,
+    viewport_w: f32,
+    viewport_h: f32,
+    zoom: f32,
+) -> (f32, f32) {
+    let x = (viewport_w - natural_w * zoom) / 2.0;
+    let y = (viewport_h - natural_h * zoom) / 2.0;
+    (x, y)
+}
+
+/// Where an image sits in its view: element-local pixels for top-left position and zoom scale.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ImageViewport {
+    pub x: f32,
+    pub y: f32,
+    pub zoom: f32,
+}
+
+impl Default for ImageViewport {
+    fn default() -> Self {
+        Self {
+            x: 0.0,
+            y: 0.0,
+            zoom: 1.0,
+        }
+    }
+}
+
+impl ImageViewport {
+    pub fn new(x: f32, y: f32, zoom: f32) -> Self {
+        Self {
+            x,
+            y,
+            zoom: clamp_zoom(zoom),
+        }
+    }
+
+    /// Zooms keeping the point on the image under `focus` (in local pixels) fixed on screen.
+    pub fn zoom_at(self, focus: Point<Pixels>, new_zoom: f32) -> Self {
+        let new_zoom = clamp_zoom(new_zoom);
+        let fx = f32::from(focus.x);
+        let fy = f32::from(focus.y);
+        let img_x = (fx - self.x) / self.zoom;
+        let img_y = (fy - self.y) / self.zoom;
+        Self {
+            zoom: new_zoom,
+            x: fx - img_x * new_zoom,
+            y: fy - img_y * new_zoom,
+        }
+    }
+
+    /// Shifts the image by `(dx, dy)` local pixels.
+    pub fn pan_by(self, dx: f32, dy: f32) -> Self {
+        Self {
+            x: self.x + dx,
+            y: self.y + dy,
+            ..self
+        }
+    }
+}
+
+/// An interactive viewer with pan, zoom around the pointer, double-click fit toggle,
+/// and a floating dock for zoom controls.
+pub struct ZoomableImage {
+    id: SharedString,
+    image: ImageData,
+    natural: Option<(f32, f32)>,
+    fit_padding: f32,
+    viewport: Option<ImageViewport>,
+    bounds: Option<Bounds<Pixels>>,
+    fit_pending: bool,
+    press: Option<ImagePress>,
+    dragging: bool,
+    debug_selector: Option<SharedString>,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct ImagePress {
+    origin: Point<Pixels>,
+    viewport: ImageViewport,
+}
+
+impl ZoomableImage {
+    pub fn new(id: impl Into<SharedString>, image: ImageData) -> Self {
+        Self {
+            id: id.into(),
+            image,
+            natural: None,
+            fit_padding: 24.0,
+            viewport: None,
+            bounds: None,
+            fit_pending: true,
+            press: None,
+            dragging: false,
+            debug_selector: None,
+        }
+    }
+
+    /// The picture's natural resolution in pixels.
+    pub fn natural(mut self, width: f32, height: f32) -> Self {
+        if width > 0.0 && height > 0.0 {
+            self.natural = Some((width, height));
+        }
+        self
+    }
+
+    pub fn fit_padding(mut self, padding: f32) -> Self {
+        self.fit_padding = padding.max(0.0);
+        self
+    }
+
+    pub fn debug_selector(mut self, selector: impl Into<SharedString>) -> Self {
+        self.debug_selector = Some(selector.into());
+        self
+    }
+
+    pub fn viewport(&self) -> Option<ImageViewport> {
+        self.viewport
+    }
+
+    fn resolved_natural(&self) -> (f32, f32) {
+        if let Some((w, h)) = self.natural {
+            if w > 0.0 && h > 0.0 {
+                return (w, h);
+            }
+        }
+        if let Some(bounds) = self.bounds {
+            let bw = f32::from(bounds.size.width);
+            let bh = f32::from(bounds.size.height);
+            if bw > 0.0 && bh > 0.0 {
+                return (bw, bh);
+            }
+        }
+        (512.0, 512.0)
+    }
+
+    fn calculate_fit_zoom(&self) -> f32 {
+        let (nat_w, nat_h) = self.resolved_natural();
+        let (vw, vh) = match self.bounds {
+            Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
+            None => (nat_w, nat_h),
+        };
+        calculate_fit_zoom(nat_w, nat_h, vw, vh, self.fit_padding)
+    }
+
+    pub fn fit(&mut self, cx: &mut Context<Self>) {
+        let (nat_w, nat_h) = self.resolved_natural();
+        let Some(bounds) = self.bounds else {
+            self.fit_pending = true;
+            cx.notify();
+            return;
+        };
+        let vw = f32::from(bounds.size.width);
+        let vh = f32::from(bounds.size.height);
+        let zoom = calculate_fit_zoom(nat_w, nat_h, vw, vh, self.fit_padding);
+        let (x, y) = calculate_fit_position(nat_w, nat_h, vw, vh, zoom);
+        self.viewport = Some(ImageViewport { x, y, zoom });
+        self.fit_pending = false;
+        cx.notify();
+    }
+
+    pub fn zoom_to_100(&mut self, cx: &mut Context<Self>) {
+        let (nat_w, nat_h) = self.resolved_natural();
+        let (vw, vh) = match self.bounds {
+            Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
+            None => (nat_w, nat_h),
+        };
+        let center = point(px(vw / 2.0), px(vh / 2.0));
+        self.zoom_at(center, 1.0, cx);
+    }
+
+    pub fn zoom_at(&mut self, focus: Point<Pixels>, zoom: f32, cx: &mut Context<Self>) {
+        let vp = self.viewport.unwrap_or_default();
+        self.viewport = Some(vp.zoom_at(focus, zoom));
+        cx.notify();
+    }
+
+    pub fn zoom_in(&mut self, cx: &mut Context<Self>) {
+        let vp = self.viewport.unwrap_or_default();
+        let (vw, vh) = match self.bounds {
+            Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
+            None => (500.0, 500.0),
+        };
+        let center = point(px(vw / 2.0), px(vh / 2.0));
+        self.zoom_at(center, vp.zoom * 1.25, cx);
+    }
+
+    pub fn zoom_out(&mut self, cx: &mut Context<Self>) {
+        let vp = self.viewport.unwrap_or_default();
+        let (vw, vh) = match self.bounds {
+            Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
+            None => (500.0, 500.0),
+        };
+        let center = point(px(vw / 2.0), px(vh / 2.0));
+        self.zoom_at(center, vp.zoom / 1.25, cx);
+    }
+
+    pub fn toggle_fit_100(&mut self, local_focus: Option<Point<Pixels>>, cx: &mut Context<Self>) {
+        let fit_zoom = self.calculate_fit_zoom();
+        let current_zoom = self.viewport.map_or(fit_zoom, |v| v.zoom);
+        if (current_zoom - fit_zoom).abs() < 0.02 {
+            let target = if (fit_zoom - 1.0).abs() < 0.02 { 2.0 } else { 1.0 };
+            let (vw, vh) = match self.bounds {
+                Some(b) => (f32::from(b.size.width), f32::from(b.size.height)),
+                None => (500.0, 500.0),
+            };
+            let focus = local_focus.unwrap_or_else(|| point(px(vw / 2.0), px(vh / 2.0)));
+            self.zoom_at(focus, target, cx);
+        } else {
+            self.fit(cx);
+        }
+    }
+
+    fn ensure_viewport(&mut self, bounds: Bounds<Pixels>) {
+        if self.viewport.is_none() || self.fit_pending {
+            let (nat_w, nat_h) = self.resolved_natural();
+            let vw = f32::from(bounds.size.width);
+            let vh = f32::from(bounds.size.height);
+            let zoom = calculate_fit_zoom(nat_w, nat_h, vw, vh, self.fit_padding);
+            let (x, y) = calculate_fit_position(nat_w, nat_h, vw, vh, zoom);
+            self.viewport = Some(ImageViewport { x, y, zoom });
+            self.fit_pending = false;
+        }
+    }
+
+    fn local_point(&self, window_point: Point<Pixels>) -> Option<Point<Pixels>> {
+        let bounds = self.bounds?;
+        Some(point(window_point.x - bounds.origin.x, window_point.y - bounds.origin.y))
+    }
+
+    fn mouse_down(&mut self, event: &MouseDownEvent, cx: &mut Context<Self>) {
+        let Some(local) = self.local_point(event.position) else {
+            return;
+        };
+        if event.click_count == 2 {
+            self.toggle_fit_100(Some(local), cx);
+            return;
+        }
+        let vp = self.viewport.unwrap_or_default();
+        self.press = Some(ImagePress {
+            origin: local,
+            viewport: vp,
+        });
+        self.dragging = false;
+    }
+
+    fn mouse_move(&mut self, event: &MouseMoveEvent, cx: &mut Context<Self>) {
+        let Some(press) = self.press else {
+            return;
+        };
+        let Some(local) = self.local_point(event.position) else {
+            return;
+        };
+        let dx = f32::from(local.x - press.origin.x);
+        let dy = f32::from(local.y - press.origin.y);
+        if !self.dragging && (dx.hypot(dy) > 2.0) {
+            self.dragging = true;
+        }
+        if self.dragging {
+            self.viewport = Some(press.viewport.pan_by(dx, dy));
+            cx.notify();
+        }
+    }
+
+    fn mouse_up(&mut self, _: &MouseUpEvent, cx: &mut Context<Self>) {
+        self.press = None;
+        if self.dragging {
+            self.dragging = false;
+            cx.notify();
+        }
+    }
+
+    fn scroll(&mut self, event: &ScrollWheelEvent, _: &mut Window, cx: &mut Context<Self>) {
+        let Some(local) = self.local_point(event.position) else {
+            return;
+        };
+        let Some(vp) = self.viewport else {
+            return;
+        };
+        let (dx, dy) = match event.delta {
+            ScrollDelta::Pixels(delta) => (f32::from(delta.x), f32::from(delta.y)),
+            ScrollDelta::Lines(delta) => (delta.x * 24.0, delta.y * 24.0),
+        };
+        if event.modifiers.secondary()
+            || event.modifiers.control
+            || matches!(event.delta, ScrollDelta::Lines(_))
+        {
+            let zoom = vp.zoom * (-dy * 0.0025).exp();
+            self.viewport = Some(vp.zoom_at(local, zoom));
+        } else if dx != 0.0 || dy != 0.0 {
+            self.viewport = Some(vp.pan_by(-dx, -dy));
+        }
+        cx.stop_propagation();
+        cx.notify();
+    }
+}
+
+impl Render for ZoomableImage {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let (nat_w, nat_h) = self.resolved_natural();
+        let entity: Entity<Self> = cx.entity();
+        let vp = self.viewport.unwrap_or_default();
+        let fit_zoom = self.calculate_fit_zoom();
+
+        let cursor = if self.dragging {
+            CursorStyle::ClosedHand
+        } else if vp.zoom > fit_zoom + 0.02 {
+            CursorStyle::OpenHand
+        } else {
+            CursorStyle::Arrow
+        };
+
+        let entity_zoom_out = entity.clone();
+        let entity_reset = entity.clone();
+        let entity_zoom_in = entity.clone();
+        let entity_fit = entity.clone();
+
+        let dock = canvas_dock(cx)
+            .child(
+                dock_group()
+                    .child(
+                        Button::new("image-zoom-out", ButtonKind::Ghost)
+                            .size(ButtonSize::Icon)
+                            .icon(Icon::MinusSignIcon)
+                            .tooltip("Zoom out")
+                            .on_click(move |_, cx| {
+                                entity_zoom_out.update(cx, |this, cx| this.zoom_out(cx));
+                            }),
+                    )
+                    .child(
+                        div()
+                            .id("image-zoom-reset")
+                            .cursor_pointer()
+                            .tooltip(tooltip("Reset to 100%"))
+                            .on_click(move |_, _, cx| {
+                                entity_reset.update(cx, |this, cx| this.zoom_to_100(cx));
+                            })
+                            .child(zoom_level(vp.zoom, cx)),
+                    )
+                    .child(
+                        Button::new("image-zoom-in", ButtonKind::Ghost)
+                            .size(ButtonSize::Icon)
+                            .icon(Icon::Plus)
+                            .tooltip("Zoom in")
+                            .on_click(move |_, cx| {
+                                entity_zoom_in.update(cx, |this, cx| this.zoom_in(cx));
+                            }),
+                    ),
+            )
+            .child(dock_separator(cx))
+            .child(
+                dock_group().child(
+                    Button::new("image-zoom-fit", ButtonKind::Ghost)
+                        .size(ButtonSize::Icon)
+                        .icon(Icon::Maximize2)
+                        .tooltip("Fit to view")
+                        .on_click(move |_, cx| {
+                            entity_fit.update(cx, |this, cx| this.fit(cx));
+                        }),
+                ),
+            );
+
+        let img_w = (nat_w * vp.zoom).max(1.0);
+        let img_h = (nat_h * vp.zoom).max(1.0);
+
+        let image_element = div()
+            .absolute()
+            .left(px(vp.x))
+            .top(px(vp.y))
+            .w(px(img_w))
+            .h(px(img_h))
+            .child(
+                img(self.image.source())
+                    .size_full()
+                    .object_fit(ObjectFit::Fill),
+            );
+
+        let probe = canvas(
+            |_, _, _| (),
+            move |bounds, _, _, cx| {
+                entity.update(cx, |view, _| {
+                    let changed = view.bounds.map_or(true, |b| b.size != bounds.size);
+                    view.bounds = Some(bounds);
+                    if changed {
+                        view.ensure_viewport(bounds);
+                    }
+                });
+            },
+        )
+        .absolute()
+        .size_full();
+
+        let mut root = div()
+            .id(self.id.clone())
+            .size_full()
+            .relative()
+            .overflow_hidden()
+            .cursor(cursor)
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|view, event: &MouseDownEvent, _, cx| view.mouse_down(event, cx)),
+            )
+            .on_mouse_move(
+                cx.listener(|view, event: &MouseMoveEvent, _, cx| view.mouse_move(event, cx)),
+            )
+            .on_mouse_up(
+                MouseButton::Left,
+                cx.listener(|view, event: &MouseUpEvent, _, cx| view.mouse_up(event, cx)),
+            )
+            .on_scroll_wheel(cx.listener(Self::scroll))
+            .child(probe)
+            .child(image_element)
+            .child(
+                div()
+                    .absolute()
+                    .bottom(px(16.0))
+                    .right(px(16.0))
+                    .child(dock),
+            );
+
+        if let Some(selector) = self.debug_selector.clone() {
+            root = root.debug_selector(move || selector.to_string());
+        }
+
+        root
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::cell::Cell;
@@ -559,6 +1000,86 @@ mod tests {
 
     use super::*;
     use crate::test_support::{draw, open};
+
+    #[test]
+    fn clamp_zoom_clamps_boundaries_and_recovers_from_nan() {
+        assert_eq!(clamp_zoom(0.0), MIN_ZOOM);
+        assert_eq!(clamp_zoom(0.05), MIN_ZOOM);
+        assert_eq!(clamp_zoom(0.10), MIN_ZOOM);
+        assert_eq!(clamp_zoom(1.0), 1.0);
+        assert_eq!(clamp_zoom(8.0), MAX_ZOOM);
+        assert_eq!(clamp_zoom(12.0), MAX_ZOOM);
+        assert_eq!(clamp_zoom(f32::NAN), 1.0);
+        assert_eq!(clamp_zoom(f32::INFINITY), MAX_ZOOM);
+        assert_eq!(clamp_zoom(f32::NEG_INFINITY), MIN_ZOOM);
+    }
+
+    #[test]
+    fn calculate_fit_zoom_scales_down_and_respects_padding() {
+        // Image larger than viewport scales down to fit within room:
+        let zoom = calculate_fit_zoom(1000.0, 1000.0, 500.0, 500.0, 0.0);
+        assert_eq!(zoom, 0.5);
+
+        // With padding 25px: room is 500 - 50 = 450px -> 450 / 1000 = 0.45:
+        let zoom_pad = calculate_fit_zoom(1000.0, 1000.0, 500.0, 500.0, 25.0);
+        assert_eq!(zoom_pad, 0.45);
+
+        // Image taller than viewport constrains on height:
+        let zoom_tall = calculate_fit_zoom(100.0, 1000.0, 500.0, 500.0, 0.0);
+        assert_eq!(zoom_tall, 0.5);
+
+        // Image wider than viewport constrains on width:
+        let zoom_wide = calculate_fit_zoom(1000.0, 100.0, 500.0, 500.0, 0.0);
+        assert_eq!(zoom_wide, 0.5);
+
+        // Small image is capped at 1.0 (never upscaled by default):
+        let zoom_small = calculate_fit_zoom(100.0, 100.0, 500.0, 500.0, 0.0);
+        assert_eq!(zoom_small, 1.0);
+
+        // Invalid dimensions fall back to 1.0:
+        assert_eq!(calculate_fit_zoom(0.0, 100.0, 500.0, 500.0, 0.0), 1.0);
+        assert_eq!(calculate_fit_zoom(100.0, 0.0, 500.0, 500.0, 0.0), 1.0);
+        assert_eq!(calculate_fit_zoom(100.0, 100.0, 0.0, 500.0, 0.0), 1.0);
+    }
+
+    #[test]
+    fn calculate_fit_position_centers_image() {
+        let (x, y) = calculate_fit_position(1000.0, 600.0, 800.0, 600.0, 0.5);
+        // Width at 0.5 is 500px: left is (800 - 500) / 2 = 150px:
+        assert_eq!(x, 150.0);
+        // Height at 0.5 is 300px: top is (600 - 300) / 2 = 150px:
+        assert_eq!(y, 150.0);
+
+        // Center of the image coincides with center of the viewport:
+        let center_x = x + (1000.0 * 0.5) / 2.0;
+        let center_y = y + (600.0 * 0.5) / 2.0;
+        assert_eq!(center_x, 400.0);
+        assert_eq!(center_y, 300.0);
+    }
+
+    #[test]
+    fn image_viewport_zoom_at_preserves_focus_point() {
+        let vp = ImageViewport::new(10.0, 20.0, 1.0);
+        let focus = point(px(100.0), px(100.0));
+        let zoomed = vp.zoom_at(focus, 2.0);
+
+        assert_eq!(zoomed.zoom, 2.0);
+        // Before zoom: image point at focus: (100 - 10) / 1.0 = 90
+        // After zoom: 90 * 2.0 + new_x = 100 -> new_x = 100 - 180 = -80
+        assert_eq!(zoomed.x, -80.0);
+        // Before zoom: image point at focus: (100 - 20) / 1.0 = 80
+        // After zoom: 80 * 2.0 + new_y = 100 -> new_y = 100 - 160 = -60
+        assert_eq!(zoomed.y, -60.0);
+    }
+
+    #[test]
+    fn image_viewport_pan_by_moves_by_exact_pixels() {
+        let vp = ImageViewport::new(10.0, 20.0, 1.5);
+        let panned = vp.pan_by(15.0, -5.0);
+        assert_eq!(panned.x, 25.0);
+        assert_eq!(panned.y, 15.0);
+        assert_eq!(panned.zoom, 1.5);
+    }
 
     #[test]
     fn a_picture_fits_inside_its_box_keeping_its_shape() {
