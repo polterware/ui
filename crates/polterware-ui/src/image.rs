@@ -331,15 +331,11 @@ impl RenderOnce for ImageCard {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
 
-        let border_color = if self.hover_progress > 0.001 {
-            blend_color(
-                theme.color_border_subtle,
-                theme.color_border_strong,
-                self.hover_progress,
-            )
-        } else {
-            theme.color_border_subtle
-        };
+        // A light ring rather than a gray line: over a bright sky or the dark fade it reads
+        // the same, where an opaque gray shows as a stripe along the dark foot.
+        let rest = gpui::rgba(0xffffff1f);
+        let lit = gpui::rgba(0xffffff3d);
+        let border_color = blend_color(rest, lit, self.hover_progress);
 
         let mut card = div()
             .id(self.id.clone())
@@ -395,9 +391,7 @@ impl RenderOnce for ImageCard {
             .rounded(px(theme.radius_card))
             .border_1()
             .border_color(border_color)
-            .group_hover("image-card", |style| {
-                style.border_color(theme.color_border_strong)
-            });
+            .group_hover("image-card", move |style| style.border_color(lit));
 
         card.child(picture).child(footer).child(border)
     }
@@ -408,7 +402,7 @@ impl RenderOnce for ImageCard {
 /// the fade starts and the darkest part under the text.
 fn scrim(radius: f32) -> gpui::Div {
     const BANDS: usize = 8;
-    const DARKEST: f32 = 0.9;
+    const DARKEST: f32 = 0.78;
     let alpha = |t: f32| DARKEST * t.powf(1.8);
     let mut column = div().absolute().inset_0().flex().flex_col();
     for band in 0..BANDS {
