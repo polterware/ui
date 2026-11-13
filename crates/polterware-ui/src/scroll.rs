@@ -455,6 +455,20 @@ pub fn scroll_area_under(
     scroll_area_below(id, body, top, Some(surface), false, window, cx)
 }
 
+/// [`scroll_area_under`] that can freeze, as [`scroll_area_locked`] does.
+pub fn scroll_area_under_locked(
+    id: impl Into<ElementId>,
+    top: f32,
+    content: impl IntoElement,
+    locked: bool,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let surface = Theme::global(cx).color_surface;
+    let body = div().w_full().pt(px(top)).child(content);
+    scroll_area_below(id, body, top, Some(surface), locked, window, cx)
+}
+
 /// [`scroll_area`] whose scrollbar starts `top` down, under what floats over the area's top
 /// (a page's toolbar), so the bar and the toolbar's controls never meet. With `fade`, the end
 /// fades into that color, over as far as there is left to scroll, up to 24px.

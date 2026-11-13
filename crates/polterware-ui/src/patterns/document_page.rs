@@ -1,6 +1,7 @@
 //! `RailPage` as a document opens in it (`rail-page.tsx`, `rail-page.css`, with no `wide`,
 //! `splitScroll`, or `railCard`), as Polterware's Knowledge decisions and docs and its Work
-//! cards are pages: the 44px [`rail_page_header`] with Back (a texture icon button) at the
+//! cards are pages: the 44px [`rail_page_header`], floating over the scroll on the toolbar's
+//! fade trail (never a solid band), with Back (a texture icon button) at the
 //! start and, at the end, a quiet status, the page's actions, and the rail's toggle, pressed
 //! while the rail shows. Under it the page scrolls as one, padded `0 62px 64px`: a column at
 //! most 654px wide, centered in the room the rail leaves, then 48px, then the 376px rail of
@@ -31,12 +32,12 @@ use gpui::{
     Window, div, prelude::*, px,
 };
 
-use super::scroll_fade::fade_scroll;
+use super::scroll_fade::{fade_scroll, trailing_toolbar};
 use crate::Handler;
 use crate::button::{Button, ButtonKind, ButtonSize};
 use crate::icon_tile::{IconTile, TileTone};
 use crate::icons::{Icon, icon_colored};
-use crate::scroll::{scroll_area_locked, use_scroll};
+use crate::scroll::{scroll_area_under_locked, use_scroll};
 use crate::theme::Theme;
 
 use super::rail_page::{RAIL_WIDTH, RailState, rail_page_header, rail_toggle_label};
@@ -231,13 +232,27 @@ impl RenderOnce for DocumentPage {
                         .w(px((RAIL_GAP + RAIL_WIDTH) * progress.max(0.0))),
                 )
             });
-        let scroll = scroll_area_locked(
+        // The page scrolls its whole height, under the header, which floats on the toolbar's
+        // trail: what passes beneath goes soft instead of meeting a band and a cut.
+        let scroll = scroll_area_under_locked(
             (self.id.clone(), "scroll"),
+            theme.page_header_height,
             row,
             self.scroll_locked,
             window,
             cx,
         );
+        let header = div()
+            .absolute()
+            .top(px(0.0))
+            .left(px(0.0))
+            .right(px(0.0))
+            .child(trailing_toolbar(
+                header,
+                theme.color_surface,
+                theme.page_header_height,
+                theme.radius_surface,
+            ));
         let offset = TRAVEL * (1.0 - progress);
         let opacity = progress.clamp(0.0, 1.0);
         let rail = present.then(|| {
@@ -303,8 +318,8 @@ impl RenderOnce for DocumentPage {
             .flex()
             .flex_col()
             .children(probe)
-            .child(header)
             .child(div().flex_1().min_h(px(0.0)).child(scroll))
+            .child(header)
             .children(rail)
     }
 }

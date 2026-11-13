@@ -1105,11 +1105,16 @@ fn install_pinch(cx: &mut App) {
 }
 
 impl Render for ZoomableImage {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         install_pinch(cx);
         let (nat_w, nat_h) = self.resolved_natural();
         let entity: Entity<Self> = cx.entity();
         let vp = self.viewport.unwrap_or_default();
+        // Nothing of the picture draws until the view has measured itself and fitted it, so
+        // it never shows at another zoom first. Fitted but still loading, a pulsing bone
+        // holds its place at the size it will take.
+        let fitted = self.viewport.is_some() && !self.fit_pending;
+        let loaded = fitted && self.image.render_image(window, cx).is_some();
 
         let cursor = if self.dragging {
             CursorStyle::ClosedHand
@@ -1172,9 +1177,23 @@ impl Render for ZoomableImage {
 
         let data = self.image.clone();
         let radius = self.corner_radius;
+        let placeholder = (fitted && !loaded).then(|| {
+            let tone = crate::skeleton::skeleton_tone(window, cx);
+            div()
+                .absolute()
+                .left(px(vp.x))
+                .top(px(vp.y))
+                .w(px(img_w))
+                .h(px(img_h))
+                .rounded(px(8.0))
+                .bg(tone)
+        });
         let image_element = canvas(
             |_, _, _| (),
             move |bounds, _, window, cx| {
+                if !loaded {
+                    return;
+                }
                 let Some(frame) = data.render_image(window, cx) else {
                     return;
                 };
@@ -1254,16 +1273,19 @@ impl Render for ZoomableImage {
                 }
             }))
             .child(probe)
+            .children(placeholder)
             .child(image_element)
-            .child(
-                div()
-                    // A press on the dock is the dock's: it never starts a pan.
-                    .occlude()
-                    .absolute()
-                    .bottom(px(16.0 + self.insets[2]))
-                    .right(px(16.0 + self.insets[1]))
-                    .child(dock),
-            );
+            .when(fitted, |root| {
+                root.child(
+                    div()
+                        // A press on the dock is the dock's: it never starts a pan.
+                        .occlude()
+                        .absolute()
+                        .bottom(px(16.0 + self.insets[2]))
+                        .right(px(16.0 + self.insets[1]))
+                        .child(dock),
+                )
+            });
 
         if let Some(selector) = self.debug_selector.clone() {
             root = root.debug_selector(move || selector.to_string());
