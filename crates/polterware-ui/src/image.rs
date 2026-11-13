@@ -1074,7 +1074,8 @@ impl ZoomableImage {
             self.viewport = Some(vp.zoom_at(local, zoom));
             self.moved = true;
         } else if dx != 0.0 || dy != 0.0 {
-            self.viewport = Some(vp.pan_by(-dx, -dy));
+            // The wheel's delta already runs the way the fingers move: the picture follows.
+            self.viewport = Some(vp.pan_by(dx, dy));
             self.moved = true;
         }
         cx.stop_propagation();
@@ -1171,7 +1172,7 @@ impl Render for ZoomableImage {
                     .child(
                         Button::new("image-zoom-fit", ButtonKind::Ghost)
                             .size(ButtonSize::Icon)
-                            .icon(Icon::Maximize2)
+                            .icon(Icon::ExpandIcon)
                             .tooltip("Fit to view")
                             .on_click(move |_, cx| {
                                 entity_fit.update(cx, |this, cx| this.fit(cx));
