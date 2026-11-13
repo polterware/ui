@@ -207,6 +207,7 @@ pub struct ImageCard {
     meta: Option<AnyElement>,
     on_click: Option<Handler>,
     hover_progress: f32,
+    backdrop: Option<gpui::Rgba>,
 }
 
 impl ImageCard {
@@ -219,7 +220,14 @@ impl ImageCard {
             meta: None,
             on_click: None,
             hover_progress: 0.0,
+            backdrop: None,
         }
+    }
+
+    /// The color the card sits on, which its rounded corners show: `color_surface` unless set.
+    pub fn backdrop(mut self, color: gpui::Rgba) -> Self {
+        self.backdrop = Some(color);
+        self
     }
 
     /// The thumbnail's height in pixels; the picture fills it cropped to cover.
@@ -280,12 +288,22 @@ impl RenderOnce for ImageCard {
 
         // The picture fills the card 1px inside its border, its own corners rounded to the
         // inner radius, so it never runs over the edge.
-        let picture = div().absolute().inset(px(1.0)).child(
+        // GPUI paints a covering image past its box and clips only to rectangles, so the
+        // picture is clipped square and each corner outside the inner radius is masked
+        // with the page's color.
+        let picture = div().absolute().inset(px(1.0)).overflow_hidden().child(
             img(self.image.source())
                 .size_full()
-                .rounded(px(inner_radius))
                 .object_fit(ObjectFit::Cover),
         );
+        let backdrop = self.backdrop.unwrap_or(theme.color_surface);
+        let masks = [
+            Corner::TopLeft,
+            Corner::TopRight,
+            Corner::BottomLeft,
+            Corner::BottomRight,
+        ]
+        .map(|corner| corner_mask(corner, inner_radius, backdrop));
 
         // The text sits on the picture over a fade into dark, not on a solid footer; it is
         // light in either theme, as the fade is.
@@ -328,7 +346,51 @@ impl RenderOnce for ImageCard {
                 style.border_color(theme.color_border_strong)
             });
 
-        card.child(picture).child(footer).child(border)
+        card.child(picture)
+            .children(masks)
+            .child(footer)
+            .child(border)
+    }
+}
+
+#[derive(Clone, Copy)]
+enum Corner {
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+}
+
+/// Covers what lies outside a `radius` arc in one corner of a box inset 1px, with `color`:
+/// a ring whose inner edge is that arc, clipped to the corner's square.
+fn corner_mask(corner: Corner, radius: f32, color: gpui::Rgba) -> gpui::Div {
+    // The ring's outer arc must reach the square's far corner, radius·√2 from its center.
+    let width = (radius * (std::f32::consts::SQRT_2 - 1.0)).ceil() + 1.0;
+    let span = 2.0 * (radius + width);
+    let ring = div()
+        .absolute()
+        .w(px(span))
+        .h(px(span))
+        .rounded(px(radius + width))
+        .border(px(width))
+        .border_color(color);
+    let ring = match corner {
+        Corner::TopLeft => ring.top(px(-width)).left(px(-width)),
+        Corner::TopRight => ring.top(px(-width)).right(px(-width)),
+        Corner::BottomLeft => ring.bottom(px(-width)).left(px(-width)),
+        Corner::BottomRight => ring.bottom(px(-width)).right(px(-width)),
+    };
+    let square = div()
+        .absolute()
+        .w(px(radius))
+        .h(px(radius))
+        .overflow_hidden()
+        .child(ring);
+    match corner {
+        Corner::TopLeft => square.top(px(1.0)).left(px(1.0)),
+        Corner::TopRight => square.top(px(1.0)).right(px(1.0)),
+        Corner::BottomLeft => square.bottom(px(1.0)).left(px(1.0)),
+        Corner::BottomRight => square.bottom(px(1.0)).right(px(1.0)),
     }
 }
 
