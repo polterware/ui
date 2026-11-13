@@ -4,6 +4,7 @@
 
 pub mod capture;
 pub mod dock_icon;
+pub mod pinch;
 pub mod scroller;
 pub mod vibrancy;
 pub mod window_drag;

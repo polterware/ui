@@ -379,18 +379,12 @@ impl RenderOnce for ImageCard {
             .left(px(1.0))
             .right(px(1.0))
             .bottom(px(1.0))
-            .rounded_bl(px(inner_radius))
-            .rounded_br(px(inner_radius))
-            .bg(gpui::linear_gradient(
-                180.0,
-                gpui::linear_color_stop(gpui::rgba(0x00000033), 0.0),
-                gpui::linear_color_stop(gpui::rgba(0x000000eb), 1.0),
-            ))
+            .child(scrim(inner_radius))
             .flex()
             .flex_col()
             .gap(px(4.0))
             .px(px(13.0))
-            .pt(px(40.0))
+            .pt(px(64.0))
             .pb(px(12.0))
             .text_color(gpui::rgba(0xffffffb8))
             .child(title_line)
@@ -409,6 +403,30 @@ impl RenderOnce for ImageCard {
 
         card.child(picture).child(footer).child(border)
     }
+}
+
+/// A fade from clear into near black down a card's foot. GPUI gradients take two stops, so
+/// it is several bands, each a two-stop gradient, following an ease-in curve: no seam where
+/// the fade starts and the darkest part under the text.
+fn scrim(radius: f32) -> gpui::Div {
+    const BANDS: usize = 8;
+    const DARKEST: f32 = 0.9;
+    let alpha = |t: f32| DARKEST * t.powf(1.8);
+    let mut column = div().absolute().inset_0().flex().flex_col();
+    for band in 0..BANDS {
+        let top = alpha(band as f32 / BANDS as f32);
+        let bottom = alpha((band + 1) as f32 / BANDS as f32);
+        let mut part = div().flex_1().bg(gpui::linear_gradient(
+            180.0,
+            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, top), 0.0),
+            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, bottom), 1.0),
+        ));
+        if band + 1 == BANDS {
+            part = part.rounded_bl(px(radius)).rounded_br(px(radius));
+        }
+        column = column.child(part);
+    }
+    column
 }
 
 fn blend_color(a: gpui::Rgba, b: gpui::Rgba, t: f32) -> gpui::Rgba {
@@ -733,6 +751,8 @@ pub struct ZoomableImage {
     insets: [f32; 4],
     /// The radius of the corners the picture is clipped to, as the view's own frame rounds.
     corner_radius: f32,
+    /// Where the pointer is over the view, in local pixels, while it is: a pinch zooms there.
+    hover: Option<Point<Pixels>>,
     /// The person zoomed or panned: a resize keeps their view instead of fitting again.
     moved: bool,
     viewport: Option<ImageViewport>,
@@ -758,6 +778,7 @@ impl ZoomableImage {
             fit_padding: 24.0,
             insets: [0.0; 4],
             corner_radius: 0.0,
+            hover: None,
             moved: false,
             viewport: None,
             bounds: None,
@@ -985,6 +1006,32 @@ impl ZoomableImage {
         }
     }
 
+    /// One trackpad pinch step: zooms by `step` (0.1 is 10% larger) around the pointer.
+    pub fn pinch(&mut self, step: f32, cx: &mut Context<Self>) {
+        let Some(vp) = self.viewport else {
+            return;
+        };
+        let focus = self.hover.unwrap_or_else(|| self.area_center());
+        self.zoom_at(focus, vp.zoom * (1.0 + step), cx);
+    }
+
+    fn hover_moved(&mut self, event: &MouseMoveEvent, cx: &mut Context<Self>) {
+        self.hover = self.local_point(event.position);
+        let target = cx.entity().downgrade();
+        PINCH_TARGET.with(|slot| *slot.borrow_mut() = Some(target));
+    }
+
+    fn hover_ended(&mut self, cx: &mut Context<Self>) {
+        self.hover = None;
+        let me = cx.entity().entity_id();
+        PINCH_TARGET.with(|slot| {
+            let mut slot = slot.borrow_mut();
+            if slot.as_ref().is_some_and(|target| target.entity_id() == me) {
+                *slot = None;
+            }
+        });
+    }
+
     fn scroll(&mut self, event: &ScrollWheelEvent, _: &mut Window, cx: &mut Context<Self>) {
         let Some(local) = self.local_point(event.position) else {
             return;
@@ -1012,8 +1059,29 @@ impl ZoomableImage {
     }
 }
 
+thread_local! {
+    /// The viewer under the pointer, which a trackpad pinch zooms.
+    static PINCH_TARGET: std::cell::RefCell<Option<gpui::WeakEntity<ZoomableImage>>> =
+        const { std::cell::RefCell::new(None) };
+    static PINCH_INSTALLED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Routes the trackpad's pinch to the viewer under the pointer, once per app.
+fn install_pinch(cx: &mut App) {
+    if PINCH_INSTALLED.with(|done| done.replace(true)) {
+        return;
+    }
+    polterware_window::pinch::on_pinch(cx, |step, cx| {
+        let Some(target) = PINCH_TARGET.with(|slot| slot.borrow().clone()) else {
+            return;
+        };
+        let _ = target.update(cx, |viewer, cx| viewer.pinch(step, cx));
+    });
+}
+
 impl Render for ZoomableImage {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        install_pinch(cx);
         let (nat_w, nat_h) = self.resolved_natural();
         let entity: Entity<Self> = cx.entity();
         let vp = self.viewport.unwrap_or_default();
@@ -1146,6 +1214,14 @@ impl Render for ZoomableImage {
                 cx.listener(|view, event: &MouseDownEvent, _, cx| view.mouse_down(event, cx)),
             )
             .on_scroll_wheel(cx.listener(Self::scroll))
+            .on_mouse_move(
+                cx.listener(|view, event: &MouseMoveEvent, _, cx| view.hover_moved(event, cx)),
+            )
+            .on_hover(cx.listener(|view, hovered: &bool, _, cx| {
+                if !*hovered {
+                    view.hover_ended(cx);
+                }
+            }))
             .child(probe)
             .child(image_element)
             .child(
@@ -1228,6 +1304,12 @@ mod tests {
         draw(&mut cx);
         let after = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
         assert_eq!(after, during, "a move after release must not pan");
+        entity.update(&mut cx, |viewer, cx| viewer.pinch(0.5, cx));
+        let pinched = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        assert!(
+            (pinched.zoom - after.zoom * 1.5).abs() < 1e-4,
+            "a pinch zooms by its step"
+        );
     }
 
     #[test]
