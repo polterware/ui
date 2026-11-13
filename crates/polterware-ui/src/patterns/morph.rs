@@ -9,7 +9,9 @@
 //! title, the body in 12.5px secondary on a 1.45 line, and the footer's actions full width
 //! 6px apart, and under the card the trigger's own rect, where Cancel stands in the trigger's
 //! shape, so the pointer
-//! that opened the panel is already on it. The surface is at least 260px wide (6px wider than
+//! that opened the panel is already on it. When the window's edge pushes the panel off a
+//! trigger (one cut by a board's scroll), Cancel moves with the growth into the panel's own
+//! slot, as wide as the card. The surface is at least 260px wide (6px wider than
 //! the trigger on each side), starts at the trigger's start (the first of a row), end (the
 //! last), or center, and stays 8px inside the window. The content fades in once the surface
 //! has mostly grown. The trigger hides while the panel stands in for it. A panel taller than
@@ -202,6 +204,28 @@ pub fn morph_target(
         height,
         down,
     }
+}
+
+/// Where Cancel stands in a panel at `rect` that cannot hold the trigger at `from` (one the
+/// window's edge pushed off it, or one cut by its scroll): the trigger's slot at the panel's
+/// foot (its head, grown down), as wide as the card. `None` while the trigger fits, and
+/// Cancel stands on it.
+pub fn detached_cancel(from: Bounds<Pixels>, rect: MorphRect) -> Option<(f32, f32, f32, f32)> {
+    let (fx, fw, fh) = (
+        f32::from(from.origin.x),
+        f32::from(from.size.width),
+        f32::from(from.size.height),
+    );
+    let inside = fx >= rect.left + INSET - 0.5 && fx + fw <= rect.left + rect.width - INSET + 0.5;
+    if inside {
+        return None;
+    }
+    let top = if rect.down {
+        rect.top + INSET
+    } else {
+        rect.top + rect.height - INSET - fh
+    };
+    Some((rect.left + INSET, top, rect.width - INSET * 2.0, fh))
 }
 
 fn lerp(from: f32, to: f32, t: f32) -> f32 {
@@ -452,11 +476,22 @@ impl RenderOnce for Morph {
             if let Some(radius) = cancel_radius {
                 cancel_button = cancel_button.radius(radius);
             }
+            // Cancel stands on the trigger, or, when the panel had to leave it, moves with
+            // the growth into the panel's own slot.
+            let (fx, fy, fw) = (
+                f32::from(from.origin.x),
+                f32::from(from.origin.y),
+                f32::from(from.size.width),
+            );
+            let (cancel_x, cy, cw) = match detached_cancel(from, target) {
+                Some((sx, sy, sw, _)) => (lerp(fx, sx, t), lerp(fy, sy, t), lerp(fw, sw, t)),
+                None => (fx, fy, fw),
+            };
             let cancel = div()
                 .absolute()
-                .left(from.origin.x)
-                .top(from.origin.y)
-                .w(from.size.width)
+                .left(px(cancel_x))
+                .top(px(cy))
+                .w(px(cw))
                 .h(from.size.height)
                 .opacity(alpha.max(if self.open { 1.0 } else { 0.0 }))
                 .child(cancel_button);
@@ -508,7 +543,7 @@ impl RenderOnce for Morph {
 mod tests {
     use gpui::{Bounds, TestAppContext, div, point, prelude::*, px, size};
 
-    use super::{Morph, MorphAlign, morph_target};
+    use super::{Morph, MorphAlign, detached_cancel, morph_target};
     use crate::button::{Button, ButtonKind, ButtonSize};
     use crate::icons::Icon;
     use crate::test_support::{draw, open, settle};
@@ -666,5 +701,23 @@ mod tests {
         // The body keeps its height and scrolls inside the panel.
         let body = visual.debug_bounds("tall-body").expect("the body draws");
         assert_eq!(body.size.height, px(900.0));
+    }
+
+    #[test]
+    fn cancel_moves_into_the_panel_when_the_trigger_is_pushed_off_it() {
+        // A trigger running past the window's right edge: the panel is held 8px inside.
+        let cut = Bounds::new(point(px(1150.0), px(500.0)), size(px(100.0), px(28.0)));
+        let r = morph_target(cut, 180.0, 260.0, MorphAlign::Start, (1200.0, 800.0));
+        let (x, y, w, h) = detached_cancel(cut, r).expect("cancel leaves the trigger");
+        assert_eq!((x, w, h), (r.left + 6.0, r.width - 12.0, 28.0));
+        assert_eq!(y + h, r.top + r.height - 6.0);
+        // Grown down, its slot is at the head.
+        let high = Bounds::new(point(px(1150.0), px(28.0)), size(px(100.0), px(28.0)));
+        let r = morph_target(high, 180.0, 260.0, MorphAlign::Start, (1200.0, 800.0));
+        assert_eq!(detached_cancel(high, r).map(|c| c.1), Some(r.top + 6.0));
+        // A trigger the panel holds keeps Cancel on it.
+        let fits = Bounds::new(point(px(100.0), px(500.0)), size(px(120.0), px(28.0)));
+        let r = morph_target(fits, 180.0, 260.0, MorphAlign::Start, (1200.0, 800.0));
+        assert_eq!(detached_cancel(fits, r), None);
     }
 }

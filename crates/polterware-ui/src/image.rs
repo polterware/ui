@@ -383,8 +383,8 @@ impl RenderOnce for ImageCard {
             .rounded_br(px(inner_radius))
             .bg(gpui::linear_gradient(
                 180.0,
-                gpui::linear_color_stop(gpui::rgba(0x00000000), 0.0),
-                gpui::linear_color_stop(gpui::rgba(0x000000c0), 1.0),
+                gpui::linear_color_stop(gpui::rgba(0x00000033), 0.0),
+                gpui::linear_color_stop(gpui::rgba(0x000000eb), 1.0),
             ))
             .flex()
             .flex_col()
@@ -1173,6 +1173,62 @@ mod tests {
 
     use super::*;
     use crate::test_support::{draw, open};
+
+    #[gpui::test]
+    fn dragging_pans_the_image_by_the_pointer_and_stops_on_release(cx: &mut TestAppContext) {
+        use gpui::{Modifiers, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent};
+        let viewer: Rc<std::cell::RefCell<Option<Entity<ZoomableImage>>>> = Rc::default();
+        let slot = viewer.clone();
+        let mut cx = open(cx, size(600.0, 400.0), move |_, cx| {
+            let entity = slot
+                .borrow_mut()
+                .get_or_insert_with(|| {
+                    cx.new(|_| {
+                        ZoomableImage::new("viewer", ImageData::from_path("/nonexistent.png"))
+                            .natural(1000.0, 500.0)
+                    })
+                })
+                .clone();
+            div().size_full().child(entity).into_any_element()
+        });
+        draw(&mut cx);
+        let entity = viewer.borrow().clone().unwrap();
+        let before = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        let at = |x: f32, y: f32| point(px(x), px(y));
+        cx.simulate_event(MouseDownEvent {
+            position: at(300.0, 200.0),
+            button: MouseButton::Left,
+            modifiers: Modifiers::default(),
+            click_count: 1,
+            first_mouse: false,
+        });
+        draw(&mut cx);
+        for (x, y) in [(320.0, 210.0), (360.0, 230.0)] {
+            cx.simulate_event(MouseMoveEvent {
+                position: at(x, y),
+                pressed_button: Some(MouseButton::Left),
+                modifiers: Modifiers::default(),
+            });
+            draw(&mut cx);
+        }
+        let during = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        assert_eq!((during.x - before.x, during.y - before.y), (60.0, 30.0));
+        cx.simulate_event(MouseUpEvent {
+            position: at(360.0, 230.0),
+            button: MouseButton::Left,
+            modifiers: Modifiers::default(),
+            click_count: 1,
+        });
+        draw(&mut cx);
+        cx.simulate_event(MouseMoveEvent {
+            position: at(500.0, 300.0),
+            pressed_button: None,
+            modifiers: Modifiers::default(),
+        });
+        draw(&mut cx);
+        let after = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        assert_eq!(after, during, "a move after release must not pan");
+    }
 
     #[test]
     fn clamp_zoom_clamps_boundaries_and_recovers_from_nan() {
