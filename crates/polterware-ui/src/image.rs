@@ -142,7 +142,9 @@ fn paint_clipped(
     let mut offset = 0.0;
     while offset < radius {
         let band = BAND.min(radius - offset);
-        let dy = radius - (offset + band / 2.0);
+        // The band's end farther from the arc's center: the band stays inside the arc, and
+        // a border drawn over the edge covers the steps with its own smooth one.
+        let dy = radius - offset;
         let dx = radius - (radius * radius - dy * dy).max(0.0).sqrt();
         let w = (width - 2.0 * dx).max(0.0);
         for top in [y + offset, y + height - offset - band] {
@@ -267,8 +269,8 @@ impl RenderOnce for ImageThumb {
     }
 }
 
-/// An image card: the picture filling the whole card 1px inside its border, rounded to the
-/// card's inner radius (`radius_card - 1.0`), with its title and meta line over a fade into
+/// An image card: the picture filling the whole card under its border, clipped inside the
+/// card's radius, with its title and meta line over a fade into
 /// dark along the bottom. `thumb_height` is the card's height.
 ///
 /// The look is the design system's `Card` (`.card-panel`, [`card`](crate::card)) with a picture
@@ -330,7 +332,6 @@ impl ImageCard {
 impl RenderOnce for ImageCard {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
-        let inner_radius = (theme.radius_card - 1.0).max(0.0);
 
         let border_color = if self.hover_progress > 0.001 {
             blend_color(
@@ -349,7 +350,7 @@ impl RenderOnce for ImageCard {
             .w_full()
             .h(px(self.thumb_height))
             .rounded(px(theme.radius_card))
-            .bg(theme.color_surface_subtle);
+            .bg(theme.color_surface);
 
         if let Some(on_click) = self.on_click {
             card = card
@@ -359,11 +360,12 @@ impl RenderOnce for ImageCard {
 
         // The picture fills the card 1px inside its border, its own corners rounded to the
         // inner radius, so it never runs over the edge.
-        // The picture covers the card 1px inside its border, clipped to the inner radius.
-        let picture = div().absolute().inset(px(1.0)).child(rounded_picture(
+        // The picture runs to the card's outer edge, clipped inside its radius; the border
+        // draws over it, so the clip's steps never show.
+        let picture = div().absolute().inset_0().child(rounded_picture(
             self.image.clone(),
             ObjectFit::Cover,
-            inner_radius,
+            theme.radius_card,
         ));
 
         // The text sits on the picture over a fade into dark, not on a solid footer; it is
@@ -376,10 +378,10 @@ impl RenderOnce for ImageCard {
             .child(ellipsis(self.title));
         let footer = div()
             .absolute()
-            .left(px(1.0))
-            .right(px(1.0))
-            .bottom(px(1.0))
-            .child(scrim(inner_radius))
+            .left_0()
+            .right_0()
+            .bottom_0()
+            .child(scrim(theme.radius_card))
             .flex()
             .flex_col()
             .gap(px(4.0))
