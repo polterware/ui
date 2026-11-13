@@ -86,7 +86,10 @@ pub use hover_card::{HoverBuilder, HoverCard};
 pub use icon_button::icon_button;
 pub use icon_tile::{IconTile, TileTone};
 pub use icons::{Icon, IconAssets, icon, icon_colored, icon_rotated, icon_stroked};
-pub use image::{ImageAction, ImageCard, ImageData, ImageThumb, ImageViewer, THUMB_SIZE, fit_size};
+pub use image::{
+    ImageAction, ImageCard, ImageData, ImageThumb, ImageViewer, ImageViewport, THUMB_SIZE,
+    ZoomableImage, fit_size,
+};
 pub use kbd::kbd;
 pub use list_popover::{ListPopover, ListRow, RowLeading};
 pub use markdown::{MarkdownEditor, MarkdownEditorEvent, markdown_view};

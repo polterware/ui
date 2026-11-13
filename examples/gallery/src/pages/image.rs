@@ -2,7 +2,9 @@
 //! card with its title and meta line, and the viewer a click opens with its actions.
 
 use gpui::{AnyElement, App, ImageFormat, IntoElement, Window, div, prelude::*, px};
-use polterware_ui::{Icon, ImageAction, ImageCard, ImageData, ImageThumb, ImageViewer};
+use polterware_ui::{
+    Icon, ImageAction, ImageCard, ImageData, ImageThumb, ImageViewer, ZoomableImage,
+};
 
 use super::super::Example;
 
@@ -84,6 +86,22 @@ fn cards(_: &mut Window, _: &mut App) -> Vec<AnyElement> {
     ]
 }
 
+fn zoomable(_: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    let theme = *polterware_ui::theme::Theme::global(cx);
+    let view = cx.new(|_| ZoomableImage::new("image-zoomable", sample()).natural(256.0, 256.0));
+    vec![
+        div()
+            .w(px(520.0))
+            .h(px(320.0))
+            .rounded(px(theme.radius_card))
+            .border_1()
+            .border_color(theme.color_border_subtle)
+            .overflow_hidden()
+            .child(view)
+            .into_any_element(),
+    ]
+}
+
 pub fn examples() -> Vec<Example> {
     vec![
         Example {
@@ -103,6 +121,12 @@ pub fn examples() -> Vec<Example> {
             title: "The viewer, with its actions",
             height: 320.0,
             render: viewer,
+        },
+        Example {
+            slug: "image-zoomable",
+            title: "Pan and zoom over an image with its floating dock",
+            height: 380.0,
+            render: zoomable,
         },
     ]
 }
