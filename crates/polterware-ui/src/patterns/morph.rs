@@ -659,16 +659,12 @@ mod tests {
         let trigger = visual
             .debug_bounds("tall-anchor")
             .expect("the anchor draws");
-        let panel = visual
-            .debug_bounds("tall-panel")
-            .expect("the panel draws");
+        let panel = visual.debug_bounds("tall-panel").expect("the panel draws");
         // Down from 6px over the trigger, cut 8px over the window's bottom.
         assert_eq!(panel.top(), trigger.top() - px(6.0));
         assert_eq!(panel.bottom(), px(392.0));
         // The body keeps its height and scrolls inside the panel.
-        let body = visual
-            .debug_bounds("tall-body")
-            .expect("the body draws");
+        let body = visual.debug_bounds("tall-body").expect("the body draws");
         assert_eq!(body.size.height, px(900.0));
     }
 }
