@@ -914,6 +914,22 @@ impl ZoomableImage {
         cx.notify();
     }
 
+    /// Brings the picture back to the middle of the free area, keeping its zoom.
+    pub fn center(&mut self, cx: &mut Context<Self>) {
+        let (Some(bounds), Some(vp)) = (self.bounds, self.viewport) else {
+            return;
+        };
+        let (nat_w, nat_h) = self.resolved_natural();
+        let (ax, ay, aw, ah) = self.fit_area(bounds);
+        let (x, y) = calculate_fit_position(nat_w, nat_h, aw, ah, vp.zoom);
+        self.viewport = Some(ImageViewport {
+            x: ax + x,
+            y: ay + y,
+            zoom: vp.zoom,
+        });
+        cx.notify();
+    }
+
     pub fn zoom_to_100(&mut self, cx: &mut Context<Self>) {
         let center = self.area_center();
         self.zoom_at(center, 1.0, cx);
@@ -1106,6 +1122,7 @@ impl Render for ZoomableImage {
         let entity_reset = entity.clone();
         let entity_zoom_in = entity.clone();
         let entity_fit = entity.clone();
+        let entity_center = entity.clone();
 
         let dock = canvas_dock(cx)
             .child(
@@ -1141,15 +1158,25 @@ impl Render for ZoomableImage {
             )
             .child(dock_separator(cx))
             .child(
-                dock_group().child(
-                    Button::new("image-zoom-fit", ButtonKind::Ghost)
-                        .size(ButtonSize::Icon)
-                        .icon(Icon::Maximize2)
-                        .tooltip("Fit to view")
-                        .on_click(move |_, cx| {
-                            entity_fit.update(cx, |this, cx| this.fit(cx));
-                        }),
-                ),
+                dock_group()
+                    .child(
+                        Button::new("image-center", ButtonKind::Ghost)
+                            .size(ButtonSize::Icon)
+                            .icon(Icon::RadioButtonIcon)
+                            .tooltip("Center")
+                            .on_click(move |_, cx| {
+                                entity_center.update(cx, |this, cx| this.center(cx));
+                            }),
+                    )
+                    .child(
+                        Button::new("image-zoom-fit", ButtonKind::Ghost)
+                            .size(ButtonSize::Icon)
+                            .icon(Icon::Maximize2)
+                            .tooltip("Fit to view")
+                            .on_click(move |_, cx| {
+                                entity_fit.update(cx, |this, cx| this.fit(cx));
+                            }),
+                    ),
             );
 
         let img_w = (nat_w * vp.zoom).max(1.0);
@@ -1311,6 +1338,13 @@ mod tests {
         draw(&mut cx);
         let after = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
         assert_eq!(after, during, "a move after release must not pan");
+        entity.update(&mut cx, |viewer, cx| viewer.center(cx));
+        let centered = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
+        assert_eq!(
+            centered, before,
+            "centering undoes the pan at the same zoom"
+        );
+        let after = centered;
         entity.update(&mut cx, |viewer, cx| viewer.pinch(0.5, cx));
         let pinched = entity.read_with(&cx, |v, _| v.viewport()).unwrap();
         assert!(
