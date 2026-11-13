@@ -1178,6 +1178,8 @@ pub struct ImageRef {
     pub name: String,
     pub rect: Rect,
     pub opacity: f64,
+    /// A monochrome mark: `name` is an SVG asset path the painter draws in this color.
+    pub tint: Option<Color>,
 }
 
 impl ImageRef {
@@ -1187,11 +1189,18 @@ impl ImageRef {
             name: name.into(),
             rect,
             opacity: 1.0,
+            tint: None,
         }
     }
 
     pub fn with_source(mut self, source: SourceRef) -> Self {
         self.source = Some(source);
+        self
+    }
+
+    /// Draws the named SVG asset as a monochrome mark in `color`, like an icon.
+    pub fn tinted(mut self, color: Color) -> Self {
+        self.tint = Some(color);
         self
     }
 }
@@ -1203,6 +1212,7 @@ impl Default for ImageRef {
             name: String::new(),
             rect: Rect::ZERO,
             opacity: 1.0,
+            tint: None,
         }
     }
 }

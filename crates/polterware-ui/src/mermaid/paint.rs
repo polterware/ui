@@ -153,7 +153,7 @@ impl ScenePainter<'_> {
                 Item::Rect(shape) => self.paint_rect_shape(shape, transform, opacity, window),
                 Item::Ellipse(shape) => self.paint_ellipse(shape, transform, opacity, window),
                 Item::Text(text) => self.paint_text(text, transform, opacity, window, cx),
-                Item::Image(image) => self.paint_image(image, transform, window),
+                Item::Image(image) => self.paint_image(image, transform, window, cx),
             }
         }
     }
@@ -598,7 +598,23 @@ impl ScenePainter<'_> {
         }
     }
 
-    fn paint_image(&self, image: &ImageRef, transform: Transform, window: &mut Window) {
+    fn paint_image(&self, image: &ImageRef, transform: Transform, window: &mut Window, cx: &App) {
+        if let Some(tint) = &image.tint {
+            let rect = self
+                .viewport
+                .window_rect(transformed_bounds(image.rect, transform), self.bounds);
+            let Some(color) = css_color(&tint.0, self.theme.color_text_primary) else {
+                return;
+            };
+            let _ = window.paint_svg(
+                rect,
+                image.name.clone().into(),
+                gpui::TransformationMatrix::unit(),
+                with_alpha(color, image.opacity).into(),
+                cx,
+            );
+            return;
+        }
         let Some(resolver) = self.images else {
             return;
         };
