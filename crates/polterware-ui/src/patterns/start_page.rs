@@ -1,4 +1,4 @@
-//! A start page (Vitals' `HostHome`): the mascot over the main action, a button the column's
+//! A start page (Vitals' `HostHome`): the mascot (when it has one) over the main action, a button the column's
 //! width, and the lists to reopen something from, in a 320px column 20px apart, given as
 //! `PageEmpty`'s action (`mt-2`) and 12px lower again.
 //!
@@ -25,12 +25,12 @@ use crate::ellipsis::fade;
 use crate::icons::{Icon, icon_colored};
 use crate::theme::{Theme, tw};
 
-use super::page_empty::page_empty_action;
+use super::page_empty::page_empty_parts;
 
 pub type MoreHandler = Rc<dyn Fn(Bounds<Pixels>, &mut Window, &mut App)>;
 
-/// The page: the `mood` mascot over `body` (the main action, then the sections).
-pub fn start_page(mood: MascotMood, body: Vec<AnyElement>, cx: &App) -> AnyElement {
+/// The page: the `mood` mascot, if any, over `body` (the main action, then the sections).
+pub fn start_page(mood: Option<MascotMood>, body: Vec<AnyElement>, cx: &App) -> AnyElement {
     let column = div()
         .w(px(320.0))
         .mt(px(12.0))
@@ -40,7 +40,7 @@ pub fn start_page(mood: MascotMood, body: Vec<AnyElement>, cx: &App) -> AnyEleme
         .gap(px(20.0))
         .children(body)
         .into_any_element();
-    page_empty_action(None, mood, column, cx).into_any_element()
+    page_empty_parts(None, mood, Some(column), None, cx).into_any_element()
 }
 
 /// A labelled list of rows; nothing when it has none.
@@ -244,7 +244,7 @@ mod tests {
             div()
                 .size_full()
                 .child(start_page(
-                    MascotMood::Sleeping,
+                    Some(MascotMood::Sleeping),
                     vec![start_section("Saved", vec![row], cx)],
                     cx,
                 ))

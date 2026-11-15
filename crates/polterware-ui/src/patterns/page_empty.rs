@@ -28,7 +28,7 @@ pub fn page_empty_with(
     body: Option<AnyElement>,
     cx: &App,
 ) -> Div {
-    page_empty_parts(title, mood, None, body, cx)
+    page_empty_parts(title, Some(mood), None, body, cx)
 }
 
 /// [`page_empty`] with an optional title and an action under it (`PageEmpty`'s `action`),
@@ -39,12 +39,13 @@ pub fn page_empty_action(
     action: AnyElement,
     cx: &App,
 ) -> Div {
-    page_empty_parts(title, mood, Some(action), None, cx)
+    page_empty_parts(title, Some(mood), Some(action), None, cx)
 }
 
-fn page_empty_parts(
+/// The column: the `mood` mascot (none for `None`), the title, the action, and the body.
+pub(crate) fn page_empty_parts(
     title: Option<&str>,
-    mood: MascotMood,
+    mood: Option<MascotMood>,
     action: Option<AnyElement>,
     body: Option<AnyElement>,
     cx: &App,
@@ -56,7 +57,7 @@ fn page_empty_parts(
         .items_center()
         .gap(px(tw(2.0)))
         .text_center()
-        .child(mascot(mood, MASCOT))
+        .children(mood.map(|mood| mascot(mood, MASCOT)))
         .children(title.map(|title| {
             div()
                 .mt(px(tw(2.0)))

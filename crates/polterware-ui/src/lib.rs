@@ -39,7 +39,6 @@ pub mod icons;
 pub mod image;
 pub mod kbd;
 pub mod list_popover;
-pub mod loader;
 pub mod markdown;
 pub mod markdown_tools;
 pub mod material;
@@ -93,7 +92,6 @@ pub use image::{
 };
 pub use kbd::kbd;
 pub use list_popover::{ListPopover, ListRow, RowLeading};
-pub use loader::echo_ring;
 pub use markdown::{MarkdownEditor, MarkdownEditorEvent, markdown_view};
 pub use material::{
     Edge, control_drop, drop, edge, face, float_drop, floating_panel, raised_drop, raised_panel,

@@ -1195,7 +1195,7 @@ impl Render for ZoomableImage {
         // While the file loads, the Echo Ring pulses in the middle of the room the picture
         // will take, and fades out as the picture fades in.
         let placeholder = (fitted && reveal < 1.0).then(|| {
-            let ring = crate::loader::echo_ring(window, cx);
+            let ring = crate::echo_ring::EchoRing::new("image-loading-echo");
             div()
                 .absolute()
                 .left(px(vp.x))
