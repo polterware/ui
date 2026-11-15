@@ -1191,14 +1191,16 @@ impl Render for ZoomableImage {
         let radius = self.corner_radius;
         // While the file loads, the Echo Ring pulses in the middle of the room the picture
         // will take, and fades out as the picture fades in.
-        let placeholder = (fitted && reveal < 1.0).then(|| {
+        // Before the fit is known it pulses in the middle of the view.
+        let placeholder = (reveal < 1.0).then(|| {
             let ring = crate::echo_ring::EchoRing::new("image-loading-echo");
-            div()
-                .absolute()
-                .left(px(vp.x))
-                .top(px(vp.y))
-                .w(px(img_w))
-                .h(px(img_h))
+            let place = div().absolute();
+            let place = if fitted {
+                place.left(px(vp.x)).top(px(vp.y)).w(px(img_w)).h(px(img_h))
+            } else {
+                place.inset_0()
+            };
+            place
                 .flex()
                 .items_center()
                 .justify_center()
@@ -1252,9 +1254,10 @@ impl Render for ZoomableImage {
                     }
                     changed
                 });
-                // The fit is known only once the view is measured: draw again with it.
+                // The fit is known only once the view is measured: draw again with it. GPUI
+                // drops a refresh asked for while it draws, so ask for the next frame instead.
                 if changed {
-                    window.refresh();
+                    window.on_next_frame(|window, _| window.refresh());
                 }
             },
         )
