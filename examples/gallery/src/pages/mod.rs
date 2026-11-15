@@ -44,6 +44,7 @@ mod title_bar;
 mod toast;
 mod tooltip;
 mod tree_view;
+mod voice_blob;
 mod usage_cards;
 
 pub fn all() -> Vec<Example> {
@@ -65,6 +66,7 @@ pub fn all() -> Vec<Example> {
     examples.extend(segment_display::examples());
     examples.extend(status::examples());
     examples.extend(echo_ring::examples());
+    examples.extend(voice_blob::examples());
     examples.extend(card::examples());
     examples.extend(chat_bubble::examples());
     examples.extend(message_composer::examples());
