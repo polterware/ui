@@ -85,7 +85,7 @@ fn start(_: &mut Window, cx: &mut App) -> Vec<AnyElement> {
         div()
             .w(px(860.0))
             .h(px(420.0))
-            .child(start_page(MascotMood::Sleeping, body, cx))
+            .child(start_page(Some(MascotMood::Sleeping), body, cx))
             .into_any_element(),
     ]
 }
