@@ -331,11 +331,9 @@ impl RenderOnce for ImageCard {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);
 
-        // A light ring rather than a gray line: over a bright sky or the dark fade it reads
-        // the same, where an opaque gray shows as a stripe along the dark foot.
-        let rest = gpui::rgba(0xffffff1f);
-        let lit = gpui::rgba(0xffffff3d);
-        let border_color = blend_color(rest, lit, self.hover_progress);
+        // No visible border: the ring is the page's own color, so it only smooths the
+        // picture's clipped corners into the page.
+        let border_color = theme.color_surface;
 
         let mut card = div()
             .id(self.id.clone())
@@ -388,8 +386,7 @@ impl RenderOnce for ImageCard {
             .inset_0()
             .rounded(px(theme.radius_card))
             .border_1()
-            .border_color(border_color)
-            .group_hover("image-card", move |style| style.border_color(lit));
+            .border_color(border_color);
 
         card.child(picture)
             .child(scrim(theme.radius_card))
@@ -405,7 +402,7 @@ impl RenderOnce for ImageCard {
 /// a box's height and a short band would round less than the card and show past its edge.
 fn scrim(radius: f32) -> gpui::Div {
     const BANDS: usize = 8;
-    const DARKEST: f32 = 0.78;
+    const DARKEST: f32 = 0.92;
     let alpha = |depth: f32| DARKEST * (depth / SCRIM_HEIGHT).clamp(0.0, 1.0).powf(1.8);
     let last = (2.0 * radius).min(SCRIM_HEIGHT);
     let step = (SCRIM_HEIGHT - last) / (BANDS - 1) as f32;
