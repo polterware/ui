@@ -829,6 +829,69 @@ pub fn page_fill_bar(
         .into_any_element()
 }
 
+/// A dropdown's rows in a scroll no taller than `max_height`, with the classic scrollbar on
+/// the right while they overflow (as the last frame laid them out), as a menu or a list
+/// popover shows a long list. `rows` itself scrolls, so its children are what
+/// `handle.scroll_to_item` counts; while it overflows its right padding grows to `end_pad`
+/// plus the gutter, so the bar never covers a row.
+pub fn capped_scroll(
+    id: impl Into<ElementId>,
+    rows: gpui::Div,
+    handle: &ScrollHandle,
+    max_height: f32,
+    end_pad: f32,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let id = id.into();
+    let max = f32::from(handle.max_offset().height);
+    let viewport = f32::from(handle.bounds().size.height);
+    let overflows = max > 0.5;
+    let scroller = rows
+        .when(overflows, |rows| rows.pr(px(end_pad + reserved_gutter())))
+        .id(id.clone())
+        .max_h(px(max_height))
+        .overflow_y_scroll()
+        .track_scroll(handle);
+    // Overflow is known once the rows are laid out: a frame that changes it draws again.
+    let watch = handle.clone();
+    let watcher = canvas(
+        move |_, window, _| {
+            if (f32::from(watch.max_offset().height) > 0.5) != overflows {
+                crate::frame::draw_again(window);
+            }
+        },
+        |_, _, _, _| {},
+    )
+    .absolute()
+    .size_0();
+    let mut area = div().relative().child(scroller).child(watcher);
+    if overflows {
+        let bar = scrollbar(
+            (id, "bar"),
+            handle,
+            ScrollAxis::Vertical,
+            ScrollGeometry {
+                track: viewport,
+                viewport,
+                content: viewport + max,
+            },
+            window,
+            cx,
+        );
+        area = area.child(
+            div()
+                .absolute()
+                .top_0()
+                .right_0()
+                .bottom_0()
+                .w(px(GUTTER))
+                .child(bar),
+        );
+    }
+    area.into_any_element()
+}
+
 #[cfg(test)]
 mod lock_tests {
     use super::*;

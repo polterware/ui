@@ -15,14 +15,18 @@
 //! closes it; Enter or a click runs an item and closes the menu, except a check item, which
 //! toggles and leaves the menu open for the next one; the pointer highlights the
 //! row under it and opens a submenu by hovering; Escape or a press outside closes the menu.
+//! A long menu stops at [`MENU_MAX_HEIGHT`] (or [`Menu::set_max_height`]) and scrolls inside,
+//! with the shared scrollbar; it opens scrolled to its picked choice, and the keys keep the
+//! highlighted row in view. A menu with submenus does not scroll, since its submenus hang
+//! past its edge and a scroll would clip them.
 
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use gpui::{
     App, Bounds, Context, DispatchPhase, FocusHandle, Focusable, IntoElement, KeyBinding,
-    MouseMoveEvent, Pixels, Render, SharedString, Window, actions, canvas, div, prelude::*, px,
-    relative,
+    MouseMoveEvent, Pixels, Render, ScrollHandle, SharedString, Window, actions, canvas, div,
+    prelude::*, px, relative,
 };
 
 use super::Dismiss;
@@ -141,6 +145,8 @@ impl MenuItem {
 
 /// The default width of a panel.
 const MIN_WIDTH: f32 = 180.0;
+/// How tall a menu grows before it scrolls inside.
+pub const MENU_MAX_HEIGHT: f32 = 320.0;
 /// How far a submenu overlaps its parent panel's edge.
 const SUBMENU_GAP: f32 = 4.0;
 
@@ -168,6 +174,12 @@ pub struct Menu {
     aim: Rc<RefCell<MenuAim>>,
     /// Counts the waits, so a newer hover drops an older one.
     pending: u64,
+    /// How tall the panel grows before its rows scroll.
+    max_height: f32,
+    /// The rows' scroll, when they overflow `max_height`.
+    scroll: ScrollHandle,
+    /// The picked choice still has to be scrolled into view since the menu opened.
+    reveal: bool,
 }
 
 impl Menu {
@@ -189,7 +201,20 @@ impl Menu {
             sub_bounds: Rc::new(Cell::new(None)),
             aim: Rc::new(RefCell::new(MenuAim::default())),
             pending: 0,
+            max_height: MENU_MAX_HEIGHT,
+            scroll: ScrollHandle::new(),
+            reveal: false,
         }
+    }
+
+    /// How tall the panel grows before its rows scroll inside ([`MENU_MAX_HEIGHT`] unless
+    /// set; 0 or less goes back to it).
+    pub fn set_max_height(&mut self, height: f32) {
+        self.max_height = if height > 0.0 {
+            height
+        } else {
+            MENU_MAX_HEIGHT
+        };
     }
 
     /// Plain actions.
@@ -218,6 +243,9 @@ impl Menu {
     }
 
     pub fn set_open(&mut self, open: bool) {
+        if open && !self.open {
+            self.reveal = true;
+        }
         self.open = open;
         self.progress.set_target(if open { 1.0 } else { 0.0 });
         if !open {
@@ -324,6 +352,9 @@ impl Menu {
             self.sub_highlighted = next;
         } else {
             self.highlighted = next_selectable(&self.items, self.highlighted, step);
+            if let Some(index) = self.highlighted {
+                self.scroll.scroll_to_item(index);
+            }
             self.close_submenu();
         }
     }
@@ -396,29 +427,56 @@ impl Menu {
         items: &[MenuItem],
         level: Level,
         theme: &Theme,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> gpui::Div {
         let highlighted = match level {
             Level::Top => self.highlighted,
             Level::Sub => self.sub_highlighted,
         };
-        let mut list = div()
+        let mut rows = div().p(px(tw(1.5))).flex().flex_col().gap(px(tw(1.0)));
+        for (index, item) in items.iter().enumerate() {
+            let lit = highlighted == Some(index);
+            rows = rows.child(self.row(index, item, lit, level, theme, window, cx));
+        }
+        let list = div()
             .relative()
             .w(px(self.width))
             .bg(theme.color_surface_subtle)
-            .p(px(tw(1.5)))
-            .flex()
-            .flex_col()
-            .gap(px(tw(1.0)))
             .text_size(px(12.0))
             .line_height(px(18.0));
-        for (index, item) in items.iter().enumerate() {
-            let lit = highlighted == Some(index);
-            list = list.child(self.row(index, item, lit, level, theme, cx));
-        }
+        let scrolls = level == Level::Top
+            && !items
+                .iter()
+                .any(|item| matches!(item, MenuItem::Submenu { .. }));
+        let list = if scrolls {
+            list.child(self.scrolling(rows, window, cx))
+        } else {
+            list.child(rows)
+        };
         floating_panel(list, theme.radius_menu, theme)
     }
 
+    /// The top panel's rows in a scroll no taller than `max_height`, with the shared
+    /// scrollbar while they overflow.
+    fn scrolling(
+        &self,
+        rows: gpui::Div,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> gpui::AnyElement {
+        crate::scroll::capped_scroll(
+            "menu-scroll",
+            rows,
+            &self.scroll,
+            self.max_height,
+            tw(1.5),
+            window,
+            cx,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn row(
         &self,
         index: usize,
@@ -426,6 +484,7 @@ impl Menu {
         lit: bool,
         level: Level,
         theme: &Theme,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> gpui::AnyElement {
         if matches!(item, MenuItem::Separator) {
@@ -529,7 +588,7 @@ impl Menu {
             row = row.child(div().size(px(14.0)).flex_none().child(icon(name, 14.0, cx)));
         }
         if level == Level::Top && is_submenu && self.submenu == Some(index) {
-            let sub = self.panel(self.submenu_items(), Level::Sub, theme, cx);
+            let sub = self.panel(self.submenu_items(), Level::Sub, theme, window, cx);
             let seen = self.sub_bounds.clone();
             row = row.child(
                 div()
@@ -623,6 +682,21 @@ impl Render for Menu {
         let theme = *Theme::global(cx);
         let t = self.progress.value().clamp(0.0, 1.0);
         let items = self.items.clone();
+        // A menu opens scrolled to its picked choice, once its rows have been laid out.
+        if self.reveal {
+            if f32::from(self.scroll.bounds().size.height) > 0.0 {
+                self.reveal = false;
+                if let Some(index) = items
+                    .iter()
+                    .position(|item| matches!(item, MenuItem::Radio { checked: true, .. }))
+                {
+                    self.scroll.scroll_to_item(index);
+                    crate::frame::draw_again(window);
+                }
+            } else {
+                crate::frame::draw_again(window);
+            }
+        }
         let bounds = self.bounds.clone();
         let panel = div()
             .debug_selector(|| "menu-panel".into())
@@ -678,7 +752,7 @@ impl Render for Menu {
                 }
             }))
             .opacity(t)
-            .child(self.panel(&items, Level::Top, &theme, cx))
+            .child(self.panel(&items, Level::Top, &theme, window, cx))
             .when(self.submenu.is_some(), |panel| {
                 let aim = self.aim.clone();
                 panel.child(
@@ -718,6 +792,56 @@ mod tests {
 
     fn noop() -> crate::Handler {
         Rc::new(|_, _| {})
+    }
+
+    #[gpui::test]
+    fn a_long_menu_stops_at_its_max_height_and_opens_on_its_choice(cx: &mut TestAppContext) {
+        let menu = cx.new(Menu::new);
+        menu.update(cx, |menu, _| {
+            menu.set_menu(
+                (0..40)
+                    .map(|n| MenuItem::radio(format!("Voice {n}"), n == 30, noop()))
+                    .collect(),
+            );
+        });
+        let host = menu.clone();
+        let mut cx = open(cx, size(600.0, 900.0), move |_, _| {
+            div()
+                .relative()
+                .size_full()
+                .child(
+                    div()
+                        .absolute()
+                        .left(px(40.0))
+                        .top(px(40.0))
+                        .w(px(120.0))
+                        .h(px(32.0))
+                        .child(host.clone()),
+                )
+                .into_any_element()
+        });
+        cx.update(|_, cx| {
+            menu.update(cx, |menu, cx| {
+                menu.set_open(true);
+                cx.notify();
+            })
+        });
+        settle(&mut cx);
+        let (panel, scrolled, overflow) = cx.update(|_, cx| {
+            let menu = menu.read(cx);
+            (
+                menu.bounds().expect("the menu is drawn"),
+                -f32::from(menu.scroll.offset().y),
+                f32::from(menu.scroll.max_offset().height),
+            )
+        });
+        assert!(
+            f32::from(panel.size.height) <= super::MENU_MAX_HEIGHT + 1.0,
+            "the panel is {:?} tall",
+            panel.size.height
+        );
+        assert!(overflow > 0.0, "forty rows overflow it");
+        assert!(scrolled > 0.0, "it opens scrolled to the picked choice");
     }
 
     #[gpui::test]

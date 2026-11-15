@@ -17,14 +17,16 @@
 //! search's, when it has one), ↑/↓ move the highlight over the rows and the footer, Enter
 //! or a click runs a row and closes the panel, and Escape or a press outside closes it. It
 //! hangs under its trigger, or over it when it does not fit under, through
-//! [`window_anchor`](crate::patterns::window_anchor).
+//! [`window_anchor`](crate::patterns::window_anchor). Its rows stop at
+//! [`MENU_MAX_HEIGHT`](crate::menu::MENU_MAX_HEIGHT) and scroll inside with the shared
+//! scrollbar; the search and the footer stay put.
 
 use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
     AnyElement, App, Context, Entity, FocusHandle, Focusable, IntoElement, KeyDownEvent, Render,
-    SharedString, Window, div, prelude::*, px,
+    ScrollHandle, SharedString, Window, div, prelude::*, px,
 };
 
 use crate::Handler;
@@ -100,6 +102,9 @@ pub struct ListPopover {
     highlighted: Option<usize>,
     /// How long a picked row stays on show before the panel closes.
     hold: Option<Duration>,
+    /// The rows' scroll: past [`MENU_MAX_HEIGHT`](crate::menu::MENU_MAX_HEIGHT) they scroll
+    /// inside, as a menu's do, and the keys keep the highlighted row in view.
+    scroll: ScrollHandle,
 }
 
 impl ListPopover {
@@ -108,6 +113,7 @@ impl ListPopover {
             focus: cx.focus_handle(),
             open: false,
             took_focus: false,
+            scroll: ScrollHandle::new(),
             progress: SpringValue::new(0.0, SpringTier::Fast),
             animator: Animator::new(),
             width: 320.0,
@@ -212,6 +218,9 @@ impl ListPopover {
             None => len - 1,
         };
         self.highlighted = Some(next as usize);
+        if (next as usize) < self.rows.len() {
+            self.scroll.scroll_to_item(next as usize);
+        }
     }
 
     fn run(&mut self, index: usize, window: &mut Window, cx: &mut Context<Self>) {
@@ -380,14 +389,20 @@ impl Render for ListPopover {
                     .child(search.clone()),
             );
         }
-        surface = surface.child(
+        surface = surface.child(crate::scroll::capped_scroll(
+            "list-popover-rows",
             div()
                 .flex()
                 .flex_col()
                 .p(px(tw(2.0)))
                 .children(rows)
                 .children(empty),
-        );
+            &self.scroll,
+            crate::menu::MENU_MAX_HEIGHT,
+            tw(2.0),
+            window,
+            cx,
+        ));
         if !footer.is_empty() {
             surface = surface.child(
                 div()
@@ -446,6 +461,49 @@ mod tests {
     use super::{ListPopover, ListRow};
     use crate::test_support::{draw, open, settle};
     use crate::theme::tw;
+
+    #[gpui::test]
+    fn a_long_list_scrolls_inside_its_max_height(cx: &mut TestAppContext) {
+        let popover = cx.new(ListPopover::new);
+        popover.update(cx, |popover, _| {
+            popover.set_width(260.0);
+            popover.set_rows(
+                (0..40)
+                    .map(|index| ListRow::new(format!("Row {index}"), Rc::new(|_, _| {})))
+                    .collect(),
+            );
+            popover.set_open(true);
+        });
+        let host = popover.clone();
+        let mut cx = open(cx, size(600.0, 1200.0), move |_, _| {
+            div()
+                .relative()
+                .size_full()
+                .child(
+                    div()
+                        .absolute()
+                        .left(px(40.0))
+                        .top(px(40.0))
+                        .w(px(32.0))
+                        .h(px(28.0))
+                        .child(host.clone()),
+                )
+                .into_any_element()
+        });
+        settle(&mut cx);
+        let (viewport, overflow) = cx.update(|_, cx| {
+            let scroll = &popover.read(cx).scroll;
+            (
+                f32::from(scroll.bounds().size.height),
+                f32::from(scroll.max_offset().height),
+            )
+        });
+        assert!(
+            viewport <= crate::menu::MENU_MAX_HEIGHT + 0.5,
+            "the rows show {viewport}px"
+        );
+        assert!(overflow > 0.0, "forty rows overflow it");
+    }
 
     #[gpui::test]
     fn a_row_runs_and_closes_the_panel_and_keys_move_the_highlight(cx: &mut TestAppContext) {
