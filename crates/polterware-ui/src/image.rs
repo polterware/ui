@@ -1192,17 +1192,21 @@ impl Render for ZoomableImage {
 
         let data = self.image.clone();
         let radius = self.corner_radius;
+        // While the file loads, the Echo Ring pulses in the middle of the room the picture
+        // will take, and fades out as the picture fades in.
         let placeholder = (fitted && reveal < 1.0).then(|| {
-            let tone = crate::skeleton::skeleton_tone(window, cx);
+            let ring = crate::loader::echo_ring(window, cx);
             div()
                 .absolute()
                 .left(px(vp.x))
                 .top(px(vp.y))
                 .w(px(img_w))
                 .h(px(img_h))
-                .rounded(px(8.0))
-                .bg(tone)
+                .flex()
+                .items_center()
+                .justify_center()
                 .opacity(1.0 - reveal)
+                .child(ring)
         });
         let image_element = canvas(
             |_, _, _| (),

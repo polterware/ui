@@ -153,6 +153,8 @@ pub struct Menu {
     animator: Animator,
     items: Vec<MenuItem>,
     width: f32,
+    /// How tall the box the panel hangs from is; `None` is a control's height.
+    trigger_height: Option<f32>,
     highlighted: Option<usize>,
     /// The open submenu (an index into `items`) and the highlight inside it.
     submenu: Option<usize>,
@@ -179,6 +181,7 @@ impl Menu {
             animator: Animator::new(),
             items: Vec::new(),
             width: MIN_WIDTH,
+            trigger_height: None,
             highlighted: None,
             submenu: None,
             sub_highlighted: None,
@@ -205,6 +208,13 @@ impl Menu {
     /// default 180px.
     pub fn set_width(&mut self, width: f32) {
         self.width = if width > 0.0 { width } else { MIN_WIDTH };
+    }
+
+    /// How tall the box it is drawn in stands for: the panel hangs that far under the box's
+    /// top-left corner (above it when it does not fit). A control's height unless set; 0 hangs
+    /// it from a point, such as a pointer press.
+    pub fn set_trigger_height(&mut self, height: f32) {
+        self.trigger_height = Some(height.max(0.0));
     }
 
     pub fn set_open(&mut self, open: bool) {
@@ -687,7 +697,8 @@ impl Render for Menu {
                     .size_0(),
                 )
             });
-        hang(theme.control_height_md, (1.0 - t) * SLIDE, panel).into_any_element()
+        let trigger_height = self.trigger_height.unwrap_or(theme.control_height_md);
+        hang(trigger_height, (1.0 - t) * SLIDE, panel).into_any_element()
     }
 }
 

@@ -19,6 +19,8 @@ use crate::theme::tw;
 
 /// The space kept between the menu and the window's edges.
 const EDGE: f32 = 8.0;
+/// The space between a menu and the control it opens under.
+const GAP: f32 = 4.0;
 /// A menu row: 12px text on an 18px line, padded `py-2`.
 fn row_height() -> f32 {
     18.0 + 2.0 * tw(2.0)
@@ -63,7 +65,8 @@ impl ContextMenu {
         self.width = width;
     }
 
-    /// Opens `items` at `at`, a window position such as a mouse event's.
+    /// Opens `items` at `at`, a window position such as a mouse event's: the panel's top-left
+    /// corner, moved in as far as it needs to stay inside the window.
     pub fn open(
         &mut self,
         at: Point<Pixels>,
@@ -72,33 +75,47 @@ impl ContextMenu {
         cx: &mut Context<Self>,
     ) {
         let viewport = window.viewport_size();
-        self.at = place(
+        let at = place(
             (f32::from(at.x), f32::from(at.y)),
             (self.width, menu_height(&items)),
             (f32::from(viewport.width), f32::from(viewport.height)),
         );
-        let width = self.width;
-        self.menu.update(cx, |menu, cx| {
-            menu.set_menu(items);
-            menu.set_width(width);
-            menu.set_open(true);
-            cx.notify();
-        });
-        cx.notify();
+        self.show(at, 0.0, items, cx);
     }
 
-    /// Opens `items` under `trigger` (a button's window bounds) with their right edges lined
-    /// up, 4px below it, as a `DropdownMenu` placed `bottom-end` opens.
+    /// Opens `items` under `trigger`, a control's bounds in window coordinates, `GAP` below
+    /// it with their right edges aligned; above it when it does not fit under.
     pub fn open_under(
         &mut self,
         trigger: gpui::Bounds<Pixels>,
         items: Vec<MenuItem>,
-        window: &Window,
+        _window: &Window,
         cx: &mut Context<Self>,
     ) {
         let x = f32::from(trigger.origin.x + trigger.size.width) - self.width;
-        let y = f32::from(trigger.origin.y + trigger.size.height) + 4.0;
-        self.open(point(px(x), px(y)), items, window, cx);
+        let y = f32::from(trigger.origin.y) - GAP;
+        let height = f32::from(trigger.size.height) + 2.0 * GAP;
+        self.show((x, y), height, items, cx);
+    }
+
+    /// Draws the menu hung from a box at `at`, `trigger_height` tall.
+    fn show(
+        &mut self,
+        at: (f32, f32),
+        trigger_height: f32,
+        items: Vec<MenuItem>,
+        cx: &mut Context<Self>,
+    ) {
+        self.at = at;
+        let width = self.width;
+        self.menu.update(cx, |menu, cx| {
+            menu.set_menu(items);
+            menu.set_width(width);
+            menu.set_trigger_height(trigger_height);
+            menu.set_open(true);
+            cx.notify();
+        });
+        cx.notify();
     }
 
     pub fn close(&mut self, cx: &mut Context<Self>) {
@@ -134,7 +151,49 @@ impl Render for ContextMenu {
 mod tests {
     use super::*;
     use crate::Handler;
+    use crate::test_support::{open, settle};
+    use gpui::{Bounds, TestAppContext, size};
     use std::rc::Rc;
+
+    fn two_rows() -> Vec<MenuItem> {
+        let noop: Handler = Rc::new(|_, _| {});
+        vec![
+            MenuItem::radio("Password", true, noop.clone()),
+            MenuItem::radio("Private key", false, noop),
+        ]
+    }
+
+    #[gpui::test]
+    fn it_opens_at_the_point_and_under_the_trigger(cx: &mut TestAppContext) {
+        let menu = cx.new(ContextMenu::new);
+        let shown = menu.clone();
+        let mut cx = open(cx, size(800.0, 600.0), move |_, _| {
+            shown.clone().into_any_element()
+        });
+        menu.update_in(&mut cx, |menu, window, cx| {
+            menu.open(point(px(100.0), px(100.0)), two_rows(), window, cx)
+        });
+        settle(&mut cx);
+        let panel = cx.debug_bounds("menu-panel").expect("the menu draws");
+        assert_eq!(
+            panel.origin,
+            point(px(100.0), px(100.0)),
+            "a press opens it there"
+        );
+
+        let trigger = Bounds::new(point(px(200.0), px(300.0)), size(px(240.0), px(32.0)));
+        menu.update_in(&mut cx, |menu, window, cx| {
+            menu.set_width(240.0);
+            menu.open_under(trigger, two_rows(), window, cx)
+        });
+        settle(&mut cx);
+        let panel = cx.debug_bounds("menu-panel").expect("the menu draws");
+        assert_eq!(
+            panel.origin,
+            point(px(200.0), px(336.0)),
+            "it hangs GAP under the trigger, left edges aligned"
+        );
+    }
 
     #[test]
     fn the_menu_stays_inside_the_window() {
