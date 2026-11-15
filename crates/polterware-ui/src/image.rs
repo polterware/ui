@@ -413,43 +413,98 @@ impl RenderOnce for ImageCard {
     }
 }
 
-/// A fade from clear into near black down a card's foot, `SCRIM_HEIGHT` tall. GPUI gradients
-/// take two stops, so it is several bands, each a two-stop gradient, following an ease-in
-/// curve: no seam where it starts and the darkest part under the text. The last band carries
-/// the card's bottom corners and is twice their radius tall, as GPUI shrinks a radius to half
-/// a box's height and a short band would round less than the card and show past its edge.
+/// A fade from clear into near black up a card's lower `SCRIM_SHARE` of its height, so the
+/// dark reaches above the title and the meta line sits on almost black. GPUI gradients take
+/// two stops, so it is several bands, each a two-stop gradient, following an ease-in curve:
+/// no step where it starts and the darkest part under the text. The bands are painted on a
+/// canvas with every edge between two of them on a whole device pixel: at a fractional edge
+/// the antialiasing of both quads leaves a light seam (a gap) or a dark one (an overlap) right
+/// across the picture. The last band carries the card's bottom corners and is at least twice
+/// their radius tall, as GPUI shrinks a radius to half a box's height and a short band would
+/// round less than the card and show past its edge.
 fn scrim(radius: f32) -> gpui::Div {
-    const BANDS: usize = 8;
-    const DARKEST: f32 = 0.92;
-    let alpha = |depth: f32| DARKEST * (depth / SCRIM_HEIGHT).clamp(0.0, 1.0).powf(1.8);
-    let last = (2.0 * radius).min(SCRIM_HEIGHT);
-    let step = (SCRIM_HEIGHT - last) / (BANDS - 1) as f32;
-    let mut column = div()
+    div()
         .absolute()
         .left_0()
         .right_0()
         .bottom_0()
-        .h(px(SCRIM_HEIGHT))
-        .flex()
-        .flex_col();
-    for band in 0..BANDS {
-        let top = step * band as f32;
-        let height = if band + 1 == BANDS { last } else { step };
-        let mut part = div().h(px(height)).bg(gpui::linear_gradient(
-            180.0,
-            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, alpha(top)), 0.0),
-            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, alpha(top + height)), 1.0),
-        ));
-        if band + 1 == BANDS {
-            part = part.rounded_bl(px(radius)).rounded_br(px(radius));
-        }
-        column = column.child(part);
-    }
-    column
+        .h(gpui::relative(SCRIM_SHARE))
+        .child(
+            gpui::canvas(
+                |_, _, _| {},
+                move |bounds: Bounds<Pixels>, _, window: &mut Window, _: &mut App| {
+                    paint_scrim(bounds, radius, window);
+                },
+            )
+            .size_full(),
+        )
 }
 
-/// How tall a card's fade is, from clear to its darkest at the bottom edge.
-const SCRIM_HEIGHT: f32 = 128.0;
+const SCRIM_BANDS: usize = 12;
+
+fn paint_scrim(bounds: Bounds<Pixels>, radius: f32, window: &mut Window) {
+    let top = f32::from(bounds.top());
+    let bottom = f32::from(bounds.bottom());
+    let height = bottom - top;
+    if height <= 0.0 {
+        return;
+    }
+    let edges = scrim_edges(top, bottom, 2.0 * radius, window.scale_factor());
+    let alpha = |y: f32| SCRIM_DARKEST * scrim_curve((y - top) / height);
+    let last = edges.len() - 2;
+    for (index, pair) in edges.windows(2).enumerate() {
+        let (from, to) = (pair[0], pair[1]);
+        let band = Bounds::new(
+            gpui::point(bounds.left(), px(from)),
+            gpui::size(bounds.size.width, px(to - from)),
+        );
+        let background = gpui::linear_gradient(
+            180.0,
+            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, alpha(from)), 0.0),
+            gpui::linear_color_stop(gpui::hsla(0.0, 0.0, 0.0, alpha(to)), 1.0),
+        );
+        let mut quad = gpui::fill(band, background);
+        if index == last {
+            quad = quad.corner_radii(gpui::Corners {
+                top_left: px(0.0),
+                top_right: px(0.0),
+                bottom_right: px(radius),
+                bottom_left: px(radius),
+            });
+        }
+        window.paint_quad(quad);
+    }
+}
+
+/// The scrim's band edges from `top` to `bottom`, the last band at least `last_min` tall
+/// (when the scrim has room), every inner edge on a whole device pixel at `scale`.
+fn scrim_edges(top: f32, bottom: f32, last_min: f32, scale: f32) -> Vec<f32> {
+    let height = bottom - top;
+    let last_top = bottom - last_min.max(height / SCRIM_BANDS as f32).min(height);
+    let snap = |y: f32| (y * scale).round() / scale;
+    let mut edges = vec![top];
+    let step = (last_top - top) / (SCRIM_BANDS - 1) as f32;
+    for band in 1..SCRIM_BANDS {
+        let edge = snap(top + step * band as f32);
+        if edge > *edges.last().unwrap_or(&top) && edge < bottom {
+            edges.push(edge);
+        }
+    }
+    edges.push(bottom);
+    edges
+}
+
+/// How dark the scrim is `depth` (0 at its top, 1 at the card's foot) of the way down, as a
+/// share of its darkest: slow out of the clear, then steep, so the lower half is dark.
+fn scrim_curve(depth: f32) -> f32 {
+    let t = depth.clamp(0.0, 1.0);
+    t * t * (3.0 - 2.0 * t)
+}
+
+/// How much of a card's height its scrim covers, from the foot up.
+const SCRIM_SHARE: f32 = 0.62;
+/// The scrim's black at the card's foot.
+const SCRIM_DARKEST: f32 = 0.95;
 
 fn blend_color(a: gpui::Rgba, b: gpui::Rgba, t: f32) -> gpui::Rgba {
     let t = t.clamp(0.0, 1.0);
@@ -1503,6 +1558,29 @@ mod tests {
             (after.zoom - before.zoom).abs() > 0.01,
             "a double click zooms"
         );
+    }
+
+    #[test]
+    fn the_scrim_bands_meet_on_whole_device_pixels() {
+        // A 4:3 card's fractional foot, on a 2x screen.
+        let (top, bottom) = (101.37, 263.9);
+        let edges = super::scrim_edges(top, bottom, 32.0, 2.0);
+        assert_eq!(edges.first(), Some(&top));
+        assert_eq!(edges.last(), Some(&bottom));
+        assert!(edges.windows(2).all(|pair| pair[1] > pair[0]), "{edges:?}");
+        for edge in &edges[1..edges.len() - 1] {
+            assert_eq!((edge * 2.0).fract(), 0.0, "{edge} is not on a device pixel");
+        }
+        let last = bottom - edges[edges.len() - 2];
+        assert!(last >= 31.5, "the cornered band is {last} tall");
+    }
+
+    #[test]
+    fn the_scrim_is_clear_at_its_top_and_dark_by_its_lower_half() {
+        assert_eq!(super::scrim_curve(0.0), 0.0);
+        assert_eq!(super::scrim_curve(1.0), 1.0);
+        assert!(super::scrim_curve(0.5) >= 0.5);
+        assert!(super::scrim_curve(0.75) > 0.8);
     }
 
     #[test]
