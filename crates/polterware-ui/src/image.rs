@@ -271,7 +271,8 @@ impl RenderOnce for ImageThumb {
 
 /// An image card: the picture filling the whole card under its border, clipped inside the
 /// card's radius, with its title and meta line over a fade into
-/// dark along the bottom. `thumb_height` is the card's height.
+/// dark along the bottom. Its height is `thumb_height`, or its own width at `aspect` when set,
+/// so cards in a grid stay one shape at every column width.
 ///
 /// The picture is cropped to fill it (`object-fit: cover`) and clipped just inside the card's
 /// radius; the 1px border draws over its edge, so the border reads all the way round. It
@@ -282,6 +283,7 @@ pub struct ImageCard {
     id: ElementId,
     image: ImageData,
     thumb_height: f32,
+    aspect: Option<f32>,
     title: SharedString,
     meta: Option<AnyElement>,
     on_click: Option<Handler>,
@@ -294,6 +296,7 @@ impl ImageCard {
             id: id.into(),
             image,
             thumb_height: 150.0,
+            aspect: None,
             title: title.into(),
             meta: None,
             on_click: None,
@@ -302,6 +305,15 @@ impl ImageCard {
     }
 
     /// The thumbnail's height in pixels; the picture fills it cropped to cover.
+    /// Sizes the card by its width: `ratio` is width over height (4.0 / 3.0 for 4:3). It wins
+    /// over [`thumb_height`](Self::thumb_height).
+    pub fn aspect(mut self, ratio: f32) -> Self {
+        if ratio.is_finite() && ratio > 0.0 {
+            self.aspect = Some(ratio);
+        }
+        self
+    }
+
     pub fn thumb_height(mut self, height: f32) -> Self {
         self.thumb_height = height.max(1.0);
         self
@@ -340,9 +352,15 @@ impl RenderOnce for ImageCard {
             .group("image-card")
             .relative()
             .w_full()
-            .h(px(self.thumb_height))
             .rounded(px(theme.radius_card))
             .bg(theme.color_surface);
+        card = match self.aspect {
+            Some(ratio) => {
+                card.style().aspect_ratio = Some(ratio);
+                card
+            }
+            None => card.h(px(self.thumb_height)),
+        };
 
         if let Some(on_click) = self.on_click {
             card = card

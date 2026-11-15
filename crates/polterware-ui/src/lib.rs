@@ -68,6 +68,7 @@ pub mod text_swap;
 pub mod texture_group;
 pub mod toast;
 pub mod tooltip;
+pub mod voice_blob;
 pub mod wrap;
 
 pub use button::{Button, ButtonKind, ButtonSize, button};
@@ -153,6 +154,7 @@ pub use tooltip::{
     RichTooltipView, TooltipView, rich_tooltip, tooltip, tooltip_card, tooltip_heading,
     tooltip_note, tooltip_row,
 };
+pub use voice_blob::VoiceBlob;
 pub use wrap::{SpanStyle, WrapText, wrap_text};
 
 use std::rc::Rc;
