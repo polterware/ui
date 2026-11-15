@@ -1370,7 +1370,7 @@ impl DashboardGrid {
                     changed
                 });
                 if changed {
-                    window.refresh();
+                    crate::frame::draw_again(window);
                 }
             },
             move |_, _, window, cx| {

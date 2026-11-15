@@ -302,7 +302,7 @@ impl RenderOnce for MessageComposer {
                 }
                 if changed {
                     cx.notify(view);
-                    window.refresh();
+                    crate::frame::draw_again(window);
                 }
             },
             |_, _, _, _| {},

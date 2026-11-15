@@ -157,7 +157,7 @@ impl PageWidth {
                 let narrow = |w: f32| w > 0.0 && w < NARROW_WIDTH;
                 // GPUI drops a refresh asked for while it draws: ask for the next frame.
                 if narrow(was) != narrow(next) {
-                    window.on_next_frame(|window, _| window.refresh());
+                    crate::frame::draw_again(window);
                 }
             },
             |_, _, _, _| {},

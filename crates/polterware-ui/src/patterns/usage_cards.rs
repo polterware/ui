@@ -453,7 +453,7 @@ pub fn card_grid(
                 });
             });
             if prev_cols.is_some_and(|p| p != new_cols) {
-                window.refresh();
+                crate::frame::draw_again(window);
             }
         },
         |_, _, _, _| {},

@@ -82,7 +82,7 @@ pub fn settings_anchor(name: impl Into<SharedString>, child: impl IntoElement) -
                         state
                             .handle
                             .set_offset(point(offset.x, (offset.y - delta).min(px(0.0))));
-                        window.refresh();
+                        crate::frame::draw_again(window);
                     }
                 });
             },

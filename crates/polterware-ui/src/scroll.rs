@@ -517,7 +517,7 @@ fn scroll_area_below(
             let last = seen.get();
             if (now.0 - last.0).abs() > 0.5 || (now.1 > 0.5) != (last.1 > 0.5) {
                 seen.set(now);
-                window.refresh();
+                crate::frame::draw_again(window);
             }
         },
         |_, _, _, _| {},

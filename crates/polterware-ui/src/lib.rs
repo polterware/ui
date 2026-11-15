@@ -31,6 +31,7 @@ pub mod echo_ring;
 pub mod ellipsis;
 pub mod filter_popover;
 pub mod floating_toolbar;
+pub mod frame;
 pub mod hang;
 pub mod hover_card;
 pub mod icon_button;

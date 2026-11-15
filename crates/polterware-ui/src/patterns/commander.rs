@@ -929,7 +929,7 @@ impl Render for Commander {
                     || (now.2 - last.2).abs() > 0.5
                 {
                     seen.set(now);
-                    window.refresh();
+                    crate::frame::draw_again(window);
                 }
             },
             |_, _, _, _| {},

@@ -1257,7 +1257,7 @@ impl Render for ZoomableImage {
                 // The fit is known only once the view is measured: draw again with it. GPUI
                 // drops a refresh asked for while it draws, so ask for the next frame instead.
                 if changed {
-                    window.on_next_frame(|window, _| window.refresh());
+                    crate::frame::draw_again(window);
                 }
             },
         )
