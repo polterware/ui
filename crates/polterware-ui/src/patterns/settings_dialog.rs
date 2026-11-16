@@ -45,8 +45,14 @@ use super::scroll_fade::toolbar_trail;
 #[derive(Default)]
 struct SectionScroll {
     handle: gpui::ScrollHandle,
-    pending: Option<SharedString>,
 }
+
+/// The section a pick asked for, until its anchor next draws. A global, not the panel's
+/// keyed state, because a click asks for it and keyed state is only reachable while drawing.
+#[derive(Default)]
+struct PendingSection(Option<SharedString>);
+
+impl gpui::Global for PendingSection {}
 
 fn section_scroll(window: &mut Window, cx: &mut App) -> gpui::Entity<SectionScroll> {
     window.use_keyed_state("settings-section-scroll", cx, |_, _| {
@@ -61,7 +67,7 @@ pub fn scroll_to_settings_section(
     window: &mut Window,
     cx: &mut App,
 ) {
-    section_scroll(window, cx).update(cx, |state, _| state.pending = Some(section.into()));
+    cx.set_global(PendingSection(Some(section.into())));
     window.refresh();
 }
 
@@ -73,17 +79,21 @@ pub fn settings_anchor(name: impl Into<SharedString>, child: impl IntoElement) -
         canvas(
             |_, _, _| (),
             move |bounds, _, window, cx| {
+                let asked = cx
+                    .try_global::<PendingSection>()
+                    .is_some_and(|pending| pending.0.as_ref() == Some(&name));
+                if !asked {
+                    return;
+                }
+                cx.set_global(PendingSection(None));
                 let state = section_scroll(window, cx);
                 state.update(cx, |state, _| {
-                    if state.pending.as_ref() == Some(&name) {
-                        state.pending = None;
-                        let offset = state.handle.offset();
-                        let delta = bounds.origin.y - state.handle.bounds().origin.y - px(tw(2.0));
-                        state
-                            .handle
-                            .set_offset(point(offset.x, (offset.y - delta).min(px(0.0))));
-                        crate::frame::draw_again(window);
-                    }
+                    let offset = state.handle.offset();
+                    let delta = bounds.origin.y - state.handle.bounds().origin.y - px(tw(2.0));
+                    state
+                        .handle
+                        .set_offset(point(offset.x, (offset.y - delta).min(px(0.0))));
+                    crate::frame::draw_again(window);
                 });
             },
         )
@@ -479,6 +489,7 @@ impl RenderOnce for SettingsDialog {
                             let shown = path(&entry);
                             div()
                                 .id(("settings-result", index))
+                                .debug_selector(move || format!("settings-result-{index}"))
                                 .w_full()
                                 .flex()
                                 .flex_col()
