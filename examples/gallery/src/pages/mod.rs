@@ -26,6 +26,7 @@ mod icon_tile;
 mod image;
 mod keyboard_key;
 mod message_composer;
+mod message_rail;
 mod morph;
 mod page_under;
 mod peek;
@@ -71,6 +72,7 @@ pub fn all() -> Vec<Example> {
     examples.extend(card::examples());
     examples.extend(chat_bubble::examples());
     examples.extend(message_composer::examples());
+    examples.extend(message_rail::examples());
     examples.extend(collapsible_section::examples());
     examples.extend(tree_view::examples());
     examples.extend(icon_choice::examples());
