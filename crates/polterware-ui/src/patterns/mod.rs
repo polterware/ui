@@ -42,6 +42,7 @@ pub mod sidebar_item;
 #[cfg(feature = "bots")]
 pub mod start_page;
 pub mod tag_picker;
+pub mod tail_preview;
 pub mod title_tabs;
 pub mod toolbar;
 pub mod tree_view;
@@ -128,6 +129,9 @@ pub use sidebar_item::{SidebarItem, SidebarSectionLabel};
 #[cfg(feature = "bots")]
 pub use start_page::{MoreHandler, StartRow, start_page, start_section};
 pub use tag_picker::{TagPicker, TagPickerEvent, TagRow, shown_tags, tag_rows};
+pub use tail_preview::{
+    TAIL_FADE, TailLine, TailPreview, TailTone, fade_heights, lines_that_fit, tail_preview,
+};
 pub use title_tabs::{
     TITLEBAR_TRAFFIC_INSET, TitleTab, title_add, title_card, title_divider, title_spacer,
     title_strip,

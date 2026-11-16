@@ -39,6 +39,7 @@ mod skeleton;
 mod status;
 mod switch;
 mod tabs;
+mod tail_preview;
 mod terminal;
 mod texture_group;
 mod title_bar;
@@ -94,6 +95,7 @@ pub fn all() -> Vec<Example> {
     examples.extend(texture_group::examples());
     examples.extend(title_bar::examples());
     examples.extend(terminal::examples());
+    examples.extend(tail_preview::examples());
     examples.extend(canvas::examples());
     examples
 }
