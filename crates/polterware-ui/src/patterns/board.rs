@@ -526,6 +526,7 @@ pub fn board(id: impl Into<ElementId>) -> Board {
         id: id.into(),
         columns: Vec::new(),
         on_move: None,
+        inset_top: 0.0,
     }
 }
 
@@ -533,6 +534,7 @@ pub struct Board {
     id: ElementId,
     columns: Vec<BoardColumn>,
     on_move: Option<MoveHandler>,
+    inset_top: f32,
 }
 
 impl Board {
@@ -543,6 +545,14 @@ impl Board {
 
     pub fn columns(mut self, columns: impl IntoIterator<Item = BoardColumn>) -> Self {
         self.columns.extend(columns);
+        self
+    }
+
+    /// The page's chrome over the board's top (its toolbar, and the filter bar under it): at
+    /// rest the columns start `inset` further down, and the cards scroll up beneath the
+    /// chrome, which fades them out on its trail ([`page_under`](crate::page_under) passes it).
+    pub fn inset_top(mut self, inset: f32) -> Self {
+        self.inset_top = inset.max(0.0);
         self
     }
 
@@ -660,7 +670,8 @@ impl Board {
             .items_start()
             .gap(px(BOARD_GAP))
             .px(px(PAD_X))
-            .py(px(PAD_Y))
+            .pt(px(PAD_Y + self.inset_top))
+            .pb(px(PAD_Y))
             .w_full()
             .min_w(px(columns.len() as f32 * BOARD_COLUMN_MIN
                 + columns.len().saturating_sub(1) as f32 * BOARD_GAP

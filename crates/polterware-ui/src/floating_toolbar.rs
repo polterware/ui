@@ -2,9 +2,14 @@
 //! overlays the independently scrolling panes; each pane pads its content by the measured
 //! toolbar height. Like gpui-kit's overlay placement, layout owns geometry rather than
 //! estimating it from the number of controls. Notifications stop when the height settles.
+//! The toolbar floats on its trail ([`toolbar_trail`]) as tall as it measured, so what scrolls
+//! up goes soft beneath it instead of meeting a cut.
 use gpui::{
-    AnyElement, App, Context, Entity, IntoElement, RenderOnce, Window, canvas, div, prelude::*,
+    AnyElement, App, Context, Entity, IntoElement, RenderOnce, Window, canvas, div, prelude::*, px,
 };
+
+use crate::patterns::toolbar_trail;
+use crate::theme::Theme;
 
 /// The actual toolbar height, including wrapped filter clauses.
 pub struct FloatingToolbar {
@@ -47,14 +52,26 @@ struct FloatingPage {
     body: AnyElement,
 }
 impl RenderOnce for FloatingPage {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let state = self.state;
+        let theme = *Theme::global(cx);
+        let height = state.read(cx).height();
         div().relative().size_full().child(self.body).child(
             div()
                 .absolute()
                 .top_0()
                 .left_0()
                 .w_full()
+                // The trail stays the surface's radius in from each side, clear of its round
+                // corners, as `page_under`'s does.
+                .child(
+                    div()
+                        .absolute()
+                        .top_0()
+                        .left(px(theme.radius_surface))
+                        .right(px(theme.radius_surface))
+                        .child(toolbar_trail(theme.color_surface, height)),
+                )
                 .child(self.toolbar)
                 .child(
                     canvas(

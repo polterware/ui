@@ -68,6 +68,7 @@ pub mod text_swap;
 pub mod texture_group;
 pub mod toast;
 pub mod tooltip;
+pub mod virtual_stack;
 pub mod voice_blob;
 pub mod wrap;
 
@@ -83,7 +84,7 @@ pub use data_table::{
 };
 pub use echo_ring::{EchoColors, EchoRing, echo_color};
 pub use ellipsis::{Ellipsis, ellipsis, fade};
-pub use filter_popover::{FilterField, FilterPopover, FiltersChanged};
+pub use filter_popover::{DisplayPick, DisplayRow, FilterField, FilterPopover, FiltersChanged};
 pub use hover_card::{HoverBuilder, HoverCard};
 pub use icon_button::icon_button;
 pub use icon_tile::{IconTile, TileTone};
@@ -154,6 +155,7 @@ pub use tooltip::{
     RichTooltipView, TooltipView, rich_tooltip, tooltip, tooltip_card, tooltip_heading,
     tooltip_note, tooltip_row,
 };
+pub use virtual_stack::{STACK_OVERDRAW, sync_virtual_list, virtual_fade_list, virtual_stack};
 pub use voice_blob::VoiceBlob;
 pub use wrap::{SpanStyle, WrapText, wrap_text};
 

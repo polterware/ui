@@ -345,6 +345,15 @@ pub fn settings_size(window: &Window) -> (f32, f32) {
     )
 }
 
+/// The room a section's body has in the panel: the dialog's height less its inset, the
+/// content's `24px 32px` padding, and the section heading's line with its lead, so a body
+/// that scrolls itself (a virtual list) fills the panel without a second scrollbar.
+pub fn settings_content_height(window: &Window) -> f32 {
+    let (_, height) = settings_size(window);
+    let panel = height - 2.0 * INSET;
+    (panel - 24.0 - 24.0 - tw(6.0) - 32.0).max(0.0)
+}
+
 impl RenderOnce for SettingsDialog {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let theme = *Theme::global(cx);

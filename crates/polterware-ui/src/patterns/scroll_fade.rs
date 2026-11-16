@@ -8,16 +8,17 @@
 //! surface (the sidebar's glass over the window material) has no one color to fade into, so
 //! there the scroll draws no bands ([`FadeScroll::bands`] off) and each row fades itself
 //! ([`fade_item`]): its opacity follows where it sits in the fading stretch, which reads as
-//! the mask does, a row at a time.
+//! the mask does, a row at a time. A virtualized list does the same from its own scroll
+//! ([`list_item_alpha`], drawn by `virtual_stack::virtual_fade_list`).
 //!
 //! [`toolbar_trail`] is `--material-fade-edge-toolbar-trail`: the surface at the toolbar's
 //! edge, 52% of it at 30%, 18% at 65%, and nothing at the end, laid under a toolbar that
 //! floats over its page so the content goes soft as it passes beneath.
 
 use gpui::{
-    AnyElement, App, Bounds, Div, ElementId, IntoElement, ParentElement, Pixels, RenderOnce, Rgba,
-    ScrollHandle, SharedString, Window, canvas, div, linear_color_stop, linear_gradient,
-    prelude::*, px,
+    AnyElement, App, Bounds, Div, ElementId, IntoElement, ListState, ParentElement, Pixels,
+    RenderOnce, Rgba, ScrollHandle, SharedString, Window, canvas, div, linear_color_stop,
+    linear_gradient, prelude::*, px,
 };
 
 /// `--scroll-fade-size`.
@@ -62,12 +63,37 @@ pub fn toolbar_trail(color: Rgba, height: f32) -> Div {
         .child(band(color, 0.18, 0.0, height * 0.35))
 }
 
-/// `toolbar` floating over the content that scrolls under it, on a [`toolbar_trail`] as
-/// tall as the toolbar: the surface only at its very top, so what passes beneath goes soft
-/// instead of meeting a band and a cut. The trail stays `inset` in from each side: GPUI
-/// clips to rectangles, so a trail across a rounded surface's top would paint its square
-/// corners over the round ones. Pass the surface's radius; nothing scrolls that close to
-/// the sides.
+/// [`toolbar_trail`] across a whole rounded surface's top: its first 75% is one quad with
+/// the surface's top corners (`radius`), so it reaches both sides without painting square
+/// corners over the round ones (a band split in three is too short to hold the radius). The
+/// one stretch runs the surface at the edge down to 12%, close to the trail's 52% at 30% and
+/// 18% at 65%, and the last 25% runs out to nothing.
+pub fn rounded_toolbar_trail(color: Rgba, height: f32, radius: f32) -> Div {
+    let head = height * 0.75;
+    div()
+        .w_full()
+        .h(px(height))
+        .flex()
+        .flex_col()
+        .child(
+            div()
+                .w_full()
+                .h(px(head))
+                .flex_none()
+                .rounded_t(px(radius))
+                .bg(linear_gradient(
+                    180.0,
+                    linear_color_stop(with_alpha(color, 1.0), 0.0),
+                    linear_color_stop(with_alpha(color, 0.12), 1.0),
+                )),
+        )
+        .child(band(color, 0.12, 0.0, height - head))
+}
+
+/// `toolbar` floating over the content that scrolls under it, on a [`rounded_toolbar_trail`]
+/// as tall as the toolbar and as wide as the surface: the surface only at its very top, so
+/// what passes beneath goes soft instead of meeting a band and a cut, out to both sides.
+/// Pass the surface's radius as `inset`: the trail's top corners follow it.
 pub fn trailing_toolbar(toolbar: impl IntoElement, color: Rgba, height: f32, inset: f32) -> Div {
     div()
         .relative()
@@ -76,9 +102,9 @@ pub fn trailing_toolbar(toolbar: impl IntoElement, color: Rgba, height: f32, ins
             div()
                 .absolute()
                 .top_0()
-                .left(px(inset))
-                .right(px(inset))
-                .child(toolbar_trail(color, height)),
+                .left_0()
+                .right_0()
+                .child(rounded_toolbar_trail(color, height, inset)),
         )
         .child(toolbar)
 }
@@ -92,6 +118,7 @@ pub fn fade_scroll(id: impl Into<SharedString>, handle: &ScrollHandle, color: Rg
         size: SCROLL_FADE,
         inset_x: 0.0,
         bands: true,
+        fit: false,
         content: Vec::new(),
         style: div(),
     }
@@ -105,6 +132,7 @@ pub struct FadeScroll {
     size: f32,
     inset_x: f32,
     bands: bool,
+    fit: bool,
     content: Vec<AnyElement>,
     /// The scrolling column, as the caller styles it (gap, padding).
     style: Div,
@@ -120,6 +148,14 @@ impl FadeScroll {
     /// Keeps the fades `inset` in from both sides, such as inside a rounded frame.
     pub fn inset_x(mut self, inset: f32) -> Self {
         self.inset_x = inset;
+        self
+    }
+
+    /// As tall as its content inside a frame that is itself as tall as its content, giving
+    /// height up (and scrolling) only once that frame reaches its cap. Default: it fills the
+    /// frame's room.
+    pub fn fit(mut self) -> Self {
+        self.fit = true;
         self
     }
 
@@ -204,7 +240,13 @@ impl RenderOnce for FadeScroll {
             .children(self.content);
         div()
             .relative()
-            .flex_1()
+            .map(|area| {
+                if self.fit {
+                    area.flex_initial()
+                } else {
+                    area.flex_1()
+                }
+            })
             .min_h(px(0.0))
             .w_full()
             .child(column)
@@ -339,11 +381,56 @@ pub fn fade_item(
         .into_any_element()
 }
 
+/// [`edge_alpha`] for item `index` of a [`ListState`]: where the list placed it for the scroll
+/// it holds, against the viewport it fills and the room left below. The fading of
+/// [`fade_item`] for a row the list builds only while it is near, which has no
+/// [`ScrollHandle`] to follow: the list's own scroll is the one read here, so a caller's
+/// watcher only has to draw again when the list scrolls. `inset_top` and `inset_bottom` are
+/// chrome the caller keeps inside the item (the stack's first and last), which the fade
+/// leaves out of the item's middle. An item not measured yet shows whole.
+pub(crate) fn list_item_alpha(
+    list: &ListState,
+    index: usize,
+    edges: FadeEdges,
+    inset_top: f32,
+    inset_bottom: f32,
+) -> f32 {
+    let viewport = list.viewport_bounds();
+    if f32::from(viewport.size.height) <= 1.0 {
+        return 1.0;
+    }
+    let Some(bounds) = list.bounds_for_item(index) else {
+        return 1.0;
+    };
+    let max = f32::from(list.max_offset_for_scrollbar().height).max(0.0);
+    let offset = (-f32::from(list.scroll_px_offset_for_scrollbar().y)).clamp(0.0, max);
+    let center =
+        (f32::from(bounds.top()) + inset_top + f32::from(bounds.bottom()) - inset_bottom) / 2.0;
+    edge_alpha(
+        center,
+        f32::from(viewport.top()),
+        f32::from(viewport.bottom()),
+        offset,
+        max - offset,
+        edges,
+    )
+}
+
 #[cfg(test)]
 mod tests {
-    use gpui::{ScrollHandle, point, px};
+    use gpui::{ListAlignment, ListState, ScrollHandle, point, px};
 
-    use super::{FadeEdges, edge_alpha, scrolled};
+    use super::{FadeEdges, edge_alpha, list_item_alpha, scrolled};
+
+    #[test]
+    fn an_unmeasured_list_item_shows_whole() {
+        // No layout yet: the fade has no place for it, so it is not faded.
+        let list = ListState::new(3, ListAlignment::Top, px(20.0));
+        assert_eq!(
+            list_item_alpha(&list, 0, FadeEdges::default(), 0.0, 0.0),
+            1.0
+        );
+    }
 
     #[test]
     fn a_wheel_past_an_end_reads_as_the_end() {

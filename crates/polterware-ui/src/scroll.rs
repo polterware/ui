@@ -25,7 +25,7 @@ use gpui::{
     prelude::*, px,
 };
 
-use crate::patterns::scroll_fade::{SCROLL_FADE, end_fade, toolbar_trail};
+use crate::patterns::scroll_fade::{SCROLL_FADE, end_fade};
 use crate::theme::Theme;
 
 pub const GUTTER: f32 = 12.0;
@@ -736,18 +736,17 @@ pub fn page_under(
         .flex()
         .flex_col()
         .child(content);
-    // The trail stays the surface's radius in from each side, clear of its round corners.
+    // The trail spans the surface, its top corners rounded as the surface's.
     let chrome = div()
         .relative()
         .w_full()
-        .child(
-            div()
-                .absolute()
-                .top_0()
-                .left(px(theme.radius_surface))
-                .right(px(theme.radius_surface))
-                .child(toolbar_trail(theme.color_surface, chrome)),
-        )
+        .child(div().absolute().top_0().left_0().right_0().child(
+            crate::patterns::rounded_toolbar_trail(
+                theme.color_surface,
+                chrome,
+                theme.radius_surface,
+            ),
+        ))
         .child(
             div()
                 .relative()

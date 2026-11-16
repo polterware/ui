@@ -121,6 +121,9 @@ impl NodeDrag {
 /// gpui-kit's canvas views: drag to pan, scroll to pan, secondary-modifier scroll to zoom around
 /// the pointer, and a double-click to fit. The scene is painted by GPUI paths, quads, text, and
 /// images; GPUI 0.2.2 clips content to rectangles, so a group's rectangular clip maps directly.
+/// A grid dot's radius on screen, at any zoom.
+const DOT_RADIUS: f32 = 1.0;
+
 pub struct MermaidView {
     scene: Rc<Scene>,
     viewport: Option<SceneViewport>,
@@ -140,6 +143,8 @@ pub struct MermaidView {
     hover: Option<SceneHit>,
     selection: Option<SceneHit>,
     background: Option<gpui::Rgba>,
+    /// The dotted grid under the drawing, rounded off at the face's corners.
+    dots: Option<f32>,
     images: Option<ImageResolver>,
 }
 
@@ -162,6 +167,7 @@ impl MermaidView {
             hover: None,
             selection: None,
             background: None,
+            dots: None,
             images: None,
         }
     }
@@ -195,6 +201,14 @@ impl MermaidView {
     /// The backing color around the diagram; `color_surface` by default.
     pub fn background(mut self, color: gpui::Rgba) -> Self {
         self.background = Some(color);
+        self
+    }
+
+    /// Lays the editor's dotted grid ([`paint_dot_grid`](crate::canvas::paint_dot_grid)) under
+    /// the drawing in `--color-border-default`, following the pan and zoom; `corner` is the
+    /// radius of the face it sits on, whose corners keep no dots.
+    pub fn dot_grid(mut self, corner: f32) -> Self {
+        self.dots = Some(corner);
         self
     }
 
@@ -384,7 +398,9 @@ impl MermaidView {
             let zoom = viewport.zoom * (-dy * 0.0025).exp();
             self.viewport = Some(viewport.zoom_at(local, zoom));
         } else if dx != 0.0 || dy != 0.0 {
-            self.viewport = Some(viewport.pan_by(-dx, -dy));
+            // The wheel's delta already runs the way the fingers move: the drawing follows
+            // them, as the image viewer's picture does.
+            self.viewport = Some(viewport.pan_by(dx, dy));
         }
         cx.stop_propagation();
         cx.notify();
@@ -517,6 +533,20 @@ impl Render for MermaidView {
                         } else {
                             CursorStyle::OpenHand
                         });
+                        if let Some(corner) = entity.read(cx).dots {
+                            crate::canvas::paint_dot_grid_rounded(
+                                bounds,
+                                crate::canvas::Viewport {
+                                    x: viewport.x,
+                                    y: viewport.y,
+                                    zoom: viewport.zoom,
+                                },
+                                DOT_RADIUS,
+                                theme.color_border_default,
+                                corner,
+                                window,
+                            );
+                        }
                         paint_scene(&scene, bounds, viewport, theme, images.as_ref(), window, cx);
                         if let Some(hit) = &selection {
                             let hit = match &entity.read(cx).drag_delta {

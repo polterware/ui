@@ -13,10 +13,10 @@
 //! that settles after its first frame, a window resized): each
 //! column's natural width is its widest content among the rows the virtualizer renders (the ones in
 //! view and 8 more, or every row for [`DataTable::measure_every_row`]), the header's included and at least its explicit width, rounded as
-//! `offsetWidth` rounds and capped at 320; the spare room shares out in proportion among the
-//! resizable columns with no explicit width (the flex column, the last resizable one, weighs
-//! double), each held to its minimum and maximum; and the flex column takes what the others leave,
-//! at least 96, on every frame. When the scroll narrows, grown columns first return to their
+//! `offsetWidth` rounds and capped at 320; spare room inside the gutters is shared equally
+//! among resizable columns without an explicit width, with no maximum on that growth. The flex
+//! column takes any rounding remainder, at least 96, on every frame. The last column aligns its
+//! header and cells to the right. When the scroll narrows, grown columns first return to their
 //! natural widths; only then do the [`Column::shrinks`] ones, whose text fades, give up the
 //! difference in proportion to their room above 96 (or their minimum), so the table follows the
 //! window; it runs wider than the scroll and scrolls sideways only once they are all that narrow.
@@ -214,6 +214,9 @@ pub struct TableGroup {
     pub icon: Option<Icon>,
     /// Its rows, in the table's row order; the groups tile the rows in order.
     pub rows: Range<usize>,
+    /// The count its header shows, when it is not the number of rows (a group that ends in a
+    /// subtotal row holds one more than the items it counts).
+    pub count: Option<usize>,
     /// The "+" at the header's end, shown while the pointer is on it (`onAdd`).
     pub add: Option<GroupAdd>,
 }
@@ -250,8 +253,15 @@ impl TableGroup {
             label: label.into(),
             icon: None,
             rows,
+            count: None,
             add: None,
         }
+    }
+
+    /// The count the header shows, in place of the group's number of rows.
+    pub fn count(mut self, count: usize) -> Self {
+        self.count = Some(count);
+        self
     }
 
     pub fn icon(mut self, icon: Icon) -> Self {
@@ -761,40 +771,33 @@ impl TableState {
 /// `distributeDataTableColumnWidths`, then the flex column's share of what is left.
 /// `available` is the scroll's width, gutters included.
 pub fn column_widths(natural: &[f32], columns: &[Column], available: f32, gutter: f32) -> Vec<f32> {
-    let flex = columns.iter().rposition(|column| column.resizable);
-    let weight = |index: usize| -> f32 {
-        if Some(index) == flex {
-            2.0
-        } else if columns[index].resizable && !columns[index].fixed {
-            1.0
-        } else {
-            0.0
-        }
-    };
-    let total: f32 = natural.iter().sum();
-    let weighted: f32 = natural
-        .iter()
-        .enumerate()
-        .map(|(index, width)| width * weight(index))
-        .sum();
-    let spare = (available - total).max(0.0);
     let mut widths: Vec<f32> = natural
         .iter()
-        .enumerate()
-        .map(|(index, &width)| {
-            let grown = if weighted > 0.0 {
-                width + spare * width * weight(index) / weighted
-            } else {
-                width
-            };
-            let column = &columns[index];
+        .zip(columns)
+        .map(|(&width, column)| {
             if column.resizable {
-                grown.clamp(column.min_width, column.max_width).round()
+                width.max(column.min_width).round()
             } else {
-                grown.round()
+                width.round()
             }
         })
         .collect();
+    if let Some(flex) = columns.iter().rposition(|column| column.resizable) {
+        widths[flex] = widths[flex].max(FLEX_MIN_WIDTH);
+    }
+    let eligible = columns
+        .iter()
+        .filter(|column| column.resizable && !column.fixed)
+        .count();
+    let spare = (available - 2.0 * gutter - widths.iter().sum::<f32>()).max(0.0);
+    if eligible > 0 {
+        let share = spare / eligible as f32;
+        for (width, column) in widths.iter_mut().zip(columns) {
+            if column.resizable && !column.fixed {
+                *width = (*width + share).round();
+            }
+        }
+    }
     fill_flex(&mut widths, columns, available, gutter);
     widths
 }
@@ -811,7 +814,8 @@ fn fill_flex(widths: &mut [f32], columns: &[Column], available: f32, gutter: f32
             .map(|(_, width)| width)
             .sum();
         // The table fills the scroll inside its gutters.
-        widths[flex] = (available - 2.0 * gutter - others).max(FLEX_MIN_WIDTH);
+        widths[flex] =
+            (available - 2.0 * gutter - others).max(FLEX_MIN_WIDTH.max(columns[flex].min_width));
     }
 }
 
@@ -829,7 +833,7 @@ pub fn fit_widths(
 ) -> Vec<f32> {
     let mut widths = frozen.to_vec();
     let flex = columns.iter().rposition(|column| column.resizable);
-    let flex_need = if flex.is_some() { FLEX_MIN_WIDTH } else { 0.0 };
+    let flex_need = flex.map_or(0.0, |index| FLEX_MIN_WIDTH.max(columns[index].min_width));
     let others: f32 = widths
         .iter()
         .enumerate()
@@ -1028,6 +1032,16 @@ fn chrome_lead(inset: f32, pitch: f32) -> (usize, f32) {
     (spacers, spacers as f32 * pitch - inset)
 }
 
+/// How tall the header block stands over the rows: its spacing either side of a `height`
+/// header, or, with no thead (a cited-record table's), only the leading border-spacing.
+fn header_pitch_of(height: f32) -> f32 {
+    if height <= 0.0 {
+        SPACING
+    } else {
+        SPACING + height + SPACING
+    }
+}
+
 fn content_height(rows: usize, pitch: f32, header_pitch: f32) -> f32 {
     header_pitch + rows as f32 * pitch + SPACING
 }
@@ -1115,8 +1129,15 @@ impl RenderOnce for DataTable {
             &items,
             (pitch - (GROUP_HEIGHT + SPACING)).max(0.0),
         ));
-        // Rows of their own heights stack, each item at its offset below the first.
-        let heights = self.heights.clone();
+        // Rows of their own heights stack, each item at its offset below the first. So do the
+        // rows under a header shorter than a row (a cited-record table's has none): a uniform
+        // list gives every item, the header's too, the row pitch, and lifting the rows over the
+        // header's spare room would leave that room to scroll at the end.
+        let short_header = header_pitch_of(self.header.0) + SPACING < pitch - 0.5;
+        let heights = self.heights.clone().or_else(|| {
+            let row_height = self.row_height;
+            short_header.then(|| Rc::new(move |_: usize| row_height) as HeightFn)
+        });
         let stack: Option<Rc<(Vec<f32>, f32)>> = heights
             .as_ref()
             .map(|height| Rc::new(stack_items(&items, height.as_ref())));
@@ -1158,12 +1179,7 @@ impl RenderOnce for DataTable {
             0.0
         };
         let (header_height, label_size) = self.header;
-        // A cited-record table has no thead: only the leading border-spacing remains.
-        let header_pitch = if header_height <= 0.0 {
-            SPACING
-        } else {
-            SPACING + header_height + SPACING
-        };
+        let header_pitch = header_pitch_of(header_height);
         let full_height = match &stack {
             Some(stack) => header_pitch + stack.1 + SPACING + inset,
             None => content_height(items.len(), pitch, header_pitch) + inset,
@@ -1885,7 +1901,7 @@ fn header_row(
             .flex()
             .items_center()
             .child(label);
-        if column.align == Align::End {
+        if column.align == Align::End || index + 1 == columns.len() {
             cell = cell.justify_end();
         }
         if column.resizable && Some(index) != last_resizable {
@@ -2141,7 +2157,9 @@ fn group_row(
                 .font(tabular(sans(theme, FontWeight::NORMAL)))
                 .text_size(px(12.0))
                 .text_color(theme.color_text_muted)
-                .child(SharedString::from(group.rows.len().to_string())),
+                .child(SharedString::from(
+                    group.count.unwrap_or(group.rows.len()).to_string(),
+                )),
         )
         .children(add);
     div()
@@ -2235,7 +2253,7 @@ fn body_row(
             .items_center()
             .overflow_hidden()
             .child(cell);
-        if column.align == Align::End {
+        if column.align == Align::End || column_index + 1 == columns.len() {
             slot = slot.justify_end();
         }
         row = row.child(slot);
@@ -2497,23 +2515,24 @@ mod tests {
     }
 
     #[test]
-    fn spare_room_shares_out_by_weight_and_the_flex_column_takes_the_rest() {
+    fn spare_room_is_shared_equally_without_a_growth_cap() {
         let columns = vec![
             Column::new("Role").fixed(),
             Column::new("When"),
             Column::new("Source"),
         ];
-        // No spare room: every column keeps its natural width, the flex one its minimum.
-        let tight = column_widths(&[141.0, 320.0, 80.0], &columns, 400.0, GUTTER);
+        let tight = column_widths(&[141.0, 320.0, 80.0], &columns, 400.0, 12.0);
         assert_eq!(tight, vec![141.0, 320.0, 96.0]);
-        // 224px spare over the weights 0, 1, and 2: When grows by 224·100/300.
-        let wide = column_widths(&[100.0, 100.0, 100.0], &columns, 524.0, GUTTER);
-        assert_eq!(wide[0], 100.0);
-        assert_eq!(wide[1], 175.0);
-        assert_eq!(wide[2], 524.0 - 2.0 * GUTTER - 100.0 - 175.0);
-        // A column grows no wider than 360.
-        let capped = column_widths(&[141.0, 320.0, 96.0], &columns, 757.0, GUTTER);
-        assert_eq!(capped[1], 360.0);
+        let wide = column_widths(&[100.0, 100.0, 100.0], &columns, 524.0, 12.0);
+        assert_eq!(wide, vec![100.0, 200.0, 200.0]);
+        let wider = column_widths(&[141.0, 320.0, 96.0], &columns, 1000.0, 12.0);
+        assert_eq!(wider, vec![141.0, 530.0, 305.0]);
+        assert_eq!(wider.iter().sum::<f32>(), 1000.0 - 2.0 * 12.0);
+        let rounding = column_widths(&[100.0, 100.0, 100.0], &columns, 525.0, 12.0);
+        assert_eq!(rounding.iter().sum::<f32>(), 525.0 - 2.0 * 12.0);
+        let min_columns = vec![Column::new("First"), Column::new("Last").min_width(180.0)];
+        let minimum = column_widths(&[100.0, 100.0], &min_columns, 250.0, 12.0);
+        assert_eq!(minimum[1], 180.0);
     }
     #[test]
     fn groups_lead_their_rows_and_a_collapsed_one_keeps_only_its_header() {

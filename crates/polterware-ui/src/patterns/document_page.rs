@@ -3,12 +3,13 @@
 //! cards are pages: the 44px [`rail_page_header`], floating over the scroll on the toolbar's
 //! fade trail (never a solid band), with Back (a texture icon button) at the
 //! start and, at the end, a quiet status, the page's actions, and the rail's toggle, pressed
-//! while the rail shows. Under it the page scrolls as one, padded `0 62px 64px`: a column at
-//! most 654px wide, centered in the room the rail leaves, then 48px, then the 376px rail of
-//! properties, 48px down. The web rail is sticky at the scroll's top, which keeps it where it
-//! starts, so it is drawn over the scroll there and the column keeps its room; a rail taller
-//! than the window scrolls independently, fading at both ends over 24px, as the design
-//! system scroll fade in `materials.css`.
+//! while the rail shows. Under it the text scrolls, padded `0 62px 64px`: a column at most
+//! 654px wide, centered in the room the rail leaves. The rail of properties is a card beside
+//! it (`railCard`): 376px wide, 8px under the header and in from the page's right, as tall
+//! as its groups up to 8px above the page's bottom, on the card surface at the card radius with its rings, padded `16px 8px`. The text
+//! and the rail scroll apart, each with its own scroll, the rail's fading at both ends over
+//! 24px, as the design system scroll fade in `materials.css`; the text's scroll stops at the
+//! rail's card, so its bar sits beside the text, never behind the rail.
 //!
 //! The rail holds [`document_group`]s, the `RailGroup` that does not fold: a 24px neutral
 //! icon tile and the 13px/500 title, then the content 6px under, the group padded
@@ -41,6 +42,7 @@ use crate::scroll::{scroll_area_under_locked, use_scroll};
 use crate::theme::Theme;
 
 use super::rail_page::{RAIL_WIDTH, RailState, rail_page_header, rail_toggle_label};
+use crate::card::card;
 use crate::material::{Edge, edge, float_drop};
 
 /// `.pw-document__column`'s measure.
@@ -49,14 +51,10 @@ pub const DOCUMENT_COLUMN: f32 = 654.0;
 /// A rail button is `variant="texture" size="sm"`, which keeps `rounded-[6px]` where the
 /// toolbars' buttons are round-ended.
 pub const RAIL_BUTTON_RADIUS: f32 = 6.0;
-/// The scroll row's gap between the column and the rail.
-const RAIL_GAP: f32 = 48.0;
 /// The scroll's side padding.
 const PAGE_PADDING: f32 = 62.0;
 /// The scroll's bottom padding.
 const PAGE_BOTTOM: f32 = 64.0;
-/// `.pw-document__rail`'s padding-top.
-const RAIL_TOP: f32 = 48.0;
 /// How far the rail slides as it comes and goes.
 const TRAVEL: f32 = 16.0;
 /// The narrow drawer: 52px from the page's top, 8px in from its other edges.
@@ -223,15 +221,13 @@ impl RenderOnce for DocumentPage {
                         .flex_col()
                         .children(self.children),
                 ),
-            )
-            // Beside the text the rail's room closes with it, the gap before it too.
-            .when(present && !narrow, |row| {
-                row.child(
-                    div()
-                        .flex_none()
-                        .w(px((RAIL_GAP + RAIL_WIDTH) * progress.max(0.0))),
-                )
-            });
+            );
+        // Beside the text the rail's card takes its room, which closes with it.
+        let rail_room = if present && !narrow {
+            ((RAIL_WIDTH + DRAWER_INSET) * progress).max(0.0)
+        } else {
+            0.0
+        };
         // The page scrolls its whole height, under the header, which floats on the toolbar's
         // trail: what passes beneath goes soft instead of meeting a band and a cut.
         let scroll = scroll_area_under_locked(
@@ -260,51 +256,51 @@ impl RenderOnce for DocumentPage {
                 .read(cx)
                 .handle()
                 .clone();
-            let rail_content = fade_scroll(
-                "document-rail-content",
-                &handle,
-                if narrow {
-                    theme.color_surface_subtle
-                } else {
-                    theme.color_surface
-                },
-            )
-            .column(|column| column.flex().flex_col())
-            .children(self.rail);
+            let rail_content =
+                fade_scroll("document-rail-content", &handle, theme.color_surface_subtle)
+                    .fit()
+                    .inset_x(theme.radius_card)
+                    .column(|column| column.flex().flex_col().py(px(16.0)).px(px(8.0)))
+                    .children(self.rail);
             if narrow {
                 // Over the text, the drawer takes the pointer and the wheel.
-                return div()
-                    .absolute()
-                    .occlude()
-                    .top(px(DRAWER_TOP))
-                    .right(px(DRAWER_INSET - offset))
-                    .bottom(px(DRAWER_INSET))
-                    .w(px(RAIL_WIDTH.min(width - 2.0 * DRAWER_INSET).max(0.0)))
-                    .opacity(opacity)
-                    .rounded(px(theme.radius_card))
-                    .bg(theme.color_surface_subtle)
-                    .shadow(float_drop(&theme))
-                    .child(
-                        rail_content
-                            .inset_x(theme.radius_card)
-                            .column(|column| column.py(px(16.0)).px(px(8.0))),
-                    )
-                    .child(edge(Edge::Quiet, theme.radius_card, &theme));
+                return rail_room_frame(
+                    DRAWER_INSET - offset,
+                    RAIL_WIDTH.min(width - 2.0 * DRAWER_INSET).max(0.0),
+                )
+                .child(
+                    div()
+                        .relative()
+                        .occlude()
+                        .w_full()
+                        .max_h_full()
+                        .min_h(px(0.0))
+                        .flex()
+                        .flex_col()
+                        .opacity(opacity)
+                        .rounded(px(theme.radius_card))
+                        .bg(theme.color_surface_subtle)
+                        .shadow(float_drop(&theme))
+                        .child(rail_content)
+                        .child(edge(Edge::Quiet, theme.radius_card, &theme)),
+                );
             }
-            // Its content keeps its full width and leaves past the page's right edge as the
-            // room closes.
-            let room = (RAIL_WIDTH * progress).clamp(0.0, RAIL_WIDTH);
-            div()
-                .absolute()
-                .top(px(theme.page_header_height + RAIL_TOP))
-                .right(px(PAGE_PADDING - (RAIL_WIDTH - room) - offset))
-                .bottom(px(0.0))
-                .w(px(RAIL_WIDTH))
-                .opacity(opacity)
-                .overflow_hidden()
-                .flex()
-                .flex_col()
-                .child(rail_content)
+            // The card keeps its full width and leaves past the page's right edge as its room
+            // closes.
+            let full = RAIL_WIDTH + DRAWER_INSET;
+            rail_room_frame(DRAWER_INSET - (full - rail_room) - offset, RAIL_WIDTH).child(
+                card(cx)
+                    .debug_selector(|| "document-rail".into())
+                    .occlude()
+                    .w_full()
+                    .max_h_full()
+                    .min_h(px(0.0))
+                    .opacity(opacity)
+                    .overflow_hidden()
+                    .flex()
+                    .flex_col()
+                    .child(rail_content),
+            )
         });
         let probe = self
             .rail_state
@@ -318,10 +314,33 @@ impl RenderOnce for DocumentPage {
             .flex()
             .flex_col()
             .children(probe)
-            .child(div().flex_1().min_h(px(0.0)).child(scroll))
+            .child(
+                div()
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .bottom_0()
+                    .right(px(rail_room))
+                    .flex()
+                    .flex_col()
+                    .child(div().flex_1().min_h(px(0.0)).child(scroll)),
+            )
             .child(header)
             .children(rail)
     }
+}
+
+/// The room the rail's card may take, from under the header to the page's bottom inset: the
+/// card is as tall as its groups up to it, and scrolls inside past it.
+fn rail_room_frame(right: f32, width: f32) -> Div {
+    div()
+        .absolute()
+        .top(px(DRAWER_TOP))
+        .right(px(right))
+        .bottom(px(DRAWER_INSET))
+        .w(px(width))
+        .flex()
+        .flex_col()
 }
 
 /// `RailGroup` that does not fold: the tiled heading over `content`.
@@ -486,6 +505,36 @@ mod tests {
     use crate::patterns::rail_page::{rail_properties, rail_property};
     use crate::test_support::{draw, open};
 
+    fn page_with_rail(height: f32, cx: &App) -> gpui::AnyElement {
+        DocumentPage::new("page")
+            .on_back(Rc::new(|_, _| {}))
+            .rail(document_group(
+                "Properties",
+                Icon::InformationCircle,
+                div().h(px(height)),
+                cx,
+            ))
+            .child(div().h(px(20.0)))
+            .into_any_element()
+    }
+
+    #[gpui::test]
+    fn the_rail_card_is_as_tall_as_its_groups(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(1400.0, 800.0), |_, cx| page_with_rail(120.0, cx));
+        draw(&mut cx);
+        let rail = cx.debug_bounds("document-rail").expect("the rail draws");
+        assert_eq!(f32::from(rail.top()), DRAWER_TOP);
+        assert!(f32::from(rail.bottom()) < 800.0 - DRAWER_INSET - 200.0);
+    }
+
+    #[gpui::test]
+    fn a_long_rail_stops_above_the_page_bottom(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(1400.0, 800.0), |_, cx| page_with_rail(3000.0, cx));
+        draw(&mut cx);
+        let rail = cx.debug_bounds("document-rail").expect("the rail draws");
+        assert_eq!(f32::from(rail.bottom()), 800.0 - DRAWER_INSET);
+    }
+
     #[gpui::test]
     fn the_column_centers_in_the_room_the_rail_leaves(cx: &mut TestAppContext) {
         let mut cx = open(cx, size(1400.0, 800.0), |_, cx| {
@@ -507,19 +556,22 @@ mod tests {
         });
         draw(&mut cx);
         let body = cx.debug_bounds("body").expect("the column draws");
-        // 1400 less both 62px paddings and the rail's 48 + 376 leaves 852px: the 654px column
-        // sits in its middle.
-        let room = 1400.0 - 2.0 * PAGE_PADDING - RAIL_GAP - RAIL_WIDTH;
+        // 1400 less the rail's card (376 and its 8px inset) leaves the text 1016px, and both
+        // 62px paddings leave 892px: the 654px column sits in its middle.
+        let room = 1400.0 - DRAWER_INSET - RAIL_WIDTH - 2.0 * PAGE_PADDING;
         assert_eq!(f32::from(body.size.width), DOCUMENT_COLUMN);
         assert_eq!(
             f32::from(body.left()),
             PAGE_PADDING + (room - DOCUMENT_COLUMN) / 2.0
         );
-        // The rail ends 62px in from the right; a value starts past the group's 4px, the
-        // 88px label, the 4px gap, and its own 6px.
+        // The rail's card ends 8px in from the right; a value starts past the card's 8px, the
+        // group's 4px, the 88px label, the 4px gap, and its own 6px.
         let value = cx.debug_bounds("value").expect("the property draws");
-        let rail_left = 1400.0 - PAGE_PADDING - RAIL_WIDTH;
-        assert_eq!(f32::from(value.left()), rail_left + 4.0 + 88.0 + 4.0 + 6.0);
+        let rail_left = 1400.0 - DRAWER_INSET - RAIL_WIDTH;
+        assert_eq!(
+            f32::from(value.left()),
+            rail_left + 8.0 + 4.0 + 88.0 + 4.0 + 6.0
+        );
     }
 
     #[gpui::test]

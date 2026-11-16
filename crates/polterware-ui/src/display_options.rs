@@ -1,7 +1,9 @@
 //! `display-options.tsx`/`display-options.css`: 12px padding and row gaps,
 //! 148px selects, a direction button and property chips spaced 6px apart.
 //! The host owns and remembers the values; selections use the shared gpui-kit-like
-//! Menu keyboard/focus behavior. Used at the end of FilterPopover's root menu.
+//! Menu keyboard/focus behavior. Used at the end of FilterPopover's root menu. A host may add
+//! a third select, Show (which items the list keeps), and a Reset to defaults action at the
+//! bottom.
 use crate::{
     button::{Button, ButtonKind, ButtonSize},
     icons::Icon,
@@ -36,6 +38,8 @@ pub struct DisplaySettings {
     pub ordering: SharedString,
     pub descending: bool,
     pub properties: Vec<SharedString>,
+    /// The Show select's value; empty while the host gives no Show choices.
+    pub show: SharedString,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DisplayChanged(pub DisplaySettings);
@@ -44,9 +48,11 @@ pub struct DisplayOptions {
     groupings: Vec<DisplayChoice>,
     orderings: Vec<DisplayChoice>,
     properties: Vec<DisplayChoice>,
+    shows: Vec<DisplayChoice>,
+    on_reset: Option<Rc<dyn Fn(&mut Window, &mut App)>>,
     settings: DisplaySettings,
     menu: Entity<Menu>,
-    anchors: [Rc<Cell<Option<Bounds<Pixels>>>>; 2],
+    anchors: [Rc<Cell<Option<Bounds<Pixels>>>>; 3],
     anchor: Option<Bounds<Pixels>>,
 }
 impl EventEmitter<DisplayChanged> for DisplayOptions {}
@@ -59,6 +65,8 @@ impl DisplayOptions {
             groupings: vec![],
             orderings: vec![],
             properties: vec![],
+            shows: vec![],
+            on_reset: None,
             settings: DisplaySettings::default(),
             menu,
             anchors: std::array::from_fn(|_| Rc::new(Cell::new(None))),
@@ -74,6 +82,14 @@ impl DisplayOptions {
         self.groupings = groupings;
         self.orderings = orderings;
         self.properties = properties;
+    }
+    /// The Show select's choices, under Ordering; none hides it.
+    pub fn set_show_choices(&mut self, shows: Vec<DisplayChoice>) {
+        self.shows = shows;
+    }
+    /// A Reset to defaults action at the bottom; the host resets and calls `set_settings`.
+    pub fn set_on_reset(&mut self, on_reset: Option<Rc<dyn Fn(&mut Window, &mut App)>>) {
+        self.on_reset = on_reset;
     }
     pub fn set_settings(&mut self, settings: DisplaySettings, cx: &mut Context<Self>) {
         if self.settings != settings {
@@ -125,15 +141,10 @@ impl DisplayOptions {
         let Some(bounds) = self.anchors[index].get() else {
             return;
         };
-        let choices = if index == 0 {
-            &self.groupings
-        } else {
-            &self.orderings
-        };
-        let selected = if index == 0 {
-            &self.settings.grouping
-        } else {
-            &self.settings.ordering
+        let (choices, selected) = match index {
+            0 => (&self.groupings, &self.settings.grouping),
+            1 => (&self.orderings, &self.settings.ordering),
+            _ => (&self.shows, &self.settings.show),
         };
         let items = choices
             .iter()
@@ -145,10 +156,10 @@ impl DisplayOptions {
                     checked: selected == &value,
                     on_select: Rc::new(move |_, cx| {
                         entity.update(cx, |this, cx| {
-                            if index == 0 {
-                                this.settings.grouping = value.clone();
-                            } else {
-                                this.settings.ordering = value.clone();
+                            match index {
+                                0 => this.settings.grouping = value.clone(),
+                                1 => this.settings.ordering = value.clone(),
+                                _ => this.settings.show = value.clone(),
                             }
                             this.changed(cx);
                         })
@@ -181,6 +192,7 @@ impl Render for DisplayOptions {
         for (index, (title, choices, selected)) in [
             ("Grouping", &self.groupings, &self.settings.grouping),
             ("Ordering", &self.orderings, &self.settings.ordering),
+            ("Show", &self.shows, &self.settings.show),
         ]
         .into_iter()
         .enumerate()
@@ -285,6 +297,17 @@ impl Render for DisplayOptions {
                     .child(div().flex().flex_wrap().gap(px(6.0)).children(chips)),
             );
         }
+        if let Some(on_reset) = self.on_reset.clone() {
+            panel = panel.child(
+                div().flex().justify_end().child(
+                    Button::new("display-reset", ButtonKind::Ghost)
+                        .size(ButtonSize::Sm)
+                        .icon(Icon::RefreshCw)
+                        .label("Reset to defaults")
+                        .on_click(move |window, cx| on_reset(window, cx)),
+                ),
+            );
+        }
         panel
     }
 }
@@ -314,6 +337,7 @@ mod tests {
                     ordering: "updated".into(),
                     descending: true,
                     properties: vec!["slug".into()],
+                    ..Default::default()
                 },
                 cx,
             );

@@ -46,6 +46,7 @@ fn panel(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
                         "tasks".into(),
                         "updated".into(),
                     ],
+                    ..Default::default()
                 },
                 cx,
             );

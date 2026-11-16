@@ -111,13 +111,14 @@ pub use rail_page::{
 };
 pub use resizable_panel::{COLLAPSE_THRESHOLD, PanelSide, ResizablePanel, resizable_panel};
 pub use scroll_fade::{
-    FadeEdges, FadeScroll, SCROLL_FADE, fade_item, fade_scroll, toolbar_trail, trailing_toolbar,
+    FadeEdges, FadeScroll, SCROLL_FADE, fade_item, fade_scroll, rounded_toolbar_trail,
+    toolbar_trail, trailing_toolbar,
 };
 pub use selection_toolbar::selection_toolbar;
 pub use settings_dialog::{
     SETTINGS_HEIGHT, SETTINGS_WIDTH, SettingsDialog, SettingsNavItem, SettingsSearchEntry,
     SettingsSearchOpen, SettingsSelect, scroll_to_settings_section, search_settings,
-    settings_anchor, settings_dialog, settings_size,
+    settings_anchor, settings_content_height, settings_dialog, settings_size,
 };
 pub use settings_group::{SettingsGroup, settings_group, settings_group_gap};
 pub use settings_row::{SettingsRow, settings_row};

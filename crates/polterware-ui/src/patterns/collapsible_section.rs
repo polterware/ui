@@ -114,7 +114,16 @@ impl SectionClip {
         .top(px(0.0))
         .left(px(0.0))
         .size_full();
-        let inner = div().relative().w_full().child(body).child(probe);
+        // A column, so the body takes the section's width: in a row it would size to its own
+        // content, and a body that sizes itself to its width (a table) would never grow back
+        // from the nothing it had while folded.
+        let inner = div()
+            .relative()
+            .w_full()
+            .flex()
+            .flex_col()
+            .child(body)
+            .child(probe);
         let clip = div().w_full().min_w(px(0.0));
         if !self.height.is_animating() {
             return clip.child(inner).into_any_element();
@@ -313,6 +322,7 @@ impl Render for CollapsibleSection {
             ));
         let body = self.clip.shows_body().then(|| {
             div()
+                .w_full()
                 .pt(px(10.0))
                 .flex()
                 .flex_col()
@@ -342,5 +352,118 @@ impl Render for CollapsibleSection {
                     }),
             )
             .child(self.clip.render(body, window))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::cell::RefCell;
+
+    use gpui::{Bounds, Entity, Pixels, TestAppContext, size};
+
+    use super::*;
+    use crate::data_table::{Column, DataTable};
+    use crate::test_support::{draw, open, settle};
+
+    type Painted = Rc<RefCell<Vec<(usize, Bounds<Pixels>)>>>;
+
+    /// A section whose body is a headless record table, as Structure's are, each row noting
+    /// where it was laid out.
+    fn record_section(
+        cx: &mut TestAppContext,
+        painted: Painted,
+    ) -> (Entity<CollapsibleSection>, gpui::VisualTestContext) {
+        let slot: Rc<RefCell<Option<Entity<CollapsibleSection>>>> = Rc::default();
+        let made = slot.clone();
+        let mut vcx = open(cx, size(600.0, 600.0), move |_, cx| {
+            let section = made
+                .borrow_mut()
+                .get_or_insert_with(|| {
+                    let painted = painted.clone();
+                    cx.new(|cx| {
+                        let mut section = CollapsibleSection::new("Rules", cx);
+                        section.set_large_title(true);
+                        section.set_body(Rc::new(move |_, _| {
+                            let painted = painted.clone();
+                            div()
+                                .w_full()
+                                .h(px(3.0 * 44.0 + 8.0))
+                                .child(
+                                    DataTable::new(
+                                        "records",
+                                        vec![Column::new("").shrinks()],
+                                        3,
+                                        move |row, _, _| {
+                                            let painted = painted.clone();
+                                            let index = row.index;
+                                            vec![
+                                                div()
+                                                    .h(px(20.0))
+                                                    .w_full()
+                                                    .child(
+                                                        canvas(
+                                                            move |bounds, _, _| {
+                                                                painted
+                                                                    .borrow_mut()
+                                                                    .push((index, bounds))
+                                                            },
+                                                            |_, _, _, _| {},
+                                                        )
+                                                        .size_full(),
+                                                    )
+                                                    .into_any_element(),
+                                            ]
+                                        },
+                                    )
+                                    .header(0.0, 11.0)
+                                    .row_height(40.0)
+                                    .gutters(0.0),
+                                )
+                                .into_any_element()
+                        }));
+                        section
+                    })
+                })
+                .clone();
+            div().size_full().child(section).into_any_element()
+        });
+        settle(&mut vcx);
+        let section = slot.borrow().clone().expect("the section was built");
+        (section, vcx)
+    }
+
+    fn shown_rows(painted: &Painted) -> Vec<usize> {
+        let mut rows: Vec<usize> = painted
+            .borrow()
+            .iter()
+            .filter(|(_, bounds)| bounds.size.width > px(300.0) && bounds.size.height > px(1.0))
+            .map(|(row, _)| *row)
+            .collect();
+        rows.sort();
+        rows.dedup();
+        rows
+    }
+
+    #[gpui::test]
+    fn a_table_body_shows_its_rows_again_after_closing_and_opening(cx: &mut TestAppContext) {
+        let painted: Painted = Rc::default();
+        let (section, mut cx) = record_section(cx, painted.clone());
+        painted.borrow_mut().clear();
+        draw(&mut cx);
+        assert_eq!(shown_rows(&painted), vec![0, 1, 2], "rows show at first");
+
+        for _ in 0..2 {
+            cx.update(|_, cx| section.update(cx, |s, cx| s.set_open(false, cx)));
+            settle(&mut cx);
+            cx.update(|_, cx| section.update(cx, |s, cx| s.set_open(true, cx)));
+            settle(&mut cx);
+            painted.borrow_mut().clear();
+            draw(&mut cx);
+            assert_eq!(
+                shown_rows(&painted),
+                vec![0, 1, 2],
+                "rows show after reopening"
+            );
+        }
     }
 }

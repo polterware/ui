@@ -1,18 +1,21 @@
 //! `DetailPanel` (`detail-panel.css`, `side-panel.tsx`): the floating panel a list opens its
 //! active record in, beside the list rather than over a scrim. The frame is
 //! `surface-panel-float` (`--card-fill`, the quiet edge, the float drop and a 0 20px 56px
-//! `--color-shadow-float` shadow, `--radius-surface`), 360px wide, 8px in from the page's
-//! right, top (below a toolbar over the page), and bottom. Its optional 12px invisible handle
+//! `--color-shadow-float` shadow, `--radius-surface`), 360px wide, 8px in from the page's right and top (below a toolbar
+//! over the page). It is as tall as its content, up to 8px above the page's bottom; past
+//! that the body and title scroll inside while Close and the footer stay. Its optional 12px invisible handle
 //! on the left edge resizes it with the column-resize cursor and follows the pointer directly.
 //! It takes the presses and the
 //! wheel over its face, so the list under it keeps neither.
 //!
-//! Its header (`data-expandable="false"`) pads 12px 12px 8px 20px: the title in 14px/600 on a
-//! 30px line with its chips 6px after it, wrapping to the next line when they do not fit, and
-//! Close details at the end; with no chips the title is on its 1.35 line, centred with Close
-//! on the 28px row; a [`DetailPanel::leading`] icon sits in a 16px slot 8px before
-//! the title, centred on it when it is larger, as a 20px bot is. The body scrolls, padded 16px
-//! 20px 24px; its sections ([`detail_section`]) stand 24px apart, each a 24px icon tile and a
+//! The panel has no title bar: the scrolling body starts with the title as its first
+//! section, a heading like every [`detail_section`]'s (the [`DetailPanel::leading`] mark in a
+//! 24px slot, else the [`DetailPanel::title_section`] icon tile, then its label, Summary by
+//! default, and the chips) over the title in [`detail_text`]. A title longer than three lines
+//! shows them as one paragraph cut with an ellipsis, and a muted 12px Show more under it
+//! opens every line (Show less closes them). Close details stays
+//! 12px from the frame's top and right, clear of the title. The body pads 20px at the sides
+//! and 24px at the bottom; its sections ([`detail_section`]) stand 24px apart, each a 24px icon tile and a
 //! 13px title 8px after it, then its content 10px under them. The rail's sections
 //! ([`DetailPanel::rail`], `DetailPanel.Rail`) follow the main ones 12px under them, the
 //! record's gap, since the panel stacks the two. [`detail_properties`] lists label and value rows: a
@@ -29,7 +32,7 @@ use std::{cell::Cell, rc::Rc};
 use gpui::{
     AnyElement, App, CursorStyle, DispatchPhase, ElementId, FontWeight, IntoElement, MouseButton,
     MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString, Window, canvas, div,
-    prelude::*, px, relative,
+    prelude::*, px,
 };
 
 use crate::Handler;
@@ -52,11 +55,42 @@ pub const DETAIL_PANEL_INSET: f32 = 8.0;
 const SECTION_GAP: f32 = 24.0;
 /// `.pw-detail-panel__record`'s gap, between the main column and the rail stacked under it.
 const RECORD_GAP: f32 = 12.0;
-/// `.pw-detail-panel__header-icon`.
-const HEADER_ICON: f32 = 16.0;
-/// The header's row without chips: Close details' 28px.
-const HEADER_ROW: f32 = 28.0;
 const PROPERTY_LABEL_WIDTH: f32 = 110.0;
+/// How many lines a long title shows before Show more.
+const TITLE_LINES: usize = 3;
+/// The body's side padding.
+const BODY_PAD_X: f32 = 20.0;
+/// The body's top padding, which puts the title section's 20px heading level with Close.
+const BODY_PAD_TOP: f32 = 16.0;
+/// What the title's heading leaves on its right for Close (28px and its 12px inset, less
+/// the body's 20px).
+const CLOSE_ROOM: f32 = 20.0;
+
+/// How many lines `title` takes at `width` in the title section's 12.5px text.
+fn title_lines(title: &SharedString, width: f32, window: &Window) -> usize {
+    if width <= 0.0 {
+        return 1;
+    }
+    let run = window.text_style().to_run(title.len());
+    window
+        .text_system()
+        .shape_text(title.clone(), px(12.5), &[run], Some(px(width)), None)
+        .map(|lines| {
+            lines
+                .iter()
+                .map(|line| line.wrap_boundaries().len() + 1)
+                .sum()
+        })
+        .unwrap_or(1)
+}
+
+/// A short key for a title, so each record's Show more starts closed.
+fn title_key(title: &str) -> u64 {
+    use std::hash::{Hash, Hasher};
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    title.hash(&mut hasher);
+    hasher.finish()
+}
 const DETAIL_HANDLE: f32 = 12.0;
 
 /// A cheap, cloneable width shared by a page and its [`DetailPanel`].
@@ -122,6 +156,8 @@ fn dragged_detail_width(drag: DetailDrag, x: f32, viewport_width: f32) -> f32 {
 pub struct DetailPanel {
     id: ElementId,
     title: SharedString,
+    title_label: SharedString,
+    title_icon: Icon,
     leading: Option<AnyElement>,
     aside: Vec<AnyElement>,
     sections: Vec<AnyElement>,
@@ -138,6 +174,8 @@ impl DetailPanel {
         Self {
             id: id.into(),
             title: title.into(),
+            title_label: "Summary".into(),
+            title_icon: Icon::FileText,
             leading: None,
             aside: Vec::new(),
             sections: Vec::new(),
@@ -148,6 +186,13 @@ impl DetailPanel {
             top: 0.0,
             width: None,
         }
+    }
+
+    /// The heading of the title's section (default: Summary, with the file icon).
+    pub fn title_section(mut self, label: impl Into<SharedString>, icon: Icon) -> Self {
+        self.title_label = label.into();
+        self.title_icon = icon;
+        self
     }
 
     /// `DetailPanel.Title`'s icon: a mark before the title, such as the actor's bot, 8px
@@ -217,41 +262,90 @@ impl RenderOnce for DetailPanel {
             width.set(clamped);
             clamped
         });
-        // Chips make the title `--inline`, on a 30px line; alone it keeps its 1.35 line.
-        let inline = !self.aside.is_empty();
-        let title = div()
+        // The title is the body's first section: its heading (the leading mark, or the
+        // title's icon tile, the label, and the chips) level with Close, and its text cut to
+        // three lines while it runs longer, with Show more under it.
+        let text_width = panel_width - 2.0 * BODY_PAD_X;
+        let long = title_lines(&self.title, text_width, window) > TITLE_LINES;
+        let open = window.use_keyed_state(
+            ElementId::Name(format!("{:?}-title-{}", self.id, title_key(&self.title)).into()),
+            cx,
+            |_, _| false,
+        );
+        let expanded = long && *open.read(cx);
+        let toggle = long.then(|| {
+            let open = open.clone();
+            div()
+                .id((self.id.clone(), "title-toggle"))
+                .debug_selector(|| "detail-title-toggle".into())
+                .mt(px(6.0))
+                .text_size(px(12.0))
+                .line_height(px(18.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(theme.color_text_muted)
+                .cursor_pointer()
+                .hover(|toggle| toggle.text_color(theme.color_text_primary))
+                .child(if expanded { "Show less" } else { "Show more" })
+                .on_click(move |_, window, cx| {
+                    open.update(cx, |open, cx| {
+                        *open = !*open;
+                        cx.notify();
+                    });
+                    window.refresh();
+                })
+        });
+        let mark = match self.leading {
+            Some(leading) => div()
+                .flex_none()
+                .size(px(24.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(leading)
+                .into_any_element(),
+            None => IconTile::new(self.title_icon)
+                .size(24.0, 14.0)
+                .into_any_element(),
+        };
+        let heading = div()
+            .min_w(px(0.0))
+            .min_h(px(20.0))
+            // Clear of Close, which stands level with it at the frame's top right.
+            .pr(px(CLOSE_ROOM))
             .flex()
             .flex_wrap()
             .items_center()
-            .gap_x(px(6.0))
-            .min_w(px(0.0))
-            .when(!inline, |title| title.min_h(px(HEADER_ROW)))
-            .children(self.leading.map(|leading| {
-                div()
-                    .flex_none()
-                    .size(px(HEADER_ICON))
-                    .mr(px(2.0))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .child(div().flex_none().child(leading))
-            }))
-            // A zero basis keeps a long title on the icon's row, wrapping beside it.
+            .gap(px(8.0))
+            .child(mark)
             .child(
                 div()
-                    .flex_1()
-                    .min_w(px(0.0))
-                    .text_size(px(14.0))
-                    .line_height(if inline {
-                        px(30.0).into()
-                    } else {
-                        relative(1.35)
-                    })
-                    .font_weight(FontWeight::SEMIBOLD)
+                    .text_size(px(13.0))
+                    .line_height(px(13.0 * 1.35))
+                    .font_weight(FontWeight::MEDIUM)
                     .text_color(theme.color_text_primary)
-                    .child(self.title),
+                    .child(self.title_label),
             )
             .children(self.aside);
+        let text = detail_text(
+            if long && !expanded {
+                // Closed, its lines run on as one paragraph, which the clamp cuts.
+                SharedString::from(self.title.split_whitespace().collect::<Vec<_>>().join(" "))
+            } else {
+                self.title
+            },
+            cx,
+        )
+        .debug_selector(|| "detail-title".into())
+        .when(long && !expanded, |text| {
+            text.line_clamp(TITLE_LINES).text_ellipsis()
+        });
+        let title = div()
+            .flex()
+            .flex_col()
+            .gap(px(10.0))
+            .min_w(px(0.0))
+            .child(heading)
+            .child(div().flex().flex_col().child(text).children(toggle));
         let close = self.on_close.map(|on_close| {
             icon_button(
                 (self.id.clone(), "close"),
@@ -261,49 +355,30 @@ impl RenderOnce for DetailPanel {
                 cx,
             )
         });
-        let header = div()
-            .flex_none()
-            .flex()
-            .when(inline, |header| header.items_start())
-            .when(!inline, |header| header.items_center())
-            .gap(px(8.0))
-            .pt(px(12.0))
-            .pr(px(12.0))
-            .pb(px(8.0))
-            .pl(px(20.0))
-            .child(div().flex_1().min_w(px(0.0)).child(title))
-            .children(close.map(|close| {
-                div()
-                    .flex_none()
-                    .when(inline, |close| close.pt(px(1.0)))
-                    .child(close)
-            }));
-        let mut main = div()
+        let mut main = div().w_full().flex().flex_col().pb(px(24.0));
+        let mut sections = div()
             .w_full()
             .flex()
             .flex_col()
-            .pt(px(16.0))
-            .px(px(20.0))
-            .pb(px(24.0));
+            .pt(px(BODY_PAD_TOP))
+            .px(px(BODY_PAD_X))
+            .child(title);
         let has_main = !self.sections.is_empty();
-        for (index, section) in self.sections.into_iter().enumerate() {
-            main = main.child(
-                div()
-                    .when(index > 0, |section| section.mt(px(SECTION_GAP)))
-                    .child(section),
-            );
+        for section in self.sections {
+            sections = sections.child(div().mt(px(SECTION_GAP)).child(section));
         }
         for (index, section) in self.rail.into_iter().enumerate() {
-            let gap = if index > 0 {
+            let gap = if index > 0 || !has_main {
                 SECTION_GAP
-            } else if has_main {
-                RECORD_GAP
             } else {
-                0.0
+                RECORD_GAP
             };
-            main = main.child(div().mt(px(gap)).child(section));
+            sections = sections.child(div().mt(px(gap)).child(section));
         }
-        let body = div().flex_1().min_h(px(0.0)).child(scroll_area(
+        main = main.child(sections);
+        // The body keeps its content's height and gives it up first when the frame reaches
+        // the page's height, scrolling inside while Close and the footer stay put.
+        let body = div().flex_initial().min_h(px(0.0)).child(scroll_area(
             (self.id.clone(), "body"),
             main,
             window,
@@ -324,14 +399,18 @@ impl RenderOnce for DetailPanel {
         let frame = div()
             .id(self.id.clone())
             .relative()
-            .size_full()
+            .w_full()
+            .max_h_full()
+            .min_h(px(0.0))
             .flex()
             .flex_col()
             .bg(theme.color_surface_subtle)
             .on_scroll_wheel(|_, _, cx| cx.stop_propagation())
-            .child(header)
             .child(body)
-            .children(footer);
+            .children(footer)
+            .children(
+                close.map(|close| div().absolute().top(px(12.0)).right(px(12.0)).child(close)),
+            );
         let frame = match self.on_outside {
             Some(on_outside) => {
                 // Only a click counts: a press outside released within 3px of where it began.
@@ -365,12 +444,23 @@ impl RenderOnce for DetailPanel {
         let mut shadows = crate::material::float_drop(&theme);
         shadows.push(drop(20.0, 56.0, theme.color_shadow_float));
         frame = frame.shadow(shadows);
-        let mut panel = div()
+        // The room the frame may take: from under the toolbar to the page's bottom inset.
+        let room = div()
             .absolute()
             .top(px(DETAIL_PANEL_INSET + self.top))
             .right(px(DETAIL_PANEL_INSET))
             .bottom(px(DETAIL_PANEL_INSET))
             .w(px(panel_width))
+            .flex()
+            .flex_col();
+        // As tall as its content, up to that room; the resize handle runs along it.
+        let mut panel = div()
+            .relative()
+            .w_full()
+            .max_h_full()
+            .min_h(px(0.0))
+            .flex()
+            .flex_col()
             .child(frame);
         if let Some(width) = self.width {
             let handle_width = width.clone();
@@ -439,7 +529,7 @@ impl RenderOnce for DetailPanel {
             .size_0();
             panel = panel.child(handle).child(tracker);
         }
-        panel
+        room.child(panel)
     }
 }
 
@@ -659,12 +749,137 @@ mod tests {
         });
         draw(&mut cx);
         let close = cx.debug_bounds("panel-close").expect("Close details draws");
-        // The header's 12px end padding inside the panel's 8px inset; with no chips, Close
-        // stands on the header's 28px row under its 12px top.
+        // Close stays 12px from the frame's top and right.
         assert_eq!(f32::from(close.right()), 1000.0 - 8.0 - 12.0);
         assert_eq!(f32::from(close.top()), 8.0 + 12.0);
         cx.simulate_click(close.center(), Modifiers::none());
         assert_eq!(closed.get(), 1);
+    }
+
+    fn panel_with_body(height: f32) -> gpui::AnyElement {
+        gpui::div()
+            .relative()
+            .size_full()
+            .child(
+                DetailPanel::new("panel", "Which screens first?")
+                    .on_close(Rc::new(|_, _| {}))
+                    .section(
+                        gpui::div()
+                            .debug_selector(|| "body".into())
+                            .h(gpui::px(height)),
+                    )
+                    .footer(
+                        gpui::div()
+                            .debug_selector(|| "actions".into())
+                            .h(gpui::px(32.0))
+                            .w(gpui::px(100.0)),
+                    ),
+            )
+            .into_any_element()
+    }
+
+    #[gpui::test]
+    fn a_short_record_keeps_the_panel_as_tall_as_its_content(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(1000.0, 600.0), |_, _| panel_with_body(100.0));
+        draw(&mut cx);
+        let body = cx.debug_bounds("body").expect("the section draws");
+        let actions = cx.debug_bounds("actions").expect("the footer draws");
+        // The footer follows the body's 24px bottom padding and its own 12px top, far above
+        // the page's bottom.
+        assert_eq!(
+            f32::from(actions.top()),
+            f32::from(body.bottom()) + 24.0 + 12.0
+        );
+        assert!(f32::from(actions.bottom()) < 600.0 - 8.0 - 20.0 - 100.0);
+    }
+
+    #[gpui::test]
+    fn a_long_record_scrolls_its_body_and_keeps_the_footer_down(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(1000.0, 600.0), |_, _| panel_with_body(2000.0));
+        draw(&mut cx);
+        let actions = cx.debug_bounds("actions").expect("the footer draws");
+        // The frame stops 8px above the page's bottom; the footer pads 20px under its actions.
+        assert_eq!(f32::from(actions.bottom()), 600.0 - 8.0 - 20.0);
+        let body = cx.debug_bounds("body").expect("the section draws");
+        assert!(
+            f32::from(body.bottom()) > f32::from(actions.top()),
+            "the body runs on, scrolled"
+        );
+    }
+
+    #[gpui::test]
+    fn a_long_title_scrolls_while_close_and_footer_stay(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(1000.0, 400.0), |_, _| {
+            gpui::div()
+                .relative()
+                .size_full()
+                .child(
+                    DetailPanel::new("panel", ("A long prompt line\n").repeat(20))
+                        .on_close(Rc::new(|_, _| {}))
+                        .footer(
+                            gpui::div()
+                                .debug_selector(|| "actions".into())
+                                .h(gpui::px(32.0)),
+                        ),
+                )
+                .into_any_element()
+        });
+        draw(&mut cx);
+        let toggle = cx
+            .debug_bounds("detail-title-toggle")
+            .expect("Show more draws");
+        cx.simulate_click(toggle.center(), Modifiers::none());
+        draw(&mut cx);
+        let close = cx.debug_bounds("panel-close").expect("Close details draws");
+        let actions = cx.debug_bounds("actions").expect("the footer draws");
+        assert_eq!(f32::from(close.top()), 8.0 + 12.0);
+        assert_eq!(f32::from(close.right()), 1000.0 - 8.0 - 12.0);
+        assert_eq!(f32::from(actions.bottom()), 400.0 - 8.0 - 20.0);
+    }
+
+    #[gpui::test]
+    fn a_long_title_shows_three_lines_until_show_more(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(1000.0, 800.0), |_, _| {
+            gpui::div()
+                .relative()
+                .size_full()
+                .child(
+                    DetailPanel::new("panel", ("A long prompt line\n").repeat(20))
+                        .on_close(Rc::new(|_, _| {})),
+                )
+                .into_any_element()
+        });
+        draw(&mut cx);
+        let line = 12.5 * 1.55;
+        let title = cx.debug_bounds("detail-title").expect("the title draws");
+        assert!(
+            (f32::from(title.size.height) - 3.0 * line).abs() < 1.0,
+            "three lines, not {}",
+            f32::from(title.size.height)
+        );
+        let toggle = cx
+            .debug_bounds("detail-title-toggle")
+            .expect("Show more draws");
+        cx.simulate_click(toggle.center(), Modifiers::none());
+        draw(&mut cx);
+        let title = cx.debug_bounds("detail-title").expect("the title draws");
+        assert!(
+            f32::from(title.size.height) > 19.0 * line,
+            "every line shows"
+        );
+    }
+
+    #[gpui::test]
+    fn a_short_title_has_no_show_more(cx: &mut TestAppContext) {
+        let mut cx = open(cx, size(1000.0, 600.0), |_, _| {
+            gpui::div()
+                .relative()
+                .size_full()
+                .child(DetailPanel::new("panel", "Rename export snapshot"))
+                .into_any_element()
+        });
+        draw(&mut cx);
+        assert!(cx.debug_bounds("detail-title-toggle").is_none());
     }
 
     #[gpui::test]
@@ -682,8 +897,8 @@ mod tests {
         });
         draw(&mut cx);
         let close = cx.debug_bounds("panel-close").expect("Close details draws");
-        // Centred on the 30px line, a pixel under the header's 12px top.
-        assert_eq!(f32::from(close.top()), 8.0 + 12.0 + 1.0);
+        // Close keeps its position even with chips.
+        assert_eq!(f32::from(close.top()), 8.0 + 12.0);
     }
 
     #[gpui::test]

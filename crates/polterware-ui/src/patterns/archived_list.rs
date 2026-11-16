@@ -63,6 +63,7 @@ pub struct ArchivedList {
     items: Vec<ArchivedItem>,
     busy: bool,
     gutter: f32,
+    inset_top: f32,
     sort: Option<(usize, SortDirection)>,
     menu: Entity<ContextMenu>,
     /// Each shown row's "…", as the last frame laid it out.
@@ -87,6 +88,7 @@ impl ArchivedList {
             items: Vec::new(),
             busy: false,
             gutter: 0.0,
+            inset_top: 0.0,
             sort: None,
             menu,
             anchors: Rc::default(),
@@ -97,6 +99,14 @@ impl ArchivedList {
     pub fn gutters(mut self, inline: f32) -> Self {
         self.gutter = inline;
         self
+    }
+
+    /// The page's chrome over the list's top, as [`DataTable::inset_top`] takes it.
+    pub fn set_inset_top(&mut self, inset: f32, cx: &mut Context<Self>) {
+        if (self.inset_top - inset).abs() > 0.5 {
+            self.inset_top = inset;
+            cx.notify();
+        }
     }
 
     pub fn set_items(&mut self, items: Vec<ArchivedItem>, cx: &mut Context<Self>) {
@@ -185,7 +195,11 @@ fn muted(text: SharedString, cx: &App) -> AnyElement {
 impl Render for ArchivedList {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         if self.items.is_empty() {
-            return empty(cx);
+            return div()
+                .size_full()
+                .pt(px(self.inset_top))
+                .child(empty(cx))
+                .into_any_element();
         }
         let rows = Rc::new(self.rows());
         self.anchors.borrow_mut().resize(rows.len(), None);
@@ -297,6 +311,8 @@ impl Render for ArchivedList {
             }
         })
         .gutters(self.gutter)
+        .inset_top(self.inset_top)
+        .fades(Theme::global(cx).color_surface)
         .measure_every_row()
         .freeze_once();
         div()

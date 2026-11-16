@@ -315,6 +315,31 @@ pub fn paint_dot_grid(
     color: impl Into<Hsla>,
     window: &mut Window,
 ) {
+    paint_dot_grid_rounded(bounds, viewport, radius, color, 0.0, window)
+}
+
+/// Whether a dot centered at `(x, y)` in a `width` × `height` box lies inside its corners
+/// rounded to `corner`: GPUI clips to rectangles, so a grid on a rounded face leaves out the
+/// dots its corners cut away.
+fn inside_corners(x: f32, y: f32, width: f32, height: f32, corner: f32) -> bool {
+    if corner <= 0.0 {
+        return true;
+    }
+    let cx = x.clamp(corner, (width - corner).max(corner));
+    let cy = y.clamp(corner, (height - corner).max(corner));
+    let (dx, dy) = (x - cx, y - cy);
+    dx * dx + dy * dy <= corner * corner
+}
+
+/// [`paint_dot_grid`] on a face whose corners are rounded to `corner`.
+pub fn paint_dot_grid_rounded(
+    bounds: Bounds<Pixels>,
+    viewport: Viewport,
+    radius: f32,
+    color: impl Into<Hsla>,
+    corner: f32,
+    window: &mut Window,
+) {
     let color: Hsla = color.into();
     let step = GRID * viewport.zoom;
     if step < 2.0 {
@@ -328,6 +353,10 @@ pub fn paint_dot_grid(
     while y < height + step {
         let mut x = start_x;
         while x < width + step {
+            if !inside_corners(x, y, width, height, corner) {
+                x += step;
+                continue;
+            }
             let dot = Bounds::new(
                 point(
                     bounds.origin.x + px(x - radius),
@@ -358,6 +387,18 @@ pub fn dot_grid(viewport: Viewport, radius: f32, color: Rgba) -> impl IntoElemen
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_rounded_face_leaves_out_the_dots_its_corners_cut_away() {
+        use super::inside_corners;
+        // The very corner of a 12px-round face is outside; its middle and edges are in.
+        assert!(!inside_corners(1.0, 1.0, 200.0, 100.0, 12.0));
+        assert!(!inside_corners(199.0, 99.0, 200.0, 100.0, 12.0));
+        assert!(inside_corners(100.0, 50.0, 200.0, 100.0, 12.0));
+        assert!(inside_corners(100.0, 1.0, 200.0, 100.0, 12.0));
+        assert!(inside_corners(12.0, 12.0, 200.0, 100.0, 12.0));
+        assert!(inside_corners(1.0, 1.0, 200.0, 100.0, 0.0));
+    }
+
     use super::*;
 
     #[test]

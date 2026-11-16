@@ -21,8 +21,9 @@ pub use geometry::{
 };
 pub use history::{Capture, History};
 pub use paint::{
-    EdgePaint, GRID, Line, ShapePaint, dot_grid, edges_layer, paint_dot_grid, paint_edges,
-    paint_selection, paint_shape, selection_frame, shape_surface, sticky_paths, sticky_surface,
+    EdgePaint, GRID, Line, ShapePaint, dot_grid, edges_layer, paint_dot_grid,
+    paint_dot_grid_rounded, paint_edges, paint_selection, paint_shape, selection_frame,
+    shape_surface, sticky_paths, sticky_surface,
 };
 pub use shapes::{
     FAMILIES, Family, GLYPH, Inset, SHAPES, ShapeDefinition, ShapeGroup, family_of, shape_of,

@@ -26,14 +26,19 @@
 //!
 //! GPUI clips to rectangles, so the results stop short of the frame's rounded bottom corners
 //! and fade out above them instead of running under the corners.
+//!
+//! The rows are one flat `gpui::list` (gpui-kit's `VirtualList`): each item is a group's
+//! heading or a command, and only the items in view, plus the list's overdraw, are built. The
+//! highlight, the fades, and the scrollbar follow the row heights this module knows, so they
+//! stay exact even before the list has measured its way to a row a jump skipped.
 
 use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, Context, CursorStyle, Div, ElementId, Entity, EventEmitter, FocusHandle,
-    Focusable, FontWeight, IntoElement, KeyBinding, KeyDownEvent, MouseButton, Render,
-    ScrollHandle, SharedString, Stateful, Window, actions, canvas, div, linear_color_stop,
-    linear_gradient, point, prelude::*, px,
+    Focusable, FontWeight, IntoElement, KeyBinding, KeyDownEvent, ListAlignment, ListOffset,
+    ListState, MouseButton, Render, ScrollHandle, SharedString, Stateful, WeakEntity, Window,
+    actions, canvas, div, linear_color_stop, linear_gradient, list, prelude::*, px,
 };
 
 use super::property_pills::{Property, PropertyPills, PropertyPillsEvent};
@@ -44,7 +49,7 @@ use crate::icon_tile::{IconTile, TileTone};
 use crate::icons::Icon;
 use crate::material::{Edge, drop, edge, float_drop};
 use crate::motion::{Animator, Spring, SpringTier, SpringValue};
-use crate::scroll::{GUTTER, ScrollAxis, ScrollGeometry, scrollbar};
+use crate::scroll::{GUTTER, ScrollAxis, ScrollGeometry, ScrollSource, scrollbar};
 use crate::text_input::{self, TextInput};
 use crate::theme::Theme;
 
@@ -272,7 +277,10 @@ pub struct Commander {
     /// The ids `matched` showed last; a different set lights the first row again.
     matched_ids: Vec<SharedString>,
     reveal: bool,
-    scroll: ScrollHandle,
+    /// The results as a `gpui::list` (gpui-kit's `VirtualList`): one item per row, a group's
+    /// heading or a command, so only the rows in view are built. The scrollbar, the fades,
+    /// and the highlight read its scroll.
+    list: ListState,
     /// The last (offset, overflow, height) the fades and the gutter were drawn for.
     seen: Rc<std::cell::Cell<(f32, f32, f32)>>,
     open: bool,
@@ -341,7 +349,7 @@ impl Commander {
             applied_query: String::new(),
             matched_ids: Vec::new(),
             reveal: false,
-            scroll: ScrollHandle::new(),
+            list: ListState::new(0, ListAlignment::Top, px(COMMANDER_HEIGHT)),
             seen: Rc::new(std::cell::Cell::new((0.0, 0.0, 0.0))),
             open: false,
             restore: None,
@@ -447,7 +455,7 @@ impl Commander {
             self.matched_ids.clear();
             self.selected = None;
             self.update_matches(cx);
-            self.scroll.set_offset(point(px(0.0), px(0.0)));
+            self.list.scroll_to(ListOffset::default());
             self.press.snap(0.0);
             self.enter.snap(0.0);
             self.enter.set_target(1.0);
@@ -535,11 +543,12 @@ impl Commander {
             .collect();
         let previous = self.selected_id().cloned();
         self.matched = matched;
-        self.rows = rows;
+        let previous_rows = std::mem::replace(&mut self.rows, rows);
+        self.sync_rows(&previous_rows);
         if ids != self.matched_ids {
             self.matched_ids = ids;
             self.selected = self.first_enabled();
-            self.scroll.set_offset(point(px(0.0), px(0.0)));
+            self.list.scroll_to(ListOffset::default());
             self.reveal = false;
             if let Some(y) = self.selected.map(|index| self.row_y(index)) {
                 self.indicator.snap(y);
@@ -665,48 +674,103 @@ impl Commander {
         !self.enter.settled() || !self.press.settled() || !self.indicator.is_settled()
     }
 
-    /// Scrolls the least that shows row `y` whole, clear of the fades' insets.
-    fn reveal_row(&self, y: f32) {
-        let view = f32::from(self.scroll.bounds().size.height);
-        if view < 1.0 {
-            return;
-        }
-        let top = -f32::from(self.scroll.offset().y);
-        let first = y - COMMANDER_LIST_TOP;
-        let last = y + COMMANDER_ROW_H + COMMANDER_LIST_BOTTOM;
-        if first < top {
-            self.scroll.set_offset(point(px(0.0), px(-first.max(0.0))));
-        } else if last > top + view {
-            self.scroll.set_offset(point(px(0.0), px(-(last - view))));
+    /// Keeps the results list at one item per row. A new row structure replaces the items so
+    /// no cached height stays on a row that changed shape (a heading that lost or gained its
+    /// group's gap).
+    fn sync_rows(&self, previous: &[Row]) {
+        if self.rows != previous {
+            let count = self.rows.len();
+            self.list.splice(0..self.list.item_count(), count);
         }
     }
 
-    fn results(
-        &mut self,
-        overflows: bool,
-        theme: &Theme,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) -> Div {
-        let gutter = if overflows { GUTTER } else { 0.0 };
-        let mut column = div()
-            .relative()
-            .w_full()
-            .pt(px(COMMANDER_LIST_TOP))
-            .pb(px(COMMANDER_LIST_BOTTOM - CORNER_CLEAR))
-            .pl(px(LIST_X))
-            .pr(px(LIST_X + gutter));
-        if self.matched.is_empty() {
-            return column.child(
-                div()
-                    .w_full()
-                    .py(px(theme.space_4))
-                    .text_center()
-                    .text_size(px(theme.font_size_sm))
-                    .text_color(theme.color_text_muted)
-                    .child(self.empty_label.clone()),
-            );
+    /// Each row's height, index-aligned with `rows`: a command's [`COMMANDER_ROW_H`], or a
+    /// heading's [`COMMANDER_HEADING_H`] plus [`COMMANDER_GROUP_GAP`] above every group after
+    /// the first.
+    fn row_heights(&self) -> Vec<f32> {
+        let mut groups = 0;
+        self.rows
+            .iter()
+            .map(|row| match *row {
+                Row::Heading(_) => {
+                    let height =
+                        COMMANDER_HEADING_H + if groups > 0 { COMMANDER_GROUP_GAP } else { 0.0 };
+                    groups += 1;
+                    height
+                }
+                Row::Item(_) => COMMANDER_ROW_H,
+            })
+            .collect()
+    }
+
+    /// The position of matched command `index` in `rows`.
+    fn row_of_item(&self, index: usize) -> Option<usize> {
+        self.rows
+            .iter()
+            .position(|row| matches!(row, Row::Item(item) if *item == index))
+    }
+
+    /// The results' scroll as (scrolled, content, viewport) heights. The rows' heights are
+    /// known here, so the reading is exact even when the list has not measured the rows a jump
+    /// skipped: `ListState`'s own pixel offset counts only what it has measured.
+    fn list_extent(&self) -> (f32, f32, f32) {
+        rows_extent(&self.list, &self.row_heights())
+    }
+
+    /// Scrolls the list so row `row` starts at `y` pixels into the rows, as [`ListOffset`]
+    /// reads them.
+    fn scroll_list_to(&self, y: f32) {
+        scroll_rows_to(&self.list, &self.row_heights(), y);
+    }
+
+    /// Scrolls the least that shows the command `index` whole, clear of the fades' insets.
+    fn reveal_row(&self, index: usize) {
+        let Some(row) = self.row_of_item(index) else {
+            return;
+        };
+        let (scrolled, _, view) = self.list_extent();
+        if view < 1.0 {
+            return;
         }
+        let heights = self.row_heights();
+        let top: f32 = heights[..row].iter().sum();
+        let height = heights[row];
+        let visible = (view - COMMANDER_LIST_TOP - (COMMANDER_LIST_BOTTOM - CORNER_CLEAR)).max(1.0);
+        if top < scrolled {
+            self.scroll_list_to(top);
+        } else if top + height > scrolled + visible {
+            self.scroll_list_to(top + height - visible);
+        }
+    }
+
+    fn results(&mut self, overflows: bool, theme: &Theme, cx: &mut Context<Self>) -> Div {
+        let gutter = if overflows { GUTTER } else { 0.0 };
+        let pad = (
+            COMMANDER_LIST_TOP,
+            COMMANDER_LIST_BOTTOM - CORNER_CLEAR,
+            LIST_X,
+            gutter,
+        );
+        let mut column = div().relative().w_full().h_full().overflow_hidden();
+        if self.matched.is_empty() {
+            return column
+                .pt(px(pad.0))
+                .pb(px(pad.1))
+                .pl(px(pad.2))
+                .pr(px(pad.2 + pad.3))
+                .child(
+                    div()
+                        .w_full()
+                        .py(px(theme.space_4))
+                        .text_center()
+                        .text_size(px(theme.font_size_sm))
+                        .text_color(theme.color_text_muted)
+                        .child(self.empty_label.clone()),
+                );
+        }
+        // The rows live in the list below, which scrolls under this column, so the one
+        // highlight rides the list's scroll to stay on its row.
+        let (scrolled, _, _) = self.list_extent();
         if self.selected.is_some() {
             let inset = self.press.value().clamp(0.0, 1.0);
             column = column.child(
@@ -714,21 +778,62 @@ impl Commander {
                     .absolute()
                     .left(px(LIST_X + inset))
                     .right(px(LIST_X + gutter + inset))
-                    .top(px(self.indicator.value() + inset))
+                    .top(px(self.indicator.value() + inset - scrolled))
                     .h(px(COMMANDER_ROW_H - inset * 2.0))
                     .rounded(px(theme.radius_item))
                     .bg(theme.color_surface_hover),
             );
         }
+        // One list item per row: what a heading shows, or a command, with the height the list
+        // measures so `row_y` and the reveal line up.
         let mut groups = 0;
-        let rows = self.rows.clone();
-        for row in rows {
-            match row {
+        let heights = self.row_heights();
+        let rows: Vec<RowData> = self
+            .rows
+            .iter()
+            .zip(heights)
+            .map(|(row, height)| match *row {
                 Row::Heading(group) => {
                     let label = self.groups[group].label.clone().unwrap_or_default();
-                    column = column.child(
+                    let gap = if groups > 0 { COMMANDER_GROUP_GAP } else { 0.0 };
+                    groups += 1;
+                    RowData {
+                        height,
+                        gap,
+                        label: Some(label.to_uppercase().into()),
+                        item: None,
+                        index: 0,
+                    }
+                }
+                Row::Item(index) => RowData {
+                    height,
+                    gap: 0.0,
+                    label: None,
+                    item: self.item_at(index).cloned(),
+                    index,
+                },
+            })
+            .collect();
+        let rows = Rc::new(rows);
+        let selected = self.selected;
+        let press = self.press.value().clamp(0.0, 1.0);
+        let weak = cx.entity().downgrade();
+        let theme = *theme;
+        // `list` lays its items out across its whole width whatever its padding says, so each
+        // item keeps the list's sides itself.
+        let (side, end) = (pad.2, pad.2 + pad.3);
+        let list = list(self.list.clone(), move |row, window, cx| {
+            let Some(data) = rows.get(row) else {
+                return div().into_any_element();
+            };
+            let Some(item) = &data.item else {
+                return div()
+                    .pl(px(side))
+                    .pr(px(end))
+                    .h(px(data.height))
+                    .when(data.gap > 0.0, |heading| heading.pt(px(data.gap)))
+                    .child(
                         div()
-                            .when(groups > 0, |heading| heading.mt(px(COMMANDER_GROUP_GAP)))
                             .h(px(COMMANDER_HEADING_H))
                             .px(px(theme.space_2))
                             .flex()
@@ -736,96 +841,183 @@ impl Commander {
                             .text_size(px(10.0))
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(theme.color_text_disabled)
-                            .child(label.to_uppercase()),
-                    );
-                    groups += 1;
-                }
-                Row::Item(index) => {
-                    let row = self.row(index, theme, window, cx);
-                    column = column.child(row);
-                }
-            }
+                            .child(data.label.clone().unwrap_or_default()),
+                    )
+                    .into_any_element();
+            };
+            div()
+                .pl(px(side))
+                .pr(px(end))
+                .child(row_item(
+                    item,
+                    data.index,
+                    selected == Some(data.index),
+                    press,
+                    &theme,
+                    &weak,
+                    window,
+                    cx,
+                ))
+                .into_any_element()
+        })
+        .size_full()
+        .pt(px(pad.0))
+        .pb(px(pad.1));
+        column.child(list)
+    }
+}
+
+/// One item of the results list, as the list's row needs it: its height, the gap above a
+/// later group's heading, and either a heading's label or a command.
+struct RowData {
+    height: f32,
+    gap: f32,
+    label: Option<SharedString>,
+    item: Option<CommanderItem>,
+    index: usize,
+}
+
+/// One command's row, with its hover and press moving the highlight and its click confirming.
+#[allow(clippy::too_many_arguments)]
+fn row_item(
+    item: &CommanderItem,
+    index: usize,
+    active: bool,
+    press: f32,
+    theme: &Theme,
+    weak: &WeakEntity<Commander>,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let mark = match &item.mark {
+        CommanderMark::None => None,
+        CommanderMark::Tile(icon, tone) => Some(
+            IconTile::new(*icon)
+                .size(TILE, TILE_MARK)
+                .tone(*tone)
+                .into_any_element(),
+        ),
+        CommanderMark::Custom(build) => Some(build(window, cx)),
+    };
+    let hover = weak.clone();
+    let down = weak.clone();
+    let click = weak.clone();
+    div()
+        .id(("commander-row", index))
+        .h(px(COMMANDER_ROW_H))
+        .w_full()
+        .px(px(theme.space_2))
+        .flex()
+        .items_center()
+        .justify_between()
+        .gap(px(theme.space_2))
+        .text_size(px(theme.font_size_md))
+        .text_color(if active && !item.disabled {
+            theme.color_text_primary
+        } else if item.disabled {
+            theme.color_text_disabled
+        } else {
+            theme.color_text_secondary
+        })
+        .opacity(if active { 1.0 - 0.18 * press } else { 1.0 })
+        .when(!item.disabled, |row| {
+            row.cursor(CursorStyle::PointingHand)
+                .on_hover(move |hovered: &bool, _, cx| {
+                    if *hovered {
+                        let _ = hover.update(cx, |this, cx| {
+                            this.reveal = false;
+                            this.select(index, cx);
+                        });
+                    }
+                })
+                .on_mouse_down(MouseButton::Left, move |_, _, cx| {
+                    let _ = down.update(cx, |this, cx| {
+                        this.reveal = false;
+                        this.select(index, cx);
+                        this.press.set_target(1.0);
+                        cx.notify();
+                    });
+                })
+                .on_click(move |_, _, cx| {
+                    let _ = click.update(cx, |this, cx| this.confirm(index, cx));
+                })
+        })
+        .child(
+            div()
+                .flex_1()
+                .min_w(px(0.0))
+                .flex()
+                .items_center()
+                .gap(px(theme.space_2))
+                .children(mark.map(|mark| div().flex_none().child(mark)))
+                .child(div().min_w(px(0.0)).truncate().child(item.label.clone())),
+        )
+        .children(item.hint.clone().map(|hint| {
+            div()
+                .flex_none()
+                .text_size(px(theme.font_size_xs))
+                .text_color(theme.color_text_disabled)
+                .child(hint)
+        }))
+        .into_any_element()
+}
+
+/// The results' scroll as (scrolled, content, viewport) heights, from the rows' known
+/// heights: the list reports only the rows it has measured, which undercounts after a jump.
+fn rows_extent(list: &ListState, heights: &[f32]) -> (f32, f32, f32) {
+    let top = list.logical_scroll_top();
+    let scrolled = heights
+        .iter()
+        .take(top.item_ix.min(heights.len()))
+        .sum::<f32>()
+        + f32::from(top.offset_in_item);
+    let content =
+        COMMANDER_LIST_TOP + heights.iter().sum::<f32>() + (COMMANDER_LIST_BOTTOM - CORNER_CLEAR);
+    let viewport = f32::from(list.viewport_bounds().size.height);
+    (scrolled.max(0.0), content, viewport)
+}
+
+/// Scrolls `list` to `y` pixels into its rows, which start at 0.
+fn scroll_rows_to(list: &ListState, heights: &[f32], y: f32) {
+    let y = y.max(0.0);
+    let Some(last) = heights.len().checked_sub(1) else {
+        list.scroll_to(ListOffset::default());
+        return;
+    };
+    let mut start = 0.0;
+    for (index, height) in heights.iter().enumerate() {
+        if index == last || start + height > y {
+            list.scroll_to(ListOffset {
+                item_ix: index,
+                offset_in_item: px((y - start).max(0.0)),
+            });
+            return;
         }
-        column
+        start += height;
+    }
+}
+
+/// The results' scrollbar reads and moves the list through the rows' known heights, so its
+/// thumb tracks a jump the list has not measured its way to yet.
+#[derive(Clone)]
+struct RowsScroll {
+    state: ListState,
+    heights: Rc<Vec<f32>>,
+    scrolled: f32,
+    max: f32,
+}
+
+impl ScrollSource for RowsScroll {
+    fn scrolled(&self, _: ScrollAxis) -> f32 {
+        self.scrolled
     }
 
-    fn row(
-        &mut self,
-        index: usize,
-        theme: &Theme,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) -> Stateful<Div> {
-        let item = self
-            .item_at(index)
-            .cloned()
-            .unwrap_or_else(|| CommanderItem::new("", ""));
-        let active = self.selected == Some(index);
-        let press = self.press.value().clamp(0.0, 1.0);
-        let mark = match &item.mark {
-            CommanderMark::None => None,
-            CommanderMark::Tile(icon, tone) => Some(
-                IconTile::new(*icon)
-                    .size(TILE, TILE_MARK)
-                    .tone(*tone)
-                    .into_any_element(),
-            ),
-            CommanderMark::Custom(build) => Some(build(window, cx)),
-        };
-        div()
-            .id(("commander-row", index))
-            .h(px(COMMANDER_ROW_H))
-            .w_full()
-            .px(px(theme.space_2))
-            .flex()
-            .items_center()
-            .justify_between()
-            .gap(px(theme.space_2))
-            .text_size(px(theme.font_size_md))
-            .text_color(if active && !item.disabled {
-                theme.color_text_primary
-            } else if item.disabled {
-                theme.color_text_disabled
-            } else {
-                theme.color_text_secondary
-            })
-            .opacity(if active { 1.0 - 0.18 * press } else { 1.0 })
-            .when(!item.disabled, |row| {
-                row.cursor(CursorStyle::PointingHand)
-                    .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
-                        if *hovered {
-                            this.reveal = false;
-                            this.select(index, cx);
-                        }
-                    }))
-                    .on_mouse_down(
-                        MouseButton::Left,
-                        cx.listener(move |this, _, _, cx| {
-                            this.reveal = false;
-                            this.select(index, cx);
-                            this.press.set_target(1.0);
-                            cx.notify();
-                        }),
-                    )
-                    .on_click(cx.listener(move |this, _, _, cx| this.confirm(index, cx)))
-            })
-            .child(
-                div()
-                    .flex_1()
-                    .min_w(px(0.0))
-                    .flex()
-                    .items_center()
-                    .gap(px(theme.space_2))
-                    .children(mark.map(|mark| div().flex_none().child(mark)))
-                    .child(div().min_w(px(0.0)).truncate().child(item.label.clone())),
-            )
-            .children(item.hint.clone().map(|hint| {
-                div()
-                    .flex_none()
-                    .text_size(px(theme.font_size_xs))
-                    .text_color(theme.color_text_disabled)
-                    .child(hint)
-            }))
+    fn max_scroll(&self, _: ScrollAxis) -> f32 {
+        self.max
+    }
+
+    fn scroll_to(&self, _: ScrollAxis, scrolled: f32) {
+        scroll_rows_to(&self.state, &self.heights, scrolled);
     }
 }
 
@@ -842,7 +1034,7 @@ impl Render for Commander {
             let y = self.row_y(index);
             self.indicator.set_target(y);
             if self.reveal {
-                self.reveal_row(y);
+                self.reveal_row(index);
                 self.reveal = false;
             }
         }
@@ -887,15 +1079,19 @@ impl Render for Commander {
             window.request_animation_frame();
         }
         let content_in = self.morph_in.value().clamp(0.0, 1.0);
-        let offset = -f32::from(self.scroll.offset().y);
-        let max = f32::from(self.scroll.max_offset().height);
-        let viewport = f32::from(self.scroll.bounds().size.height);
+        let (offset, content, viewport) = self.list_extent();
+        let max = (content - viewport).max(0.0);
         let overflows = max > 0.5;
-        let results = self.results(overflows, &theme, window, cx);
+        let results = self.results(overflows, &theme, cx);
         let bar = overflows.then(|| {
             scrollbar(
                 "commander-scrollbar",
-                &self.scroll,
+                &RowsScroll {
+                    state: self.list.clone(),
+                    heights: Rc::new(self.row_heights()),
+                    scrolled: offset,
+                    max,
+                },
                 ScrollAxis::Vertical,
                 ScrollGeometry {
                     track: viewport,
@@ -913,16 +1109,14 @@ impl Render for Commander {
             }
         });
         let seen = self.seen.clone();
-        let watch = self.scroll.clone();
+        let watch = self.list.clone();
+        let heights = Rc::new(self.row_heights());
         // The fades and the gutter read the scroll of the frame before; draw again once the
         // offset, the overflow, or the height has moved.
         let watcher = canvas(
             move |_, window, _| {
-                let now = (
-                    -f32::from(watch.offset().y),
-                    f32::from(watch.max_offset().height),
-                    f32::from(watch.bounds().size.height),
-                );
+                let (scrolled, content, viewport) = rows_extent(&watch, &heights);
+                let now = (scrolled, content, viewport);
                 let last = seen.get();
                 if (now.0 - last.0).abs() > 0.5
                     || (now.1 - last.1).abs() > 0.5
@@ -993,7 +1187,7 @@ impl Render for Commander {
         } else {
             (
                 div()
-                    .w_full()
+                    .size_full()
                     .opacity(content_in)
                     .child(results)
                     .into_any_element(),
@@ -1017,7 +1211,7 @@ impl Render for Commander {
             self.presence(),
             input.into_any_element(),
             body,
-            &self.scroll,
+            None,
             fades,
             bar,
             footer,
@@ -1093,7 +1287,7 @@ pub fn commander_panel(
         presence,
         input.into_any_element(),
         results.into_any_element(),
-        scroll,
+        Some(scroll),
         Fades::default(),
         None,
         None,
@@ -1119,7 +1313,9 @@ fn palette_frame(
     presence: f32,
     input: AnyElement,
     results: AnyElement,
-    scroll: &ScrollHandle,
+    // The scroll `results` own, for `commander_panel`'s caller-drawn list; `None` when the
+    // results bring their own (a `gpui::list`), which the frame then just clips.
+    scroll: Option<&ScrollHandle>,
     fades: Fades,
     bar: Option<AnyElement>,
     footer: Option<AnyElement>,
@@ -1231,8 +1427,13 @@ fn palette_frame(
                     div()
                         .id("commander-results")
                         .w_full()
-                        .when(!run_mode, |body| body.h_full().overflow_y_scroll())
-                        .track_scroll(scroll)
+                        .when(!run_mode && scroll.is_none(), |body| {
+                            body.h_full().overflow_hidden()
+                        })
+                        .when(!run_mode && scroll.is_some(), |body| {
+                            body.h_full().overflow_y_scroll()
+                        })
+                        .when_some(scroll, |body, scroll| body.track_scroll(scroll))
                         .cursor(CursorStyle::PointingHand)
                         .child(results),
                 )
@@ -1318,6 +1519,8 @@ fn fold(text: &str) -> Vec<char> {
 mod tests {
     use super::*;
     use gpui::TestAppContext;
+
+    type CommanderSlot = Rc<std::cell::RefCell<Option<Entity<Commander>>>>;
 
     fn groups() -> Vec<CommanderGroup> {
         vec![
@@ -1471,6 +1674,186 @@ mod tests {
             assert_eq!(
                 this.row_y(3),
                 first + 3.0 * COMMANDER_ROW_H + COMMANDER_GROUP_GAP + COMMANDER_HEADING_H
+            );
+            // The list's row heights, which the reveal and the scrollbar read.
+            assert_eq!(
+                this.row_heights(),
+                vec![
+                    COMMANDER_HEADING_H,
+                    COMMANDER_ROW_H,
+                    COMMANDER_ROW_H,
+                    COMMANDER_ROW_H,
+                    COMMANDER_HEADING_H + COMMANDER_GROUP_GAP,
+                    COMMANDER_ROW_H,
+                ]
+            );
+        });
+    }
+
+    /// A palette open in a real window with `count` commands under one heading, counting every
+    /// row mark built.
+    fn open_palette(
+        cx: &mut TestAppContext,
+        count: usize,
+    ) -> (
+        CommanderSlot,
+        Rc<std::cell::Cell<usize>>,
+        gpui::VisualTestContext,
+    ) {
+        use crate::test_support::open;
+        let built = Rc::new(std::cell::Cell::new(0_usize));
+        let items: Vec<CommanderItem> = (0..count)
+            .map(|index| {
+                let built = built.clone();
+                CommanderItem::new(format!("item.{index}"), format!("Item {index}")).mark(
+                    move |_, _| {
+                        built.set(built.get() + 1);
+                        div().w(px(20.0)).h(px(20.0)).into_any_element()
+                    },
+                )
+            })
+            .collect();
+        let slot: CommanderSlot = Rc::default();
+        let made = slot.clone();
+        let visual = open(cx, gpui::size(900.0, 700.0), move |window, cx| {
+            let commander = made
+                .borrow_mut()
+                .get_or_insert_with(|| {
+                    cx.new(|cx| {
+                        let mut commander = Commander::new(window, cx);
+                        commander
+                            .set_groups(vec![CommanderGroup::new("All").items(items.clone())], cx);
+                        commander.set_open(true, window, cx);
+                        commander
+                    })
+                })
+                .clone();
+            commander.into_any_element()
+        });
+        (slot, built, visual)
+    }
+
+    /// A palette in a real window drawing `groups`, open, with its entity filled in once.
+    fn open_groups(
+        cx: &mut TestAppContext,
+        groups: Vec<CommanderGroup>,
+    ) -> (CommanderSlot, gpui::VisualTestContext) {
+        use crate::test_support::open;
+        let slot: CommanderSlot = Rc::default();
+        let made = slot.clone();
+        let visual = open(cx, gpui::size(900.0, 700.0), move |window, cx| {
+            made.borrow_mut()
+                .get_or_insert_with(|| {
+                    cx.new(|cx| {
+                        let mut commander = Commander::new(window, cx);
+                        commander.set_groups(groups.clone(), cx);
+                        commander.set_open(true, window, cx);
+                        commander
+                    })
+                })
+                .clone()
+                .into_any_element()
+        });
+        (slot, visual)
+    }
+
+    #[gpui::test]
+    fn a_later_groups_heading_keeps_its_gap_in_the_list(cx: &mut TestAppContext) {
+        use crate::test_support::draw;
+        let (slot, mut visual) = open_groups(cx, groups());
+        draw(&mut visual);
+        let commander = slot.borrow().clone().unwrap();
+        commander.read_with(&visual, |commander, _| {
+            // The rows: Navigation's heading, its three commands, Actions' heading, Reload.
+            let last_item = commander.list.bounds_for_item(3).expect("Offline");
+            let heading = commander.list.bounds_for_item(4).expect("Actions' heading");
+            let reload = commander.list.bounds_for_item(5).expect("Reload");
+            assert!(
+                (f32::from(heading.size.height) - (COMMANDER_HEADING_H + COMMANDER_GROUP_GAP))
+                    .abs()
+                    < 0.5,
+                "a later group's heading keeps its gap above it"
+            );
+            assert_eq!(
+                heading.top(),
+                reload.top() - px(COMMANDER_HEADING_H + COMMANDER_GROUP_GAP)
+            );
+            assert_eq!(last_item.top(), heading.top() - px(COMMANDER_ROW_H));
+        });
+    }
+
+    #[gpui::test]
+    fn hovering_a_listed_row_lights_it(cx: &mut TestAppContext) {
+        use crate::test_support::draw;
+        let (slot, mut visual) = open_groups(cx, groups());
+        let commander = slot.borrow().clone().unwrap();
+        let spend = commander.read_with(&visual, |commander, _| {
+            commander.list.bounds_for_item(2).expect("Spend").center()
+        });
+        visual.simulate_mouse_move(spend, None, gpui::Modifiers::default());
+        draw(&mut visual);
+        commander.read_with(&visual, |commander, _| {
+            assert_eq!(
+                commander.selected_id().map(|id| id.as_ref()),
+                Some("nav.spend")
+            );
+        });
+    }
+
+    #[gpui::test]
+    fn a_long_palette_builds_only_the_rows_in_view(cx: &mut TestAppContext) {
+        use crate::test_support::draw;
+        let (slot, built, mut visual) = open_palette(cx, 400);
+        draw(&mut visual);
+        built.set(0);
+        draw(&mut visual);
+        let built = built.get();
+        assert!(
+            built > 0 && built < 80,
+            "built {built} row marks for 400 commands"
+        );
+        let commander = slot.borrow().clone().unwrap();
+        commander.read_with(&visual, |commander, _| {
+            let count = commander.list.item_count();
+            assert_eq!(count, 401, "a heading and every command");
+            assert!(
+                commander.list.bounds_for_item(count - 1).is_none(),
+                "the last row is never laid out while it is out of view"
+            );
+            // The list lays the rows out at the heights `row_y` steps through, so the
+            // highlight, the reveal, and the rows share one geometry.
+            let heading = commander.list.bounds_for_item(0).expect("the heading");
+            let first = commander
+                .list
+                .bounds_for_item(1)
+                .expect("the first command");
+            assert!((f32::from(heading.size.height) - COMMANDER_HEADING_H).abs() < 0.5);
+            assert!((f32::from(first.size.height) - COMMANDER_ROW_H).abs() < 0.5);
+            assert!((f32::from(first.top() - heading.top()) - COMMANDER_HEADING_H).abs() < 0.5);
+        });
+    }
+
+    #[gpui::test]
+    fn moving_past_the_view_scrolls_the_highlight_into_view(cx: &mut TestAppContext) {
+        use crate::test_support::draw;
+        let (slot, _built, mut visual) = open_palette(cx, 300);
+        draw(&mut visual);
+        let commander = slot.borrow().clone().unwrap();
+        commander.update(&mut visual, |commander, cx| {
+            commander.selected = Some(120);
+            commander.reveal = true;
+            cx.notify();
+        });
+        draw(&mut visual);
+        commander.read_with(&visual, |commander, _| {
+            let top = commander.list.logical_scroll_top();
+            assert!(top.item_ix > 90, "scrolled to row {}", top.item_ix);
+            let (scrolled, _, view) = commander.list_extent();
+            let y = commander.row_y(120) - scrolled;
+            assert!(view > 1.0, "the results were laid out");
+            assert!(
+                y >= 0.0 && y + COMMANDER_ROW_H <= view,
+                "the lit row at {y} sits outside the {view} view"
             );
         });
     }

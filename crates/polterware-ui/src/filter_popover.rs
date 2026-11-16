@@ -26,6 +26,13 @@
 //! 4px slide from its anchor on the fast spring, and it leaves on the fast exit tween. The
 //! menus' slight vertical scale is left out, as GPUI cannot scale an element. Each surface is
 //! drawn deferred, at the window position its anchor recorded in the last frame.
+//!
+//! A page may add display rows ([`DisplayRow`]: Group by, Sort by, Show) under the fields,
+//! in a section of their own under a hairline, drawn and hovered as the field rows are, with
+//! the current value muted at the end. A display row opens the same values panel beside it,
+//! as radio groups (a hairline between two), with no search: a pick only reports itself
+//! ([`DisplayPick`]) and leaves the menu open; it makes no clause and no pill. A Reset to
+//! defaults row ends the section.
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -52,8 +59,8 @@ use super::radio_group::radio_mark;
 use super::text_input::TextInput;
 use super::tooltip::tooltip;
 use crate::filter::{
-    FilterKind, FilterSpec, Filters, SearchRow, operator_label, operators, option_sections,
-    search_rows, value_summary,
+    FilterKind, FilterOption, FilterSpec, Filters, SearchRow, operator_label, operators,
+    option_sections, search_rows, value_summary,
 };
 use crate::motion::{Curve, SpringTier, Tween};
 use crate::theme::{Ease, Theme, fade, mix};
@@ -134,6 +141,63 @@ impl FilterField {
 
 /// The clauses changed, or a surface the bar draws opened or closed.
 pub struct FiltersChanged;
+
+/// A row of the menu's Display section (Group by, Sort by, Show): its values are radio
+/// groups, one value checked in each, and picking one reports [`DisplayPick`] instead of
+/// filtering.
+#[derive(Clone, Debug)]
+pub struct DisplayRow {
+    pub id: String,
+    pub label: String,
+    pub icon: Icon,
+    /// The radio groups, in order, with a hairline between two.
+    pub groups: Vec<Vec<FilterOption>>,
+    /// The value checked in each group.
+    pub values: Vec<String>,
+}
+
+impl DisplayRow {
+    pub fn new(id: impl Into<String>, label: impl Into<String>, icon: Icon) -> Self {
+        Self {
+            id: id.into(),
+            label: label.into(),
+            icon,
+            groups: Vec::new(),
+            values: Vec::new(),
+        }
+    }
+
+    /// One more radio group, `value` checked in it.
+    pub fn group(mut self, options: Vec<FilterOption>, value: impl Into<String>) -> Self {
+        self.groups.push(options);
+        self.values.push(value.into());
+        self
+    }
+
+    /// The label of the first group's checked value, shown muted at the row's end.
+    fn summary(&self) -> Option<String> {
+        let value = self.values.first()?;
+        self.groups
+            .first()?
+            .iter()
+            .find(|option| &option.id == value)
+            .map(|option| option.label.clone())
+    }
+}
+
+/// A display row's pick, or its section's Reset to defaults.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum DisplayPick {
+    /// `row` now has `value` checked in the group that holds it.
+    Value {
+        row: String,
+        value: String,
+    },
+    Reset,
+}
+
+/// The section the display rows' stand-in fields share, apart from any page's sections.
+const DISPLAY_SECTION: &str = "\u{1}display";
 
 /// One surface's presence: `popup-motion.ts`'s fade and slide.
 struct Popup {
@@ -290,6 +354,10 @@ enum Surface {
 
 pub struct FilterPopover {
     display: Option<Entity<crate::display_options::DisplayOptions>>,
+    /// The Display section's rows; `fields` ends with a single-value stand-in for each.
+    display_rows: Vec<DisplayRow>,
+    /// How many of `fields` are the page's: the rest stand in for `display_rows`.
+    host_fields: usize,
     id: SharedString,
     label: SharedString,
     shortcut: bool,
@@ -328,6 +396,7 @@ pub struct FilterPopover {
 }
 
 impl EventEmitter<FiltersChanged> for FilterPopover {}
+impl EventEmitter<DisplayPick> for FilterPopover {}
 
 impl FilterPopover {
     /// `label` is the trigger's name ("Run filters"); `shortcut` gives this control the F key.
@@ -345,6 +414,8 @@ impl FilterPopover {
             label: label.into(),
             shortcut,
             display: None,
+            display_rows: Vec::new(),
+            host_fields: 0,
             fields: Vec::new(),
             filters: Filters::default(),
             root: Popup::new(),
@@ -423,13 +494,45 @@ impl FilterPopover {
     }
 
     pub fn fields(&self) -> &[FilterField] {
-        &self.fields
+        &self.fields[..self.host_fields]
     }
 
     /// The fields for the page's current data. Clauses whose field is gone stay, as the bar
     /// only draws the ones it knows.
     pub fn set_fields(&mut self, fields: Vec<FilterField>) {
+        self.host_fields = fields.len();
         self.fields = fields;
+        self.append_display_fields();
+    }
+
+    /// The Display section's rows, under the fields; an empty list drops the section.
+    /// Subscribe to [`DisplayPick`] for changes and Reset; filter clauses stay untouched.
+    pub fn set_display_rows(&mut self, rows: Vec<DisplayRow>, cx: &mut Context<Self>) {
+        self.display_rows = rows;
+        self.fields.truncate(self.host_fields);
+        self.append_display_fields();
+        cx.notify();
+    }
+
+    pub fn display_rows(&self) -> &[DisplayRow] {
+        &self.display_rows
+    }
+
+    /// One single-value field per display row after the page's, so the rows share the
+    /// fields' drawing, hover, and submenu.
+    fn append_display_fields(&mut self) {
+        let stand_ins = self.display_rows.iter().map(|row| FilterField {
+            spec: FilterSpec::multi(
+                format!("display:{}", row.id),
+                row.label.clone(),
+                row.groups.iter().flatten().cloned().collect(),
+            )
+            .single(),
+            icon: Some(row.icon),
+            section: Some(DISPLAY_SECTION.into()),
+            option_icons: Default::default(),
+        });
+        self.fields.extend(stand_ins.collect::<Vec<_>>());
         if let Some((field, _)) = self.sub_field
             && field >= self.fields.len()
         {
@@ -588,7 +691,10 @@ impl FilterPopover {
         match surface {
             Surface::Root => {
                 let query = self.query(Surface::Root, cx);
-                let specs: Vec<&FilterSpec> = self.fields.iter().map(|field| &field.spec).collect();
+                let specs: Vec<&FilterSpec> = self.fields[..self.host_fields]
+                    .iter()
+                    .map(|field| &field.spec)
+                    .collect();
                 match search_rows(&specs, &query).first() {
                     Some(SearchRow::Field(field)) => self.open_field(*field, 0, true, cx),
                     Some(SearchRow::Value(field, option)) => {
@@ -602,6 +708,9 @@ impl FilterPopover {
                 let Some((field, _)) = self.sub_field else {
                     return;
                 };
+                if self.display_row(field).is_some() {
+                    return;
+                }
                 let query = self.query(Surface::Sub, cx);
                 let first = option_sections(&self.fields[field].spec, &query, &[], false)
                     .into_iter()
@@ -642,7 +751,8 @@ impl FilterPopover {
         }
         self.sub_field = Some((field, row));
         self.sub.set(true);
-        if focus {
+        // A display row's values have no search to focus.
+        if focus && self.display_row(field).is_none() {
             self.focus_next = Some(Surface::Sub);
         }
         cx.notify();
@@ -808,6 +918,10 @@ impl FilterPopover {
 
     /// A label click in the submenu: only this value, then close.
     fn select_in_submenu(&mut self, field: usize, value: &str, cx: &mut Context<Self>) {
+        if self.display_row(field).is_some() {
+            self.pick_display(field, value, cx);
+            return;
+        }
         let spec = self.fields[field].spec.clone();
         match self.edited_clause(field) {
             Some(clause) => self.filters.set_values(&clause, vec![value.to_string()]),
@@ -842,7 +956,50 @@ impl FilterPopover {
     }
 
     fn field_index(&self, field: &str) -> Option<usize> {
-        self.fields.iter().position(|item| item.spec.id == field)
+        self.fields[..self.host_fields]
+            .iter()
+            .position(|item| item.spec.id == field)
+    }
+
+    /// The display row field `field` stands in for.
+    fn display_row(&self, field: usize) -> Option<&DisplayRow> {
+        field
+            .checked_sub(self.host_fields)
+            .and_then(|index| self.display_rows.get(index))
+    }
+
+    /// A display row's value: checked in its group, reported, and the menu stays open.
+    fn pick_display(&mut self, field: usize, value: &str, cx: &mut Context<Self>) {
+        let Some(index) = field.checked_sub(self.host_fields) else {
+            return;
+        };
+        let Some(row) = self.display_rows.get_mut(index) else {
+            return;
+        };
+        let Some(group) = row
+            .groups
+            .iter()
+            .position(|options| options.iter().any(|option| option.id == value))
+        else {
+            return;
+        };
+        if row.values[group] == value {
+            return;
+        }
+        row.values[group] = value.to_string();
+        let pick = DisplayPick::Value {
+            row: row.id.clone(),
+            value: value.to_string(),
+        };
+        cx.emit(pick);
+        cx.notify();
+    }
+
+    fn reset_display(&mut self, cx: &mut Context<Self>) {
+        self.timer += 1;
+        self.sub.set(false);
+        cx.emit(DisplayPick::Reset);
+        cx.notify();
     }
 
     /// The field and clause of the open pill's values, while the clause still exists.
@@ -1074,7 +1231,12 @@ impl FilterPopover {
             mix(theme.color_text_secondary, theme.color_text_primary, hover)
         };
         let element = div()
-            .id(id)
+            .id(id.clone())
+            // Tests find a row by its id (a no-op outside gpui's test support).
+            .debug_selector({
+                let id = id.clone();
+                move || id.to_string()
+            })
             .relative()
             .h(px(FIELD_ROW_H))
             .px(px(FIELD_ROW_PAD_X))
@@ -1124,7 +1286,10 @@ impl FilterPopover {
         };
         let entity = cx.entity();
         let query = self.query(Surface::Root, cx);
-        let specs: Vec<&FilterSpec> = self.fields.iter().map(|field| &field.spec).collect();
+        let specs: Vec<&FilterSpec> = self.fields[..self.host_fields]
+            .iter()
+            .map(|field| &field.spec)
+            .collect();
         let open_field = self
             .sub_field
             .filter(|_| self.sub.open)
@@ -1179,11 +1344,35 @@ impl FilterPopover {
                     let tile = IconTile::option(self.fields[field].icon, &spec.label);
                     let hover_entity = entity.clone();
                     let click_entity = entity.clone();
+                    let label = ellipsis(SharedString::from(spec.label.clone()));
+                    let text = match self.display_row(field).and_then(DisplayRow::summary) {
+                        // A display row: its label, then its value muted at the end.
+                        Some(value) => div()
+                            .flex()
+                            .items_center()
+                            .gap(px(8.0))
+                            .child(div().flex_none().child(label))
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .min_w(px(0.0))
+                                    .flex()
+                                    .justify_end()
+                                    .text_size(px(12.0))
+                                    .text_color(theme.color_text_muted)
+                                    .child(ellipsis(SharedString::from(value))),
+                            )
+                            .into_any_element(),
+                        None => label.into_any_element(),
+                    };
                     self.menu_row(
-                        format!("field-{field}"),
+                        self.display_row(field).map_or_else(
+                            || format!("field-{field}"),
+                            |row| format!("display-{}", row.id),
+                        ),
                         index,
                         tile,
-                        ellipsis(SharedString::from(spec.label.clone())).into_any_element(),
+                        text,
                         true,
                         Some(field) == open_field,
                         Rc::new(move |hovered, _, cx| {
@@ -1248,6 +1437,33 @@ impl FilterPopover {
                 }
             };
             list = list.child(element);
+        }
+        if !searching && !self.display_rows.is_empty() {
+            let index = rows.len();
+            let hover_entity = entity.clone();
+            let click_entity = entity.clone();
+            list = list.child(self.menu_row(
+                "display-reset".into(),
+                index,
+                IconTile::option(Some(Icon::RefreshCw), "Reset to defaults"),
+                ellipsis(SharedString::from("Reset to defaults")).into_any_element(),
+                false,
+                false,
+                Rc::new(move |hovered, _, cx| {
+                    hover_entity.update(cx, |this, cx| {
+                        this.hover_row(index, hovered, cx);
+                        // Leaving the rows above for this one closes their values.
+                        if hovered && this.sub.open {
+                            this.schedule(None, cx);
+                        }
+                    });
+                }),
+                Rc::new(move |_, cx| {
+                    click_entity.update(cx, |this, cx| this.reset_display(cx));
+                }),
+                window,
+                cx,
+            ));
         }
         let body = if rows.is_empty() {
             empty_line(
@@ -1348,11 +1564,23 @@ impl FilterPopover {
             Surface::Sub => &self.sub_search,
             _ => &self.values_search,
         };
-        let query = self.query(surface, cx);
+        let display = self.display_row(field);
+        let query = if display.is_some() {
+            String::new()
+        } else {
+            self.query(surface, cx)
+        };
         let spec = &self.fields[field].spec;
         let multi = spec.kind == FilterKind::Multi;
         let pinned: &[String] = if checked_first { &self.pinned } else { &[] };
-        let sections = option_sections(spec, &query, pinned, checked_first);
+        let sections = match display {
+            Some(row) => row
+                .groups
+                .iter()
+                .map(|group| group.iter().collect())
+                .collect(),
+            None => option_sections(spec, &query, pinned, checked_first),
+        };
         let first = sections
             .first()
             .and_then(|section| section.first())
@@ -1418,8 +1646,13 @@ impl FilterPopover {
                     );
                 }
                 let select_entity = entity.clone();
+                let body_id = SharedString::from(format!("{id}-body"));
                 let body = div()
-                    .id(SharedString::from(format!("{id}-body")))
+                    .id(body_id.clone())
+                    .debug_selector({
+                        let body_id = body_id.clone();
+                        move || body_id.to_string()
+                    })
                     .flex_1()
                     .min_w(px(0.0))
                     .h_full()
@@ -1475,7 +1708,9 @@ impl FilterPopover {
             .flex_col()
             .occlude()
             .text_color(theme.color_text_primary)
-            .child(search_header(search, None, &theme))
+            .when(display.is_none(), |panel| {
+                panel.child(search_header(search, None, &theme))
+            })
             .child(
                 div()
                     .id(SharedString::from(format!("{}-{surface:?}-list", self.id)))
@@ -1550,10 +1785,13 @@ impl FilterPopover {
         } else {
             (row_left - SUB_GUTTER - PANEL_W, 1.0)
         };
-        let values = self
-            .edited_clause(field)
-            .and_then(|id| self.filters.clause(&id).map(|clause| clause.values.clone()))
-            .unwrap_or_default();
+        let values = match self.display_row(field) {
+            Some(row) => row.values.clone(),
+            None => self
+                .edited_clause(field)
+                .and_then(|id| self.filters.clause(&id).map(|clause| clause.values.clone()))
+                .unwrap_or_default(),
+        };
         let alpha = self.sub.alpha.value().clamp(0.0, 1.0);
         let offset = self.sub.offset() * toward;
         let geometry = self.geometry.clone();
@@ -2300,6 +2538,117 @@ mod tests {
     };
     use crate::filter::{FilterOption, FilterSpec};
     use crate::test_support::{draw, open, settle};
+
+    #[gpui::test]
+    fn display_filter_rows_pick_radios_without_adding_clauses(cx: &mut TestAppContext) {
+        use super::{DisplayPick, DisplayRow};
+        use crate::Icon;
+        use std::{cell::RefCell, rc::Rc};
+
+        let (filter, mut visual) = opened(cx);
+        let changes = Rc::new(RefCell::new(Vec::new()));
+        let heard = changes.clone();
+        visual.update(|_, cx| {
+            cx.subscribe(&filter, move |_, pick: &DisplayPick, _| {
+                heard.borrow_mut().push(pick.clone());
+            })
+            .detach();
+        });
+        filter.update(&mut visual, |filter, cx| {
+            filter.set_display_rows(
+                vec![
+                    DisplayRow::new("group", "Group by", Icon::Layers).group(
+                        vec![
+                            FilterOption::new("status", "Status"),
+                            FilterOption::new("repository", "Repository"),
+                        ],
+                        "status",
+                    ),
+                    DisplayRow::new("sort", "Sort by", Icon::ListOrdered)
+                        .group(
+                            vec![
+                                FilterOption::new("updated", "Last updated"),
+                                FilterOption::new("created", "Date created"),
+                            ],
+                            "updated",
+                        )
+                        .group(
+                            vec![
+                                FilterOption::new("desc", "Descending"),
+                                FilterOption::new("asc", "Ascending"),
+                            ],
+                            "desc",
+                        ),
+                ],
+                cx,
+            );
+            // Refreshing the page's fields must keep the display rows separate.
+            filter.set_fields(vec![field("status", "Status")]);
+            assert_eq!(filter.fields().len(), 1);
+            assert_eq!(filter.fields.len(), 3);
+        });
+        settle(&mut visual);
+        let field_row = visual.debug_bounds("f-field-0").unwrap();
+        let group_row = visual.debug_bounds("f-display-group").unwrap();
+        assert_eq!(field_row.size.height, group_row.size.height);
+        assert_eq!(field_row.size.height, px(FIELD_ROW_H));
+        // The hairline is `LIST_PAD * 2 + 1` (10.75). A 2x window snaps that to a device pixel.
+        let gap = f32::from(group_row.top() - field_row.bottom());
+        assert!(
+            (gap - SECTION_GAP).abs() <= 0.5,
+            "display rows sit {gap}px under the fields, not the {SECTION_GAP}px section hairline"
+        );
+        visual.simulate_mouse_move(group_row.center(), None, Modifiers::none());
+        wait(&mut visual, OPEN_DELAY);
+        assert_eq!(shown(&filter, &mut visual), Some(1));
+        settle(&mut visual);
+        let repository = visual
+            .debug_bounds("f-Sub-display:group-repository-body")
+            .unwrap();
+        visual.simulate_click(repository.center(), Modifiers::none());
+        settle(&mut visual);
+        assert_eq!(
+            *changes.borrow(),
+            vec![DisplayPick::Value {
+                row: "group".into(),
+                value: "repository".into()
+            }]
+        );
+        filter.read_with(&visual, |filter, _| {
+            assert_eq!(filter.display_rows()[0].values, ["repository"]);
+            assert_eq!(
+                filter.display_rows()[0].summary().as_deref(),
+                Some("Repository")
+            );
+            assert!(filter.filters().clauses.is_empty());
+            assert!(filter.root.open && filter.sub.open);
+        });
+        let sort_row = visual.debug_bounds("f-display-sort").unwrap();
+        visual.simulate_click(sort_row.center(), Modifiers::none());
+        settle(&mut visual);
+        for id in [
+            "f-Sub-display:sort-created-body",
+            "f-Sub-display:sort-asc-body",
+        ] {
+            let bounds = visual.debug_bounds(id).unwrap();
+            visual.simulate_click(bounds.center(), Modifiers::none());
+            settle(&mut visual);
+        }
+        filter.read_with(&visual, |filter, _| {
+            assert_eq!(filter.display_rows()[1].values, ["created", "asc"]);
+            assert!(filter.filters().clauses.is_empty());
+            assert!(filter.root.open && filter.sub.open);
+        });
+        assert_eq!(changes.borrow().len(), 3);
+        let reset = visual.debug_bounds("f-display-reset").unwrap();
+        visual.simulate_click(reset.center(), Modifiers::none());
+        settle(&mut visual);
+        assert_eq!(changes.borrow().last(), Some(&DisplayPick::Reset));
+        filter.read_with(&visual, |filter, _| {
+            assert!(filter.filters().clauses.is_empty());
+            assert!(filter.root.open && !filter.sub.open);
+        });
+    }
 
     #[gpui::test]
     fn display_widens_the_filter_and_selecting_keeps_it_open(cx: &mut TestAppContext) {
