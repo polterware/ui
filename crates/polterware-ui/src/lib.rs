@@ -131,6 +131,7 @@ pub use patterns::{
 };
 #[cfg(feature = "bots")]
 pub use patterns::{MascotMood, list_empty, page_empty, page_empty_action, page_empty_with};
+pub use patterns::{TAIL_FADE, TailLine, TailPreview, TailTone, tail_preview};
 pub use pointer::{
     PointerState, PointerTiming, track, track_with_hover, use_pointer, use_pointer_timed,
 };
