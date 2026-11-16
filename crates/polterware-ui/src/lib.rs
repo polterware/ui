@@ -35,6 +35,7 @@ pub mod frame;
 pub mod hang;
 pub mod hover_card;
 pub mod icon_button;
+pub mod icon_choice;
 pub mod icon_tile;
 pub mod icons;
 pub mod image;
@@ -87,6 +88,7 @@ pub use ellipsis::{Ellipsis, ellipsis, fade};
 pub use filter_popover::{DisplayPick, DisplayRow, FilterField, FilterPopover, FiltersChanged};
 pub use hover_card::{HoverBuilder, HoverCard};
 pub use icon_button::icon_button;
+pub use icon_choice::IconChoice;
 pub use icon_tile::{IconTile, TileTone};
 pub use icons::{Icon, IconAssets, icon, icon_colored, icon_rotated, icon_stroked};
 pub use image::{

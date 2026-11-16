@@ -3,15 +3,23 @@
 //! export on the macOS icon grid, and the Dock shows that. A bundled app keeps its compiled
 //! Icon Composer icon, so this does nothing there.
 
+#[cfg(target_os = "macos")]
+pub(crate) fn is_bundled() -> bool {
+    is_bundled_exe(std::env::current_exe().ok().as_deref())
+}
+
+#[cfg(target_os = "macos")]
+pub(crate) fn is_bundled_exe(exe: Option<&std::path::Path>) -> bool {
+    exe.is_some_and(|exe| exe.to_string_lossy().contains(".app/Contents/MacOS/"))
+}
+
 /// Shows `png` as the app's Dock icon when the binary does not run from an `.app` bundle.
 #[cfg(target_os = "macos")]
 pub fn install_unbundled(png: &'static [u8]) {
     use objc::runtime::Object;
     use objc::{class, msg_send, sel, sel_impl};
 
-    let bundled = std::env::current_exe()
-        .is_ok_and(|exe| exe.to_string_lossy().contains(".app/Contents/MacOS/"));
-    if bundled {
+    if is_bundled() {
         return;
     }
     // SAFETY: plain AppKit calls on the main thread, where GPUI runs its startup; the NSData

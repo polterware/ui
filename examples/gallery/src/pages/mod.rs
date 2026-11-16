@@ -21,6 +21,7 @@ mod echo_ring;
 mod empty;
 mod filter_popover;
 mod floating_toolbar;
+mod icon_choice;
 mod icon_tile;
 mod image;
 mod keyboard_key;
@@ -44,8 +45,8 @@ mod title_bar;
 mod toast;
 mod tooltip;
 mod tree_view;
-mod voice_blob;
 mod usage_cards;
+mod voice_blob;
 
 pub fn all() -> Vec<Example> {
     let mut examples = Vec::new();
@@ -72,6 +73,7 @@ pub fn all() -> Vec<Example> {
     examples.extend(message_composer::examples());
     examples.extend(collapsible_section::examples());
     examples.extend(tree_view::examples());
+    examples.extend(icon_choice::examples());
     examples.extend(icon_tile::examples());
     examples.extend(image::examples());
     examples.extend(keyboard_key::examples());

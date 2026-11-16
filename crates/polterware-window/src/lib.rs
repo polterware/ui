@@ -2,6 +2,7 @@
 //! traffic lights over the sidebar, the vibrancy material under the shell, window drag
 //! from the empty parts of the chrome, and the Dock icon of a build with no bundle.
 
+pub mod app_icon;
 pub mod capture;
 pub mod dock_icon;
 pub mod pinch;
