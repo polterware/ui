@@ -52,7 +52,7 @@ fn rail(id: &'static str, count: usize, window: &mut Window, cx: &mut App) -> An
                 .child(
                     MessageRail::new(id)
                         .items(messages(count))
-                        .active(Some(active))
+                        .active((count > 0).then_some(active))
                         .on_select(move |index, _, cx| {
                             viewing.update(cx, |viewing, cx| {
                                 viewing.0 = index;
@@ -72,6 +72,10 @@ fn single(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
     vec![rail("message-rail-single", 1, window, cx)]
 }
 
+fn empty(window: &mut Window, cx: &mut App) -> Vec<AnyElement> {
+    vec![rail("message-rail-empty", 0, window, cx)]
+}
+
 pub fn examples() -> Vec<Example> {
     let example = |title, render| Example {
         slug: "message-rail",
@@ -81,6 +85,7 @@ pub fn examples() -> Vec<Example> {
     };
     vec![
         example("Message rail", several),
-        example("One message (hidden)", single),
+        example("One message", single),
+        example("Empty (hidden)", empty),
     ]
 }

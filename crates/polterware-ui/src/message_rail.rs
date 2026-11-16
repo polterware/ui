@@ -6,8 +6,8 @@
 //! It looks like the message index along the edge of Codex's conversation view, on the
 //! library's tokens (`color_text_*`, the tooltip card of [`crate::tooltip`]); it behaves
 //! like a one-axis anchor list (gpui-kit's `Anchor`): items with a stable id, one active,
-//! a callback with the picked index. Fewer than two items have nothing to index, so the
-//! rail draws nothing.
+//! a callback with the picked index. An empty list has nothing to index, so the rail draws
+//! nothing; one or more items show.
 //!
 //! The rail is a fixed-width column ([`RAIL_WIDTH`]) as tall as its bars; the caller places
 //! it (absolute, vertically centered, clear of a scrollbar). Its hover springs live in the
@@ -60,9 +60,9 @@ impl MessageRailItem {
     }
 }
 
-/// Whether a rail of `count` messages shows: one message has nothing to index.
+/// Whether a rail of `count` messages shows: an empty list has nothing to index.
 pub fn message_rail_visible(count: usize) -> bool {
-    count >= 2
+    count >= 1
 }
 
 /// The bar's length at hover progress `t` (0 at rest, 1 hovered).
@@ -304,9 +304,9 @@ mod tests {
     }
 
     #[test]
-    fn fewer_than_two_messages_have_nothing_to_index() {
+    fn an_empty_rail_has_nothing_to_index() {
         assert!(!message_rail_visible(0));
-        assert!(!message_rail_visible(1));
+        assert!(message_rail_visible(1));
         assert!(message_rail_visible(2));
     }
 
@@ -366,9 +366,19 @@ mod tests {
     }
 
     #[gpui::test]
-    fn one_message_draws_no_rail(cx: &mut TestAppContext) {
-        let mut cx = open_rail(cx, 1, Rc::new(RefCell::new(Vec::new())));
+    fn zero_messages_draw_no_rail(cx: &mut TestAppContext) {
+        let mut cx = open_rail(cx, 0, Rc::new(RefCell::new(Vec::new())));
         draw(&mut cx);
         assert!(cx.debug_bounds("message-rail-0").is_none());
+    }
+
+    #[gpui::test]
+    fn one_message_draws_a_rail_bar(cx: &mut TestAppContext) {
+        let picked = Rc::new(RefCell::new(Vec::new()));
+        let mut cx = open_rail(cx, 1, picked.clone());
+        draw(&mut cx);
+        let bar = center(&mut cx, "message-rail-0");
+        cx.simulate_click(bar, Modifiers::none());
+        assert_eq!(*picked.borrow(), vec![0]);
     }
 }
