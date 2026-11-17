@@ -5,8 +5,14 @@
 //! over the page). It is as tall as its content, up to 8px above the page's bottom; past
 //! that the body and title scroll inside while Close and the footer stay. Its optional 12px invisible handle
 //! on the left edge resizes it with the column-resize cursor and follows the pointer directly.
-//! It takes the presses and the
-//! wheel over its face, so the list under it keeps neither.
+//! While it is open it takes the presses and the wheel over its face, so the list under it
+//! keeps neither. While it is leaving it keeps neither, and the list under it gets them.
+//!
+//! It comes and goes like the docs rail: it slides 16px in from the right and fades on
+//! `spring.slow`, and leaves on that tier's exit tween, still showing the last record, then
+//! unmounts. Swapping records while it is open replaces the content and does not replay the
+//! slide. A presence created already open is at rest on the first paint, as the rail is.
+//! The host holds one [`DetailPanelPresence`] and hands it the body each frame.
 //!
 //! The panel has no title bar: the scrolling body starts with the title as its first
 //! section, a heading like every [`detail_section`]'s (the [`DetailPanel::leading`] mark in a
@@ -30,10 +36,12 @@
 use std::{cell::Cell, rc::Rc};
 
 use gpui::{
-    AnyElement, App, CursorStyle, DispatchPhase, ElementId, FontWeight, IntoElement, MouseButton,
-    MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString, Window, canvas, div,
-    prelude::*, px,
+    AnyElement, App, Bounds, ContentMask, CursorStyle, DispatchPhase, Element, ElementId,
+    FontWeight, GlobalElementId, InspectorElementId, IntoElement, MouseButton, MouseDownEvent,
+    MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString, Window, canvas, div, prelude::*, px,
 };
+
+use super::rail_page::RailPresence;
 
 use crate::Handler;
 use crate::data_table::{sans, tabular};
@@ -52,6 +60,168 @@ pub const DETAIL_PANEL_MIN_WIDTH: f32 = 320.0;
 pub const DETAIL_PANEL_MAX_WIDTH: f32 = 720.0;
 /// The frame's inset from the page's edges.
 pub const DETAIL_PANEL_INSET: f32 = 8.0;
+/// How far the panel slides as it comes and goes, the rail's travel.
+const TRAVEL: f32 = 16.0;
+
+/// The body a host rebuilds while the panel is open. Kept, and not replaced, while it leaves.
+pub type DetailPanelBody = Rc<dyn Fn(&mut Window, &mut App) -> AnyElement>;
+
+/// The detail panel's presence, as [`RailPresence`] is the rail's: one progress from 0
+/// (gone) to 1 (in place) on `spring.slow`, and the last body, kept while it leaves.
+///
+/// A host holds one in an `Entity`. Each frame it calls [`set`](Self::set) with the body
+/// while a record is open and with `None` once it has closed, then [`element`](Self::element)
+/// for what to draw. A new body while it is already open swaps the record and does not replay
+/// the slide. Created open, the first paint is already at rest.
+pub struct DetailPanelPresence {
+    motion: RailPresence,
+    body: Option<DetailPanelBody>,
+}
+
+impl DetailPanelPresence {
+    /// At rest, open or not, so a page created with the panel open does not slide on first paint.
+    pub fn new(open: bool) -> Self {
+        Self {
+            motion: RailPresence::new(open),
+            body: None,
+        }
+    }
+
+    pub fn is_open(&self) -> bool {
+        self.motion.is_open()
+    }
+
+    /// Whether the panel draws: open with a body, or still leaving with the last one.
+    pub fn is_present(&self) -> bool {
+        self.body.is_some() && self.motion.is_present()
+    }
+
+    pub(crate) fn value(&self) -> f32 {
+        self.motion.value()
+    }
+
+    /// `Some` replaces the body and opens. `None` starts the exit and keeps the last body
+    /// until the tween ends.
+    pub fn set(&mut self, body: Option<DetailPanelBody>) {
+        let open = body.is_some();
+        if let Some(body) = body {
+            self.body = Some(body);
+        }
+        self.motion.set_open(open);
+        if !self.motion.is_present() {
+            self.body = None;
+        }
+    }
+
+    /// The panel for this frame, slid and faded. `None` once it has gone.
+    ///
+    /// While it is leaving, the panel draws but takes no pointer and no wheel.
+    /// Call this from the page's render: an in-flight tween asks that page for the next frame.
+    pub fn element(&mut self, window: &mut Window, cx: &mut App) -> Option<AnyElement> {
+        if !self.motion.is_present() {
+            self.body = None;
+            return None;
+        }
+        let body = self.body.clone()?;
+        if self.motion.is_animating() {
+            window.request_animation_frame();
+        }
+        let progress = self.motion.value();
+        let offset = TRAVEL * (1.0 - progress);
+        let opacity = progress.clamp(0.0, 1.0);
+        // Shift both edges by the travel so the panel's own 8px inset rides with it, the way
+        // the rail's drawer sets `right: 8px - offset`.
+        let layer = div()
+            .absolute()
+            .top_0()
+            .bottom_0()
+            .left(px(offset))
+            .right(px(-offset))
+            .opacity(opacity)
+            .child(body(window, cx));
+        if self.motion.is_open() {
+            Some(layer.into_any_element())
+        } else {
+            Some(unhit(layer).into_any_element())
+        }
+    }
+}
+
+/// Draws `child` and leaves it out of hit testing, so presses and the wheel fall through.
+struct Unhit {
+    child: AnyElement,
+}
+
+fn unhit(child: impl IntoElement) -> Unhit {
+    Unhit {
+        child: child.into_any_element(),
+    }
+}
+
+impl IntoElement for Unhit {
+    type Element = Self;
+
+    fn into_element(self) -> Self::Element {
+        self
+    }
+}
+
+impl Element for Unhit {
+    type RequestLayoutState = ();
+    type PrepaintState = ();
+
+    fn id(&self) -> Option<ElementId> {
+        None
+    }
+
+    fn source_location(&self) -> Option<&'static core::panic::Location<'static>> {
+        None
+    }
+
+    fn request_layout(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> (gpui::LayoutId, Self::RequestLayoutState) {
+        (self.child.request_layout(window, cx), ())
+    }
+
+    fn prepaint(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        _bounds: Bounds<Pixels>,
+        _request_layout: &mut Self::RequestLayoutState,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> Self::PrepaintState {
+        // Hit testing intersects each hitbox with the mask stored here. An empty mask misses,
+        // so the occluding face, Close, and the wheel never see the pointer. Paint stays
+        // unmasked, so the panel is still on screen.
+        let mask = ContentMask {
+            bounds: Bounds::default(),
+        };
+        window.with_content_mask(Some(mask), |window| {
+            self.child.prepaint(window, cx);
+        });
+    }
+
+    fn paint(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        _bounds: Bounds<Pixels>,
+        _request_layout: &mut Self::RequestLayoutState,
+        _prepaint: &mut Self::PrepaintState,
+        window: &mut Window,
+        cx: &mut App,
+    ) {
+        self.child.paint(window, cx);
+    }
+}
+
 const SECTION_GAP: f32 = 24.0;
 /// `.pw-detail-panel__record`'s gap, between the main column and the rail stacked under it.
 const RECORD_GAP: f32 = 12.0;
@@ -698,16 +868,21 @@ pub fn detail_numbered_list<S: Into<SharedString>>(
 
 #[cfg(test)]
 mod tests {
-    use std::cell::Cell;
+    use std::cell::{Cell, OnceCell};
     use std::rc::Rc;
+    use std::time::Duration;
 
-    use gpui::{Modifiers, TestAppContext, prelude::*, size};
+    use gpui::{
+        Modifiers, MouseButton, ScrollDelta, ScrollWheelEvent, TestAppContext, TouchPhase, point,
+        prelude::*, px, size,
+    };
 
     use super::{
         DETAIL_PANEL_MAX_WIDTH, DETAIL_PANEL_MIN_WIDTH, DETAIL_PANEL_WIDTH, DetailDrag,
-        DetailPanel, DetailPanelWidth, clamp_detail_width, dragged_detail_width,
+        DetailPanel, DetailPanelBody, DetailPanelPresence, DetailPanelWidth, clamp_detail_width,
+        dragged_detail_width,
     };
-    use crate::test_support::{draw, open};
+    use crate::test_support::{draw, open, settle};
 
     #[test]
     fn width_clamps_to_limits_and_available_viewport() {
@@ -926,5 +1101,142 @@ mod tests {
         // The row grows past its 20px to the aside; the body stays 10px under it.
         let body = cx.debug_bounds("body").expect("the body draws");
         assert_eq!(f32::from(body.top()), 26.0 + 10.0);
+    }
+
+    fn body(label: &'static str) -> DetailPanelBody {
+        Rc::new(move |_: &mut gpui::Window, _: &mut gpui::App| {
+            gpui::div().child(label).into_any_element()
+        })
+    }
+
+    #[test]
+    fn the_panel_keeps_its_place_across_records_and_leaves_before_it_unmounts() {
+        let ready = DetailPanelPresence::new(true);
+        assert!(ready.is_open());
+        assert!((ready.value() - 1.0).abs() < f32::EPSILON);
+        assert!(!ready.is_present());
+
+        let mut presence = DetailPanelPresence::new(false);
+        assert!(!presence.is_present());
+        presence.set(Some(body("one")));
+        assert!(presence.is_open());
+        assert!(presence.is_present());
+        std::thread::sleep(Duration::from_millis(50));
+        let mid = presence.value();
+        assert!(mid > 0.05, "the slow spring has left the start, was {mid}");
+        presence.set(Some(body("two")));
+        let swapped = presence.value();
+        assert!(
+            swapped + 0.02 >= mid,
+            "a new record does not replay the slide ({mid} -> {swapped})"
+        );
+        assert!(presence.is_open());
+        presence.set(None);
+        assert!(!presence.is_open());
+        assert!(
+            presence.is_present(),
+            "the last record stays mounted while it leaves"
+        );
+        std::thread::sleep(Duration::from_millis(200));
+        assert!(!presence.is_present());
+    }
+
+    #[gpui::test]
+    fn the_panel_slides_in_and_lets_the_list_take_presses_while_it_leaves(
+        cx: &mut TestAppContext,
+    ) {
+        let hits = Rc::new(Cell::new(0));
+        let wheels = Rc::new(Cell::new(0));
+        let closes = Rc::new(Cell::new(0));
+        let shown = Rc::new(Cell::new(true));
+        let slot: Rc<OnceCell<gpui::Entity<DetailPanelPresence>>> = Rc::new(OnceCell::new());
+
+        let hits_b = hits.clone();
+        let wheels_b = wheels.clone();
+        let closes_b = closes.clone();
+        let shown_b = shown.clone();
+        let slot_b = slot.clone();
+        let mut cx = open(cx, size(1000.0, 600.0), move |window, cx| {
+            let presence = slot_b
+                .get_or_init(|| cx.new(|_| DetailPanelPresence::new(false)))
+                .clone();
+            let closes = closes_b.clone();
+            let panel = shown_b.get().then(|| {
+                let closes = closes.clone();
+                Rc::new(move |_: &mut gpui::Window, _: &mut gpui::App| {
+                    DetailPanel::new("panel", "Rename export snapshot")
+                        .on_close(Rc::new({
+                            let closes = closes.clone();
+                            move |_, _| closes.set(closes.get() + 1)
+                        }))
+                        .into_any_element()
+                }) as DetailPanelBody
+            });
+            presence.update(cx, |presence, _| presence.set(panel));
+            let panel = presence.update(cx, |presence, cx| presence.element(window, cx));
+            let hits = hits_b.clone();
+            let wheels = wheels_b.clone();
+            gpui::div()
+                .relative()
+                .size_full()
+                .child(
+                    gpui::div()
+                        .size_full()
+                        .on_mouse_down(MouseButton::Left, move |_, _, _| hits.set(hits.get() + 1))
+                        .on_scroll_wheel(move |_, _, _| wheels.set(wheels.get() + 1)),
+                )
+                .children(panel)
+                .into_any_element()
+        });
+
+        let close = cx.debug_bounds("panel-close").expect("Close draws on the way in");
+        assert!(
+            f32::from(close.right()) > 980.0 + 4.0,
+            "it starts 16px to the right of rest, right edge {}",
+            f32::from(close.right())
+        );
+        settle(&mut cx);
+        let close = cx.debug_bounds("panel-close").expect("Close draws at rest");
+        assert_eq!(f32::from(close.right()), 1000.0 - 8.0 - 12.0);
+
+        let wheel = |at: gpui::Point<gpui::Pixels>| ScrollWheelEvent {
+            position: at,
+            delta: ScrollDelta::Pixels(point(px(0.0), px(-40.0))),
+            modifiers: Modifiers::default(),
+            touch_phase: TouchPhase::Moved,
+        };
+        cx.simulate_event(wheel(close.center()));
+        assert_eq!(wheels.get(), 0, "an open panel takes the wheel");
+        cx.simulate_click(close.center(), Modifiers::none());
+        assert_eq!(closes.get(), 1);
+        assert_eq!(hits.get(), 0, "an open panel takes the press");
+
+        shown.set(false);
+        draw(&mut cx);
+        let (present, open) = cx.read(|app| {
+            let presence = slot.get().unwrap().read(app);
+            (presence.is_present(), presence.is_open())
+        });
+        assert!(present, "the last record stays mounted while it leaves");
+        assert!(!open);
+        let close = cx
+            .debug_bounds("panel-close")
+            .expect("Close stays through the exit");
+        cx.simulate_event(wheel(close.center()));
+        cx.simulate_click(close.center(), Modifiers::none());
+        assert_eq!(closes.get(), 1, "Close takes nothing while the panel leaves");
+        assert_eq!(wheels.get(), 1, "the list takes the wheel while the panel leaves");
+        assert_eq!(hits.get(), 1, "the list takes the press while the panel leaves");
+
+        // debug_bounds keeps a selector after the element is gone, so the presence is the
+        // record of whether this frame still drew it.
+        std::thread::sleep(Duration::from_millis(200));
+        draw(&mut cx);
+        let (value, present) = cx.read(|app| {
+            let presence = slot.get().unwrap().read(app);
+            (presence.value(), presence.is_present())
+        });
+        assert!(!present, "it unmounts when the exit tween ends");
+        assert!(value < 0.01, "the exit tween has arrived, was {value}");
     }
 }

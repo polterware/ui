@@ -77,8 +77,8 @@ pub use dashboard_grid::{
 };
 pub use detail_panel::{
     DETAIL_PANEL_INSET, DETAIL_PANEL_MAX_WIDTH, DETAIL_PANEL_MIN_WIDTH, DETAIL_PANEL_WIDTH,
-    DetailPanel, DetailPanelWidth, detail_numbered_list, detail_properties, detail_property,
-    detail_section, detail_section_with_aside, detail_text,
+    DetailPanel, DetailPanelBody, DetailPanelPresence, DetailPanelWidth, detail_numbered_list,
+    detail_properties, detail_property, detail_section, detail_section_with_aside, detail_text,
 };
 pub use dialog::{
     DIALOG_SCALE_FROM, Dialog, DialogPose, DialogPresence, DialogSize, Field, dialog, field,
